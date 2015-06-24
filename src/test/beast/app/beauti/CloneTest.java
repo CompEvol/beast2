@@ -24,10 +24,11 @@ public class CloneTest extends BeautiBase {
         importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
-        JOptionPaneFixture op = beautiFrame.optionPane();
-        if (op.target.isVisible()) {
-        	op.okButton().click();
-        }
+		// may need to use the following when not running on Hudson
+//        JOptionPaneFixture op = beautiFrame.optionPane();
+//        if (op.target.isVisible()) {
+//        	op.okButton().click();
+//        }
 
         //1. Set the site model to HKY+G4 (estimated)
         warning("1. Set the site model of first partition to HKY+G4 (estimated)");
@@ -102,10 +103,11 @@ public class CloneTest extends BeautiBase {
         importAlignment("examples/nexus", new File("primate-mtDNA.nex"));
 
 		JTabbedPaneFixture f = beautiFrame.tabbedPane();
-        JOptionPaneFixture op = beautiFrame.optionPane();
-	    if (op.target.isVisible()) {
-	    	op.okButton().click();
-	    }
+		// may need to use the following when not running on Hudson
+//        JOptionPaneFixture op = beautiFrame.optionPane();
+//	    if (op.target.isVisible()) {
+//	    	op.okButton().click();
+//	    }
 
         //1. Set the clock model of second partition to UCLD exponential
         warning("1. Set the clock model of second partition to UCLD exponential");

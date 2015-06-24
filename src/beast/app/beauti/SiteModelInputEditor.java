@@ -119,7 +119,16 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		}
 	}
 
-    public InputEditor createGammaCategoryCountEditor() throws Exception {
+    public InputEditor createMutationRateEditor() throws Exception {
+    	SiteModel sitemodel = ((SiteModel) m_input.get()); 
+        Input<?> input = sitemodel.muParameterInput;
+        ParameterInputEditor mutationRateEditor = new ParameterInputEditor(doc);
+        mutationRateEditor.init(input, sitemodel, -1, ExpandOption.FALSE, true);
+        mutationRateEditor.getEntry().setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
+        return mutationRateEditor;
+    }
+	
+	public InputEditor createGammaCategoryCountEditor() throws Exception {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
         Input<?> input = sitemodel.gammaCategoryCount;
         categoryCountEditor = new IntegerInputEditor(doc) {
