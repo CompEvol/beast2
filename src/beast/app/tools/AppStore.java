@@ -47,11 +47,6 @@ public class AppStore {
     }
 
     public JDialog launchGUI() {
-        try {
-            AddOnManager.loadExternalJars();
-        } catch (Exception e) {
-            // ignore
-        }
 
         mainDialog = new JDialog();
         mainDialog.setTitle("BEAST 2 Package Application Launcher");
@@ -320,6 +315,8 @@ public class AppStore {
 
     public void runAppFromCMD(PackageApp packageApp, String[] additionalArgs) {
         try {
+            AddOnManager.loadExternalJars();
+
             List<String> cmd = new ArrayList<>();
             if (System.getenv("JAVA_HOME") != null) {
                 cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
