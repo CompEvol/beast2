@@ -4,10 +4,7 @@ package beast.app.beauti;
 
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,71 +75,77 @@ public class BeautiAlignmentProvider extends BEASTObject {
         List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
         for (File file : files) {
             String fileName = file.getName();
-            // if (sFileName.lastIndexOf('/') > 0) {
-            // Beauti.g_sDir = sFileName.substring(0,
-            // sFileName.lastIndexOf('/'));
-            // }
-            if (fileName.toLowerCase().endsWith(".nex") || fileName.toLowerCase().endsWith(".nxs")
-                || fileName.toLowerCase().endsWith(".nexus")) {
-                NexusParser parser = new NexusParser();
-                try {
-                    parser.parseFile(file);
-                    if (parser.filteredAlignments.size() > 0) {
-                        /**
-                         * sanity check: make sure the filters do not
-                         * overlap
-                         **/
-                        int[] used = new int[parser.m_alignment.getSiteCount()];
-                        Set<Integer> overlap = new HashSet<Integer>();
-                        int partitionNr = 1;
-                        for (Alignment data : parser.filteredAlignments) {
-                            int[] indices = ((FilteredAlignment) data).indices();
-                            for (int i : indices) {
-                                if (used[i] > 0) {
-                                    overlap.add(used[i] * 10000 + partitionNr);
-                                } else {
-                                    used[i] = partitionNr;
-                                }
-                            }
-                            partitionNr++;
-                        }
-                        if (overlap.size() > 0) {
-                            String overlaps = "<html>Warning: The following partitions overlap:<br/>";
-                            for (int i : overlap) {
-                                overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
-                                        + " overlaps with "
-                                        + parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
-                            }
-                            overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
-                            JOptionPane.showMessageDialog(null, overlaps);
-                        }
-                        /** add alignments **/
-                        for (Alignment data : parser.filteredAlignments) {
-                        	Alignment.sortByTaxonName(data.sequenceInput.get());
-                            selectedPlugins.add(data);
-                        }
-                    } else {
-                        selectedPlugins.add(parser.m_alignment);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
-                    return null;
-                }
-            }
-            if (file.getName().toLowerCase().endsWith(".xml")) {
-                BEASTInterface alignment = getXMLData(file);
-                selectedPlugins.add(alignment);
-            }
-            if (file.getName().toLowerCase().endsWith(".fas") || file.getName().toLowerCase().endsWith(".fasta") ||
-            		file.getName().toLowerCase().endsWith(".fst") || 
-            		file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || 
-            		file.getName().toLowerCase().endsWith(".faa") || file.getName().toLowerCase().endsWith(".frn") 
-            		) {
-            	Alignment alignment = getFASTAData(file);
-            	Alignment.sortByTaxonName(alignment.sequenceInput.get());
-                selectedPlugins.add(alignment);
-            }
+			String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+			Alignment alignment;
+
+			switch (fileExtension) {
+				case ".nex":
+				case ".nxs":
+				case ".nexus":
+					NexusParser parser = new NexusParser();
+					try {
+						parser.parseFile(file);
+						if (parser.filteredAlignments.size() > 0) {
+							/**
+							 * sanity check: make sure the filters do not
+							 * overlap
+							 **/
+							int[] used = new int[parser.m_alignment.getSiteCount()];
+							Set<Integer> overlap = new HashSet<Integer>();
+							int partitionNr = 1;
+							for (Alignment data : parser.filteredAlignments) {
+								int[] indices = ((FilteredAlignment) data).indices();
+								for (int i : indices) {
+									if (used[i] > 0) {
+										overlap.add(used[i] * 10000 + partitionNr);
+									} else {
+										used[i] = partitionNr;
+									}
+								}
+								partitionNr++;
+							}
+							if (overlap.size() > 0) {
+								String overlaps = "<html>Warning: The following partitions overlap:<br/>";
+								for (int i : overlap) {
+									overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
+											+ " overlaps with "
+											+ parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
+								}
+								overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
+								JOptionPane.showMessageDialog(null, overlaps);
+							}
+							/** add alignments **/
+							for (Alignment data : parser.filteredAlignments) {
+								Alignment.sortByTaxonName(data.sequenceInput.get());
+								selectedPlugins.add(data);
+							}
+						} else {
+							selectedPlugins.add(parser.m_alignment);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
+						return null;
+					}
+					break;
+
+				case ".xml":
+					alignment = (Alignment)getXMLData(file);
+					selectedPlugins.add(alignment);
+					break;
+
+				case ".fas":
+				case ".fasta":
+				case ".fst":
+				case ".fna":
+				case ".ffn":
+				case ".faa":
+				case ".frn":
+					alignment = getFASTAData(file);
+					Alignment.sortByTaxonName(alignment.sequenceInput.get());
+					selectedPlugins.add(alignment);
+					break;
+			}
         }
         for (BEASTInterface plugin : selectedPlugins) {
         	// ensure ID of alignment is unique
