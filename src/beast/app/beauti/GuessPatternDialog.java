@@ -585,17 +585,21 @@ public class GuessPatternDialog extends JDialog {
         }
     }
 
+    /**
+     * Converts the first character of sDelimiter into a substring suitable for
+     * inclusion in a regexp. This is done by expressing the character as an
+     * octal escape.
+     *
+     * @param sDelimiter first character of this string to be used as delimiter
+     * @return escaped octal representation of character
+     */
     private String normalise(String sDelimiter) {
 
         if (sDelimiter.length() == 0) {
             return ".";
         }
-        sDelimiter = sDelimiter.substring(0, 1);
-        // insert escape chars for anything that might upset a regular expression
-        if ("./\"[]()".indexOf(sDelimiter) > -1) {
-            sDelimiter = "\\" + sDelimiter;
-        }
-        return sDelimiter;
+
+        return String.format("\\0%o", (int)sDelimiter.charAt(0));
     }
 
     public String match(String s) {
