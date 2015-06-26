@@ -45,10 +45,10 @@ public class GuessPatternDialog extends JDialog {
     Component m_parent;
     JPanel guessPanel;
     ButtonGroup group;
-    JRadioButton b1 = new JRadioButton("use everything");
-    JRadioButton b2 = new JRadioButton("split on character");
-    JRadioButton b3 = new JRadioButton("use regular expression");
-    JRadioButton b4 = new JRadioButton("read from file");
+    JRadioButton bUseEverything = new JRadioButton("use everything");
+    JRadioButton bSplitOnChar = new JRadioButton("split on character");
+    JRadioButton bUseRegexp = new JRadioButton("use regular expression");
+    JRadioButton bReadFromFile = new JRadioButton("read from file");
 
     int m_location = 0;
     int m_splitlocation = 0;
@@ -90,39 +90,39 @@ public class GuessPatternDialog extends JDialog {
         guessPanel.setLayout(gbl_guessPanel);
 
         group = new ButtonGroup();
-        group.add(b1);
-        group.add(b2);
-        group.add(b3);
-        group.add(b4);
-        group.setSelected(b1.getModel(), true);
-        b1.addActionListener(new ActionListener() {
+        group.add(bUseEverything);
+        group.add(bSplitOnChar);
+        group.add(bUseRegexp);
+        group.add(bReadFromFile);
+        group.setSelected(bUseEverything.getModel(), true);
+        bUseEverything.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
-        b1.setName(b1.getText());
-        b2.addActionListener(new ActionListener() {
+        bUseEverything.setName(bUseEverything.getText());
+        bSplitOnChar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
-        b2.setName(b2.getText());
-        b3.addActionListener(new ActionListener() {
+        bSplitOnChar.setName(bSplitOnChar.getText());
+        bUseRegexp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
-        b3.setName(b3.getText());
-        b4.addActionListener(new ActionListener() {
+        bUseRegexp.setName(bUseRegexp.getText());
+        bReadFromFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
-        b4.setName(b4.getText());
+        bReadFromFile.setName(bReadFromFile.getText());
 
-        createDelimiterBox(b1);
-        createSplitBox(b2);
-        createRegExtpBox(b3);
+        createDelimiterBox(bUseEverything);
+        createSplitBox(bSplitOnChar);
+        createRegExtpBox(bUseRegexp);
 
         textRegExp = new JTextField();
         textRegExp.setText(pattern);
@@ -139,17 +139,17 @@ public class GuessPatternDialog extends JDialog {
         textRegExp.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
-                b3.setSelected(true);
+                bUseRegexp.setSelected(true);
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                b3.setSelected(true);
+                bUseRegexp.setSelected(true);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                b3.setSelected(true);
+                bUseRegexp.setSelected(true);
             }
         });
 
@@ -168,7 +168,7 @@ public class GuessPatternDialog extends JDialog {
         gbc_rdbtnReadFromFile.insets = new Insets(0, 0, 5, 5);
         gbc_rdbtnReadFromFile.gridx = 0;
         gbc_rdbtnReadFromFile.gridy = 10;
-        guessPanel.add(b4, gbc_rdbtnReadFromFile);
+        guessPanel.add(bReadFromFile, gbc_rdbtnReadFromFile);
 
         btnBrowse = new JButton("Browse");
         btnBrowse.addActionListener(new ActionListener() {
@@ -176,7 +176,7 @@ public class GuessPatternDialog extends JDialog {
                 File file = Utils.getLoadFile("Load trait from file", new File(Beauti.g_sDir), "Select trait file", "dat","txt");
                 if (file != null) {
                     txtFile.setText(file.getPath());
-                    b4.setSelected(true);
+                    bReadFromFile.setSelected(true);
                     updateFields();
                 }
             }
@@ -336,19 +336,19 @@ public class GuessPatternDialog extends JDialog {
         combo_1.setEnabled(false);
         lblAndTakeGroups.setEnabled(false);
         btnBrowse.setEnabled(false);
-        if (b1.isSelected()) {
+        if (bUseEverything.isSelected()) {
             textSplitChar.setEnabled(true);
             combo.setEnabled(true);
         }
-        if (b2.isSelected()) {
+        if (bSplitOnChar.isSelected()) {
             textSplitChar2.setEnabled(true);
             combo_1.setEnabled(true);
             lblAndTakeGroups.setEnabled(true);
         }
-        if (b3.isSelected()) {
+        if (bUseRegexp.isSelected()) {
             textRegExp.setEnabled(true);
         }
-        if (b4.isSelected()) {
+        if (bReadFromFile.isSelected()) {
             btnBrowse.setEnabled(true);
             txtFile.setEnabled(true);
         }
@@ -376,7 +376,7 @@ public class GuessPatternDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 JComboBox combo = (JComboBox) e.getSource();
                 m_location = combo.getSelectedIndex();
-                b1.setSelected(true);
+                bUseEverything.setSelected(true);
                 updateFields();
             }
         });
@@ -445,7 +445,7 @@ public class GuessPatternDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 JComboBox combo = (JComboBox) e.getSource();
                 m_splitlocation = combo.getSelectedIndex();
-                b2.setSelected(true);
+                bSplitOnChar.setSelected(true);
                 updateFields();
             }
         });
@@ -485,7 +485,7 @@ public class GuessPatternDialog extends JDialog {
             return Status.canceled;
         }
 
-        if (b1.getModel() == group.getSelection()) {
+        if (bUseEverything.getModel() == group.getSelection()) {
             String sDelimiter = normalise(textSplitChar.getText());
             switch (m_location) {
                 case 0: // "after first",
@@ -502,7 +502,7 @@ public class GuessPatternDialog extends JDialog {
                     break;
             }
         }
-        if (b2.getModel() == group.getSelection()) {
+        if (bSplitOnChar.getModel() == group.getSelection()) {
             String sDelimiter = normalise(textSplitChar2.getText());
             switch (m_splitlocation) {
                 case 0: // "1"
@@ -539,10 +539,10 @@ public class GuessPatternDialog extends JDialog {
                             + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
             }
         }
-        if (b3.getModel() == group.getSelection()) {
+        if (bUseRegexp.getModel() == group.getSelection()) {
             pattern = textRegExp.getText();
         }
-        if (b4.getModel() == group.getSelection()) {
+        if (bReadFromFile.getModel() == group.getSelection()) {
             try {
                 BufferedReader fin = new BufferedReader(new FileReader(txtFile.getText()));
                 StringBuffer buf = new StringBuffer();
