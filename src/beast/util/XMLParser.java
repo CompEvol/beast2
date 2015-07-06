@@ -233,6 +233,10 @@ public class XMLParser {
         // Substitute occurrences of "$(filebase)" with name of file 
         int pointIdx = file.getName().lastIndexOf('.');
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
+        if (doc.getElementsByTagName(BEAST_ELEMENT).item(0) == null) {
+        	Log.err.println("Incorrect XML: Could not find 'beast' element in file " + file.getName());
+        	throw new RuntimeException();
+        }
         replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
 
         // Substitute occurrences of "$(seed)" with RNG seed
