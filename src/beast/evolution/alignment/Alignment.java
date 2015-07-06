@@ -663,8 +663,12 @@ public class Alignment extends Map<String> {
     }
 
     public double[] getTipLikelihoods(int iTaxon, int iPattern) {
-    	if (tipLikelihoods.get(iTaxon) == null) return null; 
-    	else return tipLikelihoods.get(iTaxon)[iPattern];
+    	if (iTaxon >= tipLikelihoods.size() || tipLikelihoods.get(iTaxon) == null) { 
+    		return null; 
+    	} else { 
+    		return tipLikelihoods.get(iTaxon)[iPattern];
+    	}
+    	
     }
     /**
      * returns an array containing the non-ambiguous states that this state represents.
