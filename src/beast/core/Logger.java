@@ -398,7 +398,6 @@ public class Logger extends BEASTObject {
                             m_out = new PrintStream(out2);
                         } else {
                             // it is a tree logger, we may need to get rid of the last line!
-                            final BufferedReader fin = new BufferedReader(new FileReader(fileName));
 
                             // back up file in case something goes wrong (e.g. an out of memory error occurs)
                             final File treeFileBackup = new File(fileName);
@@ -406,6 +405,8 @@ public class Logger extends BEASTObject {
                             //final boolean ok = treeFileBackup.renameTo(new File(fileName + ".bu"));    assert ok;
                             Files.move(treeFileBackup.toPath(), new File(fileName+".bu").toPath(), StandardCopyOption.ATOMIC_MOVE);
                             // open the file and write back all but the last line
+                            final BufferedReader fin = new BufferedReader(new FileReader(fileName+".bu"));
+
                             final FileOutputStream out2 = new FileOutputStream(fileName);
                             m_out = new PrintStream(out2);
 
