@@ -504,14 +504,17 @@ System.err.println("needsRePartition = " + needsRePartition);
 							try {
 							if (input.get() == oldTree) {
 								if (input.getRule() != Input.Validate.REQUIRED) {
-									input.setValue(null, (BEASTInterface) plugin);
+									input.setValue(tree/*null*/, (BEASTInterface) plugin);
 								//} else {
-								//	input.setValue(tree, (BEASTInterface) plugin);
+									//input.setValue(tree, (BEASTInterface) plugin);
 								}
 							} else if (input.get() instanceof List) {
-								List<?> list = (List<?>) input.get();
-								if (list.contains(oldTree) && input.getRule() != Validate.REQUIRED) {
+								List list = (List) input.get();
+								if (list.contains(oldTree)) { // && input.getRule() != Validate.REQUIRED) {
 									list.remove(oldTree);
+									if (!list.contains(tree)) {
+										list.add(tree);
+									}
 								}
 							}
 							} catch (Exception e) {

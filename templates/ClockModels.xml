@@ -96,6 +96,7 @@
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
             <connect srcID='Tree.t:$(n)' targetID='ExponentialRelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(ExponentialRelaxedClock.c:$(n))'/>
+            <connect srcID='Tree.t:$(n)' targetID='rateStat.c:$(n)' inputName='tree' if='inlikelihood(ExponentialRelaxedClock.c:$(n))'/>
 
             <connect srcID='ucedMean.c:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(ucedMean.c:$(n)) and ucedMean.c:$(n)/estimate=true'/>
@@ -176,6 +177,7 @@
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
             <connect srcID='Tree.t:$(n)' targetID='RelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(RelaxedClock.c:$(n))'/>
+            <connect srcID='Tree.t:$(n)' targetID='rate.c:$(n)' inputName='tree' if='inlikelihood(RelaxedClock.c:$(n))'/>
 
             <connect srcID='ucldMean.c:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true'/>
