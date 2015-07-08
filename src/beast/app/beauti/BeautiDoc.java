@@ -1156,6 +1156,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         if (pluginmap.containsKey("likelihood")) {
             collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
         }
+        
+                
+        System.err.print("InPosterior=");
+        for (BEASTInterface o : posteriorPredecessors) {
+        	pluginmap.put(o.getID(), o);
+        	System.err.print(o.getID() + " ");
+        	//if (!pluginmap.containsKey(o)) {
+        	//	System.err.println("MISSING: " + o.getID());
+        	//}
+        }
+        System.err.println();
     }
 
     public static String translatePartitionNames(String sStr, PartitionContext partition) {
@@ -1765,6 +1776,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // itself
         Set<BEASTInterface> ancestors = new HashSet<BEASTInterface>();
         collectAncestors(plugin, ancestors, taboo);
+		System.out.print(Arrays.toString(ancestors.toArray()));
         for (BEASTInterface plugin2 : predecessors) {
             if (plugin2 instanceof StateNode) {
                 Set<BEASTInterface> ancestors2 = new HashSet<BEASTInterface>();
@@ -1795,43 +1807,47 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         // now the ancestors contain all plugins to be copied
         // make a copy of all individual Pluings, before connecting them up
-        Map<String, BEASTInterface> copySet = new HashMap<String, BEASTInterface>();
+        Map<String, BEASTInterface> copySet = new HashMap<>();
         for (BEASTInterface plugin2 : ancestors) {
             String id = plugin2.getID();
             String copyID = renameId(id, partitionContext);
-            if (doc.pluginmap.containsKey(copyID)) {
-            	BEASTInterface org = doc.pluginmap.get(copyID);
-                for (Object output : org.getOutputs()) {
-                    for (Input<?> input : ((BEASTInterface)output).listInputs()) {
-                        if (input.get() instanceof List) {
-                            ((List) input.get()).remove(org);
-                        } else {
-                            // ignore?
-                        }
-                    }
-                }
+            if (!id.equals(copyID)) {
+	            if (doc.pluginmap.containsKey(copyID)) {
+	            	BEASTInterface org = doc.pluginmap.get(copyID);
+	                copySet.put(id, org);
+	            } else {
+	            	BEASTInterface copy = (BEASTInterface) plugin2.getClass().newInstance();
+	            	copy.setID(copyID);
+	                copySet.put(id, copy);
+	            }
             }
-            BEASTInterface copy = (BEASTInterface) plugin2.getClass().newInstance();
-            copySet.put(id, copy);
-//			System.err.println("Copy: " + id);
+			System.err.println("Copy: " + id + " -> " + copyID);
         }
 
         // set all inputs of copied plugins + outputs to taboo
-        for (BEASTInterface plugin2 : ancestors) {
+		for (BEASTInterface plugin2 : ancestors) {
             String id = plugin2.getID();
-            System.err.println("Processin: " + id);
             BEASTInterface copy = copySet.get(id);
+            if (copy != null) {
+            System.err.println("Processing: " + id + " -> " + copy.getID());
             // set inputs
             for (Input<?> input : plugin2.listInputs()) {
                 if (input.get() != null) {
                     if (input.get() instanceof List) {
                         // handle lists
+                    	//((List)copy.getInput(input.getName())).clear();
                         for (Object o : (List<?>) input.get()) {
                             if (o instanceof BEASTInterface) {
                             	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, partitionContext, doc);
                                 copy.setInputValue(input.getName(), value);
                             } else {
                                 // it is a primitive value
+                            	
+                            	if (copy instanceof Parameter.Base && input.getName().equals("value")) {
+                            	//	// prevent appending to parameter values
+                            		Parameter.Base p = ((Parameter.Base) copy);
+                            		((List) p.valuesInput.get()).clear();
+                            	}
                                 copy.setInputValue(input.getName(), input.get());
                             }
                         }
@@ -1845,7 +1861,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     }
                 }
             }
-            copy.setID(renameId(id, partitionContext));
+
             // set outputs
             for (Object output : plugin2.getOutputs()) {
                 if (taboo.contains(output) && output != parent) {
@@ -1857,7 +1873,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                 !(taboo.contains(output2) && input.getName().equals("init"))) {
                             List<?> list = (List<?>) input.get();
                             if (list.contains(plugin2)) {
-                                output2.setInputValue(input.getName(), copy);
+                            	List<?> list2 = (List<?>)output2.getInput(input.getName()).get();
+                            	if (!list2.contains(copy)) {
+                            		output2.setInputValue(input.getName(), copy);
+                            	}
                             }
                         }
                     }
@@ -1866,9 +1885,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
 
             copySet.put(id, copy);
+    		//System.err.println(base.operatorsAsString());
+            }
         }
 
-        // deep copy must be obtained from copyset, before sorting
+		// deep copy must be obtained from copyset, before sorting
         // since the sorting changes (deletes items) from the copySet map
         BEASTInterface deepCopy = copySet.get(plugin.getID());
 
@@ -1908,6 +1929,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         }
 
+        doc.scrubAll(true, false);
         return deepCopy;
     } // deepCopyPlugin
 

@@ -409,7 +409,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             // Check for duplicate taxa
             BitSet nodeNrSeen = new BitSet();
             for (Node leaf : root.getAllLeafNodes()) {
-                if (nodeNrSeen.get(leaf.getNr()) == true)
+                if (leaf.getNr()<0)
+                   continue;  // Skip unnumbered leaves
+
+                if (nodeNrSeen.get(leaf.getNr()))
                     throw new ParseCancellationException("Duplicate taxon found: " + labels.get(leaf.getNr()));
                 else
                     nodeNrSeen.set(leaf.getNr());
@@ -479,7 +482,15 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 if (!isLabelledNewickInput.get()
                         && postCtx.label().number() != null
                         && postCtx.label().number().INT() != null) {
-                    node.setNr(Integer.parseInt(postCtx.label().getText()) - offsetInput.get());
+
+                    int nodeNr = Integer.parseInt(postCtx.label().getText()) - offsetInput.get();
+                    if (nodeNr<0)
+                        throw new ParseCancellationException("Node number given " +
+                                "is smaller than current offset (" +
+                                offsetInput.get() + ").  Perhaps offset is " +
+                                "too high?");
+
+                    node.setNr(nodeNr);
                     numberedNodeCount += 1;
                 } else {
                     if (node.isLeaf()) {
