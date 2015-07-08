@@ -32,7 +32,7 @@ import java.util.List;
         , DOI = "10.1093/sysbio/syr087", year = 2012, firstAuthorSurname = "heled")
 public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
-    static enum Type {
+    public static enum Type {
         NONE("none"),
         OVER_ALL_TOPOS("full"),
         OVER_RANKED_COUNTS("restricted");
@@ -269,7 +269,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         }
     }
 
-    Tree compatibleInitialTree() throws Exception {
+    public Tree compatibleInitialTree() throws Exception {
         final int nCals = orderedCalibrations.length;
         final double[] lowBound = new double[nCals];
         final double[] cladeHeight = new double[nCals];

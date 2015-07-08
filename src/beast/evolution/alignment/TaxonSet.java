@@ -17,6 +17,7 @@ public class TaxonSet extends Taxon {
     public Input<Alignment> alignmentInput = new Input<Alignment>("alignment", "alignment where each sequence represents a taxon");
 
     protected List<String> taxaNames;
+    protected List<Taxon> taxonList;
 
     public TaxonSet() {
     }
@@ -31,22 +32,35 @@ public class TaxonSet extends Taxon {
         initAndValidate();
     }
 
+    // for testing purposes (Huw)
+    public TaxonSet(final String id, final List<Taxon> taxa) throws Exception {
+        setID(id);
+        taxonsetInput.setValue(taxa, this);
+        initAndValidate();
+    }
+
     @Override
     public void initAndValidate() throws Exception {
+        taxonList = taxonsetInput.get();
         if (alignmentInput.get() != null) {
-            if (taxonsetInput.get().size() > 0) {
+            if (taxonList.size() > 0) {
                 throw new Exception("Only one of taxon and alignment should be specified, not both.");
             }
             taxaNames = alignmentInput.get().taxaNames;
         } else {
-            if (taxonsetInput.get().size() == 0) {
+            if (taxonList.size() == 0) {
                 throw new Exception("Either taxon or alignment should be specified.");
             }
             taxaNames = new ArrayList<>();
-            for (final Taxon taxon : taxonsetInput.get()) {
+            for (final Taxon taxon : taxonList) {
             	taxaNames.add(taxon.getID());
             }
         }
+    }
+
+    public Set<Taxon> getTaxonSet() {
+        final Set<Taxon> unorderedTaxa = new HashSet<>(taxonList);
+        return unorderedTaxa;
     }
 
     /**
@@ -149,7 +163,7 @@ public class TaxonSet extends Taxon {
 		final StringBuilder buf = new StringBuilder();
 		buf.append(indent).append(getID()).append("\n");
 		indent += "\t";
-		for (final Taxon taxon : taxonsetInput.get()) {
+		for (final Taxon taxon : taxonList) {
 			buf.append(taxon.toString(indent));
 		}
 		return buf.toString();
