@@ -358,6 +358,15 @@ public class Alignment extends Map<String> {
                 patternWeight[iPattern] = 0;
                 excludedPatterns.add(iPattern);
             }
+        } else {
+        	// sanity check
+            int iFrom = excludefromInput.get();
+            int iTo = excludetoInput.get();
+            if (iFrom != excludefromInput.defaultValue || iTo != excludetoInput.defaultValue) {
+            	Log.warning.println("WARNING: excludefrom or excludeto is specified, but 'ascertained' flag is not set to true");
+            	Log.warning.println("WARNING: to suppress this warning, remove the excludefrom or excludeto attributes (if no astertainment correction is required)");
+            	Log.warning.println("WARNING: or set the 'ascertained' flag to true on element with id=" + getID());
+            }
         }
 
     } // initAndValidate
