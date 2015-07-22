@@ -105,8 +105,7 @@ public class Node extends BEASTObject {
      *         This is a number between 0 and the total number of nodes in the tree
      *         Leaf nodes are number 0 to #leaf nodes -1
      *         Internal nodes are numbered  #leaf nodes  up to #nodes-1
-     *         The root node is not guaranteed a number.
-     *         Node number is guaranteed not to change during an MCMC run.
+     *         The root node is always numbered #nodes-1
      */
     public int getNr() {
         return labelNr;
