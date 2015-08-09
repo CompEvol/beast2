@@ -45,10 +45,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 
-
-
-
-
 @Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
         "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
@@ -227,7 +223,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
     }
 
-    void initCore() {
+    protected void initCore() {
         final int nodeCount = treeInput.get().getNodeCount();
         likelihoodCore.initialize(
                 nodeCount,
@@ -260,7 +256,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * set leaf states in likelihood core *
      */
-    void setStates(Node node, int patternCount) {
+    protected void setStates(Node node, int patternCount) {
         if (node.isLeaf()) {
             Alignment data = dataInput.get();
             int i;
@@ -305,7 +301,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 	/**
      * set leaf partials in likelihood core *
      */
-    void setPartials(Node node, int patternCount) {
+    protected void setPartials(Node node, int patternCount) {
         if (node.isLeaf()) {
             Alignment data = dataInput.get();
             int nStates = data.getDataType().getStateCount();
