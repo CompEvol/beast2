@@ -3,6 +3,7 @@ package beast.core.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
 /** class used for logging messages from programs 
  * Comes with 5 levels:
@@ -61,6 +62,14 @@ public class Log {
 		infoIfOpen = System.out;
 		debugIfOpen = System.out;
 		traceIfOpen = System.out;
+		if (System.getProperty("beast.log.level") != null) {
+			try {
+				level = Level.valueOf(System.getProperty("beast.log.level"));
+			} catch (IllegalArgumentException e) {
+				System.err.println("beast.log.level is set to " + System.getProperty("beast.log.level") + " "
+						+"but should be one of " + Arrays.toString(Level.values()));
+			}
+		}
 		setLevel(level);
 	}
 	
