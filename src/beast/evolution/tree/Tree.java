@@ -451,7 +451,7 @@ public class Tree extends StateNode implements TreeInterface {
 //        return nodes;
 //    }
 
-    private Node[] postCache = null;
+    protected Node[] postCache = null;
     public Node[] listNodesPostOrder(Node node, Node[] nodes) {
         if( node != null ) {
             return TreeInterface.super.listNodesPostOrder(node, nodes);
