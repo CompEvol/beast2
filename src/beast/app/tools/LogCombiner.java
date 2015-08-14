@@ -57,7 +57,7 @@ public class LogCombiner extends LogAnalyser {
                         m_sFileOut = args[i + 1];
                         m_out = new PrintStream(m_sFileOut);
                         i += 2;
-                    } else if (args[i].equals("-b")) {
+                    } else if (args[i].equals("-b") || args[i].equals("-burnin") || args[i].equals("--burnin")) {
                         m_nBurninPercentage = Integer.parseInt(args[i + 1]);
                         i += 2;
                     } else if (args[i].equals("-n")) {

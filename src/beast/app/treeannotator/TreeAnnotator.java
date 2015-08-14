@@ -1041,7 +1041,9 @@ public class TreeAnnotator {
                         //new Arguments.StringOption("target", new String[] { "maxclade", "maxtree" }, false, "an option of 'maxclade' or 'maxtree'"),
                         new Arguments.StringOption("heights", new String[]{"keep", "median", "mean", "ca"}, false,
                                 "an option of 'keep' (default), 'median', 'mean' or 'ca'"),
-                        new Arguments.IntegerOption("burnin", "the percentage of states to be considered as 'burn-in'"),
+                        new Arguments.IntegerOption("burnin", 0, 99, "the percentage of states to be considered as 'burn-in'"),
+                        // allow -b as burnin option, just like other apps
+                        new Arguments.IntegerOption("b", 0, 99, "the percentage of states to be considered as 'burn-in'"),
                         new Arguments.RealOption("limit", "the minimum posterior probability for a node to be annotated"),
                         new Arguments.StringOption("target", "target_file_name", "specifies a user target tree to be annotated"),
                         new Arguments.Option("help", "option to print this message"),
@@ -1084,6 +1086,8 @@ public class TreeAnnotator {
         int burnin = -1;
         if (arguments.hasOption("burnin")) {
             burnin = arguments.getIntegerOption("burnin");
+        } else  if (arguments.hasOption("b")) {
+            burnin = arguments.getIntegerOption("b");        	
         }
         if (burnin >= 100) {
         	System.err.println("burnin is a percentage and should be less than 100.");

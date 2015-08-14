@@ -3,6 +3,7 @@ package beast.util;
 import beast.app.BEASTVersion;
 import beast.app.util.Utils;
 import beast.core.util.ESS;
+import beast.core.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -450,24 +451,72 @@ public class LogAnalyser {
         System.err.println(s);
     }
 
+    static void printUsageAndExit() {
+    	System.out.println("LogAnalyser [-b <burninPercentage] [file1] ... [filen]");
+    	System.out.println("-burnin <burninPercentage>");
+    	System.out.println("--burnin <burninPercentage>");
+    	System.out.println("-b <burninPercentage> percentage of log file to disregard, default " + BURN_IN_PERCENTAGE);
+    	System.out.println("-help");
+    	System.out.println("--help");
+    	System.out.println("-h print this message");
+    	System.out.println("[fileX] log file to analyse. Multiple files are allowed, each is analysed separately");
+    	System.exit(0);
+    }
+    
     /**
      * @param args
      */
     public static void main(String[] args) {
         try {
             LogAnalyser analyser;
-            if (args.length == 0) {
-                BEASTVersion version = new BEASTVersion();
-                File file = Utils.getLoadFile("LogAnalyser " + version.getVersionString() + " - Select log file to analyse",
-                        null, "BEAST log (*.log) Files", "log", "txt");
-                if (file == null) {
-                    return;
-                }
-                analyser = new LogAnalyser(file.getAbsolutePath());
-            } else {
-                analyser = new LogAnalyser(args);
+            	// process args
+            	int burninPercentage = BURN_IN_PERCENTAGE;
+            	List<String> files = new ArrayList<>();
+            	int i = 0;
+            	while (i < args.length) {
+            		String arg = args[i];
+            		switch (arg) {
+            		case "-b":
+            		case "-burnin":
+            		case "--burnin":
+            			if (i+1 >= args.length) {
+            				Log.warning.println("-b argument requires another argument");
+            				printUsageAndExit();
+            			}
+            			burninPercentage = Integer.parseInt(args[i+1]);
+            			i += 2;
+            			break;
+            		case "-h":
+            		case "-help":
+            		case "--help":
+            			printUsageAndExit();
+            			break;
+            		default:
+            			if (arg.startsWith("-")) {
+            				Log.warning.println("unrecognised command " + arg);
+            				printUsageAndExit();
+            			}
+            			files.add(arg);
+            			i++;
+            		}
+            	}
+            	if (files.size() == 0) {
+            		// no file specified, open file dialog to select one
+	                BEASTVersion version = new BEASTVersion();
+	                File file = Utils.getLoadFile("LogAnalyser " + version.getVersionString() + " - Select log file to analyse",
+	                        null, "BEAST log (*.log) Files", "log", "txt");
+	                if (file == null) {
+	                    return;
+	                }
+	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage);
+	                analyser.print(System.out);
+            	} else {
+            		// process files
+            		for (String file : files) {
+    	                analyser = new LogAnalyser(file, burninPercentage);
+    	                analyser.print(System.out);
+            		}
             }
-            analyser.print(System.out);
         } catch (Exception e) {
             e.printStackTrace();
         }
