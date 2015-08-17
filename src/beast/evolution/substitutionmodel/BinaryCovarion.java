@@ -73,7 +73,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 	public Input<MODE> modeInput = new Input<>("mode","one of BEAST, REVERSIBLE, TUFFLESTEEL "
 			+ "BEAST = implementation as in BEAST 1 "
 			+ "REVERSIBLE = like BEAST 1 implementation, but using frequencies to make it reversible "
-			+ "TUFFLEYSTEEL = Tuffley & Steel (1996) impementation (no rates for ", MODE.BEAST);
+			+ "TUFFLEYSTEEL = Tuffley & Steel (1996) impementation (no rates for ", MODE.BEAST,MODE.values());
 
     private RealParameter alpha;
     private RealParameter switchRate;
