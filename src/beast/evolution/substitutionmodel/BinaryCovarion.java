@@ -99,16 +99,16 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 
         
         if (mode.equals(MODE.BEAST) || mode.equals(MODE.REVERSIBLE)) {
-        	if (alpha.getDimension() != 1) {
-        		throw new Exception("alpha should have dimension 1");
+        	if (switchRate.getDimension() != 1) {
+        		throw new Exception("switchRate should have dimension 1");
         	}
         } else {
-        	if (alpha.getDimension() != 2) {
-        		throw new Exception("alpha should have dimension 2");
+        	if (switchRate.getDimension() != 2) {
+        		throw new Exception("switchRate should have dimension 2");
         	}
         }
-        if (switchRate.getDimension() != 1) {
-            throw new Exception("switchRate should have dimension 1");
+        if (alpha.getDimension() != 1) {
+            throw new Exception("alpha should have dimension 1");
         }
         if (frequencies.getDimension() != 2) {
             throw new Exception("frequencies should have dimension 2");
