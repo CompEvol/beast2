@@ -5,6 +5,7 @@ import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
+import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -133,7 +134,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                                 calcCalibrations = false;
                             } else {
                                 if (_MRCAPrior.isMonophyleticInput.get()) {
-                                    System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
+                                    Log.warning.println("WARNING: MRCAPriors (" + _MRCAPrior.getID() + ") must have a distribution when monophyletic. Ignored for Calibrated Yule prior");
+                                } else {
+                                	Log.warning.println("WARNING: MRCAPriors (" + _MRCAPrior.getID() + ") found that is not monophyletic. Ignored for Calibrated Yule prior");                                	
                                 }
                             }
                         }
@@ -143,6 +146,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             xclades = new int[nCals][];
         }
         if (nCals == 0) {
+        	Log.warning.println("WARNING: Calibrated Yule prior could not find any properly configured calibrations. Expect this to crash in a BEAST run.");                                	
             // assume we are in beauti, back off for now
             return;
         }
