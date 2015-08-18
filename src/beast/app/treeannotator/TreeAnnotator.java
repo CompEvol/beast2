@@ -67,7 +67,23 @@ public class TreeAnnotator {
 
     private boolean SAmode = false;
 
-	Tree [] trees;
+    class TreeSet {
+    	Tree [] trees;
+    	int current = 0;
+    	
+    	void reset() {
+    		current = 0;
+    	}
+    	
+    	boolean hasNext() {
+    		return current < trees.length;
+    	}
+    	
+    	Tree next() {
+    		return trees[current++];
+    	}
+    }
+    TreeSet treeSet;
 
 
     enum Target {
@@ -144,12 +160,13 @@ public class TreeAnnotator {
         TreeSetParser parser = new TreeSetParser(burninPercentage, bAllowSingleChild);
         try {
         	Node [] roots = parser.parseFile(inputFileName);
-        	trees = new Tree[roots.length];
+        	treeSet = new TreeSet();
+        	treeSet.trees = new Tree[roots.length];
         	int i = 0;
         	for (Node root : roots) {
-        		trees[i++] = new Tree(root);
+        		treeSet.trees[i++] = new Tree(root);
         	}
-        	progressStream.println("Read " + trees.length + " trees from file" +
+        	progressStream.println("Read " + treeSet.trees.length + " trees from file" +
                     (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% trees." : "."));
         } catch (Exception e) {
         	e.printStackTrace();
@@ -159,7 +176,9 @@ public class TreeAnnotator {
         
         if (targetOption != Target.USER_TARGET_TREE) {
             try {
-	            for (Tree tree : trees) {
+            	treeSet.reset();
+            	while (treeSet.hasNext()) {
+            		Tree tree = treeSet.next();
                     tree.getLeafNodeCount();
                     if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
                         SAmode = true;
@@ -256,9 +275,13 @@ public class TreeAnnotator {
         cladeSystem = new CladeSystem(targetTree);
         totalTreesUsed = 0;
         try {
-            setupAttributes(trees[0]);
             int counter = 0;
-        	for (Tree tree: trees) {
+            treeSet.reset();
+            while (treeSet.hasNext()) {
+            	Tree tree = treeSet.next();
+            	if (counter == 0) {
+                    setupAttributes(tree);
+            	}
                 cladeSystem.collectAttributes(tree, attributeNames);
                 if (counter > 0 && counter % stepSize == 0 && reported < 61) {
                     progressStream.print("*");
@@ -380,7 +403,9 @@ public class TreeAnnotator {
         int reported = 0;
 
         int counter = 0;
-        for (Tree tree : trees) {
+        treeSet.reset();
+        while (treeSet.hasNext()) {
+        	Tree tree = treeSet.next();
             double score = scoreTree(tree, cladeSystem, useSumCladeCredibility);
           if (score > bestScore) {
               bestTree = tree;
@@ -1192,7 +1217,9 @@ public class TreeAnnotator {
         totalTreesUsed = 0;
 
         int counter = 0;
-        for (Tree tree: trees) {
+        treeSet.reset();
+        while (treeSet.hasNext()) {
+        	Tree tree = treeSet.next();
             TreeUtils.preOrderTraversalList(tree, postOrderList);
             cladeSystem.getTreeCladeCodes(tree, ctree);
             for (int k = 0; k < nClades; ++k) {
