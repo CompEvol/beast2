@@ -72,7 +72,6 @@ public class Utils {
 
 
     public static void loadUIManager() {
-        boolean lafLoaded = false;
 
         if (isMac()) {
             System.setProperty("apple.awt.graphics.UseQuartz", "true");
@@ -82,6 +81,8 @@ public class Utils {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.draggableWindowBackground", "true");
             System.setProperty("apple.awt.showGrowBox", "true");
+
+            LookAndFeel laf = UIManager.getLookAndFeel();
 
             try {
 
@@ -104,33 +105,41 @@ public class Utils {
                 UIManager.setLookAndFeel(
                         "ch.randelshofer.quaqua.QuaquaLookAndFeel"
                 );
-                lafLoaded = true;
+
+                UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
+                UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
+
 
             } catch (Exception e) {
-
-            }
-
-            UIManager.put("SystemFont", new Font("Lucida Grande", Font.PLAIN, 13));
-            UIManager.put("SmallSystemFont", new Font("Lucida Grande", Font.PLAIN, 11));
-        }
-
-        try {
-
-            if (!lafLoaded) {
-            	if (System.getProperty("beast.laf") != null && !System.getProperty("beast.laf").equals("")) {
-                    UIManager.setLookAndFeel(System.getProperty("beast.laf"));
-            	} else if (isMac()) {
-                   	UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-                } else { // If Windows or Linux 
-                    try {
-                        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                    } catch (Exception e) {
-                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-                    }
+                System.err.println(e.getMessage());
+                try {
+                    UIManager.setLookAndFeel(laf);
+                } catch (UnsupportedLookAndFeelException e1) {
+                    e1.printStackTrace();
                 }
             }
-        } catch (Exception e) {
+
         }
+
+// APART FROM THE ABOVE CODE FOR OLD MAC OS X, WE SHOULD LEAVE THE UIManager to the defaults, rather than mess it up
+// DEFAULT is almost always the most appropriate thing to use!
+//        try {
+//
+//            if (!lafLoaded) {
+//            	if (System.getProperty("beast.laf") != null && !System.getProperty("beast.laf").equals("")) {
+//                    UIManager.setLookAndFeel(System.getProperty("beast.laf"));
+//            	} else if (isMac()) {
+//                   	UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+//                } else { // If Windows or Linux
+//                    try {
+//                        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+//                    } catch (Exception e) {
+//                        UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//        }
     }
 
     public static boolean isMac() {
