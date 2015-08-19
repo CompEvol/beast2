@@ -32,6 +32,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.util.Log;
 import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
@@ -363,6 +364,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 return;
             } catch (ConstraintViolatedException e) {
                 // need to generate another tree
+            	Log.warning.println("WARNING: Generating a random tree did not succeed. The most common reasons are:");
+            	Log.warning.println("WARNING: 1. there are conflicting monophyletic constraints, for example if both (A,B) "
+            			+ "and (B,C) must be monophyletic no tree will be able to meet these constraints at the same "
+            			+ "time. To fix this, carefully check all clade sets, especially the ones that are expected to "
+            			+ "be nested clades.");
+            	Log.warning.println("WARNING: 2. clade heights are constrained by an upper and lower bound, but the population size "
+            			+ "is too large, so it is very unlikely a generated treed does not violate these constraints. To "
+            			+ "fix this you can try to reduce the popultion size of the population model.");
+            	Log.warning.println("WARNING: Expect BEAST to crash if this is not fixed."); 
             }
         }
     }
