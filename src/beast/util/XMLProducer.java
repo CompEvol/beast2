@@ -906,6 +906,12 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     void inputToXML(String sInput, BEASTInterface plugin, StringBuffer buf, boolean isShort) throws Exception {
+    	if (sInput.equals("*")) {
+    		// this can happen with beast.core.parameter.Map
+    		// and * is not a valid XML attribute name
+    		return;
+    	}
+    	
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {

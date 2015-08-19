@@ -29,6 +29,7 @@ import beast.app.BEASTVersion;
 import beast.app.beauti.BeautiDoc;
 import beast.app.tools.LogCombiner;
 import beast.app.util.Arguments;
+import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -41,8 +42,12 @@ import beast.util.TreeParser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
@@ -67,20 +72,293 @@ public class TreeAnnotator {
 
     private boolean SAmode = false;
 
-    class TreeSet {
-    	Tree [] trees;
+    
+    abstract class TreeSet {
+    	abstract boolean hasNext();
+    	abstract Tree next() throws Exception;
+    	abstract void reset() throws Exception ;
+    }    
+    
+    class FastTreeSet extends TreeSet {
     	int current = 0;
+    	Tree [] trees;
     	
-    	void reset() {
-    		current = 0;
+    	public FastTreeSet(String inputFileName, int burninPercentage) throws Exception {
+            progressStream.println("0              25             50             75            100");
+            progressStream.println("|--------------|--------------|--------------|--------------|");
+    		TreeSetParser parser = new TreeSetParser(burninPercentage, false);
+	      	Node [] roots = parser.parseFile(inputFileName);
+	      	trees = new Tree[roots.length];
+	      	int i = 0;
+	      	for (Node root : roots) {
+	      		trees[i++] = new Tree(root);
+	      	}
+		}
+
+		@Override
+		boolean hasNext() {
+			return current < trees.length;
+		}
+
+		@Override
+		Tree next() throws Exception {
+			return trees[current++];
+		}
+
+		@Override
+		void reset() throws Exception {
+			current = 0;
+		}
+    }
+    
+    class MemoryFriendlyTreeSet extends TreeSet {
+//    	Tree [] trees;
+    	int current = 0;
+    	int lineNr;
+        public Map<String, String> translationMap = null;
+        public List<String> taxa;
+    	
+        int burninCount = 0;
+        int totalTrees = 0;
+        boolean isNexus = true;
+        BufferedReader fin;
+        String inputFileName;
+        // label count origin for NEXUS trees
+        int origin = -1;
+       
+        MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws Exception {
+    		this.inputFileName = inputFileName;
+    		init(burninPercentage);
+        	progressStream.println("Processing " + (totalTrees - burninCount) + " trees from file" +
+                    (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% = " + burninCount + " trees." : "."));
+    		
+    		
     	}
+
+    	/** determine number of trees in the file,
+    	 * and number of trees to skip as burnin 
+    	 * @throws FileNotFoundException **/
+    	private void init(int burninPercentage) throws Exception {
+            fin = new BufferedReader(new FileReader(new File(inputFileName)));
+            if (!fin.ready()) {
+            	throw new Exception("File appears empty");
+            }
+        	String str = nextLine();
+            if (!str.toUpperCase().trim().startsWith("#NEXUS")) {
+            	// the file contains a list of Newick trees instead of a list in Nexus format
+            	isNexus = false;
+            	if (str.trim().length() > 0) {
+            		totalTrees = 1;
+            	}
+            }
+            while (fin.ready()) {
+            	str = nextLine();
+                if (isNexus) {
+                    if (str.trim().toLowerCase().startsWith("tree ")) {
+                    	totalTrees++;
+                    }
+                } else if (str.trim().length() > 0) {
+            		totalTrees++;
+                }            	
+            }
+            fin.close();
+            
+            burninCount = Math.max(0, (burninPercentage * totalTrees)/100);
+		}
+
+    	void reset() throws Exception {
+    		current = 0;
+            fin = new BufferedReader(new FileReader(new File(inputFileName)));
+            lineNr = 0;
+            try {
+                while (fin.ready()) {
+                    final String sStr = nextLine();
+                    if (sStr == null) {
+                        return;
+                    }
+                    final String sLower = sStr.toLowerCase();
+                    if (sLower.matches("^\\s*begin\\s+trees;\\s*$")) {
+                        parseTreesBlock();
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new Exception("Around line " + lineNr + "\n" + e.getMessage());
+            }
+        } // parseFile
+
+        /**
+         * read next line from Nexus file that is not a comment and not empty *
+         */
+        String nextLine() throws Exception {
+            String sStr = readLine();
+            if (sStr == null) {
+                return null;
+            }
+            if (sStr.contains("[")) {
+                final int iStart = sStr.indexOf('[');
+                int iEnd = sStr.indexOf(']', iStart);
+                while (iEnd < 0) {
+                    sStr += readLine();
+                    iEnd = sStr.indexOf(']', iStart);
+                }
+                sStr = sStr.substring(0, iStart) + sStr.substring(iEnd + 1);
+                if (sStr.matches("^\\s*$")) {
+                    return nextLine();
+                }
+            }
+            if (sStr.matches("^\\s*$")) {
+                return nextLine();
+            }
+            return sStr;
+        }
+
+        /**
+         * read line from nexus file *
+         */
+        String readLine() throws IOException {
+            if (!fin.ready()) {
+                return null;
+            }
+            lineNr++;
+            return fin.readLine();
+        }
+
+        private void parseTreesBlock() throws Exception {
+            // read to first non-empty line within trees block
+            String sStr = fin.readLine().trim();
+            while (sStr.equals("")) {
+                sStr = fin.readLine().trim();
+            }
+
+            // if first non-empty line is "translate" then parse translate block
+            if (sStr.toLowerCase().contains("translate")) {
+                translationMap = parseTranslateBlock();
+                origin = getIndexedTranslationMapOrigin(translationMap);
+                if (origin != -1) {
+                    taxa = getIndexedTranslationMap(translationMap, origin);
+                }
+            }
+            // we got to the end of the translate block
+            // read bunrinCount trees
+            current = 0;
+            while (current < burninCount && fin.ready()) {
+    			sStr = nextLine();
+                if (sStr.toLowerCase().startsWith("tree ")) {
+                	current++;
+                }
+            }
+        }
+
+        private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
+
+            //System.out.println("translation map size = " + translationMap.size());
+
+            final String[] taxa = new String[translationMap.size()];
+
+            for (final String key : translationMap.keySet()) {
+                taxa[Integer.parseInt(key) - origin] = translationMap.get(key);
+            }
+            return Arrays.asList(taxa);
+        }
+
+        /**
+         * @param translationMap
+         * @return minimum key value if keys are a contiguous set of integers starting from zero or one, -1 otherwise
+         */
+        private int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
+
+            final SortedSet<Integer> indices = new java.util.TreeSet<>();
+
+            int count = 0;
+            for (final String key : translationMap.keySet()) {
+                final int index = Integer.parseInt(key);
+                indices.add(index);
+                count += 1;
+            }
+            if ((indices.last() - indices.first() == count - 1) && (indices.first() == 0 || indices.first() == 1)) {
+                return indices.first();
+            }
+            return -1;
+        }
+
+        /**
+         * @param reader a reader
+         * @return a map of taxa translations, keys are generally integer node number starting from 1
+         *         whereas values are generally descriptive strings.
+         * @throws IOException
+         */
+        private Map<String, String> parseTranslateBlock() throws IOException {
+
+            final Map<String, String> translationMap = new HashMap<String, String>();
+
+            String line = readLine();
+            final StringBuilder translateBlock = new StringBuilder();
+            while (line != null && !line.trim().toLowerCase().equals(";")) {
+                translateBlock.append(line.trim());
+                line = readLine();
+            }
+            final String[] taxaTranslations = translateBlock.toString().split(",");
+            for (final String taxaTranslation : taxaTranslations) {
+                final String[] translation = taxaTranslation.split("[\t ]+");
+                if (translation.length == 2) {
+                    translationMap.put(translation[0], translation[1]);
+//                    System.out.println(translation[0] + " -> " + translation[1]);
+                } else {
+                    Log.err.println("Ignoring translation:" + Arrays.toString(translation));
+                }
+            }
+            return translationMap;
+        }
+
+    	
     	
     	boolean hasNext() {
-    		return current < trees.length;
+    		return current < totalTrees;
     	}
     	
-    	Tree next() {
-    		return trees[current++];
+    	Tree next() throws Exception {
+			String sStr = nextLine();
+    		if (!isNexus) {
+                TreeParser treeParser;
+
+                if (origin != -1) {
+                    treeParser = new TreeParser(taxa, sStr, origin, false);
+                } else {
+                    try {
+                        treeParser = new TreeParser(taxa, sStr, 0, false);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        treeParser = new TreeParser(taxa, sStr, 1, false);
+                    }
+                }
+                return treeParser;
+    		}
+    		
+            // read trees from NEXUS file
+            if (sStr.toLowerCase().startsWith("tree ")) {
+            	current++;
+                final int i = sStr.indexOf('(');
+                if (i > 0) {
+                    sStr = sStr.substring(i);
+                }
+                TreeParser treeParser;
+
+                if (origin != -1) {
+                    treeParser = new TreeParser(taxa, sStr, origin, false);
+                } else {
+                    try {
+                        treeParser = new TreeParser(taxa, sStr, 0, false);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        treeParser = new TreeParser(taxa, sStr, 1, false);
+                    }
+                }
+
+                if (translationMap != null) treeParser.translateLeafIds(translationMap);
+
+                return treeParser;
+            }
+    		return null;
     	}
     }
     TreeSet treeSet;
@@ -121,7 +399,7 @@ public class TreeAnnotator {
 
 
     // Messages to stderr, output to stdout
-    private static PrintStream progressStream = System.err;
+    private static PrintStream progressStream = Log.err;
 
 //    private final String location1Attribute = "longLat1";
 //    private final String location2Attribute = "longLat2";
@@ -130,7 +408,7 @@ public class TreeAnnotator {
     public TreeAnnotator() { }
 
     public TreeAnnotator(final int burninPercentage,
-    					boolean bAllowSingleChild,
+    					 boolean lowMemory, // bAllowSingleChild was defunct (always set to false), now replaced by flag to say how much 
                          HeightsSummary heightsOption,
                          double posteriorLimit,
                          double hpd2D,
@@ -152,27 +430,21 @@ public class TreeAnnotator {
         totalTreesUsed = 0;
 
         //progressStream.println("Reading trees (bar assumes 10,000 trees)...");
-        progressStream.println("0              25             50             75            100");
-        progressStream.println("|--------------|--------------|--------------|--------------|");
 
         int stepSize = Math.max(totalTrees / 60, 1);
 
-        TreeSetParser parser = new TreeSetParser(burninPercentage, bAllowSingleChild);
         try {
-        	Node [] roots = parser.parseFile(inputFileName);
-        	treeSet = new TreeSet();
-        	treeSet.trees = new Tree[roots.length];
-        	int i = 0;
-        	for (Node root : roots) {
-        		treeSet.trees[i++] = new Tree(root);
+        	if (lowMemory) {
+        		treeSet = new MemoryFriendlyTreeSet(inputFileName, burninPercentage);
+        	} else {
+        		treeSet = new FastTreeSet(inputFileName, burninPercentage);
         	}
-        	progressStream.println("Read " + treeSet.trees.length + " trees from file" +
-                    (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% trees." : "."));
         } catch (Exception e) {
         	e.printStackTrace();
-            System.err.println("Error Parsing Input Tree: " + e.getMessage());
-            return;
-		}
+        	Log.err.println("Error Parsing Input Tree: " + e.getMessage());
+        	return;
+        }
+
         
         if (targetOption != Target.USER_TARGET_TREE) {
             try {
@@ -182,7 +454,7 @@ public class TreeAnnotator {
                     tree.getLeafNodeCount();
                     if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
                         SAmode = true;
-                        System.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
+                        Log.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
                                 "summary analysis.");
                         if (heightsOption == HeightsSummary.CA_HEIGHTS) {
                             throw new RuntimeException("The common ancestor height is not \n available for trees with sampled " +
@@ -194,7 +466,7 @@ public class TreeAnnotator {
 	            }
 	            totalTrees = totalTreesUsed * 100 / (100-Math.max(burninPercentage, 0));
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+            	Log.err.println(e.getMessage());
                 return;
             }
 
@@ -202,12 +474,12 @@ public class TreeAnnotator {
             progressStream.println();
 
             if (totalTrees < 1) {
-                System.err.println("No trees");
+            	Log.err.println("No trees");
                 return;
             }
             if (totalTreesUsed <= 1) {
                 if (burninPercentage > 0) {
-                    System.err.println("No trees to use: burnin too high");
+                    Log.err.println("No trees to use: burnin too high");
                     return;
                 }
             }
@@ -241,12 +513,12 @@ public class TreeAnnotator {
 		                    parser2.initByName("IsLabelledNewick", true, "newick", sTree);
 		                    targetTree = parser2;
 	                    } catch (Exception e) {
-	                        System.err.println("Error Parsing Target Tree: " + e.getMessage());
+	                        Log.err.println("Error Parsing Target Tree: " + e.getMessage());
 	                        return;
 	                    }
                     }
                 } else {
-                    System.err.println("No user target tree specified.");
+                    Log.err.println("No user target tree specified.");
                     return;
                 }
                 break;
@@ -296,7 +568,7 @@ public class TreeAnnotator {
             //progressStream.println("totalTreesUsed=" + totalTreesUsed);
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
         } catch (Exception e) {
-            System.err.println("Error Parsing Input Tree: " + e.getMessage());
+            Log.err.println("Error Parsing Input Tree: " + e.getMessage());
             return;
         }
         progressStream.println();
@@ -312,7 +584,7 @@ public class TreeAnnotator {
             }
         } catch (Exception e) {
         	e.printStackTrace();
-            System.err.println("Error to annotate tree: " + e.getMessage() + "\nPlease check the tree log file format.");
+            Log.err.println("Error to annotate tree: " + e.getMessage() + "\nPlease check the tree log file format.");
             return;
         }
 
@@ -337,7 +609,7 @@ public class TreeAnnotator {
             targetTree.close(stream);
             stream.println();
         } catch (Exception e) {
-            System.err.println("Error to write annotated tree file: " + e.getMessage());
+            Log.err.println("Error to write annotated tree file: " + e.getMessage());
             return;
         }
 
@@ -390,7 +662,7 @@ public class TreeAnnotator {
         }
     }
 
-    private Tree summarizeTrees(CladeSystem cladeSystem, boolean useSumCladeCredibility) throws IOException {
+    private Tree summarizeTrees(CladeSystem cladeSystem, boolean useSumCladeCredibility) throws Exception {
 
         Tree bestTree = null;
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -825,8 +1097,8 @@ public class TreeAnnotator {
 //                int numberContours = contourList.size();
 //
 //                if (numberContours > 1) {
-//                    System.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
-//                    System.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
+//                    Log.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
+//                    Log.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
 //                }
 //
 //
@@ -866,8 +1138,8 @@ public class TreeAnnotator {
             node.setMetaData(preLabel + postLabel + "_modality", paths.length);
 
             if (paths.length > 1) {
-                System.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
-                System.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
+                Log.err.println("Warning: a node has a disjoint " + 100 * hpd + "% HPD region.  This may be an artifact!");
+                Log.err.println("Try decreasing the enclosed mass or increasing the number of samples.");
             }
 
             StringBuffer output = new StringBuffer();
@@ -909,14 +1181,14 @@ public class TreeAnnotator {
 //        try {
 //            System.loadLibrary("jri");
 //            processBivariateAttributes = true;
-//            System.err.println("JRI loaded. Will process bivariate attributes");
+//            Log.err.println("JRI loaded. Will process bivariate attributes");
 //        } catch (UnsatisfiedLinkError e) {
-//            System.err.print("JRI not available. ");
+//            Log.err.print("JRI not available. ");
 //            if (!USE_R) {
 //                processBivariateAttributes = true;
-//                System.err.println("Using Java bivariate attributes");
+//                Log.err.println("Using Java bivariate attributes");
 //            } else {
-//                System.err.println("Will not process bivariate attributes");
+//                Log.err.println("Will not process bivariate attributes");
 //            }
 //        }
 //    }
@@ -1017,26 +1289,26 @@ public class TreeAnnotator {
 
             targetTreeFileName = dialog.getTargetFileName();
             if (targetOption == Target.USER_TARGET_TREE && targetTreeFileName == null) {
-                System.err.println("No target file specified");
+                Log.err.println("No target file specified");
                 return;
             }
 
             inputFileName = dialog.getInputFileName();
             if (inputFileName == null) {
-                System.err.println("No input file specified");
+                Log.err.println("No input file specified");
                 return;
             }
 
             outputFileName = dialog.getOutputFileName();
             if (outputFileName == null) {
-                System.err.println("No output file specified");
+                Log.err.println("No output file specified");
                 return;
             }
+        	boolean lowMem = dialog.useLowMem();
 
             try {
-            	boolean allowSingleChild = false;
                 new TreeAnnotator(burninPercentage,
-                		allowSingleChild,
+                		lowMem,
                         heightsOption,
                         posteriorLimit,
                         hpd2D,
@@ -1046,7 +1318,7 @@ public class TreeAnnotator {
                         outputFileName);
 
             } catch (Exception ex) {
-                System.err.println("Exception: " + ex.getMessage());
+                Log.err.println("Exception: " + ex.getMessage());
             }
 
             progressStream.println("Finished - Quit program to exit.");
@@ -1073,6 +1345,7 @@ public class TreeAnnotator {
                         new Arguments.StringOption("target", "target_file_name", "specifies a user target tree to be annotated"),
                         new Arguments.Option("help", "option to print this message"),
                         new Arguments.Option("forceDiscrete", "forces integer traits to be treated as discrete traits."),
+                        new Arguments.Option("lowMem", "use less memory, which is a bit slower."),
                         new Arguments.RealOption("hpd2D", "the HPD interval to be used for the bivariate traits")
                 });
 
@@ -1085,13 +1358,18 @@ public class TreeAnnotator {
         }
 
         if (arguments.hasOption("forceDiscrete")) {
-            System.out.println("  Forcing integer traits to be treated as discrete traits.");
+            Log.info.println("  Forcing integer traits to be treated as discrete traits.");
             forceIntegerToDiscrete = true;
         }
 
         if (arguments.hasOption("help")) {
             printUsage(arguments);
             System.exit(0);
+        }
+        
+        boolean lowMem = false;
+        if (arguments.hasOption("lowMem")) {
+        	lowMem = true;
         }
 
         HeightsSummary heights = HeightsSummary.CA_HEIGHTS;
@@ -1103,7 +1381,7 @@ public class TreeAnnotator {
                 heights = HeightsSummary.MEDIAN_HEIGHTS;
             } else if (value.equalsIgnoreCase("ca")) {
                 heights = HeightsSummary.CA_HEIGHTS;
-                System.out.println("Please cite: Heled and Bouckaert: Looking for trees in the forest:\n" +
+                Log.info.println("Please cite: Heled and Bouckaert: Looking for trees in the forest:\n" +
                                         "summary tree from posterior samples. BMC Evolutionary Biology 2013 13:221.");
             }
         }
@@ -1115,7 +1393,7 @@ public class TreeAnnotator {
             burnin = arguments.getIntegerOption("b");        	
         }
         if (burnin >= 100) {
-        	System.err.println("burnin is a percentage and should be less than 100.");
+        	Log.err.println("burnin is a percentage and should be less than 100.");
         	System.exit(0);
         }
 
@@ -1128,7 +1406,7 @@ public class TreeAnnotator {
         if (arguments.hasOption("hpd2D")) {
             hpd2D = arguments.getRealOption("hpd2D");
             if (hpd2D <= 0 || hpd2D >=1) {
-            	System.err.println("hpd2D is a fraction and should be in between 0.0 and 1.0.");
+            	Log.err.println("hpd2D is a fraction and should be in between 0.0 and 1.0.");
             	System.exit(0);            	
             }
             processBivariateAttributes = true;
@@ -1150,16 +1428,15 @@ public class TreeAnnotator {
                 inputFileName = args2[0];
                 break;
             default: {
-                System.err.println("Unknown option: " + args2[2]);
-                System.err.println();
+                Log.err.println("Unknown option: " + args2[2]);
+                Log.err.println();
                 printUsage(arguments);
                 System.exit(1);
             }
         }
-        boolean allowSingleChild = false;
         
         try {
-        	new TreeAnnotator(burnin, allowSingleChild, heights, posteriorLimit, hpd2D, target, targetTreeFileName, inputFileName, outputFileName);
+        	new TreeAnnotator(burnin, lowMem, heights, posteriorLimit, hpd2D, target, targetTreeFileName, inputFileName, outputFileName);
         } catch (IOException e) {
         	throw e;
         } catch (Exception e) {

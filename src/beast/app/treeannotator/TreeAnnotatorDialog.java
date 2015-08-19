@@ -50,6 +50,8 @@ public class TreeAnnotatorDialog {
 
     private JComboBox nodeHeightsCombo = new JComboBox(TreeAnnotator.HeightsSummary.values());
 
+    private JCheckBox lowMemCheckbox = new JCheckBox();
+    
 	private File targetFile = null;
 	private File inputFile = null;
 	private File outputFile = null;
@@ -178,6 +180,8 @@ public class TreeAnnotatorDialog {
 		panel3.add(outputFileNameText, BorderLayout.CENTER);
 		panel3.add(outputFileButton, BorderLayout.EAST);
 		optionPanel.addComponentWithLabel("Output File: ", panel3);
+
+		optionPanel.addComponentWithLabel("Low memory: ", lowMemCheckbox);
 	}
 
 	public boolean showDialog(String title) {
@@ -228,6 +232,10 @@ public class TreeAnnotatorDialog {
 	public String getOutputFileName() {
 		if (outputFile == null) return null;
 		return outputFile.getPath();
+	}
+
+	public boolean useLowMem() {
+		return lowMemCheckbox.isSelected();
 	}
 
 }
