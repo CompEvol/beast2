@@ -38,16 +38,20 @@ public class NexusParser {
     public Map<String, String> translationMap = null;
 
     static {
-        g_sequenceIDs = new HashSet<String>();
+        g_sequenceIDs = new HashSet<>();
     }
 
-    public List<TaxonSet> taxonsets = new ArrayList<TaxonSet>();
+    public List<TaxonSet> taxonsets = new ArrayList<>();
 
-//    private List<NexusParserListener> listeners = new ArrayList<NexusParserListener>();
+    private List<NexusParserListener> listeners = new ArrayList<>();
 
-//    public void addListener(final NexusParserListener listener) {
-//        listeners.add(listener);
-//    }
+    /**
+     * Adds a listener for client classes that want to monitor progress of the parsing.
+     * @param listener
+     */
+    public void addListener(final NexusParserListener listener) {
+        listeners.add(listener);
+    }
 
     /**
      * Try to parse BEAST 2 objects from the given file
@@ -143,9 +147,9 @@ public class NexusParser {
 //                    treeParser = new TreeParser(m_taxa, sStr, 1);
 //                }
 
-//                for (final NexusParserListener listener : listeners) {
-//                    listener.treeParsed(trees.size(), treeParser);
-//                }
+                for (final NexusParserListener listener : listeners) {
+                    listener.treeParsed(trees.size(), treeParser);
+                }
 
                 if (translationMap != null) treeParser.translateLeafIds(translationMap);
 
