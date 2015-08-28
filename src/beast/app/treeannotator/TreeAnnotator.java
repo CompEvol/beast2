@@ -284,7 +284,6 @@ public class TreeAnnotator {
         }
 
         /**
-         * @param reader a reader
          * @return a map of taxa translations, keys are generally integer node number starting from 1
          *         whereas values are generally descriptive strings.
          * @throws IOException
