@@ -5,10 +5,7 @@ import beast.app.util.Utils;
 import beast.core.util.ESS;
 import beast.core.util.Log;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,13 +13,15 @@ import java.util.List;
 import static beast.util.OutputUtils.format;
 
 
-public class LogAnalyser {
+public class LogAnalyser extends LogReader{
     // MAX_LAG typical = 2000; = maximum lag for ESS, TODO not used
     protected final static int MAX_LAG = 2000;
 
-    public static final int BURN_IN_PERCENTAGE = 10; // default
+//    public static final int BURN_IN_PERCENTAGE = 10; // default
 
-    protected final String sFile;
+//    protected String fileName;
+//    protected int total; // total lines of data
+//    protected int sampleInterval = 1;
 
     /**
      * column labels in log file *
@@ -35,8 +34,6 @@ public class LogAnalyser {
     protected enum type {
         REAL, INTEGER, BOOL, NOMINAL
     }
-
-    ;
     protected type[] m_types;
     /**
      * range of a column, if it is not a REAL *
@@ -53,103 +50,53 @@ public class LogAnalyser {
      */
     Double[] m_fMean, m_fStdError, m_fStdDev, m_fMedian, m_f95HPDup, m_f95HPDlow, m_fESS, m_fACT, m_fGeometricMean;
 
-    /**
-     * used for storing comments before the actual log file commences *
-     */
-    protected String m_sPreAmble;
+    public LogAnalyser() { }
 
-    final protected static String BAR = "|---------|---------|---------|---------|---------|---------|---------|---------|";
-
-    public LogAnalyser() {
-        sFile = null;
-    }
-
-    /**
-     *
-     * @param args
-     * @param nBurnInPercentage  nBurnInPercentage typical = 10; percentage of data that can be ignored
-     * @throws Exception
-     */
-    public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
-        sFile = args[args.length - 1];
-        readLogFile(sFile, nBurnInPercentage);
-        calcStats();
+    public LogAnalyser(String[] args, int burninPercentage) throws Exception {
+//        fileName = args[args.length - 1];
+//        readLogFile(fileName, burninPercentage);
+//        analyse();
+        this(args[args.length - 1], burninPercentage);
     }
 
     public LogAnalyser(String[] args) throws Exception {
         this(args, BURN_IN_PERCENTAGE);
     }
-
-    public LogAnalyser(String sFile, int nBurnInPercentage) throws Exception {
-        this.sFile = sFile;
-        readLogFile(sFile, nBurnInPercentage);
-        calcStats();
+    /**
+     *
+     * @param fileName
+     * @param burninPercentage  burninPercentage typical = 10; percentage of data that can be ignored
+     * @throws Exception
+     */
+    public LogAnalyser(String fileName, int burninPercentage) throws Exception {
+        readLogFile(fileName, burninPercentage);
+        analyse();
     }
 
-    public LogAnalyser(String sFile) throws Exception {
-        this(sFile, BURN_IN_PERCENTAGE);
+    public LogAnalyser(String fileName) throws Exception {
+        this(fileName, BURN_IN_PERCENTAGE);
     }
 
-    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
-        log("\nLoading " + sFile);
-        BufferedReader fin = new BufferedReader(new FileReader(sFile));
-        String sStr = null;
-        m_sPreAmble = "";
-        m_sLabels = null;
-        int nData = 0;
-        // first, sweep through the log file to determine size of the log
+    public void readLogFile(String fileName, int burninPercentage) throws Exception {
+        lowMemory = false;
+        init(fileName, burninPercentage);
+
+        long nLines = Math.max(1, total / 80);
+        final int nItems = m_sLabels.length;
+        long nBurnIn = getNBurnIn(burninPercentage);
+        long nData = initNData(nBurnIn);
+
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
         while (fin.ready()) {
-            sStr = fin.readLine();
-            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
-                if (m_sLabels == null)
-                    m_sLabels = sStr.split("\\s");
-                else
-                    nData++;
-            } else {
-                m_sPreAmble += sStr + "\n";
+            Double[] data = next(fin, ++nData >= 0);
+            if (data != null) {
+                for (int i = 0; i < nItems; i++)
+                    m_fTraces[i][(int) nData] = data[i];
             }
-        }
-        int nLines = Math.max(1, nData / 80);
-        // reserve memory
-        int nItems = m_sLabels.length;
-        m_ranges = new List[nItems];
-        int nBurnIn = nData * nBurnInPercentage / 100;
-        m_fTraces = new Double[nItems][nData - nBurnIn];
-        fin = new BufferedReader(new FileReader(sFile));
-        nData = -nBurnIn - 1;
-        logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
-        // grab data from the log, ignoring burn in samples
-        m_types = new type[nItems];
-        Arrays.fill(m_types, type.INTEGER);
-        while (fin.ready()) {
-            sStr = fin.readLine();
-            int i = 0;
-            if (sStr.indexOf('#') < 0 && sStr.matches("[0-9].*")) // {
-                //nData++;
-                if (++nData >= 0) //{
-                    for (String sStr2 : sStr.split("\\s")) {
-                        try {
-                            if (sStr2.indexOf('.') >= 0) {
-                                m_types[i] = type.REAL;
-                            }
-                            m_fTraces[i][nData] = Double.parseDouble(sStr2);
-                        } catch (Exception e) {
-                            if (m_ranges[i] == null) {
-                                m_ranges[i] = new ArrayList<String>();
-                            }
-                            if (!m_ranges[i].contains(sStr2)) {
-                                m_ranges[i].add(sStr2);
-                            }
-                            m_fTraces[i][nData] = 1.0 * m_ranges[i].indexOf(sStr2);
-                        }
-                        i++;
-                    }
-            //}
-            //}
-            if (nData % nLines == 0) {
+            if (nData % nLines == 0)
                 log("*");
-            }
         }
+
         logln("");
         // determine types
         for (int i = 0; i < nItems; i++)
@@ -159,14 +106,186 @@ public class LogAnalyser {
                     m_types[i] = type.BOOL;
                 else
                     m_types[i] = type.NOMINAL;
+    }// readLogFile
 
-    } // readLogFile
+    @Override
+    public void init(String fileName, int burninPercentage) throws Exception {
+        this.fileName=fileName;
+
+        log("\nLoading " + fileName);
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
+
+        m_sPreAmble = "";
+        m_sLabels = null;
+        total = 0;
+        // grab data from the log, ignoring burn in samples
+        long nSample0 = -1;
+
+        // first, sweep through the log file to determine size of the log
+        String sStr = readLine(fin);
+        while (sStr != null) {
+            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
+                if (m_sLabels == null) {
+                    m_sLabels = sStr.split("\\s");
+                } else {
+                    // calculate sampleInterval
+                    if (total < 2) {
+                        String[] sStrArray = sStr.split("\\s");
+                        if (nSample0 < 0) {
+                            nSample0 = Long.parseLong(sStrArray[0]);
+                        } else {
+                            sampleInterval = (int) (Long.parseLong(sStrArray[0]) - nSample0);
+                        }
+                    }
+
+                    total++;
+                }
+            } else {
+                m_sPreAmble += sStr + "\n";
+            }
+            sStr = readLine(fin);
+        }
+
+        // reserve memory
+        final int nItems = m_sLabels.length;
+        m_ranges = new List[nItems];
+        long nBurnIn = getNBurnIn(burninPercentage);
+        logln(", burnin " + burninPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
+
+        // grab data from the log, ignoring burn in samples
+        m_types = new type[nItems];
+        Arrays.fill(m_types, type.INTEGER);
+
+        // init m_fTraces depend on memory
+        if (lowMemory)
+            m_fTraces = null;
+        else
+            m_fTraces = new Double[nItems][(int) (total - nBurnIn)];
+    }
+
+    // read the line if toContinue is true
+    @Override
+    public Double[] next(BufferedReader fin, boolean process) throws Exception {
+        String sStr = fin.readLine();
+        int i = 0;
+        if (sStr.indexOf('#') < 0 && sStr.matches("[0-9].*")) // {
+            //++nData >= 0
+            if (process) {
+                String[] sStrArray = sStr.split("\\s");
+                assert sStrArray.length == m_sLabels.length;
+
+                Double[] data = new Double[sStrArray.length];
+
+                for (String sStr2 : sStrArray) {
+                    try {
+                        if (sStr2.indexOf('.') >= 0) {
+                            m_types[i] = type.REAL;
+                        }
+                        data[i] = Double.parseDouble(sStr2);
+                    } catch (Exception e) {
+                        if (m_ranges[i] == null) {
+                            m_ranges[i] = new ArrayList<String>();
+                        }
+                        if (!m_ranges[i].contains(sStr2)) {
+                            m_ranges[i].add(sStr2);
+                        }
+                        data[i] = 1.0 * m_ranges[i].indexOf(sStr2);
+                    }
+                    i++;
+                }
+                return data;
+            }
+        //}
+        return null;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return current < total;
+    }
+
+    @Override
+    public void reset() throws Exception {
+        current = 0;
+    }
+
+//    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+//        log("\nLoading " + sFile);
+//        BufferedReader fin = new BufferedReader(new FileReader(sFile));
+//        String sStr = null;
+//        m_sPreAmble = "";
+//        m_sLabels = null;
+//        int nData = 0;
+//        // first, sweep through the log file to determine size of the log
+//        while (fin.ready()) {
+//            sStr = fin.readLine();
+//            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
+//                if (m_sLabels == null)
+//                    m_sLabels = sStr.split("\\s");
+//                else
+//                    nData++;
+//            } else {
+//                m_sPreAmble += sStr + "\n";
+//            }
+//        }
+//        int nLines = Math.max(1, nData / 80);
+//        // reserve memory
+//        int nItems = m_sLabels.length;
+//        m_ranges = new List[nItems];
+//        int nBurnIn = nData * nBurnInPercentage / 100;
+//        m_fTraces = new Double[nItems][nData - nBurnIn];
+//        fin = new BufferedReader(new FileReader(sFile));
+//        nData = -nBurnIn - 1;
+//        logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
+//        // grab data from the log, ignoring burn in samples
+//        m_types = new type[nItems];
+//        Arrays.fill(m_types, type.INTEGER);
+//        while (fin.ready()) {
+//            sStr = fin.readLine();
+//            int i = 0;
+//            if (sStr.indexOf('#') < 0 && sStr.matches("[0-9].*")) // {
+//                //nData++;
+//                if (++nData >= 0) //{
+//                    for (String sStr2 : sStr.split("\\s")) {
+//                        try {
+//                            if (sStr2.indexOf('.') >= 0) {
+//                                m_types[i] = type.REAL;
+//                            }
+//                            m_fTraces[i][nData] = Double.parseDouble(sStr2);
+//                        } catch (Exception e) {
+//                            if (m_ranges[i] == null) {
+//                                m_ranges[i] = new ArrayList<String>();
+//                            }
+//                            if (!m_ranges[i].contains(sStr2)) {
+//                                m_ranges[i].add(sStr2);
+//                            }
+//                            m_fTraces[i][nData] = 1.0 * m_ranges[i].indexOf(sStr2);
+//                        }
+//                        i++;
+//                    }
+//            //}
+//            //}
+//            if (nData % nLines == 0) {
+//                log("*");
+//            }
+//        }
+//        logln("");
+//        // determine types
+//        for (int i = 0; i < nItems; i++)
+//            if (m_ranges[i] != null)
+//                if (m_ranges[i].size() == 2 && m_ranges[i].contains("true") && m_ranges[i].contains("false") ||
+//                        m_ranges[i].size() == 1 && (m_ranges[i].contains("true") || m_ranges[i].contains("false")))
+//                    m_types[i] = type.BOOL;
+//                else
+//                    m_types[i] = type.NOMINAL;
+//
+//    } // readLogFile
 
     /**
      * calculate statistics on the data, one per column.
      * First column (sample nr) is not set *
      */
-    void calcStats() {
+    public void analyse() {
         logln("\nCalculating statistics\n\n" + BAR);
         int nStars = 0;
         int nItems = m_sLabels.length;
@@ -246,6 +365,11 @@ public class LogAnalyser {
             }
         }
         logln("\n");
+    }
+
+    @Deprecated
+    void calcStats() {
+        analyse();
     } // calcStats
 
     public void setData(Double[][] fTraces, String[] sLabels, type[] types) {
@@ -267,7 +391,7 @@ public class LogAnalyser {
 
     public int indexof(String sLabel) {
         return CollectionUtils.indexof(sLabel, m_sLabels);
-	}
+    }
 
     /**
      * First column "Sample" (sample nr) needs to be removed
@@ -280,11 +404,11 @@ public class LogAnalyser {
     }
 
     public Double [] getTrace(int index) {
-    	return m_fTraces[index].clone();
+        return m_fTraces[index].clone();
     }
 
     public Double [] getTrace(String sLabel) {
-    	return m_fTraces[indexof(sLabel)].clone();
+        return m_fTraces[indexof(sLabel)].clone();
     }
 
     public double getMean(String sLabel) {
@@ -400,27 +524,26 @@ public class LogAnalyser {
     }
 
     public String getLogFile() {
-        return sFile;
+        return fileName;
     }
 
     /**
      * print statistics for each column except first column (sample nr). *
      */
-    final String SPACE = OutputUtils.SPACE;
     public void print(PrintStream out) {
-    	// set up header for prefix, if any is specified
-    	String prefix = System.getProperty("prefix");
-    	String prefixHead = (prefix == null ? "" : "prefix ");
-    	if (prefix != null) {
-	    	String [] p = prefix.trim().split("\\s+");
-	    	if (p.length > 1) {
-	    		prefixHead = "";
-	    		for (int i = 0; i < p.length; i++) {
-	    			prefixHead += "prefix" + i + " ";
-	    		}
-	    	}
-    	}
-    	
+        // set up header for prefix, if any is specified
+        String prefix = System.getProperty("prefix");
+        String prefixHead = (prefix == null ? "" : "prefix ");
+        if (prefix != null) {
+            String [] p = prefix.trim().split("\\s+");
+            if (p.length > 1) {
+                prefixHead = "";
+                for (int i = 0; i < p.length; i++) {
+                    prefixHead += "prefix" + i + " ";
+                }
+            }
+        }
+
         try {
             // delay so that stars can be flushed from stderr
             Thread.sleep(100);
@@ -434,7 +557,7 @@ public class LogAnalyser {
             sSpace += " ";
 
         out.println("item" + sSpace.substring(4) + " " + prefixHead +
-        		format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPDlo")  + format("95%HPDup")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
+                format("mean") + format("stderr") + format("stddev") + format("median") + format("95%HPDlo") + format("95%HPDup") + format("ACT") + format("ESS") + format("geometric-mean"));
         for (int i = 1; i < m_sLabels.length; i++) {
             out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
                     format(m_fMean[i]) + SPACE + format(m_fStdError[i]) + SPACE + format(m_fStdDev[i]) +
@@ -443,79 +566,60 @@ public class LogAnalyser {
         }
     }
 
-    protected void log(String s) {
-        System.err.print(s);
-    }
-
-    protected void logln(String s) {
-        System.err.println(s);
-    }
-
-    static void printUsageAndExit() {
-    	System.out.println("LogAnalyser [-b <burninPercentage] [file1] ... [filen]");
-    	System.out.println("-burnin <burninPercentage>");
-    	System.out.println("--burnin <burninPercentage>");
-    	System.out.println("-b <burninPercentage> percentage of log file to disregard, default " + BURN_IN_PERCENTAGE);
-    	System.out.println("-help");
-    	System.out.println("--help");
-    	System.out.println("-h print this message");
-    	System.out.println("[fileX] log file to analyse. Multiple files are allowed, each is analysed separately");
-    	System.exit(0);
-    }
-    
     /**
      * @param args
      */
     public static void main(String[] args) {
+        final String program = "LogAnalyser";
         try {
             LogAnalyser analyser;
-            	// process args
-            	int burninPercentage = BURN_IN_PERCENTAGE;
-            	List<String> files = new ArrayList<>();
-            	int i = 0;
-            	while (i < args.length) {
-            		String arg = args[i];
-            		switch (arg) {
-            		case "-b":
-            		case "-burnin":
-            		case "--burnin":
-            			if (i+1 >= args.length) {
-            				Log.warning.println("-b argument requires another argument");
-            				printUsageAndExit();
-            			}
-            			burninPercentage = Integer.parseInt(args[i+1]);
-            			i += 2;
-            			break;
-            		case "-h":
-            		case "-help":
-            		case "--help":
-            			printUsageAndExit();
-            			break;
-            		default:
-            			if (arg.startsWith("-")) {
-            				Log.warning.println("unrecognised command " + arg);
-            				printUsageAndExit();
-            			}
-            			files.add(arg);
-            			i++;
-            		}
-            	}
-            	if (files.size() == 0) {
-            		// no file specified, open file dialog to select one
-	                BEASTVersion version = new BEASTVersion();
-	                File file = Utils.getLoadFile("LogAnalyser " + version.getVersionString() + " - Select log file to analyse",
-	                        null, "BEAST log (*.log) Files", "log", "txt");
-	                if (file == null) {
-	                    return;
-	                }
-	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage);
-	                analyser.print(System.out);
-            	} else {
-            		// process files
-            		for (String file : files) {
-    	                analyser = new LogAnalyser(file, burninPercentage);
-    	                analyser.print(System.out);
-            		}
+            // process args
+            int burninPercentage = BURN_IN_PERCENTAGE;
+            List<String> files = new ArrayList<>();
+            int i = 0;
+            while (i < args.length) {
+                String arg = args[i];
+                switch (arg) {
+                    case "-b":
+                    case "-burnin":
+                    case "--burnin":
+                        if (i+1 >= args.length) {
+                            Log.warning.println("-b argument requires another argument");
+                            printUsageAndExit(program);
+                        }
+                        burninPercentage = Integer.parseInt(args[i+1]);
+                        i += 2;
+                        break;
+                    case "-h":
+                    case "-help":
+                    case "--help":
+                        printUsageAndExit(program);
+                        break;
+                    default:
+                        if (arg.startsWith("-")) {
+                            Log.warning.println("unrecognised command " + arg);
+                            printUsageAndExit(program);
+                        }
+                        files.add(arg);
+                        i++;
+                }
+            }
+            if (files.size() == 0) {
+                // no file specified, open file dialog to select one
+                BEASTVersion version = new BEASTVersion();
+                File file = Utils.getLoadFile(program +" " + version.getVersionString() + " - Select log file to analyse",
+                        null, "BEAST log (*.log) Files", "log", "txt");
+                if (file == null) {
+                    return;
+                }
+                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage);
+                analyser.print(System.out);
+            } else {
+                // process files
+                for (String file : files) {
+                    analyser = new LogAnalyser(file, burninPercentage);
+                    analyser.print(System.out);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
