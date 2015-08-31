@@ -216,9 +216,12 @@ public class Utils {
                 chooser.setFilenameFilter(filter);
             }
 
-            //        chooser.show();
+            chooser.setMultipleMode(bAllowMultipleSelection);
             chooser.setVisible(true);
             if (chooser.getFile() == null) return null;
+            if (bAllowMultipleSelection) {
+            	return chooser.getFiles();
+            }
             File file = new java.io.File(chooser.getDirectory(), chooser.getFile());
             chooser.dispose();
             frame.dispose();
