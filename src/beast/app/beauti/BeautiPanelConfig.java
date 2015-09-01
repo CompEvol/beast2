@@ -292,6 +292,12 @@ public class BeautiPanelConfig extends BEASTObject {
                     targetList.remove(plugin);
                 }
                 targetList.addAll(list);
+                // sync outputs of items in list
+                for (Object o : list) {
+                	if (o instanceof BEASTInterface) {
+                		((BEASTInterface)o).getOutputs().add(parentPlugins.get(iPartition));
+                	}
+                }
             } else {
                 try {
                     //System.err.println("sync " + parentPlugins.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
