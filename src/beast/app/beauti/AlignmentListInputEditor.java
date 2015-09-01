@@ -28,6 +28,8 @@ import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
+import beast.core.State;
+import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -479,6 +481,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					PartitionContext context = getPartitionContext(iRow);
 					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
 							(MCMC) doc.mcmc.get(), context, doc, null);
+					
+					State state = ((MCMC) doc.mcmc.get()).startStateInput.get();
+					List<StateNode> stateNodes = new ArrayList<>();
+					stateNodes.addAll(state.stateNodeInput.get());
+					for (StateNode s : stateNodes) {
+						if (s.getID().endsWith(".t:" + oldContext.tree) && !(s instanceof TreeInterface)) {
+							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+						}
+					}
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
@@ -1198,3 +1209,4 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 	
 } // class AlignmentListInputEditor
+

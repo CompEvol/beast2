@@ -342,14 +342,25 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.button("Link Trees").click();
 		printBeautiState(f);
 		assertPriorsEqual("CoalescentConstant.t:26", "ClockPrior.c:47", "PopSizePrior.t:26");
+
+		warning("Unlink trees");
+		beautiFrame.button("Unlink Trees").click();
+		// should have PopSizePrior.t:47 as well?
+		assertPriorsEqual("CoalescentConstant.t:26", "CoalescentConstant.t:47", "ClockPrior.c:47", "PopSizePrior.t:26", "PopSizePrior.t:47");
 		
-		warning("Delete first partition");
+//		warning("Delete partition");
+//		f.selectTab("Partitions");
+//		selectRows(1);
+//		beautiFrame.button("-").click();
+//		printBeautiState(f);
+//		assertPriorsEqual("CoalescentConstant.t:26", "PopSizePrior.t:26");
+
+		warning("Delete partition");
 		f.selectTab("Partitions");
-		beautiFrame.table().selectCell(TableCell.row(0).column(1));
+		selectRows(0);
 		beautiFrame.button("-").click();
 		printBeautiState(f);
-		// should have PopSizePrior.t:47 as well?
-		assertPriorsEqual("CoalescentConstant.t:26", "CoalescentConstant.t:47", "ClockPrior.c:47", "PopSizePrior.t:26");
+		assertPriorsEqual("CoalescentConstant.t:47", "PopSizePrior.t:47");
 
 		makeSureXMLParses();
 	}
