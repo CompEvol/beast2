@@ -1,10 +1,31 @@
-                    BEAST v2.3.0 2015
+                    BEAST v2.3.1 2015
                  Beast 2 development team 2011-2015
 Version History
-Last updated: May 2015
+Last updated: September 2015
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.3.1 September 2015
+        BEAUti fixes
+           robustify (un)linking
+	   improved Fasta import
+
+	BEAST
+	   support for uncertain alignments (see examples/testJukesCantorShortUncertain.xml) 
+           improved error messages
+
+        TreeAnnotator allows lower memory consumption
+
+	AppStore, LogCombiners, LogAnalyser improved command line interface 
+
+	Antlr based tree parsing
+
+        DensiTree updated to v2.2.3
+
+	BinaryCovarion model option to run as reversible model 
+
+	Set log level by environment variable
+	
 Version 2.3.0 May 2015
 	BEAUti fixes
 		cloning, linking, unlinking bugs fixed
