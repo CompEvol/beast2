@@ -9,7 +9,7 @@ import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
-
+import org.fest.assertions.Assertions;
 
 public class LinkUnlinkTest extends BeautiBase {
 
@@ -365,4 +365,161 @@ public class LinkUnlinkTest extends BeautiBase {
 		makeSureXMLParses();
 	}
 
+	
+	@Test
+	public void linkClocksAndDeleteTest() throws Exception {
+		warning("Load gopher data 26.nex, 47.nex, 59.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1, 2);
+
+		warning("Link clocks");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Clock Models").click();
+		printBeautiState(f);
+
+		warning("Delete second partition");
+		f.selectTab("Partitions");
+		selectRows(1);
+		beautiFrame.button("-").click();
+		printBeautiState(f);
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:59", "YuleBirthRatePrior.t:59");
+
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(2);
+		
+		makeSureXMLParses();
+	}
+
+	@Test
+	public void linkSiteModelssAndDeleteTest() throws Exception {
+		warning("Load gopher data 26.nex, 47.nex, 59.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1, 2);
+
+		warning("Link clocks");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Site Models").click();
+		printBeautiState(f);
+
+		warning("Delete second partition");
+		f.selectTab("Partitions");
+		selectRows(1);
+		beautiFrame.button("-").click();
+		printBeautiState(f);
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
+
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(2);
+		
+		makeSureXMLParses();
+	}
+
+	@Test
+	public void linkClocksSitesAndDeleteTest() throws Exception {
+		warning("Load gopher data 26.nex, 47.nex, 59.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1, 2);
+
+		warning("Link clocks");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Clock Models").click();
+
+		warning("Link site models");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Site Models").click();
+		printBeautiState(f);
+
+		warning("Delete second partition");
+		f.selectTab("Partitions");
+		selectRows(1);
+		beautiFrame.button("-").click();
+		printBeautiState(f);
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:59", "YuleBirthRatePrior.t:59");
+
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(2);
+		
+		makeSureXMLParses();
+	}
+
+	@Test
+	public void linkClocksSitesTreesAndDeleteTest() throws Exception {
+		warning("Load gopher data 26.nex, 47.nex, 59.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1, 2);
+
+		warning("Link clocks");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Clock Models").click();
+
+		warning("Link site models");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Site Models").click();
+		printBeautiState(f);
+
+		warning("Link trees");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Trees").click();
+		printBeautiState(f);
+
+		warning("Delete second partition");
+		f.selectTab("Partitions");
+		selectRows(1);
+		beautiFrame.button("-").click();
+		printBeautiState(f);
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26");
+
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(2);
+		
+		makeSureXMLParses();
+	}
+	
+	
+	@Test
+	public void starBeastLinkTreesAndDeleteTest() throws Exception {
+		warning("Select StarBeast template");
+		beautiFrame.menuItemWithPath("File", "Template", "StarBeast").click();
+
+		warning("Load gopher data 26.nex, 47.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1);
+
+		warning("Link trees");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Trees").click();
+		printBeautiState(f);
+
+		warning("Delete second partition");
+		f.selectTab("Partitions");
+		selectRows(1);
+		beautiFrame.button("-").click();
+		printBeautiState(f);
+//		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26");
+		
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(1);
+
+		makeSureXMLParses();
+	}	
 }
