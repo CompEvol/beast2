@@ -1751,6 +1751,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         taboo.add(mcmc);
         // add loggers
         taboo.addAll(mcmc.loggersInput.get());
+        // add exception for *BEAST logger (perhaps need to be generalised?)
+        if (doc.pluginmap.containsKey("SpeciesTreeLoggerX")) {
+        	taboo.add(doc.pluginmap.get("SpeciesTreeLoggerX"));
+        }
         // add trees
         for (StateNode node : mcmc.startStateInput.get().stateNodeInput.get()) {
             if (node instanceof Tree) {
