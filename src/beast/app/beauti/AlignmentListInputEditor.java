@@ -1126,6 +1126,17 @@ System.err.println("needsRePartition = " + needsRePartition);
 				}
 				getDoc().delAlignmentWithSubnet(alignments.get(iRow));
 				alignments.remove(iRow);
+			    // remove deleted likelihood from likelihoods array
+				GenericTreeLikelihood[] tmp = new GenericTreeLikelihood[likelihoods.length - 1];
+				int k = 0;
+				for (int j = 0; j < likelihoods.length; j++) {
+					if (j != iRow) {
+						tmp[k] = likelihoods[j];
+						k++;
+					}
+				}
+				likelihoods = tmp;
+				nPartitions--;
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Deletion failed: " + e.getMessage());
 				e.printStackTrace();

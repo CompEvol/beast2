@@ -492,7 +492,7 @@ public class LinkUnlinkTest extends BeautiBase {
 	}
 	
 	
-	@Test
+	@Test // issue #413
 	public void starBeastLinkTreesAndDeleteTest() throws Exception {
 		warning("Select StarBeast template");
 		beautiFrame.menuItemWithPath("File", "Template", "StarBeast").click();
@@ -523,4 +523,24 @@ public class LinkUnlinkTest extends BeautiBase {
 		// does not parse unless taxon set is specified
 		//makeSureXMLParses();
 	}	
+	
+	@Test // issue #414
+	public void linkClocksDeleteAllTest() throws Exception {
+		warning("Load gopher data 26.nex, 47.nex, 59.nex");
+		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"), new File("59.nex"));
+
+		JTabbedPaneFixture f = beautiFrame.tabbedPane();
+		printBeautiState(f);
+
+		selectRows(0, 1, 2);
+
+		warning("Link clocks");
+		f.selectTab("Partitions");
+		beautiFrame.button("Link Clock Models").click();
+		
+		beautiFrame.button("-").click();
+
+		JTableFixture t = beautiFrame.table();
+		Assertions.assertThat(t.target.getRowCount()).isEqualTo(0);
+	}
 }
