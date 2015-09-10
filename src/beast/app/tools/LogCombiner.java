@@ -3,7 +3,6 @@ package beast.app.tools;
 
 import beast.app.BEASTVersion;
 import beast.util.LogAnalyser;
-import beast.util.TreeLogAnalyser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
@@ -29,7 +28,7 @@ public class LogCombiner extends LogAnalyser {
     PrintStream m_out = System.out;
     int m_nBurninPercentage = 10;
 
-    boolean isTreeLog = false;
+    boolean m_bIsTreeLog = false;
     List<String> m_sTrees;
     // Sample interval as it appears in the combined log file.
     // To use the interval of the log files, use the -renumber option
@@ -101,7 +100,7 @@ public class LogCombiner extends LogAnalyser {
      */
     Double[][] m_fCombinedTraces;
 
-    private String[] getParticleLogs() throws Exception {
+    private void combineParticleLogs() throws Exception {
         List<String> sLogs = new ArrayList<String>();
         for (int i = 0; i < m_nParticles; i++) {
             String sDir = m_sParticleDir + "/particle" + i;
@@ -111,28 +110,9 @@ public class LogCombiner extends LogAnalyser {
             }
             sLogs.add(sDir + "/" + m_sLogFileName.get(0));
         }
-        return sLogs.toArray(new String[0]);
-    }
-
-    private void combineParticleLogs() throws Exception {
-        String[] sLogs = getParticleLogs();
-        int[] nBurnIns = new int[sLogs.length];
+        int[] nBurnIns = new int[sLogs.size()];
         Arrays.fill(nBurnIns, m_nBurninPercentage);
-        combineLogs(sLogs, nBurnIns);
-    }
-
-    private void combineParticleLogsAndWriteBigMem() throws Exception {
-        String[] sLogs = getParticleLogs();
-        int[] nBurnIns = new int[sLogs.length];
-        Arrays.fill(nBurnIns, m_nBurninPercentage);
-        isTreeLog = false;
-        combineLogsAndWriteBigMem(sLogs, nBurnIns);
-    }
-
-    public boolean isTreeLog(String fileName) throws IOException {
-        BufferedReader fin = new BufferedReader(new FileReader(fileName));
-        String sStr = fin.readLine();
-        return sStr.toUpperCase().startsWith("#NEXUS");
+        combineLogs(sLogs.toArray(new String[0]), nBurnIns);
     }
 
     private void combineLogs(String[] sLogs, int[] nBurbIns) throws Exception {
@@ -141,8 +121,10 @@ public class LogCombiner extends LogAnalyser {
         int nColumns = 0;
         int k = 0;
         for (String sFile : sLogs) {
-            if (isTreeLog(sLogs[k])) {
-                isTreeLog = true;
+            BufferedReader fin = new BufferedReader(new FileReader(sFile));
+            String sStr = fin.readLine();
+            if (sStr.toUpperCase().startsWith("#NEXUS")) {
+                m_bIsTreeLog = true;
                 readTreeLogFile(sFile, nBurbIns[k]);
             } else {
                 readLogFile(sFile, nBurbIns[k]);
@@ -150,7 +132,7 @@ public class LogCombiner extends LogAnalyser {
 
             if (m_fCombinedTraces == null) {
                 m_fCombinedTraces = m_fTraces;
-                if (!isTreeLog) {
+                if (!m_bIsTreeLog) {
                     nColumns = m_sLabels.length;
                 }
             } else {
@@ -168,7 +150,7 @@ public class LogCombiner extends LogAnalyser {
             }
             k++;
         }
-        if (!isTreeLog) {
+        if (!m_bIsTreeLog) {
             // reset sample column
             if (m_fCombinedTraces[0].length > 2) {
                 if (m_nSampleInterval < 0) {
@@ -182,197 +164,62 @@ public class LogCombiner extends LogAnalyser {
         }
     }
 
-    // m_fCombinedTraces = null and m_fTraces = null
-    private void combineLogsAndWriteBigMem(String[] sLogs, int[] nBurbIns) throws Exception {
-        m_fCombinedTraces = null;
-        lowMemory = true;
-
-        // +++++ init combined log +++++++
-        if (m_sFileOut != null) {
-            log("Writing to file " + m_sFileOut);
-            try {
-                m_out = new PrintStream(new File(m_sFileOut));
-            } catch (FileNotFoundException e) {
-                log("Could not open file " + m_sFileOut + " for writing: " + e.getMessage());
-                return;
+    protected void readTreeLogFile(String sFile, int nBurnInPercentage) throws Exception {
+        log("\nLoading " + sFile);
+        BufferedReader fin = new BufferedReader(new FileReader(sFile));
+        String sStr = null;
+        m_sPreAmble = "";
+        int nData = 0;
+        // first, sweep through the log file to determine size of the log
+        while (fin.ready()) {
+            sStr = fin.readLine();
+            if (sStr.matches("^tree STATE.*")) {
+                nData++;
+            } else {
+                if (nData == 0) {
+                    m_sPreAmble += sStr + "\n";
+                }
             }
         }
-        logln("\n\n" + BAR);
-        // preamble
-        m_out.println(m_sPreAmble);
-
-        // +++++ read logs +++++++
-        int nLines = 0;
-        long step = m_nResample; // if m_nResample <= 1, then step = sampleInterval
-        int nColumns = 0;
-        int nLNoResample=0;
-        for (int k = 0; k < sLogs.length; k++) {
-            if (isTreeLog || isTreeLog(sLogs[k])) { // tree log
-                isTreeLog = true;
-
-                TreeLogAnalyser treeLogAnalyser = new TreeLogAnalyser();
-                treeLogAnalyser.init(sLogs[k], nBurbIns[k]);
-
-                // reserve memory
-                long nBurnIn = treeLogAnalyser.getNBurnIn(nBurbIns[k]);
-                long nData = treeLogAnalyser.initNData(nBurnIn);
-
-                BufferedReader fin = new BufferedReader(new FileReader(fileName));
-                while (fin.ready()) {
-                    String tree = treeLogAnalyser.next(fin, ++nData >= 0);
-
-                    if (tree != null) {
-                        if ((m_nSampleInterval * nLNoResample) % m_nResample == 0) {
-                            String sTree = format(tree);
-                            m_out.println("tree STATE_" + (m_nSampleInterval * nLNoResample) +
-                                    (Character.isSpaceChar(sTree.charAt(0)) ? "" : " ") + sTree);
-                            nLines++;
-                        }
-                        nLNoResample++;
-                    }
-//                    if (i % (nData / 80) == 0)
-                    if (nLNoResample % treeLogAnalyser.getTotal() == 0)
-                        log("*");
-                }
-                logln("");
-
-                if (k==(sLogs.length-1))
-                    m_out.println("End;");
-
-            } else { // not tree log
-                super.init(sLogs[k], nBurbIns[k]); // set m_fTraces = null
-
-                if (m_nResample > 1 && m_nResample % m_nSampleInterval > 0)
-                    throw new Exception("ERROR: the original sampling frequency " + m_nSampleInterval +
-                            " must be a factor of resampling frequency " + m_nResample + " at log " + k);
-
-                if (m_nResample <= 1)
-                    step = sampleInterval; // no resample, use the log interval
-
-                if (k == 0) {
-                    nColumns = m_sLabels.length;
-                    // header
-                    for (int i = 0; i < m_sLabels.length; i++) {
-                        if (i == (m_sLabels.length-1))
-                            m_out.println(m_sLabels[i]);
-                        else
-                            m_out.print(m_sLabels[i] + "\t");
-                    }
-                } else {
-                    if (nColumns != m_sLabels.length)
-                        throw new Exception("ERROR: The number of columns in file " + sLogs[k] +
-                                " does not match that of the first file");
-                } // end if k==0
-
-                long nBurnIn = getNBurnIn(nBurbIns[k]);
-                long nData = initNData(nBurnIn);
-
-                BufferedReader fin = new BufferedReader(new FileReader(sLogs[k]));
-                while (fin.ready()) {
-                    Double[] data = next(fin, ++nData >= 0);
-                    if (data != null) {
-                        // extract state in log
-                        long currentState = Math.round(data[0]);
-
-                        if (currentState % m_nResample == 0) {
-                            if (m_nSampleInterval < 0) {
-                                // need to renumber
-                                data[0] = (double) (step * nLines);
-                            }
-
-                            for (int j = 0; j < m_types.length; j++) {
-                                switch (m_types[j]) {
-                                    case INTEGER:
-                                        m_out.print((int) (double) data[j] + "\t");
-                                        break;
-                                    case REAL:
-                                        m_out.print(format.format(data[j]) + "\t");
-                                        break;
-                                    case NOMINAL:
-                                    case BOOL:
-                                        m_out.print(m_ranges[(int) (double) data[j]] + "\t");
-                                        break;
-                                }
-                            }
-                            m_out.print("\n");
-                            nLines++;
-                        }
-                        nLNoResample++;
-                    } // end if data != null
-//                if ((nData / 80 > 0) && i % (nData / 80) == 0)
-                    if (nLines % total == 0)
-                        log("*");
-                } // end wile
-            } // end if isTreeLog
+        int nLines = nData / 80;
+        // reserve memory
+        int nBurnIn = nData * nBurnInPercentage / 100;
+        logln(" skipping " + nBurnIn + " trees\n\n" + BAR);
+        if (m_sTrees == null) {
+            m_sTrees = new ArrayList<String>();
         }
+        fin = new BufferedReader(new FileReader(sFile));
+        nData = -nBurnIn - 1;
+        // grab data from the log, ignoring burn in samples
+        int nSample0 = -1;
 
-        logln("\n" + nLines + " lines in combined log, total" + nLNoResample + " lines in all logs after burn-in removed.");
-    }
+        while (fin.ready()) {
+            sStr = fin.readLine();
+            if (sStr.matches("^tree STATE_.*")) {
+                if (++nData >= 0) {
+                    if (m_nSampleInterval < 0) {
+                        String sStr2 = sStr.substring(11, sStr.indexOf("=")).trim();
+                        sStr2 = sStr2.split("\\s")[0];
+                        if (nSample0 < 0) {
+                            nSample0 = Integer.parseInt(sStr2);
+                        } else {
+                            m_nSampleInterval = Integer.parseInt(sStr2) - nSample0;
+                        }
 
-    protected void readTreeLogFile(String fileName, int burninPercentage) throws Exception {
-        TreeLogAnalyser treeLogAnalyser = new TreeLogAnalyser();
-        treeLogAnalyser.readTreeLogFile(fileName, burninPercentage);
-        m_sTrees = treeLogAnalyser.getTreesInString();
-        // m_nSampleInterval used in printCombinedLogs() when isTreeLog is true
-        if (m_nSampleInterval < 0)
-            m_nSampleInterval = treeLogAnalyser.getSampleInterval();
-    }
-//    protected void readTreeLogFile(String sFile, int nBurnInPercentage) throws Exception {
-//        log("\nLoading " + sFile);
-//        BufferedReader fin = new BufferedReader(new FileReader(sFile));
-//        String sStr = null;
-//        m_sPreAmble = "";
-//        int nData = 0;
-//        // first, sweep through the log file to determine size of the log
-//        while (fin.ready()) {
-//            sStr = fin.readLine();
-//            if (sStr.matches("^tree STATE.*")) {
-//                nData++;
-//            } else {
-//                if (nData == 0) {
-//                    m_sPreAmble += sStr + "\n";
-//                }
-//            }
-//        }
-//        int nLines = nData / 80;
-//        // reserve memory
-//        int nBurnIn = nData * nBurnInPercentage / 100;
-//        logln(" skipping " + nBurnIn + " trees\n\n" + BAR);
-//        if (m_sTrees == null) {
-//            m_sTrees = new ArrayList<String>();
-//        }
-//        fin = new BufferedReader(new FileReader(sFile));
-//        nData = -nBurnIn - 1;
-//        // grab data from the log, ignoring burn in samples
-//        int nSample0 = -1;
-//
-//        while (fin.ready()) {
-//            sStr = fin.readLine();
-//            if (sStr.matches("^tree STATE_.*")) {
-//                if (++nData >= 0) {
-//                    if (m_nSampleInterval < 0) {
-//                        String sStr2 = sStr.substring(11, sStr.indexOf("=")).trim();
-//                        sStr2 = sStr2.split("\\s")[0];
-//                        if (nSample0 < 0) {
-//                            nSample0 = Integer.parseInt(sStr2);
-//                        } else {
-//                            m_nSampleInterval = Integer.parseInt(sStr2) - nSample0;
-//                        }
-//
-//                    }
-//                    sStr = sStr.replaceAll("^tree STATE_[^\\s=]*", "");
-//                    m_sTrees.add(sStr);
-//                }
-//            }
-//            if (nData % nLines == 0) {
-//                log("*");
-//            }
-//        }
-//        logln("");
-//    } // readTreeLogFile
+                    }
+                    sStr = sStr.replaceAll("^tree STATE_[^\\s=]*", "");
+                    m_sTrees.add(sStr);
+                }
+            }
+            if (nData % nLines == 0) {
+                log("*");
+            }
+        }
+        logln("");
+    } // readTreeLogFile
 
     private void printCombinedLogs() {
-        int nData = (isTreeLog ? m_sTrees.size() : m_fCombinedTraces[0].length);
+        int nData = (m_bIsTreeLog ? m_sTrees.size() : m_fCombinedTraces[0].length);
         logln("Collected " + nData + " lines in combined log");
         if (m_sFileOut != null) {
             log("Writing to file " + m_sFileOut);
@@ -388,7 +235,7 @@ public class LogCombiner extends LogAnalyser {
         m_out.println(m_sPreAmble);
 
         int nLines = 0;
-        if (isTreeLog) {
+        if (m_bIsTreeLog) {
             for (int i = 0; i < m_sTrees.size(); i++) {
                 if ((m_nSampleInterval * i) % m_nResample == 0) {
                     String sTree = m_sTrees.get(i);
@@ -580,7 +427,7 @@ public class LogCombiner extends LogAnalyser {
                     return;
                 }
 
-                combiner.isTreeLog = dialog.isTreeFiles();
+                combiner.m_bIsTreeLog = dialog.isTreeFiles();
                 combiner.m_bUseDecimalFormat = dialog.convertToDecimal();
                 if (combiner.m_bUseDecimalFormat) {
                     combiner.format = new DecimalFormat("#.############", new DecimalFormatSymbols(Locale.US));
