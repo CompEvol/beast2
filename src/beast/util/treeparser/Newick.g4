@@ -30,7 +30,7 @@ fragment NZD : [1-9] ;
 fragment D : [0-9] ;
 
 STRING :
-    [a-zA-Z0-9|*%/.-+_&]+  // these chars don't need quotes
+    [a-zA-Z0-9|*%/.\-+_&]+  // these chars don't need quotes
     | '"' .*? '"'
     | '\'' .*? '\''
     ;
