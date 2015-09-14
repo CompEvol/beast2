@@ -517,7 +517,7 @@ public class AddOnManager {
      * return list of directories that may contain packages *
      */
     public static List<String> getBeastDirectories() {
-        List<String> sDirs = new ArrayList<String>();
+        List<String> sDirs = new ArrayList<>();
         // check if there is the BEAST environment variable is set
         if (System.getProperty("BEAST_ADDON_PATH") != null) {
             String sBEAST = System.getProperty("BEAST_ADDON_PATH");
@@ -532,8 +532,6 @@ public class AddOnManager {
             }
         }
 
-        // add user directory
-        sDirs.add(System.getProperty("user.dir"));
         // add user package directory
         sDirs.add(getPackageUserDir());
         // add application package directory
@@ -545,10 +543,10 @@ public class AddOnManager {
         for (String path : paths) {
             if (!path.endsWith(".jar")) {
                 path = path.replaceAll("\\\\","/");
-                if (path.indexOf("/") >= 0) {
+                if (path.contains("/")) {
                     path = path.substring(0, path.lastIndexOf("/"));
                     // deal with the way Mac's appbundler sets up paths
-                  	path = path.replaceAll("/[^\\/]*/Contents/Java", "");
+                  	path = path.replaceAll("/[^/]*/Contents/Java", "");
                     // exclude Intellij build path out/production
                     if (!sDirs.contains(path) && !path.contains("production")) {
                         sDirs.add(path);
@@ -561,26 +559,19 @@ public class AddOnManager {
         // subdirectories that look like they may contain an package
         // this is detected by checking the subdirectory contains a lib or
         // templates directory
-        List<String> sSubDirs = new ArrayList<String>();
+        List<String> sSubDirs = new ArrayList<>();
         for (String sDir : sDirs) {
             File dir = new File(sDir);
             if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
+                if (files == null)
+                    continue;
+
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        File[] files2 = file.listFiles();
-                        if (files2 != null) {
-                            for (File file2 : files2) {
-                                if (file2.isDirectory()) {
-                                    String sFile = file2.getAbsolutePath().toLowerCase();
-                                    if (sFile.endsWith("/lib") || sFile.endsWith("/templates") ||
-                                            sFile.endsWith("\\lib") || sFile.endsWith("\\templates")) {
-                                        sSubDirs.add(file.getAbsolutePath());
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        File versionFile = new File(file, "version.xml");
+                        if (versionFile.exists())
+                            sSubDirs.add(file.getAbsolutePath());
                     }
                 }
             }
