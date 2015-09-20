@@ -59,6 +59,10 @@ public class LogCombiner extends LogAnalyser {
                         i += 2;
                     } else if (args[i].equals("-b") || args[i].equals("-burnin") || args[i].equals("--burnin")) {
                         m_nBurninPercentage = Integer.parseInt(args[i + 1]);
+                        if (m_nBurninPercentage < 0 || m_nBurninPercentage > 100) {
+                            System.err.println("Error: Burn-in percentage must be between 0 and 100.");
+                            System.exit(1);
+                        }
                         i += 2;
                     } else if (args[i].equals("-n")) {
                         m_nParticles = Integer.parseInt(args[i + 1]);

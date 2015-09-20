@@ -95,7 +95,9 @@ public class LogCombinerDialog {
         filesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         filesTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 
-        TableEditorStopper.ensureEditingStopWhenTableLosesFocus(filesTable);
+        // This causes superfluous TabelModel.setValue events to fire.
+        // Is this still needed?  I guess we'll see...
+        //TableEditorStopper.ensureEditingStopWhenTableLosesFocus(filesTable);
 
         filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent evt) {
@@ -362,7 +364,13 @@ public class LogCombinerDialog {
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             FileInfo fileInfo = files.get(rowIndex);
             if (columnIndex == 1) {
-                fileInfo.burnin = (Integer) aValue;
+                int newBurnin = (int)aValue;
+                if (newBurnin<0 || newBurnin>100)
+                    JOptionPane.showMessageDialog(frame,
+                            "Burn-in percentage must be between 0 and 100.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    fileInfo.burnin = newBurnin;
             }
         }
 
