@@ -115,6 +115,50 @@ public class MRCAPrior extends Distribution {
 
     }
 
+    boolean [] nodesTraversed;
+    int nseen;
+
+    private Node getCommonAncestor(Node n1, Node n2) {
+        // assert n1.getTree() == n2.getTree();
+        if( ! nodesTraversed[n1.getNr()] ) {
+           nodesTraversed[n1.getNr()] = true;
+            nseen += 1;
+        }
+        if( ! nodesTraversed[n2.getNr()] ) {
+            nodesTraversed[n2.getNr()] = true;
+            nseen += 1;
+        }
+        while (n1 != n2) {
+            if (n1.getHeight() < n2.getHeight()) {
+                n1 = n1.getParent();
+                if( ! nodesTraversed[n1.getNr()] ) {
+                    nodesTraversed[n1.getNr()] = true;
+                    nseen += 1;
+                }
+            } else {
+                n2 = n2.getParent();
+                if( ! nodesTraversed[n2.getNr()] ) {
+                     nodesTraversed[n2.getNr()] = true;
+                     nseen += 1;
+                 }
+            }
+        }
+        return n1;
+    }
+
+    // A lightweight version for finding the most recent common ancestor of a group of taxa.
+    // return the node-ref of the MRCA.
+
+    // would be nice to use nodeRef's, but they are not preserved :(
+    public Node getCommonAncestor() {
+        Node cur = tree.getNode(taxonIndex[0]);
+
+        for (int k = 1; k < taxonIndex.length; ++k) {
+            cur = getCommonAncestor(cur, tree.getNode(taxonIndex[k]));
+        }
+        return cur;
+    }
+
     @Override
     public double calculateLogP() throws Exception {
         logP = 0;
@@ -130,7 +174,15 @@ public class MRCAPrior extends Distribution {
             return logP;
         } else {
             // internal node
-            calcMRCAtime(tree.getRoot(), new int[1]);
+            if( false) {
+                calcMRCAtime(tree.getRoot(), new int[1]);
+            } else {
+                nodesTraversed = new boolean[tree.getNodeCount()];
+                nseen = 0;
+                final Node m = getCommonAncestor();
+                MRCATime = m.getDate();
+                isMonophyletic = nseen == 2 * taxonIndex.length - 1;
+            }
         }
         if (isMonophyleticInput.get() && !isMonophyletic) {
             logP = Double.NEGATIVE_INFINITY;
