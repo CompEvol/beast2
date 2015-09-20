@@ -286,6 +286,8 @@ public class Logger extends BEASTObject {
         				}
     				}
 					partitionPrefix = getprefix(partitionPrefix, prefix);
+					// get rid of braces
+					partitionPrefix = partitionPrefix.replaceAll("[\\(\\)]","");
     			}
     		}
     	}
