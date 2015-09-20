@@ -478,9 +478,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
      *         coalescent under the given demographic model.
      * @throws beast.evolution.tree.RandomTree.ConstraintViolatedException
      */
-    public Node simulateCoalescent(final List<Node> nodes, final PopulationFunction demographic) throws ConstraintViolatedException {
-        return simulateCoalescentWithMax(nodes, demographic, Double.POSITIVE_INFINITY);
-    }
+//    public Node simulateCoalescent(final List<Node> nodes, final PopulationFunction demographic) throws ConstraintViolatedException {
+//        return simulateCoalescentWithMax(nodes, demographic, Double.POSITIVE_INFINITY);
+//    }
 
     /**
      * @param nodes

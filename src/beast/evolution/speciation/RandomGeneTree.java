@@ -24,7 +24,7 @@ public class RandomGeneTree extends RandomTree {
     }
 
     @Override
-    public Node simulateCoalescent(List<Node> nodes, PopulationFunction demographic) {
+    public Node simulateCoalescentWithMax(List<Node> nodes, PopulationFunction demographic, final double maxHeight) {
         // sanity check - disjoint trees
 
 //        if( ! Tree.Utils.allDisjoint(nodes) ) {
@@ -39,7 +39,7 @@ public class RandomGeneTree extends RandomTree {
 
         for (int attempts = 0; attempts < 1000; ++attempts) {
             try {
-                final List<Node> rootNode = simulateCoalescent(nodes, demographic, fLowestHeight, Double.POSITIVE_INFINITY);
+                final List<Node> rootNode = simulateCoalescent(nodes, demographic, fLowestHeight, maxHeight);
                 if (rootNode.size() == 1) {
                     return rootNode.get(0);
                 }
