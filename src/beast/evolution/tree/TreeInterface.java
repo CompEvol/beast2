@@ -40,7 +40,7 @@ public interface TreeInterface {
      * @param nodes array to fill (null will result in creating a new one)
      * @return tree nodes in post-order, children before parents
      */
-    default public Node[] listNodesPostOrder(Node node, Node[] nodes) {
+    default Node[] listNodesPostOrder(Node node, Node[] nodes) {
         if (node == null) {
             node = getRoot();
         }

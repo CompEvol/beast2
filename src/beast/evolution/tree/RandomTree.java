@@ -33,7 +33,6 @@ import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.util.Log;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
@@ -57,12 +56,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     // total nr of taxa
     int nrOfTaxa;
-    // list of bitset representation of the taxon sets
-    List<Set<String>> taxonSets;
-    // the first m_nIsMonophyletic of the m_bTaxonSets are monophyletic, while the remainder are not
-    int isMonophyletic;
-    // list of parametric distribution constraining the MRCA of taxon sets, null if not present
-    List<ParametricDistribution> distributions;
 
     class Bound {
         Double upper = Double.POSITIVE_INFINITY;
@@ -73,7 +66,23 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
     }
 
+    // Location of last monophyletic clade in the lists below, which are grouped together at the start.
+    // (i.e. the first isMonophyletic of the TaxonSets are monophyletic, while the remainder are not).
+    int lastMonophyletic;
+
+    // taxonSets,distributions, m_bounds and taxonSetIDs are indexed together (four values associated with this clade, a set of taxa.
+
+    // taxon sets of clades that has a constraint of calibrations. Monophyletic constraints may be nested, and are sorted by the code to be at a
+    // higher index, i.e iterating from zero up does post-order (descendants before parent).
+    List<Set<String>> taxonSets;
+
+    // list of parametric distribution constraining the MRCA of taxon sets, null if not present
+    List<ParametricDistribution> distributions;
+
+    // hard bound for the set, if any
     List<Bound> m_bounds;
+
+    // The prior element involved, if any
     List<String> taxonSetIDs;
 
     List<Integer>[] children;
@@ -112,23 +121,23 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     }
 
     // taxonset intersection test
-    private boolean intersects(final BitSet bitSet, final BitSet bitSet2) {
-        for (int k = bitSet.nextSetBit(0); k >= 0; k = bitSet.nextSetBit(k + 1)) {
-            if (bitSet2.get(k)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private boolean intersects(final BitSet bitSet, final BitSet bitSet2) {
+//        for (int k = bitSet.nextSetBit(0); k >= 0; k = bitSet.nextSetBit(k + 1)) {
+//            if (bitSet2.get(k)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     // returns true if bitSet is a subset of bitSet2
-    private boolean isSubset(final BitSet bitSet, final BitSet bitSet2) {
-        boolean bIsSubset = true;
-        for (int k = bitSet.nextSetBit(0); bIsSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
-            bIsSubset = bitSet2.get(k);
-        }
-        return bIsSubset;
-    }
+//    private boolean isSubset(final BitSet bitSet, final BitSet bitSet2) {
+//        boolean bIsSubset = true;
+//        for (int k = bitSet.nextSetBit(0); bIsSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
+//            bIsSubset = bitSet2.get(k);
+//        }
+//        return bIsSubset;
+//    }
 
     //@Override
     public void initStateNodes() throws Exception {
@@ -137,7 +146,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         m_bounds = new ArrayList<>();
         distributions = new ArrayList<>();
         taxonSetIDs = new ArrayList<>();
-        isMonophyletic = 0;
+        lastMonophyletic = 0;
 
         if (taxaInput.get() != null) {
             sTaxa.addAll(taxaInput.get().getTaxaNames());
@@ -207,11 +216,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	
 	            if (prior.isMonophyleticInput.get()) {
 	                // add any monophyletic constraint
-	                taxonSets.add(isMonophyletic, bTaxa);
-	                distributions.add(isMonophyletic, distr);
-	                m_bounds.add(isMonophyletic, bounds);
+	                taxonSets.add(lastMonophyletic, bTaxa);
+	                distributions.add(lastMonophyletic, distr);
+	                m_bounds.add(lastMonophyletic, bounds);
 	                taxonSetIDs.add(prior.getID());
-	                isMonophyletic++;
+	                lastMonophyletic++;
 	            } else {
 	                // only calibrations with finite bounds are added
 	                if (!Double.isInfinite(bounds.lower) || !Double.isInfinite(bounds.upper)) {
@@ -226,12 +235,12 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         // assume all calibration constraints are MonoPhyletic
         // TODO: verify that this is a reasonable assumption
-        isMonophyletic = taxonSets.size();
+        lastMonophyletic = taxonSets.size();
 
 
         // sort constraints such that if taxon set i is subset of taxon set j, then i < j
-        for (int i = 0; i < isMonophyletic; i++) {
-            for (int j = i + 1; j < isMonophyletic; j++) {
+        for (int i = 0; i < lastMonophyletic; i++) {
+            for (int j = i + 1; j < lastMonophyletic; j++) {
 
                 Set<String> intersection = new HashSet<>(taxonSets.get(i));
                 intersection.retainAll(taxonSets.get(j));
@@ -258,15 +267,16 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        // build tree of mono constraints such that i is parent of j => j is subset of i
-        final int[] nParent = new int[isMonophyletic];
-        children = new List[isMonophyletic + 1];
-        for (int i = 0; i < isMonophyletic + 1; i++) {
+        // build tree of mono constraints such that j is parent of i if i is a subset of j but i+1,i+2,...,j-1 are not.
+        // The last one, standing for the virtual "root" of all monophyletic clades is not associated with an actual clade
+        final int[] nParent = new int[lastMonophyletic];
+        children = new List[lastMonophyletic + 1];
+        for (int i = 0; i < lastMonophyletic + 1; i++) {
             children[i] = new ArrayList<Integer>();
         }
-        for (int i = 0; i < isMonophyletic; i++) {
+        for (int i = 0; i < lastMonophyletic; i++) {
             int j = i + 1;
-            while (j < isMonophyletic && !taxonSets.get(j).containsAll(taxonSets.get(i))) {
+            while (j < lastMonophyletic && !taxonSets.get(j).containsAll(taxonSets.get(i))) {
                 j++;
             }
             nParent[i] = j;
@@ -274,8 +284,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         // make sure upper bounds of a child does not exceed the upper bound of its parent
-        for (int i = 0; i < isMonophyletic; i++) {
-            if (nParent[i] < isMonophyletic) {
+        for (int i = lastMonophyletic-1; i >= 0 ;--i) {
+            if (nParent[i] < lastMonophyletic ) {
                 if (m_bounds.get(i).upper > m_bounds.get(nParent[i]).upper) {
                     m_bounds.get(i).upper = m_bounds.get(nParent[i]).upper - 1e-100;
                 }
@@ -293,11 +303,39 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         nodeCount = 2 * sTaxa.size() - 1;
         internalNodeCount = sTaxa.size() - 1;
         leafNodeCount = sTaxa.size();
+
+        // multiple simulation tries may produce an excess of nodes with invalid nr's. reset those.
+        setNodesNrs(root, 0, new int[1]);
+
         initArrays();
 
         if (m_initial.get() != null) {
             m_initial.get().assignFromWithoutID(this);
         }
+        for(int k = 0; k < lastMonophyletic; ++k) {
+            final MRCAPrior p = calibrations.get(k);
+            if( p.isMonophyleticInput.get() ) {
+                final TaxonSet taxonSet = p.taxonsetInput.get();
+                final Set<String> bTaxa = new HashSet<>();
+                bTaxa.addAll(taxonSet.asStringList());
+                int c = traverse(root, bTaxa, taxonSet.getTaxonCount(), new int[1]);
+                boolean b = c == nrOfTaxa + 127;
+            }
+        }
+    }
+
+    private int setNodesNrs(final Node node, int internalNodeCount, int[] n) {
+        if( node.isLeaf() )  {
+            node.setNr(n[0]);
+            n[0] += 1;
+        } else {
+            for (final Node child : node.getChildren()) {
+                internalNodeCount = setNodesNrs(child, internalNodeCount, n);
+            }
+            node.setNr(nrOfTaxa + internalNodeCount);
+            internalNodeCount += 1;
+        }
+        return internalNodeCount;
     }
 
     private void scaleToFit(double scale, Node node) {
@@ -360,7 +398,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 for (Node node: candidates) {
                     allCandidates.put(node.getID(),node);
                 }
-                root = simulateCoalescent(isMonophyletic, allCandidates, candidates, demoFunction);
+                root = simulateCoalescent(lastMonophyletic, allCandidates, candidates, demoFunction);
                 return;
             } catch (ConstraintViolatedException e) {
                 // need to generate another tree
@@ -375,6 +413,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             	Log.warning.println("WARNING: Expect BEAST to crash if this is not fixed."); 
             }
         }
+        throw new RuntimeException("Failed to generate a random tree (probably a bug).");
     }
     
     /**
@@ -415,7 +454,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        final Node MRCA = simulateCoalescent(remainingCandidates, demoFunction);
+        final double upper = iIsMonophyleticNode < m_bounds.size() ?  m_bounds.get(iIsMonophyleticNode).upper : Double.POSITIVE_INFINITY;
+        final Node MRCA = simulateCoalescentWithMax(remainingCandidates, demoFunction, upper);
         return MRCA;
     }
 
@@ -439,6 +479,18 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
      * @throws beast.evolution.tree.RandomTree.ConstraintViolatedException
      */
     public Node simulateCoalescent(final List<Node> nodes, final PopulationFunction demographic) throws ConstraintViolatedException {
+        return simulateCoalescentWithMax(nodes, demographic, Double.POSITIVE_INFINITY);
+    }
+
+    /**
+     * @param nodes
+     * @param demographic
+     * @return the root node of the given array of nodes after simulation of the
+     *         coalescent under the given demographic model.
+     * @throws beast.evolution.tree.RandomTree.ConstraintViolatedException
+     */
+    public Node simulateCoalescentWithMax(final List<Node> nodes, final PopulationFunction demographic,
+                                          final double maxHeight) throws ConstraintViolatedException {
         // sanity check - disjoint trees
 
         // if( ! Tree.Utils.allDisjoint(nodes) ) {
@@ -450,12 +502,36 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         for (int attempts = 0; attempts < 1000; ++attempts) {
-            final List<Node> rootNode = simulateCoalescent(nodes, demographic, 0.0, Double.POSITIVE_INFINITY);
+            final List<Node> rootNode = simulateCoalescent(nodes, demographic, 0.0, maxHeight);
             if (rootNode.size() == 1) {
                 return rootNode.get(0);
             }
         }
 
+        if( Double.isFinite(maxHeight) ){
+            double h = -1;
+
+            for( Node n : nodeList ) {
+                h = Math.max(h, n.getHeight());
+            }
+            assert h < maxHeight;
+            double dt = (maxHeight - h)/ (nodeList.size() + 1);
+            while (nodeList.size() > 1) {
+                int k = nodeList.size() - 1;
+                final Node left = nodeList.remove(k);
+                final Node right = nodeList.get(k-1);
+                final Node newNode = new Node();
+                newNode.setNr(nextNodeNr++);   // multiple tries may generate an excess of nodes assert(nextNodeNr <= nrOfTaxa*2-1);
+                newNode.setHeight(h + dt);
+                newNode.setLeft(left);
+                left.setParent(newNode);
+                newNode.setRight(right);
+                right.setParent(newNode);
+                nodeList.set(k-1, newNode);
+            }
+            assert (nodeList.size() == 1);
+            return nodeList.get(0);
+        }
         throw new RuntimeException("failed to merge trees after 1000 tries!");
     }
 
@@ -519,13 +595,6 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         return nodeList;
-
-        // Node[] nodesLeft = new Node[nodeList.size()];
-        // for (int i = 0; i < nodesLeft.length; i++) {
-        // nodesLeft[i] = nodeList.get(i);
-        // }
-        //
-        // return nodesLeft;
     }
 
     /**
@@ -584,7 +653,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         final Node newNode = new Node();
 //		System.err.println(2 * m_taxa.get().getNrTaxa() - nodeList.size());
-        newNode.setNr(nextNodeNr++);
+        newNode.setNr(nextNodeNr++);   // multiple tries may generate an excess of nodes assert(nextNodeNr <= nrOfTaxa*2-1);
         newNode.setHeight(height);
         newNode.setLeft(left);
         left.setParent(newNode);
