@@ -50,5 +50,4 @@ public class RandomGeneTree extends RandomTree {
 
         throw new RuntimeException("failed to merge trees after 1000 tries!");
     }
-
 }
