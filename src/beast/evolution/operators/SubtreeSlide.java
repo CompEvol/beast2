@@ -73,13 +73,16 @@ public class SubtreeSlide extends TreeOperator {
     public Input<Double> sizeInput = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
     public Input<Boolean> gaussianInput = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
     public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
-
+    public Input<Double> limitInput = new Input<Double>("limit", "limit on step size, default disable, " +
+            "i.e. -1. (when positive, gets multiplied by tree-height/log2(n-taxa).", -1.0);
     // shadows size
     double fSize;
+    private double limit;
 
     @Override
     public void initAndValidate() {
         fSize = sizeInput.get();
+        limit = limitInput.get();
     }
 
     /**
@@ -94,7 +97,7 @@ public class SubtreeSlide extends TreeOperator {
         double logq;
 
         Node i;
-        final boolean  markClades = markCladesInput.get();
+        final boolean markClades = markCladesInput.get();
         // 1. choose a random node avoiding root
         final int nNodes = tree.getNodeCount();
         do {
@@ -247,10 +250,22 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(final double logAlpha) {
-        if (optimiseInput.get()) {
+        if (optimiseInput.get() && ! Double.isInfinite(logAlpha) ) {
             double fDelta = calcDelta(logAlpha);
             fDelta += Math.log(fSize);
-            fSize = Math.exp(fDelta);
+            final double f = Math.exp(fDelta);
+//            double f = Math.exp(fDelta);
+            if( limit > 0 ) {
+                final Tree tree = treeInput.get();
+                final double h = tree.getRoot().getHeight();
+                final double k = Math.log(tree.getLeafNodeCount()) / Math.log(2);
+                final double lim = (h / k) * limit;
+                if( f <= lim ) {
+                    fSize = f;
+                }
+            } else {
+               fSize = f;
+            }
         }
     }
 
