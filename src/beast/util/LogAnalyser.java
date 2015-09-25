@@ -461,12 +461,12 @@ public class LogAnalyser {
                 "ACT", "ESS", "geometric-mean"
         };
 
-        for (String param : m_sLabels) {
+        for (int paramIdx=1; paramIdx<m_sLabels.length; paramIdx++) {
             for (int i=0; i<postFix.length; i++) {
-                if (i>0)
+                if (paramIdx> 1 || i>0)
                     out.print("\t");
 
-                out.print(param + "." + postFix[i]);
+                out.print(m_sLabels[paramIdx] + "." + postFix[i]);
             }
         }
 
@@ -480,7 +480,10 @@ public class LogAnalyser {
      */
     public void printOneLine(PrintStream out) {
 
-        for (int paramIdx=0; paramIdx<m_sLabels.length; paramIdx++) {
+        for (int paramIdx=1; paramIdx<m_sLabels.length; paramIdx++) {
+            if (paramIdx>1)
+                out.print("\t");
+
             out.print(m_fMean[paramIdx] + "\t");
             out.print(m_fStdError[paramIdx] + "\t");
             out.print(m_fStdDev[paramIdx] + "\t");
@@ -489,8 +492,10 @@ public class LogAnalyser {
             out.print(m_f95HPDup[paramIdx] + "\t");
             out.print(m_fACT[paramIdx] + "\t");
             out.print(m_fESS[paramIdx] + "\t");
-            out.print(m_fGeometricMean[paramIdx] + "\n");
+            out.print(m_fGeometricMean[paramIdx]);
         }
+
+        out.println();
     }
 
     protected void log(String s) {
