@@ -17,9 +17,6 @@ import static beast.util.OutputUtils.format;
 
 
 public class LogAnalyser {
-    // MAX_LAG typical = 2000; = maximum lag for ESS, TODO not used
-    protected final static int MAX_LAG = 2000;
-
     public static final int BURN_IN_PERCENTAGE = 10; // default
 
     protected final String sFile;
@@ -36,7 +33,6 @@ public class LogAnalyser {
         REAL, INTEGER, BOOL, NOMINAL
     }
 
-    ;
     protected type[] m_types;
     /**
      * range of a column, if it is not a REAL *
@@ -57,6 +53,11 @@ public class LogAnalyser {
      * used for storing comments before the actual log file commences *
      */
     protected String m_sPreAmble;
+
+    /**
+     * If set, analyzer works in "quiet" mode.
+     */
+    protected boolean quiet = false;
 
     final protected static String BAR = "|---------|---------|---------|---------|---------|---------|---------|---------|";
 
@@ -86,6 +87,13 @@ public class LogAnalyser {
         calcStats();
     }
 
+    public LogAnalyser(String sFile, int nBurnInPercentage, boolean quiet) throws Exception {
+        this.sFile = sFile;
+        this.quiet = quiet;
+        readLogFile(sFile, nBurnInPercentage);
+        calcStats();
+    }
+
     public LogAnalyser(String sFile) throws Exception {
         this(sFile, BURN_IN_PERCENTAGE);
     }
@@ -93,7 +101,7 @@ public class LogAnalyser {
     protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
-        String sStr = null;
+        String sStr;
         m_sPreAmble = "";
         m_sLabels = null;
         int nData = 0;
@@ -135,7 +143,7 @@ public class LogAnalyser {
                             m_fTraces[i][nData] = Double.parseDouble(sStr2);
                         } catch (Exception e) {
                             if (m_ranges[i] == null) {
-                                m_ranges[i] = new ArrayList<String>();
+                                m_ranges[i] = new ArrayList<>();
                             }
                             if (!m_ranges[i].contains(sStr2)) {
                                 m_ranges[i].add(sStr2);
@@ -233,11 +241,8 @@ public class LogAnalyser {
                 m_fMedian[i] = Double.NaN;
                 m_f95HPDlow[i] = Double.NaN;
                 m_f95HPDup[i] = Double.NaN;
-                ;
                 m_fACT[i] = Double.NaN;
-                ;
                 m_fESS[i] = Double.NaN;
-                ;
                 m_fGeometricMean[i] = Double.NaN;
             }
             while (nStars < 80 * (i + 1) / nItems) {
@@ -443,12 +448,59 @@ public class LogAnalyser {
         }
     }
 
+    /**
+     * Display header used in one-line mode.
+     *
+     * @param out output stream
+     */
+    public void printOneLineHeader(PrintStream out) {
+
+        String[] postFix = {
+                "mean", "stderr", "stddev",
+                "median", "95%HPDlo", "95%HPDup",
+                "ACT", "ESS", "geometric-mean"
+        };
+
+        for (String param : m_sLabels) {
+            for (int i=0; i<postFix.length; i++) {
+                if (i>0)
+                    out.print("\t");
+
+                out.print(param + "." + postFix[i]);
+            }
+        }
+
+        out.println();
+    }
+
+    /**
+     * Display results for single log on one line.
+     *
+     * @param out output stream
+     */
+    public void printOneLine(PrintStream out) {
+
+        for (int paramIdx=0; paramIdx<m_sLabels.length; paramIdx++) {
+            out.print(m_fMean[paramIdx] + "\t");
+            out.print(m_fStdError[paramIdx] + "\t");
+            out.print(m_fStdDev[paramIdx] + "\t");
+            out.print(m_fMedian[paramIdx] + "\t");
+            out.print(m_f95HPDlow[paramIdx] + "\t");
+            out.print(m_f95HPDup[paramIdx] + "\t");
+            out.print(m_fACT[paramIdx] + "\t");
+            out.print(m_fESS[paramIdx] + "\t");
+            out.print(m_fGeometricMean[paramIdx] + "\n");
+        }
+    }
+
     protected void log(String s) {
-        System.err.print(s);
+        if (!quiet)
+            System.err.print(s);
     }
 
     protected void logln(String s) {
-        System.err.println(s);
+        if (!quiet)
+            System.err.println(s);
     }
 
     static void printUsageAndExit() {
@@ -456,6 +508,10 @@ public class LogAnalyser {
     	System.out.println("-burnin <burninPercentage>");
     	System.out.println("--burnin <burninPercentage>");
     	System.out.println("-b <burninPercentage> percentage of log file to disregard, default " + BURN_IN_PERCENTAGE);
+        System.out.println("-oneline Display only one line of output per file.\n" +
+                "         Header is generated from the first file only.\n" +
+                "         (Implies quiet mode.)");
+        System.out.println("-quiet Quiet mode.  Avoid printing status updates to stderr.");
     	System.out.println("-help");
     	System.out.println("--help");
     	System.out.println("-h print this message");
@@ -471,11 +527,13 @@ public class LogAnalyser {
             LogAnalyser analyser;
             	// process args
             	int burninPercentage = BURN_IN_PERCENTAGE;
+                boolean oneLine = false;
+                boolean quiet = true;
             	List<String> files = new ArrayList<>();
             	int i = 0;
             	while (i < args.length) {
             		String arg = args[i];
-            		switch (arg) {
+                    switch (arg) {
             		case "-b":
             		case "-burnin":
             		case "--burnin":
@@ -486,6 +544,17 @@ public class LogAnalyser {
             			burninPercentage = Integer.parseInt(args[i+1]);
             			i += 2;
             			break;
+
+                    case "-oneline":
+                        oneLine = true;
+                        i += 1;
+                        break;
+
+                    case "-quiet":
+                        quiet = true;
+                        i += 1;
+                        break;
+
             		case "-h":
             		case "-help":
             		case "--help":
@@ -508,14 +577,26 @@ public class LogAnalyser {
 	                if (file == null) {
 	                    return;
 	                }
-	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage);
+	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage, quiet);
 	                analyser.print(System.out);
             	} else {
             		// process files
-            		for (String file : files) {
-    	                analyser = new LogAnalyser(file, burninPercentage);
-    	                analyser.print(System.out);
-            		}
+                    if (oneLine) {
+                        for (int idx=0; idx<files.size(); idx++) {
+                            analyser = new LogAnalyser(files.get(idx), burninPercentage, true);
+
+                            if (idx == 0)
+                                analyser.printOneLineHeader(System.out);
+
+                            analyser.printOneLine(System.out);
+                        }
+
+                    } else {
+                        for (String file : files) {
+                            analyser = new LogAnalyser(file, burninPercentage, quiet);
+                            analyser.print(System.out);
+                        }
+                    }
             }
         } catch (Exception e) {
             e.printStackTrace();
