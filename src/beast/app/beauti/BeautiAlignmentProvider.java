@@ -57,7 +57,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	List<BEASTInterface> getAlignments(BeautiDoc doc) {
         File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
                 new File(Beauti.g_sDir), "Alignment files", "xml", 
-                "fas","fst","fasta","fna","ffn","faa","frn",
+                "fa","fas","fst","fasta","fna","ffn","faa","frn",
                 "nex","nxs","nexus");
         if (files != null && files.length > 0) {
             return getAlignments(doc, files);
@@ -134,6 +134,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 					selectedPlugins.add(alignment);
 					break;
 
+				case ".fa":
 				case ".fas":
 				case ".fasta":
 				case ".fst":
@@ -145,6 +146,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 					Alignment.sortByTaxonName(alignment.sequenceInput.get());
 					selectedPlugins.add(alignment);
 					break;
+
+                default:
+                    JOptionPane.showMessageDialog(null,
+                            "Unsupported sequence file extension.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
 			}
         }
         for (BEASTInterface plugin : selectedPlugins) {
