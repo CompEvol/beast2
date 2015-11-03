@@ -6,6 +6,8 @@ import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -429,6 +431,14 @@ public class LogCombiner extends LogAnalyser {
 
                 if (!dialog.showDialog(nameString)) {
                     return;
+                }
+
+                // issue #437: ensure the table editor finished.
+                // this way, the latest entered burn-in is captured, otherwise 
+                // the last editing action may be ignored
+                TableCellEditor editor = dialog.filesTable.getCellEditor();
+                if (editor != null) {
+                    editor.stopCellEditing();
                 }
 
                 combiner.m_bIsTreeLog = dialog.isTreeFiles();

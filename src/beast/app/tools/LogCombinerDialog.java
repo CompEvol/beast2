@@ -59,7 +59,7 @@ public class LogCombinerDialog {
 
     private final OptionsPanel optionPanel;
 
-    private JTable filesTable = null;
+    JTable filesTable = null;
     private FilesTableModel filesTableModel = null;
 
     private final JComboBox fileTypeCombo = new JComboBox(new String[]{"Log Files", "Tree Files"});
