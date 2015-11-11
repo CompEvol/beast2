@@ -304,8 +304,22 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         internalNodeCount = sTaxa.size() - 1;
         leafNodeCount = sTaxa.size();
 
+        HashMap<String,Integer> taxonToNR = null;
+        // preserve node numbers where possible
+        if (m_initial.get() != null) {
+            taxonToNR = new HashMap<>();
+            for( Node n : m_initial.get().getExternalNodes() ) {
+                taxonToNR.put(n.getID(), n.getNr());
+            }
+        } else {
+            taxonToNR = new HashMap<>();
+            String[] taxa = getTaxaNames();
+            for(int k = 0; k < taxa.length; ++k) {
+                taxonToNR.put(taxa[k], k);
+            }
+        }
         // multiple simulation tries may produce an excess of nodes with invalid nr's. reset those.
-        setNodesNrs(root, 0, new int[1]);
+        setNodesNrs(root, 0, new int[1], taxonToNR);
 
         initArrays();
 
@@ -324,19 +338,24 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
     }
 
-    private int setNodesNrs(final Node node, int internalNodeCount, int[] n) {
+    private int setNodesNrs(final Node node, int internalNodeCount, int[] n, Map<String,Integer> initial) {
         if( node.isLeaf() )  {
-            node.setNr(n[0]);
-            n[0] += 1;
+            if( initial != null ) {
+                node.setNr(initial.get(node.getID()));
+            } else {
+                node.setNr(n[0]);
+                n[0] += 1;
+            }
         } else {
             for (final Node child : node.getChildren()) {
-                internalNodeCount = setNodesNrs(child, internalNodeCount, n);
+                internalNodeCount = setNodesNrs(child, internalNodeCount, n, initial);
             }
             node.setNr(nrOfTaxa + internalNodeCount);
             internalNodeCount += 1;
         }
         return internalNodeCount;
     }
+
 
     private void scaleToFit(double scale, Node node) {
         if (!node.isLeaf()) {
