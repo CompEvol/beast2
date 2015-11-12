@@ -50,6 +50,8 @@ public class MRCAPrior extends Distribution {
     boolean isMonophyletic = false;
     boolean onlyUseTips = false;
     boolean useOriginate = false;
+    
+    boolean initialised = false;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -84,28 +86,7 @@ public class MRCAPrior extends Distribution {
             throw new Exception("Taxonset must be specified OR tipsonly be set to true");
         }
         
-        // determine which taxa are in the set
-        taxonIndex = new int[nrOfTaxa];
-        if ( set != null )  {  // m_taxonset.get() != null) {
-            isInTaxaSet.clear();
-            int k = 0;
-            for (final String sTaxon : set) {
-                final int iTaxon = sTaxaNames.indexOf(sTaxon);
-                if (iTaxon < 0) {
-                    throw new Exception("Cannot find taxon " + sTaxon + " in data");
-                }
-                if (isInTaxaSet.contains(sTaxon)) {
-                    throw new Exception("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
-                }
-                isInTaxaSet.add(sTaxon);
-                taxonIndex[k++] = iTaxon;
-            }
-        } else {
-            for (int i = 0; i < nrOfTaxa; i++) {
-                taxonIndex[i] = i;
-            }
-        }
-        
+       
         if (useOriginate && onlyUseTips) {
         	throw new Exception("'useOriginate' and 'tipsOnly' cannot be both true");
         }
@@ -161,6 +142,9 @@ public class MRCAPrior extends Distribution {
 
     @Override
     public double calculateLogP() throws Exception {
+    	if (!initialised) {
+    		initialise();
+    	}
         logP = 0;
         if (onlyUseTips) {
             // tip date
@@ -194,7 +178,41 @@ public class MRCAPrior extends Distribution {
         return logP;
     }
 
-    /**
+    private void initialise() {
+        // determine which taxa are in the set
+    	
+        List<String> set = null;
+        if (taxonsetInput.get() != null) {
+            set = taxonsetInput.get().asStringList();
+        }
+        final List<String> sTaxaNames = new ArrayList<>();
+        for (final String sTaxon : tree.getTaxaNames()) {
+            sTaxaNames.add(sTaxon);
+        }
+
+        taxonIndex = new int[nrOfTaxa];
+        if ( set != null )  {  // m_taxonset.get() != null) {
+            isInTaxaSet.clear();
+            int k = 0;
+            for (final String sTaxon : set) {
+                final int iTaxon = sTaxaNames.indexOf(sTaxon);
+                if (iTaxon < 0) {
+                    throw new RuntimeException("Cannot find taxon " + sTaxon + " in data");
+                }
+                if (isInTaxaSet.contains(sTaxon)) {
+                    throw new RuntimeException("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
+                }
+                isInTaxaSet.add(sTaxon);
+                taxonIndex[k++] = iTaxon;
+            }
+        } else {
+            for (int i = 0; i < nrOfTaxa; i++) {
+                taxonIndex[i] = i;
+            }
+        }
+ 	}
+
+	/**
      * Recursively visit all leaf nodes, and collect number of taxa in the taxon
      * set. When all taxa in the set are visited, record the time.
      * *
