@@ -423,7 +423,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         @Override
         public Node visitNode(NewickParser.NodeContext ctx) {
-            Node node = new Node();
+            Node node = newNode();
 
             for (NewickParser.NodeContext ctxChild : ctx.node()) {
                 node.addChild(visit(ctxChild));
