@@ -23,6 +23,7 @@ import beast.core.Input;
 import beast.core.Operator;
 import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
@@ -44,7 +45,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
     @Override
     public Class<?> type() {
-        return RealParameter.class;
+        return Parameter.Base.class;
     }
     
     
@@ -58,16 +59,16 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     protected void initEntry() {
         if (m_input.get() != null) {
         	if (itemNr < 0) {
-        		RealParameter parameter = (RealParameter) m_input.get();
+        		Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
         		String s = "";
-        		for (Double d : parameter.valuesInput.get()) {
+        		for (Object d : parameter.valuesInput.get()) {
         			s += d + " ";
         		}
         		m_entry.setText(s);
         	} else {
-        		RealParameter parameter = (RealParameter) ((List)m_input.get()).get(itemNr);
+        		Parameter.Base<?> parameter = (Parameter.Base<?>) ((List)m_input.get()).get(itemNr);
         		String s = "";
-        		for (Double d : parameter.valuesInput.get()) {
+        		for (Object d : parameter.valuesInput.get()) {
         			s += d + " ";
         		}
         		m_entry.setText(s);
@@ -79,9 +80,9 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     protected void processEntry() {
         try {
             String sValue = m_entry.getText();
-            RealParameter parameter = (RealParameter) m_input.get();
+            Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
         	String oldValue = "";
-    		for (Double d : parameter.valuesInput.get()) {
+    		for (Object d : parameter.valuesInput.get()) {
     			oldValue += d + " ";
     		}
             int oldDim = parameter.getDimension();
@@ -107,11 +108,11 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     @Override
     protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
         Box paramBox = Box.createHorizontalBox();
-        RealParameter parameter = null;
+        Parameter.Base<?> parameter = null;
         if (itemNr >= 0) {
-        	parameter = (RealParameter) ((List) input.get()).get(itemNr);
+        	parameter = (Parameter.Base<?>) ((List) input.get()).get(itemNr);
         } else {
-        	parameter = (RealParameter) input.get();
+        	parameter = (Parameter.Base<?>) input.get();
         }
 
         if (parameter == null) {
@@ -183,7 +184,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        RealParameter parameter = (RealParameter) m_input.get();
+                        Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
                         parameter.isEstimatedInput.setValue(m_isEstimatedBox.isSelected(), parameter);
                         if (isParametricDistributionParameter) {
                         	String sID = parameter.getID();
@@ -268,9 +269,9 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
     @Override
     void refresh() {
-        RealParameter parameter = (RealParameter) m_input.get();
+        Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
 		String s = "";
-		for (Double d : parameter.valuesInput.get()) {
+		for (Object d : parameter.valuesInput.get()) {
 			s += d + " ";
 		}
 		m_entry.setText(s);
