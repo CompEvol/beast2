@@ -45,6 +45,10 @@ public class BeautiSubTemplate extends BEASTObject {
     public Input<String> sXMLInput = new Input<String>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
     public Input<List<BeautiConnector>> connectorsInput = new Input<List<BeautiConnector>>("connect", "Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
     public Input<String> suppressedInputs = new Input<String>("suppressInputs", "comma separated list of inputs that should not be shown");
+    public Input<String> inlineInput = new Input<String>("inlinePlugins", "comma separated list of inputs that should " +
+            "go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
+    public Input<String> collapsedInput = new Input<String>("collapsedPlugins", "comma separated list of inputs that should " +
+            "go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
 
     Class<?> _class = null;
     Object instance;
@@ -353,6 +357,7 @@ public class BeautiSubTemplate extends BEASTObject {
                     doc.tipTextMap.put(ID, tipText);
                 }
             }
+
             if (suppressedInputs.get() != null) {
                 String[] inputs = suppressedInputs.get().split(",");
                 for (String input : inputs) {
@@ -360,6 +365,23 @@ public class BeautiSubTemplate extends BEASTObject {
                     doc.beautiConfig.suppressPlugins.add(input);
                 }
             }
+
+            if (inlineInput.get() != null) {
+                String[] inputs = inlineInput.get().split(",");
+                for (String input : inputs) {
+                    input = input.trim();
+                    doc.beautiConfig.inlinePlugins.add(input);
+                }
+            }
+
+            if (collapsedInput.get() != null) {
+                String[] inputs = collapsedInput.get().split(",");
+                for (String input : inputs) {
+                    input = input.trim();
+                    doc.beautiConfig.collapsedPlugins.add(input);
+                }
+            }
+
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
