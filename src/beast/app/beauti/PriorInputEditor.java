@@ -15,6 +15,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.BEASTObjectDialog;
 import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.Prior;
 
@@ -83,20 +84,36 @@ public class PriorInputEditor extends InputEditor.Base {
             // add range button for real parameters
             RealParameter p = (RealParameter) prior.m_x.get();
             JButton rangeButton = new JButton(paramToString(p));
-            rangeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JButton rangeButton = (JButton) e.getSource();
+            rangeButton.addActionListener(e -> {
+                JButton rangeButton1 = (JButton) e.getSource();
 
-                    List<?> list = (List<?>) m_input.get();
-                    Prior prior = (Prior) list.get(itemNr);
-                    RealParameter p = (RealParameter) prior.m_x.get();
-                    BEASTObjectDialog dlg = new BEASTObjectDialog(p, RealParameter.class, doc);
-                    if (dlg.showDialog()) {
-                        dlg.accept(p, doc);
-                        rangeButton.setText(paramToString(p));
-                        refreshPanel();
-                    }
+                List<?> list = (List<?>) m_input.get();
+                Prior prior1 = (Prior) list.get(itemNr);
+                RealParameter p1 = (RealParameter) prior1.m_x.get();
+                BEASTObjectDialog dlg = new BEASTObjectDialog(p1, RealParameter.class, doc);
+                if (dlg.showDialog()) {
+                    dlg.accept(p1, doc);
+                    rangeButton1.setText(paramToString(p1));
+                    refreshPanel();
+                }
+            });
+            itemBox.add(Box.createHorizontalStrut(10));
+            itemBox.add(rangeButton);
+        } else if (prior.m_x.get() instanceof IntegerParameter) {
+            // add range button for real parameters
+            IntegerParameter p = (IntegerParameter) prior.m_x.get();
+            JButton rangeButton = new JButton(paramToString(p));
+            rangeButton.addActionListener(e -> {
+                JButton rangeButton1 = (JButton) e.getSource();
+
+                List<?> list = (List<?>) m_input.get();
+                Prior prior1 = (Prior) list.get(itemNr);
+                IntegerParameter p1 = (IntegerParameter) prior1.m_x.get();
+                BEASTObjectDialog dlg = new BEASTObjectDialog(p1, IntegerParameter.class, doc);
+                if (dlg.showDialog()) {
+                    dlg.accept(p1, doc);
+                    rangeButton1.setText(paramToString(p1));
+                    refreshPanel();
                 }
             });
             itemBox.add(Box.createHorizontalStrut(10));
@@ -123,4 +140,11 @@ public class PriorInputEditor extends InputEditor.Base {
                 "," + (upper == null ? "\u221E" : upper + "") + "]";
     }
 
+    String paramToString(IntegerParameter p) {
+        Integer lower = p.lowerValueInput.get();
+        Integer upper = p.upperValueInput.get();
+        return "initial = " + Arrays.toString(p.valuesInput.get().toArray()) +
+                " [" + (lower == null ? "-\u221E" : lower + "") +
+                "," + (upper == null ? "\u221E" : upper + "") + "]";
+    }
 }
