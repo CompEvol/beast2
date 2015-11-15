@@ -230,6 +230,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 				GenericTreeLikelihood treelikelihood = (GenericTreeLikelihood) d;
 	    		Alignment data = treelikelihood.dataInput.get(); 
 	    		int weight = data.getSiteCount();
+	    		if (data.isAscertained) {
+	    			weight -= data.getExcludedPatternCount();
+	    		}
 	    		if (treelikelihood.siteModelInput.get() instanceof SiteModel) {
 		    		SiteModel siteModel = (SiteModel) treelikelihood.siteModelInput.get();
 		    		RealParameter mutationRate = siteModel.muParameterInput.get();
