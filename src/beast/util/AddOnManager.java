@@ -508,6 +508,11 @@ public class AddOnManager {
      * @return string representation of BEAST install directory or null if this directory cannot be identified.
      */
     public static String getBEASTInstallDir() {
+
+        // Allow users to explicitly set install directory - handy for programmers
+        if (System.getProperty("beast.install.dir") != null)
+            return System.getProperty("beast.install.dir");
+
         try {
             File beastJar = new File(BeastMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             if (beastJar.getParentFile() != null)
