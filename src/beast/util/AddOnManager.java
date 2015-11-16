@@ -32,6 +32,7 @@ package beast.util;
 
 
 import beast.app.BEASTVersion;
+import beast.app.beastapp.BeastMain;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
 import beast.core.Description;
@@ -52,6 +53,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.channels.Channels;
@@ -87,8 +89,8 @@ public class AddOnManager {
     public static final String NOT_INSTALLED = "un-installed";
     
     public static final String NO_CONNECTION_MESSAGE = "Could not get an internet connection. "
-    		+ "The BEAST Pacakage Manager needs internet access in order to list available packages and download them for installation. "
-    		+ "Possibly, some software (like security software, or a firewall) blocks the BEAST Pacakage Manager.  "
+    		+ "The BEAST Package Manager needs internet access in order to list available packages and download them for installation. "
+    		+ "Possibly, some software (like security software, or a firewall) blocks the BEAST Package Manager.  "
     		+ "If so, you need to reconfigure such software to allow access.";
     		
 
@@ -112,7 +114,7 @@ public class AddOnManager {
         // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
         System.setProperty("jsse.enableSNIExtension", "false");
 
-        List<String> URLs = new ArrayList<String>();
+        List<String> URLs = new ArrayList<>();
         URLs.add(PACKAGES_XML);
 
         File beastProps = new File(getPackageUserDir() + "/beauti.properties");
@@ -201,7 +203,7 @@ public class AddOnManager {
      */
     public static List<Package> getPackages() throws IOException, ParserConfigurationException, SAXException {
 
-        List<Package> packages = new ArrayList<Package>();
+        List<Package> packages = new ArrayList<>();
         List<String> sURLs = getPackagesURL();
 
         for (String sURL : sURLs) {
@@ -218,13 +220,7 @@ public class AddOnManager {
         }
         
         // Ensure package list is in alphabetical order
-        Collections.sort(packages, new Comparator<Package>() {
-
-            @Override
-            public int compare(Package p1, Package p2) {
-                return p1.packageName.toLowerCase().compareTo(p2.packageName.toLowerCase());
-            }
-        });
+        Collections.sort(packages, (p1, p2) -> p1.packageName.toLowerCase().compareTo(p2.packageName.toLowerCase()));
         
         return packages;
     }
@@ -355,7 +351,7 @@ public class AddOnManager {
             sDir = customDir + "/" + sName;
         }
         File dir = new File(sDir);
-        List<File> deleteFailed = new ArrayList<File>();
+        List<File> deleteFailed = new ArrayList<>();
         deleteRecursively(dir, deleteFailed);
 
         // write deleteFailed to file
@@ -384,7 +380,7 @@ public class AddOnManager {
 
     /** pretty format aPackage information in list of string form as produced by getAddOns() **/
     public static String formatPackageInfo(Package aPackage) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(aPackage.packageName);
         if (aPackage.packageName.length() < 12) {
             buf.append("             ".substring(aPackage.packageName.length()));
@@ -505,6 +501,25 @@ public class AddOnManager {
     }
 
     /**
+     * Returns directory where BEAST installation resides, based on the location of the jar containing the
+     * BeastMain class file.  This assumes that the parent directory of the beast.jar is the base install
+     * directory.
+     *
+     * @return string representation of BEAST install directory or null if this directory cannot be identified.
+     */
+    public static String getBEASTInstallDir() {
+        try {
+            File beastJar = new File(BeastMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            if (beastJar.getParentFile() != null)
+                return beastJar.getParentFile().getParent();
+            else
+                return null;
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException("Error determining BEAST install location.");
+        }
+    }
+
+    /**
      * @return file containing list of files that need to be deleted
      * but could not be deleted. This can happen when uninstalling packages
      * on windows, which locks jar files loaded by java.
@@ -534,8 +549,13 @@ public class AddOnManager {
 
         // add user package directory
         sDirs.add(getPackageUserDir());
+
         // add application package directory
         sDirs.add(getPackageSystemDir());
+
+        // add BEAST installation directory
+        if (getBEASTInstallDir() != null)
+            sDirs.add(getBEASTInstallDir());
 
         // pick up directories in class path, useful when running in an IDE
         String strClassPath = System.getProperty("java.class.path");
@@ -683,9 +703,9 @@ public class AddOnManager {
      * @param sDirs
      */
     private static void checkDependencies(List<String> sDirs) {
-        HashMap<String, Double> packageVersion = new HashMap<String, Double>();
+        HashMap<String, Double> packageVersion = new HashMap<>();
         packageVersion.put("beast2", beastVersion.parseVersion(beastVersion.getVersion()));
-        List<PackageDependency> dependencies = new ArrayList<PackageDependency>();
+        List<PackageDependency> dependencies = new ArrayList<>();
 
         // gather version and dependency info for all packages
         for (String sDir : sDirs) {
@@ -776,8 +796,8 @@ public class AddOnManager {
         // ClassLoader.getSystemClassLoader();
         URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
         URL urls[] = sysLoader.getURLs();
-        for (int i = 0; i < urls.length; i++) {
-            if (urls[i].toString().toLowerCase().equals(u.toString().toLowerCase())) {
+        for (URL url : urls) {
+            if (url.toString().toLowerCase().equals(u.toString().toLowerCase())) {
                 Log.debug.println("URL " + u + " is already in the CLASSPATH");
                 return;
             }
@@ -811,7 +831,7 @@ public class AddOnManager {
             }
         }
 
-        all_classes = new ArrayList<String>();
+        all_classes = new ArrayList<>();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
 
@@ -956,7 +976,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<String>();
+        result = new ArrayList<>();
 
         try {
             cls = Class.forName(classname);
@@ -980,7 +1000,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<String>();
+        result = new ArrayList<>();
 
         try {
             cls = Class.forName(classname);
@@ -1006,9 +1026,9 @@ public class AddOnManager {
         int i;
         HashSet<String> names;
 
-        result = new ArrayList<String>();
+        result = new ArrayList<>();
 
-        names = new HashSet<String>();
+        names = new HashSet<>();
         for (i = 0; i < pkgnames.length; i++) {
             names.addAll(find(cls, pkgnames[i]));
         }
@@ -1033,7 +1053,7 @@ public class AddOnManager {
             loadAllClasses();
         }
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String sClass = all_classes.get(i);
             sClass = sClass.replaceAll("/", ".");
