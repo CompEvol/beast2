@@ -515,6 +515,10 @@ public class AddOnManager {
 
         try {
             File beastJar = new File(BeastMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            Log.trace.println("BeastMain found in " + beastJar.getPath());
+            if (!beastJar.getName().toLowerCase().endsWith(".jar")) {
+            	return null;
+            }
             if (beastJar.getParentFile() != null)
                 return beastJar.getParentFile().getParent();
             else
