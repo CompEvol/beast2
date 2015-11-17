@@ -9,6 +9,7 @@ import java.util.Map;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -39,8 +40,10 @@ public class NodeReheight extends TreeOperator {
         final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();
         
         if (list.size() <= 1) {
-        	throw new Exception("NodeReheight operator requires at least 2 taxa while the taxon set (id=" + taxonSetInput.get().getID() +") has only " + list.size() + " taxa. "
+        	Log.warning.println("NodeReheight operator requires at least 2 taxa while the taxon set (id=" + taxonSetInput.get().getID() +") has only " + list.size() + " taxa. "
         			+ "If the XML file was set up in BEAUti, this probably means a taxon assignment needs to be set up in the taxonset panel.");
+        	// assume we are in BEAUti, back off for now
+        	return;
         }
         
         for (int i = 0; i < list.size(); i++) {
