@@ -37,6 +37,12 @@ public class NodeReheight extends TreeOperator {
         /** maps gene taxa names to species number **/
         final Map<String, Integer> taxonMap = new HashMap<String, Integer>();
         final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();
+        
+        if (list.size() <= 1) {
+        	throw new Exception("NodeReheight operator requires at least 2 taxa while the taxon set (id=" + taxonSetInput.get().getID() +") has only " + list.size() + " taxa. "
+        			+ "If the XML file was set up in BEAUti, this probably means a taxon assignment needs to be set up in the taxonset panel.");
+        }
+        
         for (int i = 0; i < list.size(); i++) {
             final Taxon taxa = list.get(i);
             // cast should be ok if taxon-set is the set for the species tree
