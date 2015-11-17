@@ -286,6 +286,9 @@ public class MRCAPrior extends Distribution {
      */
     @Override
     public void init(final PrintStream out) throws Exception {
+    	if (!initialised) {
+    		initialise();
+    	}
         if (onlyUseTips) {
             if (dist != null) {
                 out.print("logP(mrca(" + getID() + "))\t");
