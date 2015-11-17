@@ -250,6 +250,7 @@ public class BeastMain {
                         new Arguments.StringOption("statefile", "STATEFILE", "Specify the filename for storing/restoring the state"),
                         new Arguments.Option("overwrite", "Allow overwriting of log files"),
                         new Arguments.Option("resume", "Allow appending of log files"),
+                        new Arguments.Option("validate", "Parse the XML, but do not run -- useful for debugging XML"),
                         // RRB: not sure what effect this option has
                         new Arguments.IntegerOption("errors", "Specify maximum number of numerical errors before stopping"),
                         new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
@@ -291,6 +292,7 @@ public class BeastMain {
         final boolean window = arguments.hasOption("window");
         final boolean options = arguments.hasOption("options");
         final boolean working = arguments.hasOption("working");
+        final boolean doNotRun = arguments.hasOption("validate");
         String fileNamePrefix = null;
         String stateFileName = null;
         //boolean allowOverwrite = arguments.hasOption("overwrite");
@@ -592,8 +594,11 @@ public class BeastMain {
             MCMCargs.add(inputFile.getAbsolutePath());
             beastMCMC.parseArgs(MCMCargs.toArray(new String[0]));
             
-
-            new BeastMain(beastMCMC, consoleApp, maxErrorCount);
+            if (!doNotRun) {
+            	new BeastMain(beastMCMC, consoleApp, maxErrorCount);
+            } else {
+            	Log.info.println("Done!");
+            }
         } catch (RuntimeException rte) {
             if (window) {
                 // This sleep for 2 seconds is to ensure that the final message
