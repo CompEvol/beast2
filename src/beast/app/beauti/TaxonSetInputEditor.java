@@ -26,6 +26,7 @@ import beast.core.Input;
 import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -376,6 +377,9 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         Set<Taxon> taxa = new HashSet<Taxon>();
         Set<String> taxonIDs = new HashSet<String>();
         for (Alignment alignment : getDoc().alignments) {
+        	if (alignment instanceof FilteredAlignment) {
+        		alignment = ((FilteredAlignment)alignment).alignmentInput.get();
+        	}
             for (Sequence sequence : alignment.sequenceInput.get()) {
                 String sID = sequence.taxonInput.get();
                 if (!taxonIDs.contains(sID)) {
