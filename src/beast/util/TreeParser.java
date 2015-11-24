@@ -28,6 +28,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -146,8 +147,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             try {
                 setRoot(parseNewick(newickInput.get()));
             } catch (ParseCancellationException e) {
-                Logger.getLogger(TreeParser.class.getName()).log(Level.SEVERE,
-                        "TreeParser cannot make sense of the Newick string " +
+                Log.err.println("TreeParser cannot make sense of the Newick string " +
                                 "provided.  It gives the following clue:\n" +
                                 e.getMessage());
                 System.exit(1);
