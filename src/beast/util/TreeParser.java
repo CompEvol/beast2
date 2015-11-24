@@ -42,6 +42,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -141,7 +143,15 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             final Node dummy = new Node();
             setRoot(dummy);
         } else {
-            setRoot(parseNewick(newickInput.get()));
+            try {
+                setRoot(parseNewick(newickInput.get()));
+            } catch (ParseCancellationException e) {
+                Logger.getLogger(TreeParser.class.getName()).log(Level.SEVERE,
+                        "TreeParser cannot make sense of the Newick string " +
+                                "provided.  It gives the following clue:\n" +
+                                e.getMessage());
+                System.exit(1);
+            }
         }
 
         super.initAndValidate();
@@ -315,7 +325,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      *
      * @param newick string to parse
      * @return root node of tree
-     * @throws Exception if anything goes wrong during the parse.
      */
     public Node parseNewick(String newick) {
         ANTLRInputStream input = new ANTLRInputStream(newick);
@@ -327,7 +336,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                     Object offendingSymbol,
                                     int line, int charPositionInLine,
                                     String msg, RecognitionException e) {
-                throw new RuntimeException("TreeParser: Error parsing character "
+                throw new ParseCancellationException("Error parsing character "
                         + charPositionInLine + " of Newick string: " + msg);
             }
         };
@@ -388,8 +397,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * a BEAST tree along the way.
      */
     class NewickASTVisitor extends NewickBaseVisitor<Node> {
-
-        private List<Exception> raisedExceptions = new ArrayList<>();
 
         private int numberedNodeCount = 0;
 
