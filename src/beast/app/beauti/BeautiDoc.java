@@ -1859,10 +1859,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                         // handle Plugin
                     	BEASTInterface value = getCopyValue((BEASTInterface) input.get(), copySet, partitionContext, doc);
                         copy.setInputValue(input.getName(), value);
-                    } else {
+                    } else if (input.get() instanceof String) {
+                		// may need to replace partition info
+                		String s = (String) input.get();
+                		s = s.replaceAll("\\.c:[a-zA-Z0-9_]*", ".c:" + partitionContext.clockModel);
+                		s = s.replaceAll("\\.s:[a-zA-Z0-9_]*", ".s:" + partitionContext.siteModel);
+                		s = s.replaceAll("\\.t:[a-zA-Z0-9_]*", ".t:" + partitionContext.tree);
+                		copy.setInputValue(input.getName(), s);
+                	} else {
                         // it is a primitive value
-                        copy.setInputValue(input.getName(), input.get());
-                    }
+                		copy.setInputValue(input.getName(), input.get());
+                	}
                 }
             }
 
