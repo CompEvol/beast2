@@ -505,6 +505,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
                 throw new ParseCancellationException("Node with single child found.");
 
+            if (node.getChildCount()>2)
+                throw new ParseCancellationException("Node with two or more children found.");
+
             return node;
         }
 
