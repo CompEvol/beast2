@@ -28,6 +28,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -42,6 +43,8 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -141,7 +144,14 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             final Node dummy = new Node();
             setRoot(dummy);
         } else {
-            setRoot(parseNewick(newickInput.get()));
+            try {
+                setRoot(parseNewick(newickInput.get()));
+            } catch (ParseCancellationException e) {
+                throw new RuntimeException(
+                        "TreeParser cannot make sense of the Newick string " +
+                                "provided.  It gives the following clue:\n" +
+                                e.getMessage());
+            }
         }
 
         super.initAndValidate();
@@ -315,7 +325,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      *
      * @param newick string to parse
      * @return root node of tree
-     * @throws Exception if anything goes wrong during the parse.
      */
     public Node parseNewick(String newick) {
         ANTLRInputStream input = new ANTLRInputStream(newick);
@@ -327,7 +336,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                     Object offendingSymbol,
                                     int line, int charPositionInLine,
                                     String msg, RecognitionException e) {
-                throw new RuntimeException("TreeParser: Error parsing character "
+                throw new ParseCancellationException("Error parsing character "
                         + charPositionInLine + " of Newick string: " + msg);
             }
         };
@@ -388,8 +397,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * a BEAST tree along the way.
      */
     class NewickASTVisitor extends NewickBaseVisitor<Node> {
-
-        private List<Exception> raisedExceptions = new ArrayList<>();
 
         private int numberedNodeCount = 0;
 
@@ -504,6 +511,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
                 throw new ParseCancellationException("Node with single child found.");
+
+            if (node.getChildCount()>2)
+                throw new ParseCancellationException("Node with two or more children found.");
 
             return node;
         }

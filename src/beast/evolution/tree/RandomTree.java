@@ -139,7 +139,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //        return bIsSubset;
 //    }
 
-    //@Override
+    @Override
     public void initStateNodes() throws Exception {
         // find taxon sets we are dealing with
         taxonSets = new ArrayList<>();

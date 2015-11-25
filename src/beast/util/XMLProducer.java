@@ -818,7 +818,7 @@ public class XMLProducer extends XMLParser {
         buf.append("<").append(sElementName);
 
         boolean bSkipInputs = false;
-        if (isDone.contains(plugin)) {
+        if (isDone.stream().anyMatch(x -> x == plugin)) {
             // XML is already produced, we can idref it
             buf.append(" idref='" + normalise(plugin.getID()) + "'");
             bSkipInputs = true;

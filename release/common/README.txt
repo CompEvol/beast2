@@ -1,7 +1,7 @@
-                    BEAST v2.3.1 2015
+                    BEAST v2.3.2 2015
                  Beast 2 development team 2011-2015
 
-Last updated: September 2015
+Last updated: December 2015
 
 Contents:
 1) INTRODUCTION
@@ -91,12 +91,11 @@ BEAUti program from a NEXUS format file.
 For documentation on creating and tuning the input files look at the
 documentation and tutorials on-line at:
 
-Help -      <http://www.beast2.org/>
-FAQ -       <http://www.beast2.org/wiki/index.php/FAQ>
-Tutorials - <http://www.beast2.org/wiki/index.php/Main_Page#BEAST_2_Tutorials>
+Help -      <http://beast2.org/>
+FAQ -       <http://beast2.org/faq/>
+Tutorials - <http://beast2.org/tutorials/>
 
 BEAST arguments:
-
     -window Provide a console window
     -options Display an options dialog
     -working Change working directory to input file's directory
@@ -105,6 +104,7 @@ BEAST arguments:
     -statefile Specify the filename for storing/restoring the state
     -overwrite Allow overwriting of log files
     -resume Allow appending of log files
+    -validate Parse the XML, but do not run -- useful for debugging XML
     -errors Specify maximum number of numerical errors before stopping
     -threads The number of computational threads to use (default auto)
     -java Use Java only, no native implementations
@@ -155,7 +155,7 @@ BEAGLE by default and this can speed up running BEAST considerably. The
 BEAGLE library needs to be installed separately from BEAST, and can be 
 obtained from:
 
-http://code.google.com/p/beagle-lib/
+https://github.com/beagle-dev/beagle-lib/blob/master/README.md
 
 
 ___________________________________________________________________________
@@ -187,7 +187,7 @@ The BEAST users' mailing-list
 
 The website for beast is here:
 
-<http://www.beast2.org/>
+<http://beast2.org/>
 
 Source code distributed under the GNU Lesser General Public License:
 

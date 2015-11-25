@@ -68,6 +68,19 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
             vars[i] = new RPNexpressionCalculator.GetVariable() {
                 public double get(final String name) {
                     final Object[] values = ((Object[]) variables.get(name));
+                    if (values == null) {
+                    	String ids = "";
+                        for (final Parameter p : parametersInput.get()) {
+                    		ids += p.getID() +", ";
+                    	}
+                    	if (parametersInput.get().size() > 0) {
+                    		ids = ids.substring(0, ids.length() - 2);
+                    	}
+                    	throw new RuntimeException("Something went wront with the RPNCalculator with id=" + getID() +".\n"
+                    			+ "There might be a typo on the expression.\n" +
+                    			"It should only contain these: " + ids +"\n"
+                    					+ "but contains " + name);
+                    }
                     if (values[0] instanceof Boolean)
                         return ((Boolean) values[values.length > 1 ? index : 0] ? 1. : 0.);
                     if (values[0] instanceof Integer)
