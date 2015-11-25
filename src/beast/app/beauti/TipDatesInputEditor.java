@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.util.*;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -36,6 +37,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         super(doc);
     }
     private static final long serialVersionUID = 1L;
+
+    DateFormat dateFormat = DateFormat.getDateInstance();
 
     @Override
     public Class<?> type() {
@@ -459,16 +462,32 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             return Double.parseDouble(sStr);
         } catch (NumberFormatException e) {
             // does not look like a number, try parsing it as a date
-            try {
                 if (sStr.matches(".*[a-zA-Z].*")) {
                     sStr = sStr.replace('/', '-');
                 }
-                long date = Date.parse(sStr);
-                return 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
-            } catch (Exception e2) {
-                // does not look like a date, give up
-            }
 
+            try {
+                Date date = dateFormat.parse(sStr);
+
+                Calendar calendar = dateFormat.getCalendar();
+                calendar.setTime(date);
+
+                // full year (e.g 2015)
+                int year = calendar.get(Calendar.YEAR);
+                double days = calendar.get(Calendar.DAY_OF_YEAR);
+
+                double daysInYear = 365.0;
+
+                if (calendar instanceof GregorianCalendar &&(((GregorianCalendar) calendar).isLeapYear(year))) {
+                    daysInYear = 366.0;
+                }
+
+                double dateAsDecimal = year + days/daysInYear;
+
+                return dateAsDecimal;
+            } catch (ParseException e1) {
+                System.err.println("*** WARNING: Failed to parse '" + sStr + "' as date using dateFormat " + dateFormat);
+            }
         }
         return 0;
     } // parseStrings
