@@ -466,8 +466,18 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     sStr = sStr.replace('/', '-');
                 }
 
-            try {
-                Date date = dateFormat.parse(sStr);
+            //try {
+
+                // unfortunately this deprecated date parser is the most flexible around at the moment...
+                long time = Date.parse(sStr);
+                Date date = new Date(time);
+
+                // AJD
+                // Ideally we would use a non-deprecated method like this one instead but it seems to have
+                // far less support for different date formats.
+                // for example it fails on "12-Oct-2014"
+                //dateFormat.setLenient(true);
+                //Date date = dateFormat.parse(sStr);
 
                 Calendar calendar = dateFormat.getCalendar();
                 calendar.setTime(date);
@@ -485,11 +495,12 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 double dateAsDecimal = year + days/daysInYear;
 
                 return dateAsDecimal;
-            } catch (ParseException e1) {
-                System.err.println("*** WARNING: Failed to parse '" + sStr + "' as date using dateFormat " + dateFormat);
-            }
+            //}
+            //catch (ParseException e1) {
+            //    System.err.println("*** WARNING: Failed to parse '" + sStr + "' as date using dateFormat " + dateFormat);
+            //}
         }
-        return 0;
+        //return 0;
     } // parseStrings
 
     private String normalize(String sStr) {
