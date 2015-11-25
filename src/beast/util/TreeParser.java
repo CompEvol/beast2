@@ -147,10 +147,10 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             try {
                 setRoot(parseNewick(newickInput.get()));
             } catch (ParseCancellationException e) {
-                Log.err.println("TreeParser cannot make sense of the Newick string " +
+                throw new RuntimeException(
+                        "TreeParser cannot make sense of the Newick string " +
                                 "provided.  It gives the following clue:\n" +
                                 e.getMessage());
-                System.exit(1);
             }
         }
 
