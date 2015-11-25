@@ -1,20 +1,40 @@
-                    BEAST v2.3.1 2015
+                    BEAST v2.3.2 2015
                  Beast 2 development team 2011-2015
 Version History
-Last updated: September 2015
+Last updated: December 2015
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.3.2 December 2015
+	BEAUti
+		path corrected so Standard and StarBeast templates are visible under templates menu
+		import of traits from file when partions are split fixed
+		cloning of scripts with partition information fixed
+		set up weights of FixedMeanRate operator when ascertainment correction is applied
+		allows ParameterInputEditor to edit Parameter inputs
+		
+	BEAST
+		add "-validate" command line option for parsing XML files without running them
+		more efficient MRCAPrior
+		more robust RandomTree
+	
+	LogCombiner
+		ensured logcombiner burn in editing finished properly
+		
+	LogAnalyser now has one line per file mode, and CLI script added for ease of launch
+		
+	More sensible error messages (in TreeParser, RPNCalculator, NodeReheight, and more).
+
 Version 2.3.1 September 2015
-        BEAUti fixes
-           robustify (un)linking
+     BEAUti
+       robustify (un)linking
 	   improved Fasta import
 
 	BEAST
 	   support for uncertain alignments (see examples/testJukesCantorShortUncertain.xml) 
-           improved error messages
+       improved error messages
 
-        TreeAnnotator allows lower memory consumption
+    TreeAnnotator allows lower memory consumption
 
 	AppStore, LogCombiners, LogAnalyser improved command line interface 
 
