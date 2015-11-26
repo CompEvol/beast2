@@ -38,6 +38,7 @@ import beast.app.util.Utils;
 import beast.core.Description;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,11 +50,11 @@ import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.channels.Channels;
@@ -515,18 +516,18 @@ public class AddOnManager {
         if (System.getProperty("beast.install.dir") != null)
             return System.getProperty("beast.install.dir");
 
-        try {
-            File beastJar = new File(BeastMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-            Log.trace.println("BeastMain found in " + beastJar.getPath());
-            if (!beastJar.getName().toLowerCase().endsWith(".jar")) {
-            	return null;
-            }
-            if (beastJar.getParentFile() != null)
-                return beastJar.getParentFile().getParent();
-            else
-                return null;
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Error determining BEAST install location.");
+        URL u = BeastMain.class.getProtectionDomain().getCodeSource().getLocation();
+		String s = u.getPath();
+        File beastJar = new File(s);
+        Log.trace.println("BeastMain found in " + beastJar.getPath());
+        if (!beastJar.getName().toLowerCase().endsWith(".jar")) {
+        	return null;
+        }
+
+        if (beastJar.getParentFile() != null) {
+            return beastJar.getParentFile().getParent();
+        } else {
+            return null;
         }
     }
 
