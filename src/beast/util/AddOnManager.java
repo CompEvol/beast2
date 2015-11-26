@@ -115,7 +115,9 @@ public class AddOnManager {
         System.setProperty("jsse.enableSNIExtension", "false");
 
         List<String> URLs = new ArrayList<>();
-        URLs.add(PACKAGES_XML);
+        // hack for v2.3.2 only -- to share repository file, saving lots of edits for package releases
+        // next version should have single package file to cover all version
+        URLs.add(PACKAGES_XML.replaceAll("2.3.2", "2.3.1"));
 
         File beastProps = new File(getPackageUserDir() + "/beauti.properties");
         // check beast.properties file exists in package directory
