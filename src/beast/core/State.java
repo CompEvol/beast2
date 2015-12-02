@@ -28,6 +28,7 @@ package beast.core;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -328,7 +329,8 @@ public class State extends BEASTObject {
             File newStateFile = new File(stateFileName + ".new");
             File oldStateFile = new File(stateFileName);
             oldStateFile.delete();
-            newStateFile.renameTo(oldStateFile);
+            // newStateFile.renameTo(oldStateFile); -- unstable under windows
+            Files.move(newStateFile.toPath(), oldStateFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
         }
