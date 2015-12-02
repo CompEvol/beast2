@@ -23,7 +23,6 @@ import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.InputEditor;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -142,6 +141,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                 String sText = m_textField.getText();
                 System.err.println(sText);
                 m_model.setValueAt(sText, m_iRow, m_iCol);
+
                 // try {
                 // Double.parseDouble(sText);
                 // } catch (Exception e) {
@@ -150,6 +150,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                 modelToTaxonset();
                 return true;
             }
+            
 
             @Override
             public boolean isCellEditable(EventObject anEvent) {
@@ -191,6 +192,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
 
         });
+        m_table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         m_table.getColumnModel().getColumn(0).setPreferredWidth(250);
         m_table.getColumnModel().getColumn(1).setPreferredWidth(250);
@@ -417,7 +419,6 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
         }
         // add taxon sets
-        int nIgnored = 0;
         for (TaxonSet set : map.values()) {
              m_taxonset.add(set);
         }
@@ -476,14 +477,6 @@ public class TaxonSetInputEditor extends InputEditor.Base {
      */
     @SuppressWarnings("unchecked")
     private void taxonSetToModel() {
-        // count number of lineages that match the filter
-        int i = 0;
-        for (String sLineageID : m_taxonMap.keySet()) {
-            if (sLineageID.matches(m_sFilter)) {
-                i++;
-            }
-        }
-
         // clear table model
         while (m_model.getRowCount() > 0) {
             m_model.removeRow(0);
@@ -525,6 +518,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
      * for convert table model to taxon sets *
      */
     private void modelToTaxonset() {
+
         // update map
         for (int i = 0; i < m_model.getRowCount(); i++) {
             String sLineageID = (String) ((Vector<?>) m_model.getDataVector().elementAt(i)).elementAt(0);
