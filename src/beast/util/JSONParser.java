@@ -25,9 +25,16 @@
 package beast.util;
 
 
+import static beast.util.XMLParserUtils.replaceVariable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
@@ -35,6 +42,7 @@ import beast.core.Input.Validate;
 import beast.core.Runnable;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -127,6 +135,20 @@ public class JSONParser {
 		doc = new JSONObject(buf.toString());
 		processPlates(doc);
 
+		int pointIdx = file.getName().lastIndexOf('.');
+        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
+// TODO: add beast identifier to top level JSON?
+//        if (doc.getElementsByTagName(XMLParser.BEAST_ELEMENT).item(0) == null) {
+//        	Log.err.println("Incorrect JSON: Could not find 'beast' value in file " + file.getName());
+//        	throw new RuntimeException();
+//        }
+
+        replaceVariable(doc, "filebase", baseName);
+
+        // Substitute occurrences of "$(seed)" with RNG seed
+        replaceVariable(doc, "seed", String.valueOf(Randomizer.getSeed()));
+
+		
 		IDMap = new HashMap<String, BEASTInterface>();
 		likelihoodMap = new HashMap<String, Integer[]>();
 		IDNodeMap = new HashMap<String, JSONObject>();
@@ -139,6 +161,43 @@ public class JSONParser {
 			throw new Exception("Run element does not point to a runnable object.");
 		}
 	} // parseFile
+	
+    /**
+     * @param node the node to do variable replacement in
+     * @param sVar the variable name to replace
+     * @param sValue the value to replace the variable name with
+     */
+    public static void replaceVariable(final Object json, final String sVar, final String sValue) {
+    	try {
+	        if (json instanceof JSONObject) {
+	            final JSONObject jsonobject = (JSONObject) json;
+	            for (String key : jsonobject.keySet()) {
+	                final Object attr = jsonobject.get(key);
+	                if (attr instanceof String) {
+	                	if (((String) attr).contains("$(" + sVar + ")")) {
+	                		String sAtt = (String) attr;
+	                		sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
+	                		jsonobject.put(key, sAtt);
+	                	}
+	                } else if (attr instanceof JSONObject) {
+	                	replaceVariable(attr, sVar, sValue);
+	                } else if (attr instanceof JSONArray) {
+	                	replaceVariable(attr, sVar, sValue);
+	                }
+	            }
+		    } else if (json instanceof JSONArray) {
+		    	JSONArray array = (JSONArray) json;
+		    	for (int i = 0; i < array.length(); i++) {
+		        	Object o2 = array.get(i);
+	            	replaceVariable(o2, sVar, sValue);
+		        }
+	        } else {
+	        	// ignore
+	        }
+    	} catch (JSONException e) {
+    		// ignore?
+    	}
+    } // replaceVariable
 
 	/**
 	 * extract all elements (runnable or not) from an XML fragment. Useful for
@@ -462,6 +521,7 @@ public class JSONParser {
 		}
 
 		initIDNodeMap(doc);
+
 		parseNameSpaceAndMap(doc);
 
 		// parseState();
@@ -719,7 +779,7 @@ public class JSONParser {
 					throw new Exception("Cannot instantiate class. Please check the spec attribute.");
 				} catch (ClassNotFoundException e) {
 					// TODO: handle exception
-					System.err.println(e.getMessage());
+					// System.err.println(e.getMessage());
 				}
 			}
 			if (!bDone) {
