@@ -93,13 +93,13 @@ public class JSONParser {
 		return element2ClassMap;
 	}
 
-	String[] m_sNameSpaces;
+	String[] nameSpaces;
 
 	/**
 	 * Flag to indicate initAndValidate should be called after all inputs of a
 	 * plugin have been parsed
 	 */
-	boolean m_bInitialize = true;
+	boolean initialise = true;
 
 	/**
 	 * when parsing JSON, missing inputs can be assigned default values through a
@@ -156,32 +156,32 @@ public class JSONParser {
 	
     /**
      * @param node the node to do variable replacement in
-     * @param sVar the variable name to replace
-     * @param sValue the value to replace the variable name with
+     * @param var the variable name to replace
+     * @param value the value to replace the variable name with
      */
-    public static void replaceVariable(final Object json, final String sVar, final String sValue) {
+    public static void replaceVariable(final Object json, final String var, final String value) {
     	try {
 	        if (json instanceof JSONObject) {
 	            final JSONObject jsonobject = (JSONObject) json;
 	            for (String key : jsonobject.keySet()) {
 	                final Object attr = jsonobject.get(key);
 	                if (attr instanceof String) {
-	                	if (((String) attr).contains("$(" + sVar + ")")) {
+	                	if (((String) attr).contains("$(" + var + ")")) {
 	                		String sAtt = (String) attr;
-	                		sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
+	                		sAtt = sAtt.replaceAll("\\$\\(" + var + "\\)", value);
 	                		jsonobject.put(key, sAtt);
 	                	}
 	                } else if (attr instanceof JSONObject) {
-	                	replaceVariable(attr, sVar, sValue);
+	                	replaceVariable(attr, var, value);
 	                } else if (attr instanceof JSONArray) {
-	                	replaceVariable(attr, sVar, sValue);
+	                	replaceVariable(attr, var, value);
 	                }
 	            }
 		    } else if (json instanceof JSONArray) {
 		    	JSONArray array = (JSONArray) json;
 		    	for (int i = 0; i < array.length(); i++) {
 		        	Object o2 = array.get(i);
-	            	replaceVariable(o2, sVar, sValue);
+	            	replaceVariable(o2, var, value);
 		        }
 	        } else {
 	        	// ignore
@@ -571,13 +571,13 @@ public class JSONParser {
 	void parseNameSpaceAndMap(JSONObject topNode) throws JSONParserException {
 		// process namespaces
 		if (topNode.has("namespace")) {
-			String sNameSpace = getAttribute(topNode, "namespace");
-			setNameSpace(sNameSpace);
+			String nameSpace = getAttribute(topNode, "namespace");
+			setNameSpace(nameSpace);
 		} else {
 			// make sure that the default namespace is in there
-			if (m_sNameSpaces == null) {
-				m_sNameSpaces = new String[1];
-				m_sNameSpaces[0] = "";
+			if (nameSpaces == null) {
+				nameSpaces = new String[1];
+				nameSpaces[0] = "";
 			}
 		}
 
@@ -624,21 +624,21 @@ public class JSONParser {
 		// }
 	} // parseNameSpaceAndMap
 
-	public void setNameSpace(String sNameSpaceStr) {
-		String[] sNameSpaces = sNameSpaceStr.split(":");
+	public void setNameSpace(String nameSpaceStr) {
+		String[] nameSpaces = nameSpaceStr.split(":");
 		// append dot after every non-zero namespace
-		m_sNameSpaces = new String[sNameSpaces.length + 1];
+		this.nameSpaces = new String[nameSpaces.length + 1];
 		int i = 0;
-		for (String sNameSpace : sNameSpaces) {
-			if (sNameSpace.length() > 0) {
-				if (sNameSpace.charAt(sNameSpace.length() - 1) != '.') {
-					sNameSpace += '.';
+		for (String nameSpace : nameSpaces) {
+			if (nameSpace.length() > 0) {
+				if (nameSpace.charAt(nameSpace.length() - 1) != '.') {
+					nameSpace += '.';
 				}
 			}
-			m_sNameSpaces[i++] = sNameSpace;
+			this.nameSpaces[i++] = nameSpace;
 		}
 		// make sure that the default namespace is in there
-		m_sNameSpaces[i] = "";
+		this.nameSpaces[i] = "";
 	}
 
 	void parseRunElement(JSONObject topNode) throws JSONParserException {
@@ -680,23 +680,23 @@ public class JSONParser {
 	 * sClass. This involves a parameter clutch to deal with non-real
 	 * parameters. This needs a bit of work, obviously...
 	 */
-	boolean checkType(String sClass, BEASTInterface plugin) throws JSONParserException {
+	boolean checkType(String className, BEASTInterface plugin) throws JSONParserException {
 		// parameter clutch
 		if (plugin instanceof Parameter<?>) {
-			for (String nameSpace : m_sNameSpaces) {
+			for (String nameSpace : nameSpaces) {
 				//nameSpace = nameSpace.replaceAll("beast", "yabby");
-				if ((nameSpace + sClass).equals(RealParameter.class.getName())) {
+				if ((nameSpace + className).equals(RealParameter.class.getName())) {
 					return true;
 				}
 			}
 		}
-		if (sClass.equals(INPUT_CLASS)) {
+		if (className.equals(INPUT_CLASS)) {
 			return true;
 		}
-		for (String nameSpace : m_sNameSpaces) {
+		for (String nameSpace : nameSpaces) {
 			//nameSpace = nameSpace.replaceAll("beast", "yabby");
 			try {
-				if (Class.forName(nameSpace + sClass).isInstance(plugin)) {
+				if (Class.forName(nameSpace + className).isInstance(plugin)) {
 					return true;
 				}
 			} catch (Exception e) {
@@ -713,12 +713,12 @@ public class JSONParser {
 
 		if (ID != null) {
 			if (IDMap.containsKey(ID)) {
-				BEASTInterface plugin = IDMap.get(ID);
-				if (checkType(className, plugin)) {
-					return plugin;
+				BEASTInterface beastObject = IDMap.get(ID);
+				if (checkType(className, beastObject)) {
+					return beastObject;
 				}
 				throw new JSONParserException(node, "id=" + ID + ". Expected object of type " + className + " instead of "
-						+ plugin.getClass().getName(), 105);
+						+ beastObject.getClass().getName(), 105);
 			}
 		}
 
@@ -731,19 +731,19 @@ public class JSONParser {
 						+ "'. All other attributes are ignored.\n");
 			}
 			if (IDMap.containsKey(IDRef)) {
-				BEASTInterface plugin = IDMap.get(IDRef);
-				if (checkType(className, plugin)) {
-					return plugin;
+				BEASTInterface beastObject = IDMap.get(IDRef);
+				if (checkType(className, beastObject)) {
+					return beastObject;
 				}
 				throw new JSONParserException(node, "id=" + IDRef + ". Expected object of type " + className + " instead of "
-						+ plugin.getClass().getName(), 106);
+						+ beastObject.getClass().getName(), 106);
 			} else if (IDNodeMap.containsKey(IDRef)) {
-				BEASTInterface plugin = createObject(IDNodeMap.get(IDRef), className, parent);
-				if (checkType(className, plugin)) {
-					return plugin;
+				BEASTInterface beastObject = createObject(IDNodeMap.get(IDRef), className, parent);
+				if (checkType(className, beastObject)) {
+					return beastObject;
 				}
 				throw new JSONParserException(node, "id=" + IDRef + ". Expected object of type " + className + " instead of "
-						+ plugin.getClass().getName(), 107);
+						+ beastObject.getClass().getName(), 107);
 			}
 			throw new JSONParserException(node, "Could not find object associated with idref " + IDRef, 170);
 		}
@@ -764,7 +764,7 @@ public class JSONParser {
 		// try to create object from sSpecName, taking namespaces in account
 		try {
 			boolean bDone = false;
-			for (String nameSpace : m_sNameSpaces) {
+			for (String nameSpace : nameSpaces) {
 				try {
 					if (!bDone) {
 						//nameSpace = nameSpace.replaceAll("beast", "yabby");
@@ -809,20 +809,20 @@ public class JSONParser {
 			// }
 			// return null;
 			// } else {
-			throw new JSONParserException(node, "Expected object to be instance of Plugin", 108);
+			throw new JSONParserException(node, "Expected object to be instance of BEASTObject", 108);
 			// }
 		}
 		// set id
-		BEASTInterface plugin = (BEASTInterface) o;
-		plugin.setID(ID);
-		register(node, plugin);
+		BEASTInterface beastObject = (BEASTInterface) o;
+		beastObject.setID(ID);
+		register(node, beastObject);
 		// process inputs
-		parseInputs(plugin, node);
+		parseInputs(beastObject, node);
 		// initialise
-		if (m_bInitialize) {
+		if (initialise) {
 			try {
-				plugin.validateInputs();
-				objectsWaitingToInit.add(new BEASTObjectWrapper(plugin, node));
+				beastObject.validateInputs();
+				objectsWaitingToInit.add(new BEASTObjectWrapper(beastObject, node));
 				// plugin.initAndValidate();
 			} catch (Exception e) {
 				// next lines for debugging only
@@ -832,27 +832,27 @@ public class JSONParser {
 				throw new JSONParserException(node, "validate and intialize error: " + e.getMessage(), 110);
 			}
 		}
-		return plugin;
+		return beastObject;
 	} // createObject
 
 	/**
 	 * find closest matching class to named class *
 	 */
 	String guessClass(String className) {
-		String sName = className;
+		String name = className;
 		if (className.contains(".")) {
-			sName = className.substring(className.lastIndexOf('.') + 1);
+			name = className.substring(className.lastIndexOf('.') + 1);
 		}
-		List<String> pluginNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
+		List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
 		int bestDistance = Integer.MAX_VALUE;
 		String closest = null;
-		for (String pluginName : pluginNames) {
-			String className2 = pluginName.substring(pluginName.lastIndexOf('.') + 1);
-			int distance = getLevenshteinDistance(sName, className2);
+		for (String beastObjectName : beastObjectNames) {
+			String className2 = beastObjectName.substring(beastObjectName.lastIndexOf('.') + 1);
+			int distance = getLevenshteinDistance(name, className2);
 
 			if (distance < bestDistance) {
 				bestDistance = distance;
-				closest = pluginName;
+				closest = beastObjectName;
 			}
 		}
 		return closest;
@@ -1015,8 +1015,8 @@ public class JSONParser {
 						String IDRef = value.substring(1);
 						JSONObject element = new JSONObject();
 						element.put("idref", IDRef);
-						BEASTInterface plugin = createObject(element, YOBJECT_CLASS, parent);
-						setInput(node, parent, name, plugin);
+						BEASTInterface beastObject = createObject(element, YOBJECT_CLASS, parent);
+						setInput(node, parent, name, beastObject);
 					} else {
 						setInput(node, parent, name, value);
 					}
@@ -1054,16 +1054,16 @@ public class JSONParser {
 		}		
 	}
 
-	void setInput(JSONObject node, BEASTInterface plugin, String name, BEASTInterface plugin2) throws JSONParserException {
+	void setInput(JSONObject node, BEASTInterface beastObject, String name, BEASTInterface beastObject2) throws JSONParserException {
 		try {
-			Input<?> input = plugin.getInput(name);
+			Input<?> input = beastObject.getInput(name);
 			// test whether input was not set before, this is done by testing
 			// whether input has default value.
 			// for non-list inputs, this should be true if the value was not
 			// already set before
 			// for list inputs this is always true.
 			if (input.get() == input.defaultValue) {
-				plugin.setInputValue(name, plugin2);
+				beastObject.setInputValue(name, beastObject2);
 			} else {
 				throw new Exception("Multiple entries for non-list input " + input.getName());
 			}
@@ -1076,25 +1076,25 @@ public class JSONParser {
 			if (e.getMessage().contains("101")) {
 				String type = "?";
 				try {
-					type = plugin.getInput(name).getType().getName().replaceAll(".*\\.", "");
+					type = beastObject.getInput(name).getType().getName().replaceAll(".*\\.", "");
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
 				throw new JSONParserException(node, e.getMessage() + " expected '" + type + "' but got '"
-						+ plugin2.getClass().getName().replaceAll(".*\\.", "") + "'", 123);
+						+ beastObject2.getClass().getName().replaceAll(".*\\.", "") + "'", 123);
 			} else {
 				throw new JSONParserException(node, e.getMessage(), 130);
 			}
 		}
 	}
 
-	void setInput(JSONObject node, BEASTInterface plugin, String sName, String sValue) throws JSONParserException {
+	void setInput(JSONObject node, BEASTInterface beastObject, String name, String value) throws JSONParserException {
 		try {
-			plugin.setInputValue(sName, sValue);
+			beastObject.setInputValue(name, value);
 			return;
 		} catch (Exception e) {
 			try {
-				plugin.setInputValue(sName, sValue);
+				beastObject.setInputValue(name, value);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1104,13 +1104,13 @@ public class JSONParser {
 	}
 
 	/**
-	 * records id in IDMap, for ease of retrieving Plugins associated with
+	 * records id in IDMap, for ease of retrieving BeastObjects associated with
 	 * idrefs *
 	 */
-	void register(JSONObject node, BEASTInterface plugin) {
+	void register(JSONObject node, BEASTInterface beastObject) {
 		String ID = getID(node);
 		if (ID != null) {
-			IDMap.put(ID, plugin);
+			IDMap.put(ID, beastObject);
 		}
 	}
 
@@ -1141,11 +1141,11 @@ public class JSONParser {
 	 * get integer value of attribute with given name *
 	 */
 	public static int getAttributeAsInt(JSONObject node, String attName) {
-		String sAtt = getAttribute(node, attName);
-		if (sAtt == null) {
+		String att = getAttribute(node, attName);
+		if (att == null) {
 			return -1;
 		}
-		return Integer.parseInt(sAtt);
+		return Integer.parseInt(att);
 	}
 
 	/**
@@ -1153,19 +1153,19 @@ public class JSONParser {
 	 * @throws JSONParserException *
 	 */
 	public static double getAttributeAsDouble(JSONObject node, String attName) throws JSONParserException {
-		String sAtt = getAttribute(node, attName);
-		if (sAtt == null) {
+		String att = getAttribute(node, attName);
+		if (att == null) {
 			return Double.MAX_VALUE;
 		}
 		try {
-			return Double.parseDouble(sAtt);			
+			return Double.parseDouble(att);			
 		} catch (NumberFormatException e) {
-			throw new JSONParserException(node, "Could not parse number " + sAtt, 1003);
+			throw new JSONParserException(node, "Could not parse number " + att, 1003);
 		}
 	}
 
 	public interface RequiredInputProvider {
-		Object createInput(BEASTInterface plugin, Input<?> input, PartitionContext context);
+		Object createInput(BEASTInterface beastObject, Input<?> input, PartitionContext context);
 	}
 
 	public void setRequiredInputProvider(RequiredInputProvider provider, PartitionContext context) {
@@ -1200,10 +1200,10 @@ public class JSONParser {
 			System.setOut(System.err);
 			// parse the file
 			JSONParser parser = new JSONParser();
-			BEASTInterface plugin = parser.parseFile(new File(args[0]));
+			BEASTInterface beastObject = parser.parseFile(new File(args[0]));
 			// restore stdout
 			System.setOut(out);
-			System.out.println(new XMLProducer().toXML(plugin));
+			System.out.println(new XMLProducer().toXML(beastObject));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
