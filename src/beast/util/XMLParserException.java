@@ -47,6 +47,10 @@ public class XMLParserException extends Exception {
      */
     int errorNr;
 
+    public XMLParserException(String sMsg) {
+    	super(sMsg);
+    }
+    
     public XMLParserException(Node node, String sMsg, int nErrorNr) {
         super(sMsg);
         _node = node;
@@ -108,5 +112,9 @@ public class XMLParserException extends Exception {
         }
         return null;
     } // getID
+
+	public String getOriginalMessage() {
+		return super.getMessage();
+	}
 
 } // XMLParserException

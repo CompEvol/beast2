@@ -33,7 +33,7 @@ import org.json.JSONObject;
  * that keeps track of the JSONOBject that caused the anomaly.
  */
 @SuppressWarnings("serial")
-public class JSONParserException extends Exception {
+public class JSONParserException extends XMLParserException {
     /**
      * JSONObject where the anomaly was in the vicinity *
      */
@@ -58,7 +58,7 @@ public class JSONParserException extends Exception {
 
     // format message and resolve parent
     public String getMessage() {
-        String msg = "\nError " + m_nErrorNr + " parsing the json input file\n\n" + m_sMsg + super.getMessage();
+        String msg = "\nError " + m_nErrorNr + " parsing the json input file\n\n" + m_sMsg + super.getOriginalMessage();
         if (node == null) {
             return "NULL NODE\n" + msg;
         }

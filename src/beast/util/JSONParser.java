@@ -55,7 +55,7 @@ public class JSONParser {
 	Runnable runnable;
 	State state;
 	/**
-	 * DOM document representation of XML file *
+	 * JSONObject document representation of JSON file *
 	 */
 	JSONObject doc;
 
@@ -102,7 +102,7 @@ public class JSONParser {
 	boolean m_bInitialize = true;
 
 	/**
-	 * when parsing XML, missing inputs can be assigned default values through a
+	 * when parsing JSON, missing inputs can be assigned default values through a
 	 * RequiredInputProvider
 	 */
 	RequiredInputProvider requiredInputProvider = null;
@@ -134,11 +134,6 @@ public class JSONParser {
 
 		int pointIdx = file.getName().lastIndexOf('.');
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
-// TODO: add beast identifier to top level JSON?
-//        if (doc.getElementsByTagName(XMLParser.BEAST_ELEMENT).item(0) == null) {
-//        	Log.err.println("Incorrect JSON: Could not find 'beast' value in file " + file.getName());
-//        	throw new RuntimeException();
-//        }
 
         replaceVariable(doc, "filebase", baseName);
 
@@ -253,7 +248,7 @@ public class JSONParser {
 	// return plugins;
 	// } // parseTemplate
 
-	private void initPlugins() throws Exception {
+	private void initPlugins() throws JSONParserException {
 		JSONObject node = null;
 		try {
 			for (int i = 0; i < objectsWaitingToInit.size(); i++) {
@@ -272,7 +267,7 @@ public class JSONParser {
 	}
 
 	/**
-	 * Expand plates in JSON by duplicating the containing XML and replacing the
+	 * Expand plates in JSON by duplicating the containing JSON and replacing the
 	 * plate variable with the appropriate value.
 	 * "plate":{"var":"n",
 	 *  "range": ["CO1", "CO2", "Nuc"],
@@ -507,11 +502,11 @@ public class JSONParser {
 	 * 
 	 * @throws Exception
 	 */
-	public void parse() throws Exception {
+	public void parse() throws JSONParserException {
 		// find top level beast element
 		JSONObject nodes = doc;
 		if (nodes == null || nodes.keySet().size() == 0) {
-			throw new Exception("Expected top level beast element in XML");
+			throw new JSONParserException(doc, "Expected top level beast element in XML", 1001);
 		}
 		double fVersion = getAttributeAsDouble(nodes, "version");
 		if (fVersion < 2.0 || fVersion == Double.MAX_VALUE) {
@@ -534,7 +529,7 @@ public class JSONParser {
 	 * @param node
 	 * @throws Exception
 	 */
-	void initIDNodeMap(JSONObject node) throws Exception {
+	void initIDNodeMap(JSONObject node) throws JSONParserException {
 		String ID = getID(node);
 		if (ID != null) {
 			if (IDNodeMap.containsKey(ID)) {
@@ -543,18 +538,22 @@ public class JSONParser {
 			IDNodeMap.put(ID, node);
 		}
 		for (Object key : node.keySet()) {
-			Object o = node.get((String) key);
-			if (o instanceof JSONObject) {
-				initIDNodeMap((JSONObject) o);
-			}
-			if (o instanceof JSONArray) {
-				JSONArray list = (JSONArray) o;
-				for (int i = 0; i < list.length(); i++) {
-					Object o2 = list.get(i);
-					if (o2 instanceof JSONObject) {
-						initIDNodeMap((JSONObject) o2);
+			try {
+				Object o = node.get((String) key);
+				if (o instanceof JSONObject) {
+					initIDNodeMap((JSONObject) o);
+				}
+				if (o instanceof JSONArray) {
+					JSONArray list = (JSONArray) o;
+					for (int i = 0; i < list.length(); i++) {
+						Object o2 = list.get(i);
+						if (o2 instanceof JSONObject) {
+							initIDNodeMap((JSONObject) o2);
+						}
 					}
 				}
+			} catch (JSONException e) {
+				throw new JSONParserException(node, e.getMessage(), 1002);
 			}
 		}
 	}
@@ -567,9 +566,9 @@ public class JSONParser {
 	 * name='snaplikelihood'>snap.likelihood.SnAPTreeLikelihood</map>
 	 * 
 	 * @param topNode
-	 * @throws XMLParserException
+	 * @throws JSONParserException
 	 */
-	void parseNameSpaceAndMap(JSONObject topNode) throws XMLParserException {
+	void parseNameSpaceAndMap(JSONObject topNode) throws JSONParserException {
 		// process namespaces
 		if (topNode.has("namespace")) {
 			String sNameSpace = getAttribute(topNode, "namespace");
@@ -642,8 +641,9 @@ public class JSONParser {
 		m_sNameSpaces[i] = "";
 	}
 
-	void parseRunElement(JSONObject topNode) throws Exception {
+	void parseRunElement(JSONObject topNode) throws JSONParserException {
 		// find beast element
+		try {
 		Object o = doc.get(XMLParser.BEAST_ELEMENT);
 		if (o == null) {
 			throw new JSONParserException(topNode, "Expected " + XMLParser.BEAST_ELEMENT + " top level object in file", 102);
@@ -670,6 +670,9 @@ public class JSONParser {
 		if (runnable == null) {
 			 throw new JSONParserException(topNode, "Expected at least one runnable element in file",  1030);
 		}
+		} catch (JSONException e) {
+			throw new JSONParserException(topNode, e.getMessage(), 1004);
+		}
 	} // parseRunElement
 
 	/**
@@ -677,7 +680,7 @@ public class JSONParser {
 	 * sClass. This involves a parameter clutch to deal with non-real
 	 * parameters. This needs a bit of work, obviously...
 	 */
-	boolean checkType(String sClass, BEASTInterface plugin) throws Exception {
+	boolean checkType(String sClass, BEASTInterface plugin) throws JSONParserException {
 		// parameter clutch
 		if (plugin instanceof Parameter<?>) {
 			for (String nameSpace : m_sNameSpaces) {
@@ -703,7 +706,7 @@ public class JSONParser {
 		return false;
 	} // checkType
 
-	BEASTInterface createObject(JSONObject node, String className, BEASTInterface parent) throws Exception {
+	BEASTInterface createObject(JSONObject node, String className, BEASTInterface parent) throws JSONParserException {
 		//className = className.replaceAll("beast", "yabby");
 		// try the IDMap first
 		String ID = getID(node);
@@ -904,7 +907,7 @@ public class JSONParser {
 		return p[n];
 	}
 
-	void parseInputs(BEASTInterface parent, JSONObject node) throws Exception {
+	void parseInputs(BEASTInterface parent, JSONObject node) throws JSONParserException {
 		// sanity check: all attributes should be valid input names
 		for (String name : node.keySet()) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
@@ -917,21 +920,27 @@ public class JSONParser {
 		}
 
 		if (node.keySet() != null) {
-			// parse inputs in occurrance of inputs in the parent object
-			// this determines the order in which initAndValidate is called
-			List<Input<?>> inputs = parent.listInputs();
-			Set<String> done = new HashSet<String>();
-			for (Input<?> input : inputs) {
-				String name = input.getName();
-				processInput(name, node, parent);
-				done.add(name);
-			}
-			
-			for (String name : node.keySet()) {
-				if (!done.contains(name)) {
-					// this can happen with Maps
+			try {
+				// parse inputs in occurrance of inputs in the parent object
+				// this determines the order in which initAndValidate is called
+				List<Input<?>> inputs = parent.listInputs();
+				Set<String> done = new HashSet<String>();
+				for (Input<?> input : inputs) {
+					String name = input.getName();
 					processInput(name, node, parent);
+					done.add(name);
 				}
+				
+				for (String name : node.keySet()) {
+					if (!done.contains(name)) {
+						// this can happen with Maps
+						processInput(name, node, parent);
+					}
+				}
+			} catch (JSONParserException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new JSONParserException(node, e.getMessage(), 1005);
 			}
 		}
 		
@@ -980,15 +989,19 @@ public class JSONParser {
 		// }
 
 		// fill in missing inputs, if an input provider is available
-		if (requiredInputProvider != null) {
-			for (Input<?> input : parent.listInputs()) {
-				if (input.get() == null && input.getRule() == Validate.REQUIRED) {
-					Object o = requiredInputProvider.createInput(parent, input, partitionContext);
-					if (o != null) {
-						input.setValue(o, parent);
+		try {
+			if (requiredInputProvider != null) {
+				for (Input<?> input : parent.listInputs()) {
+					if (input.get() == null && input.getRule() == Validate.REQUIRED) {
+						Object o = requiredInputProvider.createInput(parent, input, partitionContext);
+						if (o != null) {
+							input.setValue(o, parent);
+						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			throw new JSONParserException(node, e.getMessage(), 1006);			
 		}
 	} // setInputs
 
@@ -1136,14 +1149,19 @@ public class JSONParser {
 	}
 
 	/**
-	 * get double value of attribute with given name *
+	 * get double value of attribute with given name 
+	 * @throws JSONParserException *
 	 */
-	public static double getAttributeAsDouble(JSONObject node, String attName) {
+	public static double getAttributeAsDouble(JSONObject node, String attName) throws JSONParserException {
 		String sAtt = getAttribute(node, attName);
 		if (sAtt == null) {
 			return Double.MAX_VALUE;
 		}
-		return Double.parseDouble(sAtt);
+		try {
+			return Double.parseDouble(sAtt);			
+		} catch (NumberFormatException e) {
+			throw new JSONParserException(node, "Could not parse number " + sAtt, 1003);
+		}
 	}
 
 	public interface RequiredInputProvider {
