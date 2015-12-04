@@ -81,6 +81,8 @@ public class JSONObject {
 
     private static final Double NEGATIVE_ZERO = -0d;
 
+    private Object parent = null;
+
     /**
      * A sentinel value used to explicitly define a name with no value. Unlike
      * {@code null}, names with this value:
@@ -820,4 +822,12 @@ public class JSONObject {
         }
         return null;
     }
+
+    public Object getParent() {
+    	return parent;
+    }
+
+    public void setParent(Object parent) {
+		this.parent = parent;
+	}
 }

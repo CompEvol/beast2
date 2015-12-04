@@ -49,6 +49,8 @@ import java.util.List;
 public class JSONArray {
 
     private final List<Object> values;
+    
+    private Object parent = null;
 
     /**
      * Creates a {@code JSONArray} with no values.
@@ -185,6 +187,9 @@ public class JSONArray {
         values.add(value);
         return this;
     }
+    
+    /** alias for put **/
+    public JSONArray add(Object value) {return put(value);}
 
     /**
      * Same as {@link #put}, with added validity checks.
@@ -263,6 +268,18 @@ public class JSONArray {
             values.add(null);
         }
         values.set(index, value);
+        return this;
+    }
+
+    public JSONArray insert(int index, Object value) throws JSONException {
+        if (value instanceof Number) {
+            // deviate from the original by checking all Numbers, not just floats & doubles
+            JSON.checkDouble(((Number) value).doubleValue());
+        }
+        while (values.size() <= index) {
+            values.add(null);
+        }
+        values.add(index, value);
         return this;
     }
 
@@ -623,4 +640,17 @@ public class JSONArray {
         // diverge from the original, which doesn't implement hashCode
         return values.hashCode();
     }
+    
+    public int indexOf(Object o) {
+    	return values.indexOf(o);
+    }
+    
+    public Object getParent() {
+    	return parent;
+    }
+
+	public void setParent(Object parent) {
+		this.parent = parent;
+	}
+
 }

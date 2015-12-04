@@ -91,16 +91,19 @@ public class JSONTokener {
      * @throws JSONException if the input is malformed.
      */
     public Object nextValue() throws JSONException {
+    	return nextValue(null);
+    }
+    private Object nextValue(Object parent) throws JSONException {
         int c = nextCleanInternal();
         switch (c) {
             case -1:
                 throw syntaxError("End of input");
 
             case '{':
-                return readObject();
+                return readObject(parent);
 
             case '[':
-                return readArray();
+                return readArray(parent);
 
             case '\'':
             case '"':
@@ -346,8 +349,9 @@ public class JSONTokener {
      * Reads a sequence of key/value pairs and the trailing closing brace '}' of
      * an object. The opening brace '{' should have already been read.
      */
-    private JSONObject readObject() throws JSONException {
+    private JSONObject readObject(Object parent) throws JSONException {
         JSONObject result = new JSONObject();
+        result.setParent(parent);
 
         /* Peek to see if this is the empty object. */
         int first = nextCleanInternal();
@@ -358,7 +362,7 @@ public class JSONTokener {
         }
 
         while (true) {
-            Object name = nextValue();
+            Object name = nextValue(result);
             if (!(name instanceof String)) {
                 if (name == null) {
                     throw syntaxError("Names cannot be null");
@@ -381,7 +385,7 @@ public class JSONTokener {
                 pos++;
             }
 
-            result.put((String) name, nextValue());
+            result.put((String) name, nextValue(result));
 
             switch (nextCleanInternal()) {
                 case '}':
@@ -401,8 +405,9 @@ public class JSONTokener {
      * "[]" yields an empty array, but "[,]" returns a two-element array
      * equivalent to "[null,null]".
      */
-    private JSONArray readArray() throws JSONException {
+    private JSONArray readArray(Object parent) throws JSONException {
         JSONArray result = new JSONArray();
+        result.setParent(parent);
 
         /* to cover input that ends with ",]". */
         boolean hasTrailingSeparator = false;
@@ -426,7 +431,7 @@ public class JSONTokener {
                     pos--;
             }
 
-            result.put(nextValue());
+            result.put(nextValue(result));
 
             switch (nextCleanInternal()) {
                 case ']':

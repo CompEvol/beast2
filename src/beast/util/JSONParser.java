@@ -26,6 +26,7 @@ package beast.util;
 
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import beast.app.beauti.PartitionContext;
@@ -311,18 +312,29 @@ public class JSONParser {
 			JSONObject orig = (JSONObject) o;
 			JSONObject copy = new JSONObject();
 			for (String key : orig.keySet()) {
-				Object value = orig.get(key);
-				Object copyValue = copyReplace(value, varStr, valueStr);
-				copy.put(key, copyValue);
+				try {
+					Object value = orig.get(key);
+					Object copyValue = copyReplace(value, varStr, valueStr);
+					copy.put(key, copyValue);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			return copy;
 		} else if (o instanceof JSONArray) {
 			JSONArray orig = (JSONArray) o;
 			JSONArray copy = new JSONArray();
 			for (int i = 0; i < orig.length(); i++) {
-				Object value = orig.get(i);
-				Object copyValue = copyReplace(value, varStr, valueStr);
-				copy.add(copyValue);
+				Object value;
+				try {
+					value = orig.get(i);
+					Object copyValue = copyReplace(value, varStr, valueStr);
+					copy.add(copyValue);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			return copy;			
 		}
@@ -1047,7 +1059,11 @@ public class JSONParser {
 	 */
 	public static String getAttribute(JSONObject node, String attName) {
 		if (node.has(attName)) {
-			return node.get(attName).toString();
+			try {
+				return node.get(attName).toString();
+			} catch (JSONException e) {
+				return null;
+			}
 		}
 		return null;
 	}

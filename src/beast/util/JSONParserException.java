@@ -25,6 +25,7 @@
 package beast.util;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -79,9 +80,14 @@ public class JSONParserException extends Exception {
 	            if (p instanceof JSONObject) {
 	            	JSONObject parent = (JSONObject) p;
 	            	for (String key : parent.keySet()) {
-	            		if (parent.get(key).equals(o)) {
-	            			name = "\"" + key + "\": ";
-	            		}
+	            		try {
+							if (parent.get(key).equals(o)) {
+								name = "\"" + key + "\": ";
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	            	}
 	            }
 	
@@ -107,9 +113,14 @@ public class JSONParserException extends Exception {
 	            if (p instanceof JSONObject) {
 	            	JSONObject parent = (JSONObject) p;
 	            	for (String key : parent.keySet()) {
-	            		if (parent.get(key).equals(o)) {
-	            			name = "\"" + key + "\": ";
-	            		}
+	            		try {
+							if (parent.get(key).equals(o)) {
+								name = "\"" + key + "\": ";
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	            	}
 	            }
 
@@ -129,7 +140,11 @@ public class JSONParserException extends Exception {
 
     String getAttribute(JSONObject node, String target) {
     	if (node.has(target)) {
-    		return  node.get(target).toString();
+    		try {
+				return  node.get(target).toString();
+			} catch (JSONException e) {
+				return null;
+			}
     	}
    		return null;
     } // getAttribute

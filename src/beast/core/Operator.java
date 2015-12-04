@@ -27,8 +27,12 @@ package beast.core;
 
 import beast.core.Input.Validate;
 import beast.core.util.Evaluator;
+
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONWriter;
+//import org.json.JSONWriter;
+
+import org.json.JSONStringer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -245,36 +249,40 @@ public abstract class Operator extends BEASTObject {
      * *
      */
     public void storeToFile(final PrintWriter out) {
-
-        StringWriter writer = new StringWriter();
-        JSONWriter json = new JSONWriter(writer);
-        json.object();
-
-        if (getID()==null)
-           setID("unknown");
-
-        json.key("id").value(getID());
-
-        double p = getCoercableParameterValue();
-        if (Double.isNaN(p)) {
-            json.key("p").value("NaN");
-        } else if (Double.isInfinite(p)) {
-        	if (p > 0) {
-        		json.key("p").value("Infinity");
-        	} else {
-        		json.key("p").value("-Infinity");
-        	}
-        } else {
-            json.key("p").value(p);
-        }
-        json.key("accept").value(m_nNrAccepted);
-        json.key("reject").value(m_nNrRejected);
-        json.key("acceptFC").value(m_nNrAcceptedForCorrection);
-        json.key("rejectFC").value(m_nNrRejectedForCorrection);
-        json.key("rejectIv").value(m_nNrRejectedInvalid);
-        json.key("rejectOp").value(m_nNrRejectedOperator);
-        json.endObject();
-        out.print(writer.toString());
+    	try {
+	        JSONStringer json = new JSONStringer();
+	        json.object();
+	
+	        if (getID()==null)
+	           setID("unknown");
+	
+	        json.key("id").value(getID());
+	
+	        double p = getCoercableParameterValue();
+	        if (Double.isNaN(p)) {
+	            json.key("p").value("NaN");
+	        } else if (Double.isInfinite(p)) {
+	        	if (p > 0) {
+	        		json.key("p").value("Infinity");
+	        	} else {
+	        		json.key("p").value("-Infinity");
+	        	}
+	        } else {
+	            json.key("p").value(p);
+	        }
+	        json.key("accept").value(m_nNrAccepted);
+	        json.key("reject").value(m_nNrRejected);
+	        json.key("acceptFC").value(m_nNrAcceptedForCorrection);
+	        json.key("rejectFC").value(m_nNrRejectedForCorrection);
+	        json.key("rejectIv").value(m_nNrRejectedInvalid);
+	        json.key("rejectOp").value(m_nNrRejectedOperator);
+	        json.endObject();
+	        out.print(json.toString());
+    	} catch (JSONException e) {
+    		// failed to log operator in state file
+    		// report and continue
+    		e.printStackTrace();
+    	}
     }
 
     /**
@@ -282,16 +290,22 @@ public abstract class Operator extends BEASTObject {
      * Override this method fo meta-operators (see also storeToFile).
      */
     public void restoreFromFile(JSONObject o) {
-        if (!Double.isNaN(o.getDouble("p"))) {
-            setCoercableParameterValue(o.getDouble("p"));
-        }
-        m_nNrAccepted = o.getInt("accept");
-        m_nNrRejected = o.getInt("reject");
-        m_nNrAcceptedForCorrection = o.getInt("acceptFC");
-        m_nNrRejectedForCorrection = o.getInt("rejectFC");
-
-        m_nNrRejectedInvalid = o.has("rejectIv") ? o.getInt("rejectIv") : 0;
-        m_nNrRejectedOperator = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
+    	try {
+	        if (!Double.isNaN(o.getDouble("p"))) {
+	            setCoercableParameterValue(o.getDouble("p"));
+	        }
+	        m_nNrAccepted = o.getInt("accept");
+	        m_nNrRejected = o.getInt("reject");
+	        m_nNrAcceptedForCorrection = o.getInt("acceptFC");
+	        m_nNrRejectedForCorrection = o.getInt("rejectFC");
+	
+	        m_nNrRejectedInvalid = o.has("rejectIv") ? o.getInt("rejectIv") : 0;
+	        m_nNrRejectedOperator = o.has("rejectOp") ? o.getInt("rejectOp") : 0;
+    	} catch (JSONException e) {
+    		// failed to restore from state file
+    		// report and continue
+    		e.printStackTrace();
+    	}
     }
 
 
