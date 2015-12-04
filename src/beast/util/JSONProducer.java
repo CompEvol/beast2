@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
@@ -77,7 +76,7 @@ public class JSONProducer {
             //buf.append("{\"version\": \"2.0\",\n\"namespace\": \"" + DEFAULT_NAMESPACE + "\",\n\n" +
             //		"\"" + JSONParser.ANALYSIS_ELEMENT + "\": [\n");
             buf.append("{version: \"2.0\",\nnamespace: \"" + DEFAULT_NAMESPACE + "\",\n\n" +
-            		JSONParser.ANALYSIS_ELEMENT + ": [\n");
+            		XMLParser.BEAST_ELEMENT + ": [\n");
             //buf.append("\n\n");
             isDone = new HashSet<BEASTInterface>();
             isInputsDone = new HashSet<Input>();

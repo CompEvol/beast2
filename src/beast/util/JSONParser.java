@@ -25,16 +25,9 @@
 package beast.util;
 
 
-import static beast.util.XMLParserUtils.replaceVariable;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
@@ -42,7 +35,6 @@ import beast.core.Input.Validate;
 import beast.core.Runnable;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,8 +48,6 @@ import java.util.Set;
 
 /** parses YABBY JSON file into a set of YABBY objects **/
 public class JSONParser {
-	final public static String ANALYSIS_ELEMENT = "analysis";
-
 	final static String INPUT_CLASS = Input.class.getName();
 	final static String YOBJECT_CLASS = BEASTInterface.class.getName();
 	final static String RUNNABLE_CLASS = Runnable.class.getName();
@@ -88,8 +78,16 @@ public class JSONParser {
 		}
 	}
 
-	List<BEASTInterface> pluginsWaitingToInit;
-	List<JSONObject> nodesWaitingToInit;
+	class BEASTObjectWrapper {
+		public BEASTObjectWrapper(BEASTInterface object, JSONObject node) {
+			this.object = object;
+			this.node = node;
+		}
+		
+		BEASTInterface object;
+		JSONObject node;
+	}
+	List<BEASTObjectWrapper> objectsWaitingToInit;
 
 	public HashMap<String, String> getElement2ClassMap() {
 		return element2ClassMap;
@@ -111,8 +109,7 @@ public class JSONParser {
 	PartitionContext partitionContext = null;
 
 	public JSONParser() {
-		pluginsWaitingToInit = new ArrayList<BEASTInterface>();
-		nodesWaitingToInit = new ArrayList<JSONObject>();
+		objectsWaitingToInit = new ArrayList<>();
 	}
 
 	public Runnable parseFile(File file) throws Exception {
@@ -259,10 +256,11 @@ public class JSONParser {
 	private void initPlugins() throws Exception {
 		JSONObject node = null;
 		try {
-			for (int i = 0; i < pluginsWaitingToInit.size(); i++) {
-				BEASTInterface plugin = pluginsWaitingToInit.get(i);
-				node = nodesWaitingToInit.get(i);
-				plugin.initAndValidate();
+			for (int i = 0; i < objectsWaitingToInit.size(); i++) {
+				BEASTObjectWrapper bow = objectsWaitingToInit.get(i);
+				// for error handling, init node
+				node = bow.node;
+				bow.object.initAndValidate();
 			}
 		} catch (Exception e) {
 			// next lines for debugging only
@@ -645,20 +643,20 @@ public class JSONParser {
 	}
 
 	void parseRunElement(JSONObject topNode) throws Exception {
-		// find mcmc element
-		Object o = doc.get(ANALYSIS_ELEMENT);
+		// find beast element
+		Object o = doc.get(XMLParser.BEAST_ELEMENT);
 		if (o == null) {
-			throw new JSONParserException(topNode, "Expected " + ANALYSIS_ELEMENT + " top level object in file", 102);
+			throw new JSONParserException(topNode, "Expected " + XMLParser.BEAST_ELEMENT + " top level object in file", 102);
 		}
 		if (!(o instanceof JSONArray)) {
-			throw new JSONParserException(topNode, "Expected " + ANALYSIS_ELEMENT + " to be a list", 1020);
+			throw new JSONParserException(topNode, "Expected " + XMLParser.BEAST_ELEMENT + " to be a list", 1020);
 		}
 		JSONArray analysis = (JSONArray) o;
 		runnable = null;
 		for (int i = 0; i < analysis.length(); i++) {
 			o = analysis.get(i);
 			if (!(o instanceof JSONObject)) {
-				throw new JSONParserException(topNode, ANALYSIS_ELEMENT + " should only contain objects", 1021);
+				throw new JSONParserException(topNode, XMLParser.BEAST_ELEMENT + " should only contain objects", 1021);
 			}
 			JSONObject node = (JSONObject) o;
 			o = createObject(node, RUNNABLE_CLASS, null);
@@ -778,8 +776,7 @@ public class JSONParser {
 					// for instance because it is abstract
 					throw new Exception("Cannot instantiate class. Please check the spec attribute.");
 				} catch (ClassNotFoundException e) {
-					// TODO: handle exception
-					// System.err.println(e.getMessage());
+					// ignore -- class is probably in another name space
 				}
 			}
 			if (!bDone) {
@@ -822,8 +819,7 @@ public class JSONParser {
 		if (m_bInitialize) {
 			try {
 				plugin.validateInputs();
-				pluginsWaitingToInit.add(plugin);
-				nodesWaitingToInit.add(node);
+				objectsWaitingToInit.add(new BEASTObjectWrapper(plugin, node));
 				// plugin.initAndValidate();
 			} catch (Exception e) {
 				// next lines for debugging only
