@@ -42,13 +42,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** parses YABBY JSON file into a set of YABBY objects **/
+/** parses BEAST JSON file into a set of BEAST objects **/
 public class JSONParser {
 	final static String INPUT_CLASS = Input.class.getName();
 	final static String YOBJECT_CLASS = BEASTInterface.class.getName();
@@ -100,7 +105,7 @@ public class JSONParser {
 
 	/**
 	 * Flag to indicate initAndValidate should be called after all inputs of a
-	 * plugin have been parsed
+	 * beastObject have been parsed
 	 */
 	boolean initialise = true;
 
@@ -679,15 +684,14 @@ public class JSONParser {
 	} // parseRunElement
 
 	/**
-	 * Check that plugin is a class that is assignable to class with name
+	 * Check that BEASTObject is a class that is assignable to class with name
 	 * sClass. This involves a parameter clutch to deal with non-real
 	 * parameters. This needs a bit of work, obviously...
 	 */
-	boolean checkType(String className, BEASTInterface plugin) throws JSONParserException {
+	boolean checkType(String className, BEASTInterface beastObject) throws JSONParserException {
 		// parameter clutch
-		if (plugin instanceof Parameter<?>) {
+		if (beastObject instanceof Parameter<?>) {
 			for (String nameSpace : nameSpaces) {
-				//nameSpace = nameSpace.replaceAll("beast", "yabby");
 				if ((nameSpace + className).equals(RealParameter.class.getName())) {
 					return true;
 				}
@@ -697,9 +701,8 @@ public class JSONParser {
 			return true;
 		}
 		for (String nameSpace : nameSpaces) {
-			//nameSpace = nameSpace.replaceAll("beast", "yabby");
 			try {
-				if (Class.forName(nameSpace + className).isInstance(plugin)) {
+				if (Class.forName(nameSpace + className).isInstance(beastObject)) {
 					return true;
 				}
 			} catch (Exception e) {
@@ -709,8 +712,14 @@ public class JSONParser {
 		return false;
 	} // checkType
 
+	/** create a BEAST object based on the info in the node.
+	 * @param node
+	 * @param className default class name -- this means a spec attribute does not need to be 
+	 * specified if all outputs of this BEAST object have as Input type the class of this object.
+	 * @return
+	 * @throws JSONParserException
+	 */
 	BEASTInterface createObject(JSONObject node, String className) throws JSONParserException {
-		//className = className.replaceAll("beast", "yabby");
 		// try the IDMap first
 		String ID = getID(node);
 
@@ -772,13 +781,13 @@ public class JSONParser {
 			}
 		}
 		if (clazzName == null) {
-			throw new JSONParserException(node, "Class could not be found. Did you mean " + guessClass(specClass) + "?", 1007);
+			throw new JSONParserException(node, "Class could not be found. Did you mean " + guessClass(specClass) + "?", 1010);
 			// throw new ClassNotFoundException(sSpecClass);
 		}
 				
 		// sanity check		
 		try {
-			Class clazz = Class.forName(clazzName);
+			Class<?> clazz = Class.forName(clazzName);
 			if (!BEASTInterface.class.isAssignableFrom(clazz)) {
 				// if (o instanceof Input) {
 				// // if we got this far, it is a basic input,
@@ -803,8 +812,8 @@ public class JSONParser {
 		}
 		
 		// process inputs
-		List<NameValuePair> inputMap = parseInputs(node, clazzName);
-		BEASTInterface beastObject = createBeastObject(node, ID, clazzName, inputMap);
+		List<NameValuePair> inputInfo = parseInputs(node, clazzName);
+		BEASTInterface beastObject = createBeastObject(node, ID, clazzName, inputInfo);
 		// initialise
 		if (initialise) {
 			try {
@@ -824,7 +833,12 @@ public class JSONParser {
 	
 	/** create BEASTInterface either using Inputs, or using annotated constructor **/
 	@SuppressWarnings("unchecked")
-	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<NameValuePair> inputMap) throws JSONParserException {
+	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
+		BEASTInterface beastObject = useAnnotatedConstructor(node, ID, clazzName, inputInfo);
+		if (beastObject != null) {
+			return beastObject;
+		}
+		
 		// create new instance using class name
 		Object o = null;
 		try {
@@ -832,18 +846,18 @@ public class JSONParser {
 				o = c.newInstance();
 		} catch (InstantiationException e) {
 			// we only get here when the class exists, but cannot be
-			// created
-			// for instance because it is abstract
+			// created for instance because it is abstract
 			throw new JSONParserException(node, "Cannot instantiate class. Please check the spec attribute.", 1006);
 		} catch (ClassNotFoundException e) {
 			// ignore -- class was found in beastObjectNames before
 		} catch (IllegalAccessException e) {
 			// T O D O Auto-generated catch block
 			e.printStackTrace();
+			throw new JSONParserException(node, "Cannot access class. Please check the spec attribute.", 1011);
 		}
 		
 		// set id
-		BEASTInterface beastObject = (BEASTInterface) o;
+		beastObject = (BEASTInterface) o;
 		beastObject.setID(ID);
 
 		// hack required to make log-parsing easier
@@ -851,8 +865,8 @@ public class JSONParser {
 			state = (State) o;
 		}
 
-		// TODO: process inputs for annotated constructors
-		for (NameValuePair pair : inputMap) {
+		// process inputs for annotated constructors
+		for (NameValuePair pair : inputInfo) {
 			setInput(node, beastObject, pair.name, pair.value);
 		}
 		
@@ -886,7 +900,7 @@ public class JSONParser {
 		}
 		
 		// make sure object o is in outputs of inputs
-		for (NameValuePair pair : inputMap) {
+		for (NameValuePair pair : inputInfo) {
 			if (pair.value instanceof BEASTInterface) {
 				((BEASTInterface) pair.value).getOutputs().add(o);
 			}	
@@ -897,25 +911,82 @@ public class JSONParser {
 		return beastObject;
 	}
 
+	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(clazzName);
+		} catch (ClassNotFoundException e) {
+			// cannot get here, since we checked the class existed before
+			e.printStackTrace();
+		}
+	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
+	    for (Constructor<?> ctor : allConstructors) {
+	    	Annotation[] annotations = ctor.getParameterAnnotations()[1];
+	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	for (Annotation a : annotations) {
+	    		if (a instanceof Param) {
+	    			paramAnnotations.add((Param) a);
+	    		}
+	    	}
+	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+    		//Type[] gtypes = ctor.getGenericParameterTypes();
+	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
+	    		Object [] args = new Object[types.length];
+	    		for (int i = 0; i < types.length; i++) {
+	    			Param param = paramAnnotations.get(i);
+	    			Type type = types[i];
+	    			if (type instanceof List) {
+	    				if (args[i] == null) {
+	    					// RRB: do we need parameterised list?
+	    					args[i] = new ArrayList();
+	    				}
+	    				Object value = getValue(param, inputInfo);
+	    				((List)args[i]).add(value);
+	    			} else {
+	    				args[i] = getValue(param, inputInfo);
+	    			}
+	    		}
+	    		// TODO: more error checking here to ensure all inputs are used
+	    		try {
+					Object o = ctor.newInstance(args);
+					BEASTInterface beastObject = (BEASTInterface) o;
+					return beastObject;
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new JSONParserException(node, "Could not create object: " + e.getMessage(), 1012);
+				}
+	    	}
+		}
+		return null;
+	}
+
+	private Object getValue(Param param, List<NameValuePair> inputInfo) {
+		for (NameValuePair pair : inputInfo) {
+			if (pair.name.equals(param.name())) {
+				return pair.value;
+			}
+		}
+		return param.defaultValue();
+	}
+
 	List<NameValuePair> parseInputs(JSONObject node, String className) throws JSONParserException {
-		List<NameValuePair> map = new ArrayList<>();
+		List<NameValuePair> inputInfo = new ArrayList<>();
 
 		if (node.keySet() != null) {
 			try {
 				// parse inputs in occurrence of inputs in the parent object
 				// this determines the order in which initAndValidate is called
-				List<Input<?>> inputs = listInputs(className);
+				List<InputType> inputs = listInputs(className);
 				Set<String> done = new HashSet<String>();
-				for (Input<?> input : inputs) {
-					String name = input.getName();
-					processInput(name, node, map, inputs);
+				for (InputType input : inputs) {
+					String name = input.name;
+					processInput(name, node, inputInfo, inputs);
 					done.add(name);
 				}
 				
 				for (String name : node.keySet()) {
 					if (!done.contains(name)) {
 						// this can happen with Maps
-						processInput(name, node, map, inputs);
+						processInput(name, node, inputInfo, inputs);
 					}
 				}
 			} catch (JSONParserException e) {
@@ -925,32 +996,82 @@ public class JSONParser {
 			}
 		}
 		
-		return map;
+		return inputInfo;
 	} // setInputs
 
-	private List<Input<?>> listInputs(String className) throws InstantiationException , IllegalAccessException {
+	
+	class InputType {
+		String name;
+		Class<?> type;
+		public InputType(String name, Class<?> type) {
+			this.name = name;
+			this.type = type;
+		}
+	}
+	
+	private List<InputType> listInputs(String className) throws InstantiationException , IllegalAccessException {
+		List<InputType> inputTypes = new ArrayList<>();
+
+		// First, collect Input members
 		BEASTInterface o = null;
+		Class<?> clazz = null;
 		try {
-			// TODO: RRB adept for annotated constructors
-			o = (BEASTInterface) Class.forName(className).newInstance();
+			clazz = Class.forName(className);
 		} catch (ClassNotFoundException e1) {
 			// cannot get here -- it was already checked the name exists
 			e1.printStackTrace();
 		}
-		List<Input<?>> inputs = null;
-		inputs = o.listInputs();
-		for (Input<?> input : inputs) {
-			try {
-				// force class types to be determined
-				if (input.getType() == null) {
-					input.determineClass(o);
+		try {
+			o = (BEASTInterface) clazz.newInstance();
+			List<Input<?>> inputs = null;
+			inputs = o.listInputs();
+			for (Input<?> input : inputs) {
+				try {
+					// force class types to be determined
+					if (input.getType() == null) {
+						input.determineClass(o);
+					}
+					inputTypes.add(new InputType(input.getName(), input.getType()));
+				} catch (Exception e) {
+					// seems safe to ignore
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				// seems safe to ignore
-				e.printStackTrace();
 			}
+		} catch (InstantiationException e) {
+			// this can happen if there is no constructor without arguments
 		}
-		return inputs;
+		
+		
+		// Second, collect types of annotated constructor
+	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
+	    for (Constructor<?> ctor : allConstructors) {
+	    	Annotation[] annotations = ctor.getParameterAnnotations()[1];
+	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	for (Annotation a : annotations) {
+	    		if (a instanceof Param) {
+	    			paramAnnotations.add((Param) a);
+	    		}
+	    	}
+	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+    		Type[] gtypes = ctor.getGenericParameterTypes();
+	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
+	    		for (int i = 0; i < types.length; i++) {
+	    			Param param = paramAnnotations.get(i);
+	    			Type type = types[i];
+	    			if (type instanceof List) {
+                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i]).getActualTypeArguments();
+                        Class<?> theClass = (Class<?>) genericTypes2[0];
+	    				InputType t = new InputType(param.name(), theClass);
+	    				inputTypes.add(t);
+	    			} else {
+	    				InputType t = new InputType(param.name(), types[i]);
+	    				inputTypes.add(t);
+	    			}
+	    		}
+	    	}
+		}
+		
+		return inputTypes;
 	}
 
 	/**
@@ -1033,7 +1154,7 @@ public class JSONParser {
 		}
 	}
 	
-	private void processInput(String name, JSONObject node, List<NameValuePair> map, List<Input<?>> inputs) throws Exception {
+	private void processInput(String name, JSONObject node, List<NameValuePair> map, List<InputType> inputs) throws Exception {
 		if (node.has(name)) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
 				Object o = node.get(name);
@@ -1210,12 +1331,12 @@ public class JSONParser {
 		return className;
 	}
 
-	String getClassName(JSONObject child, String name, List<Input<?>> inputs) throws Exception {
+	String getClassName(JSONObject child, String name, List<InputType> inputs) throws Exception {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
-			for (Input<?> input : inputs) {
-				if (input.getName().equals(name)) {
-					Class<?> type = input.getType();
+			for (InputType input : inputs) {
+				if (input.name.equals(name)) {
+					Class<?> type = input.type;
 					if (type == null) {
 						throw new RuntimeException("Programmer error: inputs should have their type set");
 					}
