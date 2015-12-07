@@ -93,7 +93,7 @@ public class MRCAPrior extends Distribution {
         if (useOriginate && nrOfTaxa == tree.getLeafNodeCount()) {
         	throw new Exception("Cannot use originate of root. You can set useOriginate to false to fix this");
         }
-
+        initialised = false;
     }
 
     boolean [] nodesTraversed;
