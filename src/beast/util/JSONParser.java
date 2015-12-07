@@ -796,7 +796,22 @@ public class JSONParser {
 			}
 		}
 		if (clazzName == null) {
-			throw new JSONParserException(node, "Class could not be found. Did you mean " + guessClass(specClass) + "?", 1010);
+			// try to create the old-fashioned way by creating the class
+            boolean bDone = false;
+            for (final String nameSpace : nameSpaces) {
+                try {
+                    if (!bDone) {
+                        Class.forName(nameSpace + specClass);
+                        clazzName = nameSpace + specClass;
+                        bDone = true;
+                    }
+                } catch (ClassNotFoundException e) {
+                    // class does not exist -- try another namespace
+                }
+            }
+		}
+		if (clazzName == null) {
+			throw new JSONParserException(node, "Class could not be found. Did you mean " + guessClass(specClass) + "?", 1017);
 			// throw new ClassNotFoundException(sSpecClass);
 		}
 				
@@ -885,7 +900,6 @@ public class JSONParser {
 			}
 			
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1394,14 +1408,18 @@ public class JSONParser {
 		return className;
 	}
 
-	String getClassName(JSONObject child, String name, List<InputType> inputs) throws Exception {
+	private String getClassName(JSONObject child, String name, List<InputType> inputs) throws Exception {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
+			// derive type from Input
 			for (InputType input : inputs) {
 				if (input.name.equals(name)) {
 					Class<?> type = input.type;
 					if (type == null) {
 						throw new RuntimeException("Programmer error: inputs should have their type set");
+					}
+					if (type.isAssignableFrom(List.class)) {
+						System.err.println("XX");
 					}
 					className = type.getName();
 				}
