@@ -129,12 +129,12 @@ public class MCMC extends Runnable {
     public MCMC(
             @Param(name = "chainLength", description = "Length of the MCMC chain i.e. number of samples taken in main loop") int chainLength,
             @Param(name = "state", description = "elements of the state space") State state,
-            @Param(name = "initialisers", description = "one or more state node initilisers used for determining the start state of the chain") List<StateNodeInitialiser> initialisers,
+            @Param(name = "init", description = "one or more state node initilisers used for determining the start state of the chain") List<StateNodeInitialiser> initialisers,
             @Param(name = "storeEvery", description = "store the state to disk every X number of samples so that we can resume computation later on if the process failed half-way.") int storeEvery,
             @Param(name = "preBurnin", description = "Number of burn in samples taken before entering the main loop", defaultValue = "0") int preBurnin,
-            @Param(name = "posterior", description = "probability distribution to sample over (e.g. a posterior)") Distribution posterior,
-            @Param(name = "operators", description = "operator for generating proposals in MCMC state space") List<Operator> operators,
-            @Param(name = "loggers", description = "loggers for reporting progress of MCMC chain") List<Logger> loggers,
+            @Param(name = "distribution", description = "probability distribution to sample over (e.g. a posterior)") Distribution posterior,
+            @Param(name = "operator", description = "operator for generating proposals in MCMC state space") List<Operator> operators,
+            @Param(name = "logger", description = "loggers for reporting progress of MCMC chain") List<Logger> loggers,
             @Param(name = "sampleFromPrior", description = "whether to ignore the likelihood when sampling (default false). The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", defaultValue = "false") boolean sampleFromPrior,
             @Param(name = "operatorSchedule", description = "specify operator selection and optimisation schedule", optional = true) OperatorSchedule operatorSchedule) {
 
@@ -142,14 +142,14 @@ public class MCMC extends Runnable {
             initByName(
                     "chainLength", chainLength,
                     "state", state,
-                    "initialisers", initialisers,
+                    "init", initialisers,
                     "storeEvery", storeEvery,
                     "preBurnin", preBurnin,
                     "distribution", posterior,
                     "operator", operators,
                     "logger", loggers,
                     "sampleFromPrior", sampleFromPrior,
-                    "operatorSchedule", operatorSchedule
+                    "operatorSchedule", (operatorSchedule != null ? operatorSchedule : new OperatorSchedule())
             );
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

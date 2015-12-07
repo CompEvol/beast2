@@ -589,47 +589,62 @@ public class JSONParser {
 			}
 		}
 
-		// // process map elements
-		// NodeList nodes = doc.getElementsByTagName(MAP_ELEMENT);
-		// for (int i = 0; i < nodes.getLength(); i++) {
-		// Node child = nodes.item(i);
-		// String sName = getAttribute(child, "name");
-		// if (sName == null) {
-		// throw new XMLParserException(child,
-		// "name attribute expected in map element", 300);
-		// }
-		// if (!element2ClassMap.containsKey(sName)) {
-		// // throw new XMLParserException(child, "name '" + sName +
-		// "' is already defined as " + m_sElement2ClassMap.get(sName), 301);
-		// // }
-		//
-		// // get class
-		// String sClass = child.getTextContent();
-		// // remove spaces
-		// sClass = sClass.replaceAll("\\s", "");
-		// // go through namespaces in order they are declared to find the
-		// correct class
-		// boolean bDone = false;
-		// for (String sNameSpace : m_sNameSpaces) {
-		// try {
-		// // sanity check: class should exist
-		// if (!bDone && Class.forName(sNameSpace + sClass) != null) {
-		// element2ClassMap.put(sName, sClass);
-		// System.err.println(sName + " => " + sNameSpace + sClass);
-		// String reserved = getAttribute(child, "reserved");
-		// if (reserved != null && reserved.toLowerCase().equals("true")) {
-		// reservedElements.add(sName);
-		// }
-		//
-		// bDone = true;
-		// }
-		// } catch (ClassNotFoundException e) {
-		// //System.err.println("Not found " + e.getMessage());
-		// // T O D O: handle exception
-		// }
-		// }
-		// }
-		// }
+		// process map elements
+		if (topNode.has("map")) {
+			try {
+				Object o = topNode.get("map");
+				if (o instanceof JSONArray) {
+					JSONArray maps = (JSONArray) o;
+					for (int i = 0; i < maps.length(); i++) {
+						Object o2 = maps.get(i);
+						if (o2 instanceof JSONObject) {
+							JSONObject map = (JSONObject) o2;
+							if (map.has("name") && map.has("value") && map.length()==2) {
+								String mapName = map.getString("name");
+								String clazz = map.getString("value");
+								 // remove spaces
+								 clazz = clazz.replaceAll("\\s", "");
+								 // go through namespaces in order they are declared to find the
+								 // correct class
+								 boolean done = false;
+								 for (String nameSpace : nameSpaces) {
+									 // sanity check: class should exist
+									 try {
+										if (!done && Class.forName(nameSpace + clazz) != null) {
+											 element2ClassMap.put(mapName, clazz);
+											 Log.warning.println(mapName + " => " + nameSpace + clazz);
+											 done = true;
+											 //String reserved = getAttribute(child, "reserved");
+											 //if (reserved != null && reserved.toLowerCase().equals("true")) {
+											 //	 reservedElements.add(sName);
+											 //}
+										 }
+									} catch (ClassNotFoundException e) {
+										// ignore -- it may be in another namespace
+										// there appears to be no good way to check a class exists other than to try and create one
+										// and test whether no exception is thrown.
+									}
+								 }
+								 if (!done) {
+									 Log.warning.println("WARNING: no class could be found for map " + mapName + " => " + clazz +". This map is ignored.");
+								 }
+
+							} else { 
+								throw new JSONParserException(map, "Expected a name and a value and nothing else", 1016);
+							}
+						} else {
+							throw new JSONParserException(topNode, "map should be a list of JSONObjects. Use for example map:[{name:\"OneOnX\", value:\"beast.math.distributions.OneOnX\"}] for a single map", 1013);
+						}
+					}
+				} else {
+					throw new JSONParserException(topNode, "map should be a list. Use for example map:[{name:\"OneOnX\", value:\"beast.math.distributions.OneOnX\"}] for a single map", 1014);
+				}
+			} catch (JSONException e) {
+				// should never get here, unless something is really wrong
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}		
 	} // parseNameSpaceAndMap
 
 	public void setNameSpace(String nameSpaceStr) {
@@ -761,10 +776,10 @@ public class JSONParser {
 		}
 		// it's not in the ID map yet, so we have to create a new object
 		String specClass = className;
-		// String sElementName = node.getNodeName();
-		//if (element2ClassMap.containsKey(specClass)) {
-		//	specClass = element2ClassMap.get(specClass);
-		//}
+		String elementName = getElementName(node);
+		if (element2ClassMap.containsKey(elementName)) {
+			specClass = element2ClassMap.get(elementName);
+		}
 		String spec = getAttribute(node, "spec");
 		if (spec != null) {
 			specClass = spec;
@@ -831,6 +846,49 @@ public class JSONParser {
 		return beastObject;
 	} // createObject
 	
+	private String getElementName(JSONObject node) {
+		Object o = node.getParent();
+		if (o == null) {
+			return null;
+		}
+		if (o instanceof JSONObject) {
+			JSONObject parent = ((JSONObject) o);
+			for (String s : parent.keySet()) {
+				try {
+					if (parent.get(s) == node) {
+						return s;
+					}
+				} catch (JSONException e) {
+					// should not get here
+					e.printStackTrace();
+				}
+			}
+		}
+		if (o instanceof JSONArray) {
+			JSONArray parent = ((JSONArray) o);
+			Object o2 = parent.getParent();
+			if (o2 == null) {
+				return null;
+			}
+			if (o2 instanceof JSONObject) {
+				JSONObject gparent = ((JSONObject) o2);
+				for (String s : gparent.keySet()) {
+					try {
+						if (gparent.get(s) == parent) {
+							return s;
+						}
+					} catch (JSONException e) {
+						// should not get here
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/** create BEASTInterface either using Inputs, or using annotated constructor **/
 	@SuppressWarnings("unchecked")
 	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
@@ -911,6 +969,7 @@ public class JSONParser {
 		return beastObject;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
 		Class<?> clazz = null;
 		try {
@@ -921,11 +980,13 @@ public class JSONParser {
 		}
 	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
 	    for (Constructor<?> ctor : allConstructors) {
-	    	Annotation[] annotations = ctor.getParameterAnnotations()[1];
+	    	Annotation[][] annotations = ctor.getParameterAnnotations();
 	    	List<Param> paramAnnotations = new ArrayList<>();
-	    	for (Annotation a : annotations) {
-	    		if (a instanceof Param) {
-	    			paramAnnotations.add((Param) a);
+	    	for (Annotation [] a0 : annotations) {
+		    	for (Annotation a : a0) {
+		    		if (a instanceof Param) {
+		    			paramAnnotations.add((Param) a);
+		    		}
 	    		}
 	    	}
 	    	Class<?>[] types  = ctor.getParameterTypes();	    	
@@ -937,7 +998,7 @@ public class JSONParser {
 	    			Type type = types[i];
 	    			if (type instanceof List) {
 	    				if (args[i] == null) {
-	    					// RRB: do we need parameterised list?
+	    					// no need to parameterise list due to type erasure
 	    					args[i] = new ArrayList();
 	    				}
 	    				Object value = getValue(param, inputInfo);
@@ -1045,12 +1106,14 @@ public class JSONParser {
 		// Second, collect types of annotated constructor
 	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
 	    for (Constructor<?> ctor : allConstructors) {
-	    	Annotation[] annotations = ctor.getParameterAnnotations()[1];
+	    	Annotation[][] annotations = ctor.getParameterAnnotations();
 	    	List<Param> paramAnnotations = new ArrayList<>();
-	    	for (Annotation a : annotations) {
-	    		if (a instanceof Param) {
-	    			paramAnnotations.add((Param) a);
-	    		}
+	    	for (Annotation [] a0 : annotations) {
+		    	for (Annotation a : a0) {
+		    		if (a instanceof Param) {
+		    			paramAnnotations.add((Param) a);
+		    		}
+		    	}
 	    	}
 	    	Class<?>[] types  = ctor.getParameterTypes();	    	
     		Type[] gtypes = ctor.getGenericParameterTypes();

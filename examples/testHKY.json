@@ -5,6 +5,10 @@ namespace: "beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent
 // only commenst after double slashes are supported
 // but /* bla */ comments are not
 
+map: [
+	{name: "stateNode", value: "parameter.RealParameter"}
+],
+
 beast: [
 	{id: "alignment.org",
 	 spec: "Alignment",
@@ -20,7 +24,7 @@ beast: [
 	 spec: "MCMC", chainLength: 10000000,
 	 state: { storeEvery: 100000,
 		 stateNode: [
-			 {id: "hky.kappa", spec: "parameter.RealParameter", lower: 0.0, value: [ 1.0 ] },
+			 {id: "hky.kappa", lower: 0.0, value: [ 1.0 ] },
 			 {id: "tree", spec: "beast.evolution.tree.Tree" }
 		  ]
 		},
