@@ -210,6 +210,7 @@ public class MRCAPrior extends Distribution {
                 taxonIndex[i] = i;
             }
         }
+        initialised = true;
  	}
 
 	/**
