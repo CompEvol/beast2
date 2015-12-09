@@ -386,6 +386,8 @@ public class MCMC extends Runnable {
      */
     protected void doLoop() throws Exception {
         int corrections = 0;
+        final boolean isStochastic = posterior.isStochastic();
+        
         if (burnIn > 0) {
         	Log.warning.println("Please wait while BEAST takes " + burnIn + " pre-burnin samples");
         }
@@ -399,7 +401,7 @@ public class MCMC extends Runnable {
 //            }
 
             final Operator operator = operatorSchedule.selectOperator();
-            //System.out.print("\n" + sampleNr + " " + operator.getName()+ ":");
+            // System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
             Evaluator evaluator = null;
@@ -427,7 +429,6 @@ public class MCMC extends Runnable {
                     }
                 };
             }
-
             final double logHastingsRatio = operator.proposal(evaluator);
 
             if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
@@ -440,7 +441,7 @@ public class MCMC extends Runnable {
                 newLogLikelihood = posterior.calculateLogP();
 
                 logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
-                //System.out.println(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
+                // System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     oldLogLikelihood = newLogLikelihood;
@@ -449,7 +450,7 @@ public class MCMC extends Runnable {
                     if (sampleNr >= 0) {
                         operator.accept();
                     }
-                    //System.out.print(" accept");
+                    // System.err.print(" accept");
                 } else {
                     // reject
                     if (sampleNr >= 0) {
@@ -457,7 +458,7 @@ public class MCMC extends Runnable {
                     }
                     state.restore();
                     state.restoreCalculationNodes();
-                    //System.out.print(" reject");
+                    // System.err.print(" reject");
                 }
                 state.setEverythingDirty(false);
             } else {
@@ -470,24 +471,24 @@ public class MCMC extends Runnable {
                     state.setEverythingDirty(false);
                     state.restoreCalculationNodes();
 				}
-                //System.out.print(" direct reject");
+				// System.err.print(" direct reject");
             }
             log(sampleNr);
 
             if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
                 // sample, as long as we are in debug mode
-            	final double fNonStochasticLogP = posterior.getNonStochasticLogP();
-                final double fLogLikelihood = state.robustlyCalcNonStochasticPosterior(posterior);
-                if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
+            	final double originalLogP = isStochastic ? posterior.getNonStochasticLogP() : oldLogLikelihood;
+                final double fLogLikelihood = isStochastic ? state.robustlyCalcNonStochasticPosterior(posterior) : state.robustlyCalcPosterior(posterior);
+                if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
-                    System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + fNonStochasticLogP + " != " + fLogLikelihood
+                    System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + fLogLikelihood
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
-                    if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
+                    if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
                         // incorrect calculation outside debug period.
                         // This happens infrequently enough that it should repair itself after a robust posterior calculation
                         corrections++;
@@ -501,7 +502,7 @@ public class MCMC extends Runnable {
                         oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
                 } else {
-                    if (Math.abs(fLogLikelihood - fNonStochasticLogP) > 1e-6) {
+                    if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
                         // halt due to incorrect posterior during intial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();
