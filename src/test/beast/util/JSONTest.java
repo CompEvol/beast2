@@ -12,7 +12,7 @@ import beast.util.JSONProducer;
 import junit.framework.TestCase;
 
 public class JSONTest extends TestCase {
-	public static String JSON_FILE = "examples/testHKY.json";
+	public static String JSON_FILE = "examples/testUCLNclock.json";
 
     @Test
     public void testJSONtoXMLtoJSON() throws Exception {
