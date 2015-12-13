@@ -451,7 +451,8 @@ public class Logger extends BEASTObject {
                         return false;
                     } else {
                         m_out = new PrintStream(fileName);
-                        Log.info.println("Writing file " + fileName);
+                        Log.warning.println("WARNING: Resuming, but file " + fileName + " does not exist yet (perhaps the seed number is not the same as before?).");
+                        Log.info.println("Writing new file " + fileName);
                         return true;
                     }
                 }

@@ -199,7 +199,7 @@
 
             <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
 
-            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="5000" fileName="$(tree).$(seed).trees" mode='tree'>
+            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="5000" fileName="$(tree).trees" mode='tree'>
 	            <log id='TreeWithMetaDataLogger.t:$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.t:$(n)'>
 	            </log>
             </logger>
@@ -389,7 +389,7 @@
 	
 	    <operator id='YuleBirthRateScaler.t:Species' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:Species"/>
 
-        <logger id='tracelog' logEvery="5000" fileName="beast_$(seed).log" sort="smart">
+        <logger id='tracelog' logEvery="5000" fileName="beast.log" sort="smart">
 	        <model idref='posterior'/>
             <log idref="posterior"/>
             <log idref="likelihood"/>
@@ -400,7 +400,7 @@
             <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:Species'/>
         </logger>
 
-		<logger fileName="species_$(seed).trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
+		<logger fileName="species.trees" id="speciesTreeLogger" logEvery="5000" mode="tree">
 		    <log id='SpeciesTreeLoggerX' spec='SpeciesTreeLogger' popSize='@popSize' popSizeTop="@popSizeTop" tree="@Tree.t:Species" speciesTreePrior='@SpeciesTreePopSize.Species' treetop='@treeTopFinder'/>
 		</logger>
 
