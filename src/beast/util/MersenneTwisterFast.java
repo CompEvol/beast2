@@ -698,7 +698,7 @@ public class MersenneTwisterFast implements Serializable {
      * @param lambda
      * @return 
      */
-    private double poissonian_reject(double lambda) {
+    private long poissonian_reject(double lambda) {
         double sq = Math.sqrt(2.0*lambda);
         double alxm = Math.log(lambda);
         double g = lambda*alxm-GammaFunction.lnGamma(lambda+1.0);
@@ -716,39 +716,44 @@ public class MersenneTwisterFast implements Serializable {
 
         } while (nextDouble()>t);
 
-        return em;
+        return Math.round(em);
     }
 
     /**
-     * Direct method: only efficient for small lambda.
+     * Inverse CDF method: only efficient for small lambda.  Warning:
+     * this method assumes that lambda < 12 by including a fail-safe
+     * loop abort which truncates the possible sample values to <500.
+     * (Numerical implementations of the iCDF method can occasionally
+     * lead to infinite loops due to floating point errors.)
      * 
      * @param lambda
      * @return 
      */
-    private double poissonian_knuth(double lambda) {
-        double L = Math.exp(-lambda);
-        double p;
-        int k;
+    private long poissonian_icdf(double lambda) {
+        double p = nextDouble();
 
-        for (k = 0, p = 1; p>=L; k++)
-            p = p*nextDouble();
+        double factor = Math.exp(-lambda);
+        double  acc = factor;
+        int n=0;
 
-        return k-1;
+        while (p>acc && n<500) {
+            n += 1;
+            factor *= lambda/n;
+            acc += factor;
+        }
+
+        return n;
     }
 
     /**
-     * Sample from a Poissonian distribution.  Note that samples are expressed
-     * as doubles, allowing for sensible convergence to the appropriate
-     * Gaussian when extremely large lambdas are used.  Be aware however that
-     * systematic errors due to rounding start to creep in for lambda>1e14.
-     * Can we improve on this?
-     * 
-     * @param lambda
+     * Sample from a Poissonian distribution.
+     *
+     * @param lambda mean of Poissonian distribution
      * @return Draw from Pois(lambda).
      */
-    public double nextPoisson(double lambda) {
+    public long nextPoisson(double lambda) {
         if (lambda<12)
-            return poissonian_knuth(lambda);
+            return poissonian_icdf(lambda);
 
         return poissonian_reject(lambda);
     }
@@ -758,21 +763,19 @@ public class MersenneTwisterFast implements Serializable {
      */
     public static void main (String [] args) throws FileNotFoundException {
         
-        double lambda = 1e12;
+        double lambda = 1e14;
         int reps=100000;
         
-        double sqrtlambda = Math.sqrt(lambda);
         double [] vals = new double[reps];
 
-        PrintStream outf = new PrintStream("vals.txt");
+//        PrintStream outf = new PrintStream("vals.txt");
         
         for (int i=0; i<reps; i++) {
             double val = Randomizer.nextPoisson(lambda);
-            //double val = Randomizer.nextGaussian()*sqrtlambda + lambda;
             vals[i] = val;
-            outf.println(val);
+//            outf.println(val);
         }
-        outf.close();
+//        outf.close();
         
         System.out.format("E[x]=%g\n",DiscreteStatistics.mean(vals));
         System.out.format("Var[x]=%g\n", DiscreteStatistics.variance(vals));
