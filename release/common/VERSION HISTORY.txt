@@ -8,7 +8,7 @@ All issues can be viewed at https://github.com/CompEvol/beast2/issues
 Version 2.3.2 December 2015
 	BEAUti
 		path corrected so Standard and StarBeast templates are visible under templates menu
-		import of traits from file when partions are split fixed
+		import of traits from file when partitions are split fixed
 		cloning of scripts with partition information fixed
 		set up weights of FixedMeanRate operator when ascertainment correction is applied
 		allows ParameterInputEditor to edit Parameter inputs
