@@ -150,9 +150,9 @@ public class MRCAPrior extends Distribution {
 	                }
 	            }
 	            if( n == n1 ) {
-                    n1 = n.getParent();
+                    n = n1 = n.getParent();
                 } else {
-                  n2 = n2.getParent();  
+                    n = n2 = n.getParent();  
                 }
 	            if( ! nodesTraversed[n.getNr()] ) {
 	                nodesTraversed[n.getNr()] = true;
