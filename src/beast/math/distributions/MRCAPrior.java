@@ -110,19 +110,55 @@ public class MRCAPrior extends Distribution {
             nseen += 1;
         }
         while (n1 != n2) {
-            if (n1.getHeight() < n2.getHeight()) {
-                n1 = n1.getParent();
-                if( ! nodesTraversed[n1.getNr()] ) {
-                    nodesTraversed[n1.getNr()] = true;
-                    nseen += 1;
+	        double h1 = n1.getHeight();
+	        double h2 = n2.getHeight();
+	        if ( h1 < h2 ) {
+	            n1 = n1.getParent();
+	            if( ! nodesTraversed[n1.getNr()] ) {
+	                nodesTraversed[n1.getNr()] = true;
+	                nseen += 1;
+	            }
+	        } else if( h2 < h1 ) {
+	            n2 = n2.getParent();
+	            if( ! nodesTraversed[n2.getNr()] ) {
+	                nodesTraversed[n2.getNr()] = true;
+	                nseen += 1;
+	            }
+	        } else {
+	            //zero length branches hell
+	            Node n;
+	            double b1 = n1.getLength();
+	            double b2 = n2.getLength();
+	            if( b1 > 0 ) {
+	                n = n2;
+	            } else { // b1 == 0
+	                if( b2 > 0 ) {
+	                    n = n1;
+	                } else {
+	                    // both 0
+	                    n = n1;
+	                    while( n != null && n != n2 ) {
+	                        n = n.getParent();
+	                    }
+	                    if( n == n2 ) {
+	                        // n2 is an ancestor of n1
+	                        n = n1;
+	                    } else {
+	                        // always safe to advance n2
+	                        n = n2;
+	                    }
+	                }
+	            }
+	            if( n == n1 ) {
+                    n1 = n.getParent();
+                } else {
+                  n2 = n2.getParent();  
                 }
-            } else {
-                n2 = n2.getParent();
-                if( ! nodesTraversed[n2.getNr()] ) {
-                     nodesTraversed[n2.getNr()] = true;
-                     nseen += 1;
-                 }
-            }
+	            if( ! nodesTraversed[n.getNr()] ) {
+	                nodesTraversed[n.getNr()] = true;
+	                nseen += 1;
+	            } 
+	        }
         }
         return n1;
     }
@@ -161,16 +197,30 @@ public class MRCAPrior extends Distribution {
             if( false) {
                 calcMRCAtime(tree.getRoot(), new int[1]);
             } else {
-                nodesTraversed = new boolean[tree.getNodeCount()];
-                nseen = 0;
-                final Node m = getCommonAncestor();
-                MRCATime = m.getDate();
-                isMonophyletic = nseen == 2 * taxonIndex.length - 1;
+            	Node m;
+            	if (taxonIndex.length == 1) {
+            		isMonophyletic = true;
+            		m = tree.getNode(taxonIndex[0]);
+            	} else {
+	                nodesTraversed = new boolean[tree.getNodeCount()];
+	                nseen = 0;
+                	m = getCommonAncestor();
+	                isMonophyletic = (nseen == 2 * taxonIndex.length - 1);
+            	}
+            	if (useOriginate) {
+            		if (!m.isRoot()) {
+            			MRCATime = m.getParent().getDate();
+            		} else {
+            			MRCATime = m.getDate();
+            		}
+            	} else {
+            		MRCATime = m.getDate();
+            	}
             }
         }
         if (isMonophyleticInput.get() && !isMonophyletic) {
-            logP = Double.NEGATIVE_INFINITY;
-            return Double.NEGATIVE_INFINITY;
+    		logP = Double.NEGATIVE_INFINITY;
+    		return Double.NEGATIVE_INFINITY;
         }
         if (dist != null) {
             logP = dist.logDensity(MRCATime); // - dist.offsetInput.get());
