@@ -471,7 +471,7 @@ public class BeastMain {
             inputFile = dialog.getInputFile();
             if (!beagleShowInfo && inputFile == null) {
                 System.err.println("No input file specified");
-                return;
+                System.exit(1);
             }
 
         } else {
@@ -486,7 +486,7 @@ public class BeastMain {
 
         if (beagleShowInfo) {
             BeagleInfo.printResourceList();
-            return;
+            System.exit(0);
         }
 
         if (inputFile == null) {
@@ -497,7 +497,7 @@ public class BeastMain {
                 System.err.println("Unknown option: " + args2[1]);
                 System.err.println();
                 printUsage(arguments);
-                return;
+                System.exit(1);
             }
 
             String inputFileName = null;
@@ -614,8 +614,10 @@ public class BeastMain {
             // logger.severe will throw a RTE but we want to keep the console visible
         } catch (XMLParserException e) {
             System.out.println(e.getMessage());
+            System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
 
         if (!window) {
