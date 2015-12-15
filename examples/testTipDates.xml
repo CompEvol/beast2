@@ -151,7 +151,7 @@
 				<input name='tree' idref="tree"/>
 				<input name='siteModel' idref="siteModel"/>
                 <branchRateModel id="StrictClockModel" spec="beast.evolution.branchratemodel.StrictClockModel">
-                    <parameter dimension="1" estimate="false" id="clockRate" name="clock.rate" value="1.0"/>
+                    <parameter dimension="1" estimate="true" id="clockRate" name="clock.rate" value="1.0"/>
                 </branchRateModel>
 		    </distribution>
 		</distribution>
