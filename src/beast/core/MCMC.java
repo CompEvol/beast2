@@ -247,12 +247,20 @@ public class MCMC extends Runnable {
         // sanity check: all operator state nodes should be in the state
         final List<StateNode> stateNodes = this.state.stateNodeInput.get();
         for (final Operator op : operatorsInput.get()) {
-            for (final StateNode stateNode : op.listStateNodes()) {
-                if (!stateNodes.contains(stateNode)) {
-                    throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
-                }
+            List<StateNode> nodes = op.listStateNodes();
+            if (nodes.size() == 0) {
+                    throw new RuntimeException("Operator " + op.getID() + "has no statenodes in the state. "
+                                    + "Each operator should operate on at least one state node in the state. "
+                                    + "Remove the operator or add its statenode(s) to the state and set estimate='true'.");
+                    // otherwise the chain may hang without obvious reason
             }
-        }
+	        for (final StateNode stateNode : op.listStateNodes()) {
+	            if (!stateNodes.contains(stateNode)) {
+	                throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
+	            }
+	        }
+	    }
+    
         // sanity check: all state nodes should be operated on
         for (final StateNode stateNode : stateNodes) {
             if (!operatorStateNodes.contains(stateNode)) {
