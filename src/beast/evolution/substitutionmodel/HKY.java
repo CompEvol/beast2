@@ -73,8 +73,10 @@ public class HKY extends SubstitutionModel.NucleotideBase {
     public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
         double distance = (fStartTime - fEndTime) * fRate;
 
-        if (updateMatrix) {
-            setupMatrix();
+        synchronized(this) {
+        	if (updateMatrix) {
+        		setupMatrix();
+        	}
         }
 
         final double xx = beta * distance;
