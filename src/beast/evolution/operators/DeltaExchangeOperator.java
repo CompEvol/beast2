@@ -57,7 +57,7 @@ public class DeltaExchangeOperator extends Operator {
             	for (int i = 0; i < intparameterInput.get().size(); i++) {
             		for (int j = i + 1; j < intparameterInput.get().size(); j++) {
             			if (intparameterInput.get().get(i) == intparameterInput.get().get(j)) {
-            				throw new RuntimeException("Dublicate intparameter (" + intparameterInput.get().get(j).getID() + ") found in operator " + getID());
+            				throw new RuntimeException("Duplicate intparameter (" + intparameterInput.get().get(j).getID() + ") found in operator " + getID());
             			}
             		}
             	}
@@ -70,7 +70,7 @@ public class DeltaExchangeOperator extends Operator {
             	for (int i = 0; i < parameterInput.get().size(); i++) {
             		for (int j = i + 1; j < parameterInput.get().size(); j++) {
             			if (parameterInput.get().get(i) == parameterInput.get().get(j)) {
-            				throw new RuntimeException("Dublicate intparameter (" + parameterInput.get().get(j).getID() + ") found in operator " + getID());
+            				throw new RuntimeException("Duplicate intparameter (" + parameterInput.get().get(j).getID() + ") found in operator " + getID());
             			}
             		}
             	}
