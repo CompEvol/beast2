@@ -16,7 +16,7 @@ import beast.core.Input.Validate;
 @Description("Summarizes a set of valuables so that for example a rate matrix can be " +
         "specified that uses a parameter in various places in the matrix.")
 public class CompoundValuable extends CalculationNode implements Function {
-    public Input<List<BEASTObject>> m_values = new Input<>("var", "reference to a valuable",
+    final public Input<List<BEASTObject>> m_values = new Input<>("var", "reference to a valuable",
             new ArrayList<>(), Validate.REQUIRED, Function.class);
 
     boolean m_bRecompute = true;

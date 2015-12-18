@@ -65,13 +65,13 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     double EPSILON = 1e-10;
 
-    public Input<Type> clusterTypeInput = new Input<>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
+    final public Input<Type> clusterTypeInput = new Input<>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
             "Should be one of " + Type.values() + " (default " + Type.average + ")", Type.average, Type.values());
-    public Input<Alignment> dataInput = new Input<>("taxa", "alignment data used for calculating distances for clustering");
+    final public Input<Alignment> dataInput = new Input<>("taxa", "alignment data used for calculating distances for clustering");
 
-    public Input<Distance> distanceInput = new Input<>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
+    final public Input<Distance> distanceInput = new Input<>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
-    public Input<RealParameter> clockRateInput = new Input<>("clock.rate",
+    final public Input<RealParameter> clockRateInput = new Input<>("clock.rate",
             "the clock rate parameter, used to divide all divergence times by, to convert from substitutions to times. (default 1.0)",
             new RealParameter(new Double[] {1.0}));
 

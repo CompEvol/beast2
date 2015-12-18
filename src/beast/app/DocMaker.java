@@ -483,7 +483,7 @@ public class DocMaker {
             Field[] fields = plugin.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
-                    Input<?> input = (Input<?>) fields[i].get(plugin);
+                    final Input<?> input = (Input<?>) fields[i].get(plugin);
                     if (input.getName().equals(sName)) {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();

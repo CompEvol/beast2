@@ -52,7 +52,7 @@ public class State extends BEASTObject {
 
     public final Input<List<StateNode>> stateNodeInput =
             new Input<>("stateNode", "anything that is part of the state", new ArrayList<>());
-    public Input<Integer> m_storeEvery =
+    final public Input<Integer> m_storeEvery =
             new Input<>("storeEvery", "store the state to disk every X number of samples so that we can " +
                     "resume computation later on if the process failed half-way.", -1);
 //    public Input<Boolean> m_checkPoint =

@@ -915,7 +915,7 @@ public class XMLProducer extends XMLParser {
         Field[] fields = plugin.getClass().getFields();
         for (int i = 0; i < fields.length; i++) {
             if (fields[i].getType().isAssignableFrom(Input.class)) {
-                Input input = (Input) fields[i].get(plugin);
+                final Input input = (Input) fields[i].get(plugin);
                 if (input.getName().equals(sInput)) {
                     // found the input with name sInput
                     if (input.get() != null) {

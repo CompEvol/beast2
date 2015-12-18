@@ -1152,7 +1152,7 @@ public class Document {
             Arrow arrow = (Arrow) m_objects.get((int) m_nPositions.get(0));
             m_objects.remove((int) m_nPositions.get(0));
             // unconnect plug-in and input
-            Input<?> input = arrow.m_headShape.m_input;
+            final Input<?> input = arrow.m_headShape.m_input;
             if (input instanceof List<?>) {
                 ((List<?>) input.get()).remove(arrow.m_tailShape.m_plugin);
             } else {

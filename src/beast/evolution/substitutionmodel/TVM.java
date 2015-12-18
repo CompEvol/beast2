@@ -12,13 +12,13 @@ import beast.evolution.datatype.Nucleotide;
 public class TVM extends GeneralSubstitutionModel {
 
     // Transversion rates
-    public Input<RealParameter> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
-    public Input<RealParameter> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
-    public Input<RealParameter> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
-    public Input<RealParameter> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
+    final public Input<RealParameter> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
+    final public Input<RealParameter> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
+    final public Input<RealParameter> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
+    final public Input<RealParameter> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
 
     // Transition rates
-    public Input<RealParameter> rateTransitionsInput = new Input<>("rateTransitions", "substitution rate for A<->G and C<->T");
+    final public Input<RealParameter> rateTransitionsInput = new Input<>("rateTransitions", "substitution rate for A<->G and C<->T");
 
     RealParameter rateAC;
     RealParameter rateGT;

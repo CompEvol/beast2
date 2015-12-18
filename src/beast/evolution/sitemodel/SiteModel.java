@@ -50,12 +50,12 @@ import beast.evolution.tree.Node;
 public class SiteModel extends SiteModelInterface.Base {
 
 
-    public Input<RealParameter> muParameterInput = new Input<>("mutationRate", "mutation rate (defaults to 1.0)");
-    public Input<Integer> gammaCategoryCount =
+    final public Input<RealParameter> muParameterInput = new Input<>("mutationRate", "mutation rate (defaults to 1.0)");
+    final public Input<Integer> gammaCategoryCount =
             new Input<>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
-    public Input<RealParameter> shapeParameterInput =
+    final public Input<RealParameter> shapeParameterInput =
             new Input<>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
-    public Input<RealParameter> invarParameterInput =
+    final public Input<RealParameter> invarParameterInput =
             new Input<>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     //public Input<Boolean> useBeast1StyleGammaInput = new Input<>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 

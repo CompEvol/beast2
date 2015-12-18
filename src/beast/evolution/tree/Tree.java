@@ -15,13 +15,13 @@ import java.util.List;
         + " beast.tree, language history, or other time-beast.tree"
         + " relationships among sequence data.")
 public class Tree extends StateNode implements TreeInterface {
-    public Input<Tree> m_initial = new Input<>("initial", "tree to start with");
-    public Input<List<TraitSet>> m_traitList = new Input<>("trait",
+    final public Input<Tree> m_initial = new Input<>("initial", "tree to start with");
+    final public Input<List<TraitSet>> m_traitList = new Input<>("trait",
             "trait information for initializing traits (like node dates) in the tree",
             new ArrayList<>());
-    public Input<TaxonSet> m_taxonset = new Input<>("taxonset",
+    final public Input<TaxonSet> m_taxonset = new Input<>("taxonset",
             "set of taxa that correspond to the leafs in the tree");
-    public Input<String> nodeTypeInput = new Input<>("nodetype",
+    final public Input<String> nodeTypeInput = new Input<>("nodetype",
             "type of the nodes in the beast.tree", Node.class.getName());
 
     /**

@@ -14,8 +14,8 @@ import beast.core.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Gamma extends ParametricDistribution {
-    public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
-    public Input<RealParameter> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
+    final public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
+    final public Input<RealParameter> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
 
     static org.apache.commons.math.distribution.GammaDistribution m_dist = new GammaDistributionImpl(1, 1);
 

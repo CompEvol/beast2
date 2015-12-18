@@ -15,11 +15,11 @@ import beast.util.Randomizer;
 @Description("A random walk operator that selects a random dimension of the real parameter and perturbs the value a " +
         "random amount within +/- windowSize.")
 public class RealRandomWalkOperator extends Operator {
-    public Input<Double> windowSizeInput =
+    final public Input<Double> windowSizeInput =
             new Input<>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
-    public Input<RealParameter> parameterInput =
+    final public Input<RealParameter> parameterInput =
             new Input<>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
-    public Input<Boolean> useGaussianInput =
+    final public Input<Boolean> useGaussianInput =
             new Input<>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
     double windowSize = 1;

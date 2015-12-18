@@ -11,12 +11,12 @@ import beast.evolution.datatype.Nucleotide;
 @Description("General Time Reversible model of nucleotide evolution. " +
         "Rates that are not specified are assumed to be 1. ")
 public class GTR extends GeneralSubstitutionModel {
-    public Input<Function> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
-    public Input<Function> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
-    public Input<Function> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
-    public Input<Function> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
-    public Input<Function> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
-    public Input<Function> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
+    final public Input<Function> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
+    final public Input<Function> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
+    final public Input<Function> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
+    final public Input<Function> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
+    final public Input<Function> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
+    final public Input<Function> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
 
     Function rateAC;
     Function rateAG;

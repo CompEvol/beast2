@@ -269,7 +269,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
         BEASTInterface plugin = config;
-        Input<?> input = config.resolveInput(doc, iPartition);
+        final Input<?> input = config.resolveInput(doc, iPartition);
 
         boolean bAddButtons = config.addButtons();
         ExpandOption bForceExpansion = config.forceExpansion();

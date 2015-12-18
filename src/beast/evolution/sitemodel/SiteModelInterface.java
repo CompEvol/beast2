@@ -35,7 +35,7 @@ public interface SiteModelInterface {
 
     @Description(value = "Base implementation of a site model with substitution model and rate categories.", isInheritable = false)
     public abstract class Base extends CalculationNode implements SiteModelInterface {
-    	public Input<SubstitutionModel.Base> substModelInput =
+    	final public Input<SubstitutionModel.Base> substModelInput =
                 new Input<>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
 
     	/**

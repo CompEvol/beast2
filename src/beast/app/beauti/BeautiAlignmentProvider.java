@@ -36,7 +36,7 @@ import beast.util.XMLParser;
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
 public class BeautiAlignmentProvider extends BEASTObject {
 	
-	public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
+	final public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 
 	
 	@Override

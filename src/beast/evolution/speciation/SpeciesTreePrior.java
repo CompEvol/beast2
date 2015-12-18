@@ -37,7 +37,7 @@ public class SpeciesTreePrior extends TreeDistribution {
     /**
      * m_taxonSet is used by GeneTreeForSpeciesTreeDistribution *
      */
-    public Input<TaxonSet> taxonSetInput = new Input<>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
+    final public Input<TaxonSet> taxonSetInput = new Input<>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
 
 
     private TreePopSizeFunction popFunction;

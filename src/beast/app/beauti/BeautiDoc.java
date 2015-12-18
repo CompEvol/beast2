@@ -60,7 +60,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public List<Alignment> alignments = new ArrayList<>();
 
-    public Input<beast.core.Runnable> mcmc = new Input<>("runnable", "main entry of analysis",
+    final public Input<beast.core.Runnable> mcmc = new Input<>("runnable", "main entry of analysis",
             Validate.REQUIRED);
 
     protected List<BranchRateModel> clockModels;
@@ -1415,7 +1415,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             if (target == null) {
                 return;
             }
-            Input<?> input = target.getInput(sInputName);
+            final Input<?> input = target.getInput(sInputName);
             Object o = input.get();
             if (o instanceof List) {
                 List<?> list = (List<?>) o;

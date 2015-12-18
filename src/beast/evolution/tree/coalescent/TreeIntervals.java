@@ -49,7 +49,7 @@ import beast.util.HeapSort;
 @Description("Extracts the intervals from a tree. Points in the intervals " +
         "are defined by the heights of nodes in the tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
-    public Input<Tree> treeInput = new Input<>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
+    final public Input<Tree> treeInput = new Input<>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 
     public TreeIntervals() {
         super();

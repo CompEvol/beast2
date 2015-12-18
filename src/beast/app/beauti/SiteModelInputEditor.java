@@ -121,7 +121,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 
     public InputEditor createMutationRateEditor() throws Exception {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
-        Input<?> input = sitemodel.muParameterInput;
+        final Input<?> input = sitemodel.muParameterInput;
         ParameterInputEditor mutationRateEditor = new ParameterInputEditor(doc);
         mutationRateEditor.init(input, sitemodel, -1, ExpandOption.FALSE, true);
         mutationRateEditor.getEntry().setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
@@ -130,7 +130,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 	
 	public InputEditor createGammaCategoryCountEditor() throws Exception {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
-        Input<?> input = sitemodel.gammaCategoryCount;
+        final Input<?> input = sitemodel.gammaCategoryCount;
         categoryCountEditor = new IntegerInputEditor(doc) {
 			private static final long serialVersionUID = 1L;
 
@@ -180,14 +180,14 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     }
 
     public InputEditor createShapeEditor() throws Exception {
-        Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
+        final Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
         gammaShapeEditor = doc.getInputEditorFactory().createInputEditor(input, (BEASTInterface) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
 
     public InputEditor createProportionInvariantEditor() throws Exception {
-        Input<?> input = ((SiteModel) m_input.get()).invarParameterInput;
+        final Input<?> input = ((SiteModel) m_input.get()).invarParameterInput;
         inVarEditor = new ParameterInputEditor(doc) {
 			private static final long serialVersionUID = 1L;
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Description("Unordered set mapping keys to values")
 abstract public class Map<T> extends CalculationNode {
 
-    public Input<java.util.Map<java.lang.String, T>> defaultInput = new Input<>("*",
+    final public Input<java.util.Map<java.lang.String, T>> defaultInput = new Input<>("*",
             "Input containing the map", new LinkedHashMap<>());
 
     public java.util.Map<java.lang.String, T> map;
@@ -61,7 +61,7 @@ abstract public class Map<T> extends CalculationNode {
     ;
 
     @Override
-    public Input<?> getInput(java.lang.String name) {
+    final public Input<?> getInput(java.lang.String name) {
         try {
             for (Input<?> input : listInputs()) {
                 if (input != defaultInput && input.getName().equals(name)) {

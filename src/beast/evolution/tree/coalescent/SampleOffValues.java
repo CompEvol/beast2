@@ -14,11 +14,11 @@ import beast.util.Randomizer;
  */
 @Description("Sample values from a distribution")
 public class SampleOffValues extends Operator {
-    public Input<RealParameter> valuesInput = new Input<>("values", "vector of target values", Input.Validate.REQUIRED);
+    final public Input<RealParameter> valuesInput = new Input<>("values", "vector of target values", Input.Validate.REQUIRED);
 
-    public Input<BooleanParameter> indicatorsInput = new Input<>("indicators", "Sample only entries which are 'off'");
+    final public Input<BooleanParameter> indicatorsInput = new Input<>("indicators", "Sample only entries which are 'off'");
 
-    public Input<ParametricDistribution> distInput = new Input<>("dist",
+    final public Input<ParametricDistribution> distInput = new Input<>("dist",
             "distribution to sample from.", Input.Validate.REQUIRED);
 
     public final Input<Boolean> scaleAll =

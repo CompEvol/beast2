@@ -14,7 +14,7 @@ import beast.core.Input.Validate;
 
 @Description("Logger to report height of a tree")
 public class TreeHeightLogger extends CalculationNode implements Loggable, Function {
-    public Input<Tree> treeInput = new Input<>("tree", "tree to report height for.", Validate.REQUIRED);
+    final public Input<Tree> treeInput = new Input<>("tree", "tree to report height for.", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() {

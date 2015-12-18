@@ -12,7 +12,7 @@ import beast.evolution.tree.Tree;
 
 @Description("Finds height of highest tree among a set of trees")
 public class TreeTopFinder extends CalculationNode {
-    public Input<List<Tree>> treeInputs = new Input<>("tree", "set of trees to search among", new ArrayList<>());
+    final public Input<List<Tree>> treeInputs = new Input<>("tree", "set of trees to search among", new ArrayList<>());
 
     List<Tree> trees;
 

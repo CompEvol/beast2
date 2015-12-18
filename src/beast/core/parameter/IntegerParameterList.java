@@ -10,9 +10,9 @@ import java.util.List;
 @Description("State node describing a list of integer-valued parameters.")
 public class IntegerParameterList extends GeneralParameterList<Integer> {
     
-    public Input<Integer> lowerBoundInput = new Input<>("lower",
+    final public Input<Integer> lowerBoundInput = new Input<>("lower",
             "Lower bound on parameter values.", Integer.MIN_VALUE+1);
-    public Input<Integer> upperBoundInput = new Input<>("upper",
+    final public Input<Integer> upperBoundInput = new Input<>("upper",
             "Upper bound on parameter values.", Integer.MAX_VALUE-1);
     
     @Override

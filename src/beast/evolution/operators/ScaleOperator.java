@@ -53,17 +53,17 @@ public class ScaleOperator extends Operator {
             new Input<>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
                     "a different factor, otherwise a single factor is used", false);
 
-    public Input<Integer> degreesOfFreedomInput = new Input<>("degreesOfFreedom", "Degrees of freedom used when " +
+    final public Input<Integer> degreesOfFreedomInput = new Input<>("degreesOfFreedom", "Degrees of freedom used when " +
             "scaleAllIndependently=false and scaleAll=true to override default in calculation of Hasting ratio. " +
             "Ignored when less than 1, default 0.", 0);
-    public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "indicates which of the dimension " +
+    final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
-    public Input<Boolean> rootOnlyInput = new Input<>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
-    public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
+    final public Input<Boolean> rootOnlyInput = new Input<>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
+    final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
-    public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0 - 1e-8);
-    public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 1e-8);
+    final public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0 - 1e-8);
+    final public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 1e-8);
 
     /**
      * shadows input *

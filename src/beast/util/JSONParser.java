@@ -1289,7 +1289,7 @@ public class JSONParser {
 
 	private void setInput(JSONObject node, BEASTInterface beastObject, String name, Object value) throws JSONParserException {
 		try {
-			Input<?> input = beastObject.getInput(name);
+			final Input<?> input = beastObject.getInput(name);
 			// test whether input was not set before, this is done by testing
 			// whether input has default value.
 			// for non-list inputs, this should be true if the value was not
@@ -1394,7 +1394,7 @@ public class JSONParser {
 	String getClassName(JSONObject child, String name, BEASTInterface parent) throws Exception {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
-			Input<?> input = parent.getInput(name);
+			final Input<?> input = parent.getInput(name);
 			Class<?> type = input.getType();
 			if (type == null) {
 				input.determineClass(parent);

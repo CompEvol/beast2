@@ -28,12 +28,12 @@ import beast.math.Binomial;
 public class BayesianSkyline extends TreeDistribution {
 //public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<Function> popSizeParamInput = new Input<>("popSizes", "present-day population size. "
+    final public Input<Function> popSizeParamInput = new Input<>("popSizes", "present-day population size. "
             + "If time units are set to Units.EXPECTED_SUBSTITUTIONS then"
             + "the N0 parameter will be interpreted as N0 * mu. "
             + "Also note that if you are dealing with a diploid population " + "N0 will be out by a factor of 2.",
             Validate.REQUIRED);
-    public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes",
+    final public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes",
             "the group sizes parameter", Validate.REQUIRED);
     // public Input<Tree> treeInput = new Input<>("tree",
     // "The tree containing coalescent node times for use in defining BSP.");

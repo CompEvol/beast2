@@ -50,19 +50,19 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     // Q2R does this makes sense, or it has to be a realParameter??
-    public Input<RealParameter> birthRateInput =
+    final public Input<RealParameter> birthRateInput =
             new Input<>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
 
-    public Input<List<CalibrationPoint>> calibrationsInput =
+    final public Input<List<CalibrationPoint>> calibrationsInput =
             new Input<>("calibrations", "Set of calibrated nodes", new ArrayList<>());
 
-    public Input<Type> correctionTypeInput = new Input<>("type", "Type of correction: none for no correction " +
+    final public Input<Type> correctionTypeInput = new Input<>("type", "Type of correction: none for no correction " +
             "(same as BEAST1), full for Yule-like over calibrated times, and restricted for Yule-like over calibrated" +
             " times and ranked topology (default 'full'). However, 'full'" +
             " is generally slow except for in a few special cases, such as a single clade or two nested clades.",
             Type.OVER_ALL_TOPOS, Type.values());
 
-    public Input<RPNcalculator> userMarInput = new Input<>("logMarginal",
+    final public Input<RPNcalculator> userMarInput = new Input<>("logMarginal",
             "Used provided correction (log of marginal) for special cases.", (RPNcalculator) null);
 
     // Which correction to apply

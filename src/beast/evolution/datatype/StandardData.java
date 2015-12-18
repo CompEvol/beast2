@@ -12,11 +12,11 @@ import java.util.List;
 @Description("Integer data type to describe discrete morphological characters with polymorphisms")
 public class StandardData extends DataType.Base {
 
-    public Input<Integer> maxNrOfStatesInput = new Input<>("nrOfStates", "specifies the maximum number of " +
+    final public Input<Integer> maxNrOfStatesInput = new Input<>("nrOfStates", "specifies the maximum number of " +
             "character states in data matrix or in the filtered alignment");
-    public Input<String> listOfAmbiguitiesInput = new Input<>("ambiguities", "all possible ambiguities presented " +
+    final public Input<String> listOfAmbiguitiesInput = new Input<>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
-    public Input<List<UserDataType>> charStateLabelsInput = new Input<>("charstatelabels",
+    final public Input<List<UserDataType>> charStateLabelsInput = new Input<>("charstatelabels",
             "list of morphological character descriptions. Position in the list corresponds to the position of the" +
                     "character in the alignment", new ArrayList<>());
 

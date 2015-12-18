@@ -27,13 +27,13 @@ import beast.evolution.tree.TreeInterface;
 //
 public class GenericTreeLikelihood extends Distribution {
     
-    public Input<Alignment> dataInput = new Input<>("data", "sequence data for the beast.tree", Validate.REQUIRED);
+    final public Input<Alignment> dataInput = new Input<>("data", "sequence data for the beast.tree", Validate.REQUIRED);
 
-    public Input<TreeInterface> treeInput = new Input<>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
+    final public Input<TreeInterface> treeInput = new Input<>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
 
-    public Input<SiteModelInterface> siteModelInput = new Input<>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    final public Input<SiteModelInterface> siteModelInput = new Input<>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
     
-    public Input<BranchRateModel.Base> branchRateModelInput = new Input<>("branchRateModel",
+    final public Input<BranchRateModel.Base> branchRateModelInput = new Input<>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
 
     

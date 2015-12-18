@@ -12,7 +12,7 @@ import beast.core.BEASTInterface;
 
 @Description("Set of plugins to represent partially finished models in GUIs")
 public class BEASTObjectSet extends BEASTObject {
-    public Input<List<BEASTInterface>> m_plugins = new Input<>("plugin", "set of the plugins in this collection", new ArrayList<>());
+    final public Input<List<BEASTInterface>> m_plugins = new Input<>("plugin", "set of the plugins in this collection", new ArrayList<>());
 
     @Override
     public void initAndValidate() {

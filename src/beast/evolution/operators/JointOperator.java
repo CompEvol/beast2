@@ -33,7 +33,7 @@ import java.util.logging.Logger;
         + " of the state.")
 public class JointOperator extends Operator {
     
-    public Input<List<Operator>> operatorsInput = new Input<>(
+    final public Input<List<Operator>> operatorsInput = new Input<>(
             "operator",
             "List of operators to combine into one operation.",
             new ArrayList<>());

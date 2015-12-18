@@ -11,9 +11,9 @@ import beast.util.Randomizer;
 @Description("A random walk operator that selects a random dimension of the integer parameter and perturbs the value a " +
         "random amount within +/- windowSize.")
 public class IntRandomWalkOperator extends Operator {
-    public Input<Integer> windowSizeInput =
+    final public Input<Integer> windowSizeInput =
             new Input<>("windowSize", "the size of the window both up and down", Validate.REQUIRED);
-    public Input<IntegerParameter> parameterInput =
+    final public Input<IntegerParameter> parameterInput =
             new Input<>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
 
     int windowSize = 1;

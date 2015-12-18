@@ -42,45 +42,45 @@ import java.util.*;
         DOI="10.1371/journal.pcbi.1003537")
 public class MCMC extends Runnable {
 
-    public Input<Integer> chainLengthInput =
+    final public Input<Integer> chainLengthInput =
             new Input<>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop",
                     Input.Validate.REQUIRED);
 
-    public Input<State> startStateInput =
+    final public Input<State> startStateInput =
             new Input<>("state", "elements of the state space");
 
-    public Input<List<StateNodeInitialiser>> initialisersInput =
+    final public Input<List<StateNodeInitialiser>> initialisersInput =
             new Input<>("init", "one or more state node initilisers used for determining " +
                     "the start state of the chain",
                     new ArrayList<>());
 
-    public Input<Integer> storeEveryInput =
+    final public Input<Integer> storeEveryInput =
             new Input<>("storeEvery", "store the state to disk every X number of samples so that we can " +
                     "resume computation later on if the process failed half-way.", -1);
 
-    public Input<Integer> burnInInput =
+    final public Input<Integer> burnInInput =
             new Input<>("preBurnin", "Number of burn in samples taken before entering the main loop", 0);
 
 
-    public Input<Integer> numInitializationAttempts =
+    final public Input<Integer> numInitializationAttempts =
             new Input<>("numInitializationAttempts", "Number of initialization attempts before failing (default=10)", 10);
 
-    public Input<Distribution> posteriorInput =
+    final public Input<Distribution> posteriorInput =
             new Input<>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
 
-    public Input<List<Operator>> operatorsInput =
+    final public Input<List<Operator>> operatorsInput =
             new Input<>("operator", "operator for generating proposals in MCMC state space",
                     new ArrayList<>());//, Input.Validate.REQUIRED);
 
-    public Input<List<Logger>> loggersInput =
+    final public Input<List<Logger>> loggersInput =
             new Input<>("logger", "loggers for reporting progress of MCMC chain",
                     new ArrayList<>(), Input.Validate.REQUIRED);
 
-    public Input<Boolean> sampleFromPriorInput = new Input<>("sampleFromPrior", "whether to ignore the likelihood when sampling (default false). " +
+    final public Input<Boolean> sampleFromPriorInput = new Input<>("sampleFromPrior", "whether to ignore the likelihood when sampling (default false). " +
             "The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
 
-    public Input<OperatorSchedule> operatorScheduleInput = new Input<>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
+    final public Input<OperatorSchedule> operatorScheduleInput = new Input<>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
 
     /**
      * Alternative representation of operatorsInput that allows random selection

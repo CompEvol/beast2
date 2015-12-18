@@ -17,9 +17,9 @@ import beast.util.Randomizer;
 
 @Description("A generic operator swapping a one or more pairs in a multi-dimensional parameter")
 public class SwapOperator extends Operator {
-    public Input<RealParameter> parameterInput = new Input<>("parameter", "a real parameter to swap individual values for");
-    public Input<IntegerParameter> intparameterInput = new Input<>("intparameter", "an integer parameter to swap individual values for", Validate.XOR, parameterInput);
-    public Input<Integer> howManyInput = new Input<>("howMany", "number of items to swap, default 1, must be less than half the dimension of the parameter", 1);
+    final public Input<RealParameter> parameterInput = new Input<>("parameter", "a real parameter to swap individual values for");
+    final public Input<IntegerParameter> intparameterInput = new Input<>("intparameter", "an integer parameter to swap individual values for", Validate.XOR, parameterInput);
+    final public Input<Integer> howManyInput = new Input<>("howMany", "number of items to swap, default 1, must be less than half the dimension of the parameter", 1);
 
 
     int howMany;

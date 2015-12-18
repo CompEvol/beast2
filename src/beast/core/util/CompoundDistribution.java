@@ -50,13 +50,13 @@ import beast.core.BEASTInterface;
 public class CompoundDistribution extends Distribution {
     // no need to make this input REQUIRED. If no distribution input is
     // specified the class just returns probability 1.
-    public Input<List<Distribution>> pDistributions =
+    final public Input<List<Distribution>> pDistributions =
             new Input<>("distribution",
                     "individual probability distributions, e.g. the likelihood and prior making up a posterior",
                     new ArrayList<>());
-    public Input<Boolean> useThreadsInput = new Input<>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
-    public Input<Integer> maxNrOfThreadsInput = new Input<>("threads","maximum number of threads to use, if less than 1 the number of threads in BeastMCMC is used (default -1)", -1);
-    public Input<Boolean> ignoreInput = new Input<>("ignore", "ignore all distributions and return 1 as distribution (default false)", false);
+    final public Input<Boolean> useThreadsInput = new Input<>("useThreads", "calculated the distributions in parallel using threads (default false)", false);
+    final public Input<Integer> maxNrOfThreadsInput = new Input<>("threads","maximum number of threads to use, if less than 1 the number of threads in BeastMCMC is used (default -1)", -1);
+    final public Input<Boolean> ignoreInput = new Input<>("ignore", "ignore all distributions and return 1 as distribution (default false)", false);
     
     /**
      * flag to indicate threads should be used. Only effective if the useThreadsInput is

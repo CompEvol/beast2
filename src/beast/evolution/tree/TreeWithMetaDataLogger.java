@@ -18,12 +18,12 @@ import beast.evolution.branchratemodel.BranchRateModel;
 
 @Description("Logs tree annotated with metadata and/or rates")
 public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
-    public Input<Tree> treeInput = new Input<>("tree", "tree to be logged", Validate.REQUIRED);
+    final public Input<Tree> treeInput = new Input<>("tree", "tree to be logged", Validate.REQUIRED);
     // TODO: make this input a list of valuables
-    public Input<List<Function>> parameterInput = new Input<>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
-    public Input<BranchRateModel.Base> clockModelInput = new Input<>("branchratemodel", "rate to be logged with branches of the tree");
-    public Input<Boolean> substitutionsInput = new Input<>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
-    public Input<Integer> decimalPlacesInput = new Input<>("dp", "the number of decimal places to use writing branch lengths and rates, use -1 for full precision (default = full precision)", -1);
+    final public Input<List<Function>> parameterInput = new Input<>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
+    final public Input<BranchRateModel.Base> clockModelInput = new Input<>("branchratemodel", "rate to be logged with branches of the tree");
+    final public Input<Boolean> substitutionsInput = new Input<>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
+    final public Input<Integer> decimalPlacesInput = new Input<>("dp", "the number of decimal places to use writing branch lengths and rates, use -1 for full precision (default = full precision)", -1);
 
     
     boolean someMetaDataNeedsLogging;

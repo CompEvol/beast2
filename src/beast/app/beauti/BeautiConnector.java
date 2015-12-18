@@ -16,15 +16,15 @@ import beast.core.Input.Validate;
 
 @Description("Specifies which part of the template get connected to the main network")
 public class BeautiConnector extends BEASTObject {
-    public Input<String> sMethodnput = new Input<>("method", "name of static method that should be called with BeautiDoc as " +
+    final public Input<String> sMethodnput = new Input<>("method", "name of static method that should be called with BeautiDoc as " +
     		"argument. For example beast.app.beauti.SiteModelInputEditor.custmoConnector");
 
-    public Input<String> sSourceIDInput = new Input<>("srcID", "ID of the plugin to be connected", Validate.XOR, sMethodnput);
-    public Input<String> sTargetIDInput = new Input<>("targetID", "ID of plugin to connect to", Validate.XOR, sMethodnput);
-    public Input<String> sInputNameInput = new Input<>("inputName", "name of the input of the plugin to connect to", Validate.XOR, sMethodnput);
-    public Input<String> sTipText = new Input<>("value", "associate some tip text with the srcID plugin, useful for displaying prior and operator specific information");
+    final public Input<String> sSourceIDInput = new Input<>("srcID", "ID of the plugin to be connected", Validate.XOR, sMethodnput);
+    final public Input<String> sTargetIDInput = new Input<>("targetID", "ID of plugin to connect to", Validate.XOR, sMethodnput);
+    final public Input<String> sInputNameInput = new Input<>("inputName", "name of the input of the plugin to connect to", Validate.XOR, sMethodnput);
+    final public Input<String> sTipText = new Input<>("value", "associate some tip text with the srcID plugin, useful for displaying prior and operator specific information");
 
-    public Input<String> sConditionInput = new Input<>("if", "condition under which this connector should be executed." +
+    final public Input<String> sConditionInput = new Input<>("if", "condition under which this connector should be executed." +
             "These should be of the form " +
             "inposterior(id) or id/input=value, e.g. inposterior(kappa), kappa/estimate=true. " +
             "inlikelihood(id) to check there is a plugin with suplied id that is predecessor of likelihood. " +
@@ -194,7 +194,7 @@ public class BeautiConnector extends BEASTObject {
         				}
                     	break;
                     case EQUALS:
-                        Input<?> input = plugin.getInput(sConditionInputs[i]);
+                        final Input<?> input = plugin.getInput(sConditionInputs[i]);
                         //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
                         if (input.get() == null) {
                         	if (!sConditionValues[i].equals("null")) {
@@ -206,7 +206,7 @@ public class BeautiConnector extends BEASTObject {
                         }
                         break;
                     case NOT_EQUALS:
-                        Input<?> input2 = plugin.getInput(sConditionInputs[i]);
+                        final Input<?> input2 = plugin.getInput(sConditionInputs[i]);
                         //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
                         if (input2.get() == null) {
                         	if (sConditionValues[i].equals("null")) {

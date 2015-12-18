@@ -18,15 +18,15 @@ public class OperatorSchedule extends BEASTObject {
 
     enum OptimisationTransform {none, log, sqrt}
 
-    public Input<OptimisationTransform> transformInput = new Input<>("transform",
+    final public Input<OptimisationTransform> transformInput = new Input<>("transform",
             "transform optimisation schedule (default none) This can be "
                     + Arrays.toString(OptimisationTransform.values()) + " (default 'none')",
             OptimisationTransform.none, OptimisationTransform.values());
-    public Input<Boolean> autoOptimiseInput = new Input<>("autoOptimize", "whether to automatically optimise operator settings", true);
+    final public Input<Boolean> autoOptimiseInput = new Input<>("autoOptimize", "whether to automatically optimise operator settings", true);
 
-    public Input<Boolean> detailedRejectionInput = new Input<>("detailedRejection", "true if detailed rejection statistics should be included. (default=false)", false);
+    final public Input<Boolean> detailedRejectionInput = new Input<>("detailedRejection", "true if detailed rejection statistics should be included. (default=false)", false);
 
-    public Input<Integer> autoOptimizeDelayInput = new Input<>("autoOptimizeDelay", "number of samples to skip before auto optimisation kicks in (default=10000)", 10000);
+    final public Input<Integer> autoOptimizeDelayInput = new Input<>("autoOptimizeDelay", "number of samples to skip before auto optimisation kicks in (default=10000)", 10000);
 
     /**
      * list of operators in the schedule *

@@ -39,7 +39,7 @@ import beast.evolution.tree.Node;
                 "  molecular clock of mitochondrial DNA. Journal of Molecular Evolution\n" +
                 "  22:160-174.", DOI = "10.1007/BF02101694", year = 1985, firstAuthorSurname = "hasegawa")
 public class HKY extends SubstitutionModel.NucleotideBase {
-    public Input<RealParameter> kappaInput = new Input<>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
+    final public Input<RealParameter> kappaInput = new Input<>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     /**
      * applies to nucleotides only *

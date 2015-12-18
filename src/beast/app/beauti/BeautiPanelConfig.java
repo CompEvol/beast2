@@ -22,31 +22,31 @@ public class BeautiPanelConfig extends BEASTObject {
         none, Partition, SiteModel, ClockModel, Tree
     }
 
-    public Input<String> sNameInput = new Input<>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
-    public Input<String> sTipTextInput = new Input<>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
+    final public Input<String> sNameInput = new Input<>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
+    final public Input<String> sTipTextInput = new Input<>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
 
-    public Input<String> sPathInput = new Input<>("path", "path of the Plugin to be shown in this panel, in xpath-like format. " +
+    final public Input<String> sPathInput = new Input<>("path", "path of the Plugin to be shown in this panel, in xpath-like format. " +
             "For example operator to edit the operator input of the top level run element. " +
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
 
-    public Input<Partition> bHasPartitionsInput = new Input<>("hasPartitions", "flag to indicate the panel has" +
+    final public Input<Partition> bHasPartitionsInput = new Input<>("hasPartitions", "flag to indicate the panel has" +
             "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 
-    public Input<Boolean> bAddButtonsInput = new Input<>("addButtons", "flag to indicate buttons should be added, default true", true);
-    public Input<Boolean> bIsVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);
+    final public Input<Boolean> bAddButtonsInput = new Input<>("addButtons", "flag to indicate buttons should be added, default true", true);
+    final public Input<Boolean> bIsVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);
 
 
-    public Input<String> sIconInput = new Input<>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
+    final public Input<String> sIconInput = new Input<>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
 
-    public Input<InputEditor.ExpandOption> forceExpansionInput = new Input<>("forceExpansion", "whether to expand the input(s)" +
+    final public Input<InputEditor.ExpandOption> forceExpansionInput = new Input<>("forceExpansion", "whether to expand the input(s)" +
             "This can be " + Arrays.toString(InputEditor.ExpandOption.values()) + " (default 'FALSE')", InputEditor.ExpandOption.FALSE, InputEditor.ExpandOption.values());
-    public Input<String> sTypeInput = new Input<>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
+    final public Input<String> sTypeInput = new Input<>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
             "by the input type of the last component of the path");
 
-    public Input<Integer> nLabelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
+    final public Input<Integer> nLabelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
 
-    public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<>("buttonStatus", "whether to show add and delete buttons. " +
+    final public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<>("buttonStatus", "whether to show add and delete buttons. " +
             "This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
 
     String[] sPathComponents;
@@ -145,7 +145,7 @@ public class BeautiPanelConfig extends BEASTObject {
      * based on the path Input.
      */
     @SuppressWarnings("unchecked")
-    public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
+    final public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
         try {
 //            if (parentPlugins != null && parentPlugins.size() > 0 && _input != null)
 //                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
@@ -170,7 +170,7 @@ public class BeautiPanelConfig extends BEASTObject {
                 parentPlugins = new ArrayList<>();
                 parentInputs = new ArrayList<>();
                 for (BEASTInterface plugin : oldPlugins) {
-                    Input<?> namedInput = plugin.getInput(sPathComponents[i]);
+                    final Input<?> namedInput = plugin.getInput(sPathComponents[i]);
                     type = namedInput.getType();
                     if (namedInput.get() instanceof List<?>) {
                         bIsList = true;
@@ -282,7 +282,7 @@ public class BeautiPanelConfig extends BEASTObject {
     @SuppressWarnings("unchecked")
     public void sync(int iPartition) {
         if (parentInputs.size() > 0 && _input.get() != null) {
-            Input<?> input = parentInputs.get(iPartition);
+            final Input<?> input = parentInputs.get(iPartition);
             if (bIsList) {
                 List<Object> list = (List<Object>) _input.get();
                 List<Object> targetList = ((List<Object>) input.get());
@@ -330,7 +330,7 @@ public class BeautiPanelConfig extends BEASTObject {
         }
     }
 
-    Input<?> getInput() {
+    final Input<?> getInput() {
         return _input;
     }
 

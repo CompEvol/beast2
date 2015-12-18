@@ -58,12 +58,12 @@ public class BirthDeathGernhard08Model extends YuleModel {
 
     final static String[] TYPES = {"unscaled", "timesonly", "oriented", "labeled"};
 
-    public Input<String> typeInput =
+    final public Input<String> typeInput =
             new Input<>("type", "tree type, should be one of " + Arrays.toString(TYPES) + " (default unscaled)",
                     "unscaled", TYPES);
-    public Input<RealParameter> relativeDeathRateParameterInput =
+    final public Input<RealParameter> relativeDeathRateParameterInput =
             new Input<>("relativeDeathRate", "relative death rate parameter, mu/lambda in birth death model", Validate.REQUIRED);
-    public Input<RealParameter> sampleProbabilityInput =
+    final public Input<RealParameter> sampleProbabilityInput =
             new Input<>("sampleProbability", "sample probability, rho in birth/death model");
 
     @Override

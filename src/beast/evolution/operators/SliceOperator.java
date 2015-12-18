@@ -17,11 +17,11 @@ import beast.util.Randomizer;
 @Description("A random walk operator that selects a random dimension of the real parameter and perturbs the value a " +
         "random amount within +/- windowSize.")
 public class SliceOperator extends Operator {
-    public Input<RealParameter> parameterInput =
+    final public Input<RealParameter> parameterInput =
             new Input<>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
-    public Input<Double> windowSizeInput =
+    final public Input<Double> windowSizeInput =
             new Input<>("windowSize", "the size of the step for finding the slice boundaries", Input.Validate.REQUIRED);
-    public Input<Distribution> sliceDensityInput =
+    final public Input<Distribution> sliceDensityInput =
             new Input<>("sliceDensity", "The density to sample from using slice sampling.", Input.Validate.REQUIRED);
 
     Double totalDelta;

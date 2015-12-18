@@ -12,12 +12,12 @@ import beast.evolution.datatype.Nucleotide;
 public class TIM extends GeneralSubstitutionModel {
 
     // Transition rates
-    public Input<RealParameter> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
-    public Input<RealParameter> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
+    final public Input<RealParameter> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
+    final public Input<RealParameter> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
 
     // Transversion rates
-    public Input<RealParameter> rateTransversions1Input = new Input<>("rateTransversions1", "substitution rate for A<->C and G<->T");
-    public Input<RealParameter> rateTransversions2Input = new Input<>("rateTransversions2", "substitution rate for C<->G and A<->T");
+    final public Input<RealParameter> rateTransversions1Input = new Input<>("rateTransversions1", "substitution rate for A<->C and G<->T");
+    final public Input<RealParameter> rateTransversions2Input = new Input<>("rateTransversions2", "substitution rate for C<->G and A<->T");
 
     RealParameter rateAG;
     RealParameter rateCT;

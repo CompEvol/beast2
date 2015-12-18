@@ -14,7 +14,7 @@ import beast.core.parameter.IntegerParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class ChiSquare extends ParametricDistribution {
-    public Input<IntegerParameter> dfInput = new Input<>("df", "degrees if freedin, defaults to 1");
+    final public Input<IntegerParameter> dfInput = new Input<>("df", "degrees if freedin, defaults to 1");
 
     static org.apache.commons.math.distribution.ChiSquaredDistribution m_dist = new ChiSquaredDistributionImpl(1);
 

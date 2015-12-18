@@ -18,8 +18,8 @@ public class TipDatesScaler extends TreeOperator {
     // perhaps multiple trees may be necessary if they share the same taxon?
     // public Input<List<Tree>> m_treesInput = new Input<>("tree" ,"tree to operate on", new ArrayList<>(), Validate.REQUIRED);
 
-    public Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
-    public Input<TaxonSet> taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
+    final public Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    final public Input<TaxonSet> taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
 
     /**
      * shadows input *

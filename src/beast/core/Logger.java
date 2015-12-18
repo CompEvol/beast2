@@ -53,17 +53,17 @@ public class Logger extends BEASTObject {
         none, alphabetic, smart
     }
 
-    public Input<String> fileNameInput = new Input<>("fileName", "Name of the file, or stdout if left blank");
+    final public Input<String> fileNameInput = new Input<>("fileName", "Name of the file, or stdout if left blank");
 
-    public Input<Integer> everyInput = new Input<>("logEvery", "Number of the samples logged", 1);
-    public Input<BEASTObject> modelInput = new Input<>("model", "Model to log at the top of the log. " +
+    final public Input<Integer> everyInput = new Input<>("logEvery", "Number of the samples logged", 1);
+    final public Input<BEASTObject> modelInput = new Input<>("model", "Model to log at the top of the log. " +
             "If specified, XML will be produced for the model, commented out by # at the start of a line. " +
             "Alignments are suppressed. This way, the log file documents itself. ");
-    public Input<LOGMODE> modeInput = new Input<>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
-    public Input<SORTMODE> sortModeInput = new Input<>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
-    public Input<Boolean> sanitiseHeadersInput = new Input<>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
+    final public Input<LOGMODE> modeInput = new Input<>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
+    final public Input<SORTMODE> sortModeInput = new Input<>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
+    final public Input<Boolean> sanitiseHeadersInput = new Input<>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
 
-    public Input<List<BEASTObject>> loggersInput = new Input<>("log",
+    final public Input<List<BEASTObject>> loggersInput = new Input<>("log",
             "Element in a log. This can be any plug in that is Loggable.",
             new ArrayList<>(), Validate.REQUIRED, Loggable.class);
 

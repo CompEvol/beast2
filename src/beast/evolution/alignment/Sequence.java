@@ -35,12 +35,12 @@ import beast.evolution.datatype.DataType;
 
 @Description("Single sequence in an alignment.")
 public class Sequence extends BEASTObject {
-    public Input<Integer> totalCountInput = new Input<>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
-    public Input<String> taxonInput = new Input<>("taxon", "name of this species", Input.Validate.REQUIRED);
-    public Input<String> dataInput = new Input<>("value",
+    final public Input<Integer> totalCountInput = new Input<>("totalcount", "number of states or the number of lineages for this species in SNAPP analysis");
+    final public Input<String> taxonInput = new Input<>("taxon", "name of this species", Input.Validate.REQUIRED);
+    final public Input<String> dataInput = new Input<>("value",
             "sequence data, either encoded as a string or as comma separated list of integers, or comma separated likelihoods/probabilities for each site if uncertain=true." +
                     "In either case, whitespace is ignored.", Input.Validate.REQUIRED);
-    public Input<Boolean> uncertainInput = new Input<>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons. In this formulation, gaps are coded as 1/K,...,1/K, where K is the number of states in the model.");
+    final public Input<Boolean> uncertainInput = new Input<>("uncertain", "if true, sequence is provided as comma separated probabilities for each character, with sites separated by a semi-colons. In this formulation, gaps are coded as 1/K,...,1/K, where K is the number of states in the model.");
 
     protected boolean uncertain = false;
     protected double[][] likelihoods = null;    

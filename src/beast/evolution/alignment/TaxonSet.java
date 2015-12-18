@@ -12,9 +12,9 @@ import java.util.*;
         " either from a list of taxon objects or an alignment.")
 public class TaxonSet extends Taxon {
 
-    public Input<List<Taxon>> taxonsetInput = new Input<>("taxon", "list of taxa making up the set", new ArrayList<>());
+    final public Input<List<Taxon>> taxonsetInput = new Input<>("taxon", "list of taxa making up the set", new ArrayList<>());
 
-    public Input<Alignment> alignmentInput = new Input<>("alignment", "alignment where each sequence represents a taxon");
+    final public Input<Alignment> alignmentInput = new Input<>("alignment", "alignment where each sequence represents a taxon");
 
     protected List<String> taxaNames;
     protected List<Taxon> taxonList;

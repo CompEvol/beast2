@@ -20,12 +20,12 @@ import beast.evolution.tree.Tree;
 
 @Description("Logs tree annotated with metadata in StarBeast format")
 public class SpeciesTreeLogger extends BEASTObject implements Loggable {
-    public Input<Tree> treeInput = new Input<>("tree", "tree to be logged", Validate.REQUIRED);
-    public Input<Function> parameterInput = new Input<>("popSize", "population size parameter associated with tree nodes", Validate.REQUIRED);
-    public Input<Function> parameterTopInput = new Input<>("popSizeTop", "population size parameter associated with top of tree branches, only used for non-constant *beast analysis");
-    public Input<SpeciesTreePrior> speciesTreePriorInput = new Input<>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
-    public Input<TreeTopFinder> treeTopFinderInput = new Input<>("treetop", "calculates height of species tree", Validate.REQUIRED);
-    public Input<List<Function>> metadataInput = new Input<>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
+    final public Input<Tree> treeInput = new Input<>("tree", "tree to be logged", Validate.REQUIRED);
+    final public Input<Function> parameterInput = new Input<>("popSize", "population size parameter associated with tree nodes", Validate.REQUIRED);
+    final public Input<Function> parameterTopInput = new Input<>("popSizeTop", "population size parameter associated with top of tree branches, only used for non-constant *beast analysis");
+    final public Input<SpeciesTreePrior> speciesTreePriorInput = new Input<>("speciesTreePrior", "species tree prior, used to find which Population Size Function is used. If not specified, assumes 'constant'");
+    final public Input<TreeTopFinder> treeTopFinderInput = new Input<>("treetop", "calculates height of species tree", Validate.REQUIRED);
+    final public Input<List<Function>> metadataInput = new Input<>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
 
     TreePopSizeFunction popSizeFunction;
     String metaDataLabel;

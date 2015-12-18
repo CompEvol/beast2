@@ -42,7 +42,7 @@ import java.util.List;
 @Description("A tree compatible with a set of monophyletic clades and hard limits on the clade root.")
 public class CalibratedYuleInitialTree extends Tree implements StateNodeInitialiser {
 
-    public Input<List<CalibrationPoint>> calibrationsInput =
+    final public Input<List<CalibrationPoint>> calibrationsInput =
             new Input<>("calibrations", "Set of calibrated nodes", new ArrayList<>(),
                     Input.Validate.REQUIRED);
 

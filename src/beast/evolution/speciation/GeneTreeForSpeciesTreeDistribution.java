@@ -24,21 +24,21 @@ import beast.evolution.tree.TreeInterface;
 
 @Description("Calculates probability of gene tree conditioned on a species tree (multi-species coalescent)")
 public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
-    public Input<TreeInterface> speciesTreeInput =
+    final public Input<TreeInterface> speciesTreeInput =
             new Input<>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
-    public Input<Double> ploidyInput =
+    final public Input<Double> ploidyInput =
             new Input<>("ploidy", "ploidy (copy number) for this gene, typically a whole number or half (default 2 for autosomal_nuclear)", 2.0);
 //    public Input<PLOIDY> m_ploidy =
 //        new Input<>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
     
-    public Input<SpeciesTreePrior> speciesTreePriorInput =
+    final public Input<SpeciesTreePrior> speciesTreePriorInput =
             new Input<>("speciesTreePrior", "defines population function and its parameters", Validate.REQUIRED);
 
-    public Input<TreeTopFinder> treeTopFinderInput =
+    final public Input<TreeTopFinder> treeTopFinderInput =
             new Input<>("treetop", "calculates height of species tree, required only for linear *beast analysis");
 
     // intervals for each of the species tree branches

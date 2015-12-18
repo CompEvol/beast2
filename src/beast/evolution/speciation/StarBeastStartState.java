@@ -38,29 +38,29 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
         private final String ename;
     }
-    public Input<Method> initMethod = new Input<>("method", "Initialise either with a totally random " +
+    final public Input<Method> initMethod = new Input<>("method", "Initialise either with a totally random " +
             "state or a point estimate based on alignments data (default point-estimate)",
             Method.POINT, Method.values());
 
-    public Input<Tree> speciesTreeInput = new Input<>("speciesTree", "The species tree to initialize");
+    final public Input<Tree> speciesTreeInput = new Input<>("speciesTree", "The species tree to initialize");
 
-    public Input<List<Tree>> genes = new Input<>("gene", "Gene trees to initialize", new ArrayList<>());
+    final public Input<List<Tree>> genes = new Input<>("gene", "Gene trees to initialize", new ArrayList<>());
     //,
     //        Validate.REQUIRED);
 
-    public Input<CalibratedYuleModel> calibratedYule = new Input<>("calibratedYule",
+    final public Input<CalibratedYuleModel> calibratedYule = new Input<>("calibratedYule",
             "The species tree (with calibrations) to initialize", Validate.XOR, speciesTreeInput);
 
-    public Input<RealParameter> popMean = new Input<>("popMean",
+    final public Input<RealParameter> popMean = new Input<>("popMean",
             "Population mean hyper prior to initialse");
 
-    public Input<RealParameter> birthRate = new Input<>("birthRate",
+    final public Input<RealParameter> birthRate = new Input<>("birthRate",
             "Tree prior birth rate to initialize");
 
-    public Input<SpeciesTreePrior> speciesTreePriorInput =
+    final public Input<SpeciesTreePrior> speciesTreePriorInput =
             new Input<>("speciesTreePrior", "Population size parameters to initialise");
 
-    public Input<Function> muInput = new Input<>("baseRate",
+    final public Input<Function> muInput = new Input<>("baseRate",
             "Main clock rate used to scale trees (default 1).");
 
 

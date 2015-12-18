@@ -41,7 +41,7 @@ import java.util.List;
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {
-    public Input<Double> m_pWeight = new Input<>("weight", "weight with which this operator is selected", Validate.REQUIRED);
+    final public Input<Double> m_pWeight = new Input<>("weight", "weight with which this operator is selected", Validate.REQUIRED);
 
     private final String STANDARD_OPERATOR_PACKAGE = "beast.evolution.operators";
 

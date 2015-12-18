@@ -23,13 +23,13 @@ import beast.util.XMLProducer;
 @Description("An alignment containing sequences randomly generated using a"
         + "given site model down a given tree.")
 public class SimulatedAlignment extends Alignment {
-    public Input<Alignment> m_data = new Input<>("data", "alignment data which specifies datatype and taxa of the beast.tree", Validate.REQUIRED);
-    public Input<Tree> m_treeInput = new Input<>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
-    public Input<SiteModel.Base> m_pSiteModelInput = new Input<>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
-    public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<>("branchRateModel",
+    final public Input<Alignment> m_data = new Input<>("data", "alignment data which specifies datatype and taxa of the beast.tree", Validate.REQUIRED);
+    final public Input<Tree> m_treeInput = new Input<>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
+    final public Input<SiteModel.Base> m_pSiteModelInput = new Input<>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    final public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
-    public Input<Integer> m_sequenceLengthInput = new Input<>("sequencelength", "nr of samples to generate (default 1000).", 1000);
-    public Input<String> m_outputFileNameInput = new Input<>(
+    final public Input<Integer> m_sequenceLengthInput = new Input<>("sequencelength", "nr of samples to generate (default 1000).", 1000);
+    final public Input<String> m_outputFileNameInput = new Input<>(
             "outputFileName",
             "If provided, simulated alignment is additionally written to this file.");    
 

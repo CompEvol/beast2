@@ -17,10 +17,10 @@ public class TipDatesRandomWalker extends TreeOperator {
     // perhaps multiple trees may be necessary if they share the same taxon?
     // public Input<List<Tree>> m_treesInput = new Input<>("tree" ,"tree to operate on", new ArrayList<>(), Validate.REQUIRED);
 
-    public Input<Double> windowSizeInput =
+    final public Input<Double> windowSizeInput =
             new Input<>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
-    public Input<TaxonSet> m_taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
-    public Input<Boolean> useGaussianInput =
+    final public Input<TaxonSet> m_taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
+    final public Input<Boolean> useGaussianInput =
             new Input<>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
     /**

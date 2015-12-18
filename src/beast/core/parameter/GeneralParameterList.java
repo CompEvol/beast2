@@ -42,15 +42,15 @@ import org.w3c.dom.Node;
         + "parameters must have identical dimensions and bounds.")
 public abstract class GeneralParameterList<T> extends StateNode {
     
-    public Input<List<Parameter.Base>> initialParamsInput = new Input<>(
+    final public Input<List<Parameter.Base>> initialParamsInput = new Input<>(
             "initialParam",
             "Parameter whose value will initially be in parameter list.",
             new ArrayList<>());
     
-    public Input<Integer> dimensionInput = new Input<>("dimension",
+    final public Input<Integer> dimensionInput = new Input<>("dimension",
             "Dimension of individual parameters in list.  Default 1.", 1);
     
-    public Input<Integer> minorDimensionInput = new Input<>("minordimension",
+    final public Input<Integer> minorDimensionInput = new Input<>("minordimension",
             "Minor dimension of individual parameters in list. Default 1.", 1);
     
 

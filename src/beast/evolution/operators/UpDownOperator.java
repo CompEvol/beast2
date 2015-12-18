@@ -20,17 +20,17 @@ import beast.util.Randomizer;
         "The up parameter is multiplied by this scale and the down parameter is divided by this scale.")
 public class UpDownOperator extends Operator {
 
-    public Input<Double> scaleFactorInput = new Input<>("scaleFactor",
+    final public Input<Double> scaleFactorInput = new Input<>("scaleFactor",
             "magnitude factor used for scaling", Validate.REQUIRED);
-    public Input<List<StateNode>> upInput = new Input<>("up",
+    final public Input<List<StateNode>> upInput = new Input<>("up",
             "zero or more items to scale upwards", new ArrayList<>());
-    public Input<List<StateNode>> downInput = new Input<>("down",
+    final public Input<List<StateNode>> downInput = new Input<>("down",
             "zero or more items to scale downwards", new ArrayList<>());
-    public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
-    public Input<Boolean> elementWiseInput = new Input<>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
+    final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    final public Input<Boolean> elementWiseInput = new Input<>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
 
-    public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0);
-    public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 0.0);
+    final public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0);
+    final public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 0.0);
 
     double scaleFactor;
     private double upper,lower;

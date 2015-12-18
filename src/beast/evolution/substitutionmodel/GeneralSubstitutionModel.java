@@ -42,13 +42,13 @@ import beast.evolution.tree.Node;
         "than that one of the is equal to one and the others are specified relative to " +
         "this unit rate. Works for any number of states.")
 public class GeneralSubstitutionModel extends SubstitutionModel.Base {
-    public Input<Function> ratesInput =
+    final public Input<Function> ratesInput =
             new Input<>("rates", "Rate parameter which defines the transition rate matrix. " +
                     "Only the off-diagonal entries need to be specified (diagonal makes row sum to zero in a " +
                     "rate matrix). Entry i specifies the rate from floor(i/(n-1)) to i%(n-1)+delta where " +
                     "n is the number of states and delta=1 if floor(i/(n-1)) >= i%(n-1) and 0 otherwise.", Validate.REQUIRED);
 
-    public Input<String> eigenSystemClass = new Input<>("eigenSystem", "Name of the class used for creating an EigenSystem", DefaultEigenSystem.class.getName());
+    final public Input<String> eigenSystemClass = new Input<>("eigenSystem", "Name of the class used for creating an EigenSystem", DefaultEigenSystem.class.getName());
     /**
      * a square m_nStates x m_nStates matrix containing current rates  *
      */

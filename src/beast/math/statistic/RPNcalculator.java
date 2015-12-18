@@ -24,8 +24,8 @@ import beast.core.parameter.Parameter;
 public class RPNcalculator extends CalculationNode implements Loggable, Function {
 
 
-    public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
-    public Input<List<Parameter>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
+    final public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
+    final public Input<List<Parameter>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
 
     private RPNexpressionCalculator[] expressions;
     private List<String> names;

@@ -16,7 +16,7 @@ import beast.core.parameter.IntegerParameter;
 
 @Description("calculates sum of a valuable")
 public class Sum extends CalculationNode implements Function, Loggable {
-    public Input<Function> functionInput = new Input<>("arg", "argument to be summed", Validate.REQUIRED);
+    final public Input<Function> functionInput = new Input<>("arg", "argument to be summed", Validate.REQUIRED);
 
     enum Mode {integer_mode, double_mode}
 

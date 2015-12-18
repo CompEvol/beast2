@@ -79,26 +79,26 @@ public class Alignment extends Map<String> {
         }
     }
 
-    public Input<List<Sequence>> sequenceInput =
+    final public Input<List<Sequence>> sequenceInput =
             new Input<>("sequence", "sequence and meta data for particular taxon", new ArrayList<>(), Validate.OPTIONAL);
 
-    public Input<TaxonSet> taxonSetInput =
+    final public Input<TaxonSet> taxonSetInput =
             new Input<>("taxa", "An optional taxon-set used only to sort the sequences into the same order as they appear in the taxon-set.", new TaxonSet(), Validate.OPTIONAL);
 
-    public Input<Integer> stateCountInput = new Input<>("statecount", "maximum number of states in all sequences");
-    public Input<String> dataTypeInput = new Input<>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
-    public Input<DataType.Base> userDataTypeInput = new Input<>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
-    public Input<Boolean> stripInvariantSitesInput = new Input<>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
-    public Input<String> siteWeightsInput = new Input<>("weights", "comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
+    final public Input<Integer> stateCountInput = new Input<>("statecount", "maximum number of states in all sequences");
+    final public Input<String> dataTypeInput = new Input<>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
+    final public Input<DataType.Base> userDataTypeInput = new Input<>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
+    final public Input<Boolean> stripInvariantSitesInput = new Input<>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
+    final public Input<String> siteWeightsInput = new Input<>("weights", "comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
 
-    public Input<Boolean> isAscertainedInput = new Input<>("ascertained", "is true if the alignment allows ascertainment correction, i.e., conditioning the " +
+    final public Input<Boolean> isAscertainedInput = new Input<>("ascertained", "is true if the alignment allows ascertainment correction, i.e., conditioning the " +
             "Felsenstein likelihood on excluding constant sites from the alignment", false);
     /**
      * Inputs from AscertainedAlignment
      */
-    public Input<Integer> excludefromInput = new Input<>("excludefrom", "first site to condition on, default 0", 0);
-    public Input<Integer> excludetoInput = new Input<>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
-    public Input<Integer> excludeeveryInput = new Input<>("excludeevery", "interval between sites to condition on (default 1)", 1);
+    final public Input<Integer> excludefromInput = new Input<>("excludefrom", "first site to condition on, default 0", 0);
+    final public Input<Integer> excludetoInput = new Input<>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
+    final public Input<Integer> excludeeveryInput = new Input<>("excludeevery", "interval between sites to condition on (default 1)", 1);
 
     /**
      * list of sequences in the alignment *

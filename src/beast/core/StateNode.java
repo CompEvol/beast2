@@ -18,7 +18,7 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      * Flag to indicate the StateNode is not constant.
      * This is particularly useful for Beauti *
      */
-    public Input<Boolean> isEstimatedInput = new Input<>("estimate", "whether to estimate this item or keep constant to its initial value", true);
+    final public Input<Boolean> isEstimatedInput = new Input<>("estimate", "whether to estimate this item or keep constant to its initial value", true);
 
     /**
      * @return this StateNode if it is not in the State.

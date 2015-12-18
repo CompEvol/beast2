@@ -17,7 +17,7 @@ import beast.core.Input.Validate;
 @Description("Report effective sample size of a parameter or log values from a distribution. " +
         "This uses the same criterion as Tracer and assumes 10% burn in.")
 public class ESS extends BEASTObject implements Loggable {
-    public Input<Function> functionInput =
+    final public Input<Function> functionInput =
             new Input<>("arg", "value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
 
     /**
