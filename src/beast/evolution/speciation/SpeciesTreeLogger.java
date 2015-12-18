@@ -4,13 +4,13 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
-import beast.core.Input.Validate;
 import beast.core.parameter.Parameter;
 import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
@@ -135,7 +135,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
 	            buf.append(((BEASTObject)metadata2).getID());
 	            buf.append('=');
 	            if (metadata2 instanceof Parameter<?>) {
-	            	Parameter p = (Parameter) metadata2;
+	            	Parameter<?> p = (Parameter<?>) metadata2;
 	            	int dim = p.getMinorDimension1();
 	            	if (dim > 1) {
 		            	buf.append('{');

@@ -8,7 +8,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.coalescent.PopulationFunction;
 
 
 /**

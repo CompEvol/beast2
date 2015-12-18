@@ -1,7 +1,7 @@
 package beast.evolution.alignment.distance;
 
-import beast.core.Description;
 import beast.core.BEASTObject;
+import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.DataType;
@@ -35,7 +35,7 @@ public interface Distance {
 	            e.printStackTrace();
 	        }
 	        this.patterns = patterns;
-	        dimension = patterns.getNrTaxa();
+	        dimension = patterns.getTaxonCount();
 	        dataType = patterns.getDataType();
 	        distancesKnown = false;
 	    }

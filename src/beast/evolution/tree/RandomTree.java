@@ -26,15 +26,23 @@
 package beast.evolution.tree;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
+import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.util.Log;
-import beast.core.BEASTInterface;
-import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.coalescent.PopulationFunction;

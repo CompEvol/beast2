@@ -35,9 +35,8 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
-import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 
 
 

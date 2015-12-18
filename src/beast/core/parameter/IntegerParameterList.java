@@ -1,8 +1,9 @@
 package beast.core.parameter;
 
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
-import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

@@ -3,13 +3,13 @@ package beast.core.parameter;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.BEASTObject;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.StateNode;
 
 
 

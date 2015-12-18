@@ -26,10 +26,14 @@
 package beast.evolution.tree;
 
 
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import beast.evolution.alignment.TaxonSet;
 import beast.util.FrequencySet;
-
-import java.util.*;
 
 /**
  * Stores a set of unique clades (and their node heights) for a tree.

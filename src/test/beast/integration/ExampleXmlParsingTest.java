@@ -12,8 +12,6 @@ import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
-
-
 import junit.framework.TestCase;
 
 /**

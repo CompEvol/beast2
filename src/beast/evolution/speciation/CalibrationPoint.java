@@ -1,8 +1,8 @@
 package beast.evolution.speciation;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.ParametricDistribution;
 

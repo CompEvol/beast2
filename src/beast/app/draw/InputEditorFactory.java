@@ -16,12 +16,9 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.app.draw.InputEditor.ButtonStatus;
 import beast.app.draw.InputEditor.ExpandOption;
+import beast.core.BEASTInterface;
 import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
-import beast.core.util.Log;
 import beast.util.AddOnManager;
 
 

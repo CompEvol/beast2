@@ -19,12 +19,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Logger;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
+import beast.core.Logger;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;

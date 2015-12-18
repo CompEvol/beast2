@@ -1,14 +1,17 @@
 package beast.evolution.tree;
 
-import beast.core.*;
-import beast.evolution.alignment.TaxonSet;
-import beast.util.TreeParser;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Operator;
+import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
+import beast.evolution.alignment.TaxonSet;
+import beast.util.TreeParser;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"

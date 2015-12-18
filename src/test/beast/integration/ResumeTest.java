@@ -1,6 +1,6 @@
 package test.beast.integration;
 
-import junit.framework.TestCase;
+import java.io.File;
 
 import org.junit.Test;
 
@@ -8,10 +8,7 @@ import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
-
-
-
-import java.io.File;
+import junit.framework.TestCase;
 
 /**
  * check that a chain can be resumed after termination *

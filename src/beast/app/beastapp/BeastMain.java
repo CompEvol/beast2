@@ -1,5 +1,20 @@
 package beast.app.beastapp;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
+
 import beagle.BeagleFlag;
 import beagle.BeagleInfo;
 import beast.app.BEASTVersion;
@@ -13,18 +28,6 @@ import beast.core.util.Log;
 import beast.util.Randomizer;
 import beast.util.XMLParserException;
 import jam.util.IconUtils;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.*;
-import java.util.List;
-import java.util.logging.*;
 
 public class BeastMain {
 

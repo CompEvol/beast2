@@ -6,11 +6,8 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Tree;
 import beast.util.ClusterTree;
 import beast.util.TreeParser;
-
-
-import test.beast.BEASTTestCase;
-
 import junit.framework.TestCase;
+import test.beast.BEASTTestCase;
 
 public class StateNodeInitialiserTest extends TestCase {
 

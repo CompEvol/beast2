@@ -4,9 +4,8 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 
 import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.evolution.speciation.SpeciesTreePrior;
 
 

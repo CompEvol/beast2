@@ -26,14 +26,14 @@
 package beast.evolution.speciation;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
 * @author Joseph Heled

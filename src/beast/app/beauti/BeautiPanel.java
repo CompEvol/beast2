@@ -1,5 +1,25 @@
 package beast.app.beauti;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Rectangle;
+
+import javax.swing.Box;
+import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import beast.app.beauti.BeautiPanelConfig.Partition;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditor.ExpandOption;
@@ -14,14 +34,6 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Set;
 
 /**
  * panel making up each of the tabs in Beauti *

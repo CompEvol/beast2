@@ -7,15 +7,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.util.XMLParser;
-
-import javax.swing.*;
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
         "information from Beauti template files.")

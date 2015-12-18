@@ -1,5 +1,7 @@
 package beast.util;
 
+import static beast.util.AddOnManager.beastVersion;
+
 /*
  * File PackageDependency.java
  *
@@ -31,8 +33,6 @@ package beast.util;
  */
 
 import beast.core.Description;
-
-import static beast.util.AddOnManager.beastVersion;
 
 /**
  * modified by Walter Xie

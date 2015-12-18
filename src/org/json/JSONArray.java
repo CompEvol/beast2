@@ -68,10 +68,11 @@ public class JSONArray {
      *     inconsistent state.
      */
     /* Accept a raw type for API compatibility */
-    public JSONArray(Collection copyFrom) {
+    public JSONArray(@SuppressWarnings("rawtypes") Collection copyFrom) {
         this();
         if (copyFrom != null) {
-            for (Iterator it = copyFrom.iterator(); it.hasNext();) {
+            for (@SuppressWarnings("rawtypes")
+			Iterator it = copyFrom.iterator(); it.hasNext();) {
                 put(JSONObject.wrap(it.next()));
             }
         }

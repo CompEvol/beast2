@@ -8,7 +8,6 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTObject;
 import beast.util.JSONParser;
 import beast.util.JSONProducer;
-
 import junit.framework.TestCase;
 
 public class JSONTest extends TestCase {

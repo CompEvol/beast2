@@ -13,11 +13,10 @@ import javax.swing.JTextField;
 
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallLabel;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;

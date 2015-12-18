@@ -1,6 +1,11 @@
 package beast.core;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -148,6 +153,8 @@ public class OperatorSchedule extends BEASTObject {
         formatter.format(headerFormat, PR_ACCEPT);
         out.println(": The acceptance probability (" + NUM_ACCEPT + " as a fraction of the total proposals for this operator).");
         out.println();
+        
+        formatter.close();
     }
 
     protected static String prettyPrintOperator(
@@ -187,6 +194,8 @@ public class OperatorSchedule extends BEASTObject {
 
         sb.append(" " + op.getPerformanceSuggestion());
 
+        formatter.close();
+   
         return sb.toString();
     }
 

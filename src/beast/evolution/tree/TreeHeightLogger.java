@@ -8,8 +8,8 @@ import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.Loggable;
 import beast.core.Input.Validate;
+import beast.core.Loggable;
 
 
 @Description("Logger to report height of a tree")

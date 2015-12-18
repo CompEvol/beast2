@@ -1,7 +1,6 @@
 package beast.app.beauti;
 
 
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 

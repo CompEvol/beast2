@@ -9,14 +9,13 @@ import java.util.Random;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreeInterface;
 

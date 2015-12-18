@@ -30,13 +30,13 @@ import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
 import beast.app.util.Utils;
+import beast.core.BEASTObject;
 import beast.core.Distribution;
 import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.State;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
 import beast.core.util.CompoundDistribution;
 import beast.util.XMLParser;
 

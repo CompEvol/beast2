@@ -10,8 +10,8 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
 

@@ -8,8 +8,6 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.operators.Exchange;
 import beast.util.Randomizer;
 import beast.util.TreeParser;
-
-
 import junit.framework.TestCase;
 
 public class ExchangeOperatorTest extends TestCase {

@@ -5,10 +5,12 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.EventObject;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -23,8 +25,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;

@@ -12,9 +12,6 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
-
 /** Utils that work with Java6 **/
 public class Utils6 {
 

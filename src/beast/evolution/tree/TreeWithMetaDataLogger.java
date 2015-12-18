@@ -6,13 +6,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
-import beast.core.Input.Validate;
 import beast.core.parameter.Parameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 

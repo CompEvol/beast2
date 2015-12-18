@@ -5,11 +5,11 @@ package test.beast.app.beauti;
 
 import java.io.File;
 
+import org.fest.assertions.Assertions;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
-import org.fest.assertions.Assertions;
 
 public class LinkUnlinkTest extends BeautiBase {
 

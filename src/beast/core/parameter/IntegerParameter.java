@@ -1,10 +1,10 @@
 package beast.core.parameter;
 
 
+import java.io.PrintStream;
+
 import beast.core.Description;
 import beast.core.Input;
-
-import java.io.PrintStream;
 
 
 /**

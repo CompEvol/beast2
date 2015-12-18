@@ -1,11 +1,55 @@
 package beast.app.beauti;
 
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditorFactory;
-import beast.core.*;
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.MCMC;
+import beast.core.Operator;
+import beast.core.StateNode;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -26,23 +70,6 @@ import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLParser.RequiredInputProvider;
 import beast.util.XMLProducer;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import java.io.*;
-import java.util.*;
 
 
 @Description("Beauti document in doc-view pattern, not useful in models")

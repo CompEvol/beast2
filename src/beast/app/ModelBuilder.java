@@ -26,15 +26,16 @@ package beast.app;
 
 
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 
 import beast.util.AddOnManager;
 import beast.util.Randomizer;
-
-
-import java.awt.*;
-import java.net.URL;
 
 
 /**

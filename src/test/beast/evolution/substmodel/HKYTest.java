@@ -4,7 +4,6 @@ import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.HKY;
-import beast.evolution.tree.Node;
 import junit.framework.TestCase;
 
 /**

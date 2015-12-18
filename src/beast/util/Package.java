@@ -1,18 +1,20 @@
 package beast.util;
 
-import beast.core.Description;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import static beast.util.AddOnManager.NOT_INSTALLED;
+import static beast.util.AddOnManager.getBeastDirectories;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static beast.util.AddOnManager.NOT_INSTALLED;
-import static beast.util.AddOnManager.getBeastDirectories;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import beast.core.Description;
 
 /**
  * BEAUti Package managed by AddOnManager

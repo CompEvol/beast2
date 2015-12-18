@@ -1,7 +1,14 @@
 package beast.evolution.speciation;
 
 
-import beast.core.*;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -11,11 +18,6 @@ import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.statistic.RPNcalculator;
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
 * @author Joseph Heled

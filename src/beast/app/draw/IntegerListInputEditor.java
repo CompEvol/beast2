@@ -17,17 +17,6 @@
 
 package beast.app.draw;
 
-import beast.app.beauti.BeautiDoc;
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionListener;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -35,6 +24,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
+
+import beast.app.beauti.BeautiDoc;
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
+import beast.core.BEASTInterface;
+import beast.core.Input;
 
 
 public class IntegerListInputEditor extends ListInputEditor {

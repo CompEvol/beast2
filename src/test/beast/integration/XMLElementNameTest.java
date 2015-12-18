@@ -8,13 +8,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.Input;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
-
-
-
 import junit.framework.TestCase;
 
 

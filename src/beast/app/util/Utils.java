@@ -1,18 +1,30 @@
 package beast.app.util;
 
-import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
-
-import java.awt.*;
-import java.io.*;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import beast.app.beauti.BeautiPanel;
+import beast.app.beauti.BeautiPanelConfig;
 
 /**
  * @author Andrew Rambaut

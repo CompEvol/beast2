@@ -8,8 +8,6 @@ import org.junit.Test;
 import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.operators.IntRandomWalkOperator;
-
-
 import junit.framework.TestCase;
 
 public class IntRandomWalkOperatorTest extends TestCase {

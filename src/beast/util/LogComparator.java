@@ -1,15 +1,15 @@
 package beast.util;
 
 
-import beast.app.BEASTVersion;
-import beast.app.util.Utils;
+import static beast.util.OutputUtils.format;
 
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static beast.util.OutputUtils.format;
+import beast.app.BEASTVersion;
+import beast.app.util.Utils;
 
 /**
  * Compare log files to find the set of parameters same between logs but having significantly different value.

@@ -18,9 +18,6 @@
  */
 package beast.core.parameter;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +26,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.w3c.dom.Node;
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.StateNode;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

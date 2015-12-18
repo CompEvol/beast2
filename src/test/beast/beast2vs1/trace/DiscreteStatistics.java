@@ -149,7 +149,6 @@ public class DiscreteStatistics {
      * @param y list of numbers
      * @return covariance of x and y
      */
-    @SuppressWarnings({"SuspiciousNameCombination"})
     public static double covariance(double[] x, double[] y) {
 
         return covariance(x, y, mean(x), mean(y), stdev(x), stdev(y));

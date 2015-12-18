@@ -1,17 +1,17 @@
 package beast.evolution.tree;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;

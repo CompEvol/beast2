@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.app.draw.InputEditor;
 import beast.app.draw.BEASTObjectPanel;
+import beast.app.draw.InputEditor;
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 
 

@@ -24,8 +24,8 @@
 */
 package beast.app.draw;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Selection {
     public List<TrackPoint> m_tracker = null;

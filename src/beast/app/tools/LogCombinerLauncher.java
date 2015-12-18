@@ -1,7 +1,6 @@
 package beast.app.tools;
 
 import beast.app.beastapp.BeastLauncher;
-import beast.app.beastapp.BeastMain;
 
 /** Launches log-combiner 
  * @see BeastLauncher 

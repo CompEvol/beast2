@@ -4,13 +4,13 @@ package beast.app.beauti;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
-import beast.core.Input.Validate;
 
 
 

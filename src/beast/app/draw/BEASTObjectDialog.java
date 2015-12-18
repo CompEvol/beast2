@@ -1,22 +1,24 @@
 package beast.app.draw;
 
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
-import beast.app.beauti.BeautiDoc;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
-import beast.util.XMLProducer;
-
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.border.EmptyBorder;
+
+import beast.app.beauti.BeautiDoc;
+import beast.core.BEASTInterface;
+import beast.core.Input;
+import beast.core.MCMC;
+import beast.util.XMLProducer;
 
 /**
  * Dialog for editing Plugins.

@@ -5,9 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.evolution.alignment.*;
-import junit.framework.TestCase;
 import org.junit.Test;
+
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
+import junit.framework.TestCase;
 
 /** test FilteredAlignment as well as some aspects of Alignment **/
 public class FilteredAlignmentTest extends TestCase {

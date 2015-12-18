@@ -1,5 +1,8 @@
 package beast.evolution.sitemodel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -9,9 +12,6 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 

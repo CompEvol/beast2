@@ -1,8 +1,9 @@
 package test.beast.util;
 
+import org.junit.Test;
+
 import beast.util.TreeParser;
 import junit.framework.TestCase;
-import org.junit.Test;
 
 
 public class TreeParserTest extends TestCase {

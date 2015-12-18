@@ -2,13 +2,13 @@ package beast.core.util;
 
 import java.io.PrintStream;
 
+import beast.core.BEASTObject;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.Loggable;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.IntegerParameter;
 

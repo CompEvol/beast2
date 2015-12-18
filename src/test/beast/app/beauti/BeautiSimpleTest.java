@@ -2,37 +2,23 @@ package test.beast.app.beauti;
 
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.swing.driver.ComponentStateValidator.validateIsEnabledAndShowing;
-import static org.fest.swing.edt.GuiActionRunner.execute;
-import static org.fest.swing.finder.JFileChooserFinder.findFileChooser;
 
-import java.awt.Button;
 import java.awt.Component;
-import java.awt.FileDialog;
 import java.io.File;
 import java.util.Arrays;
 
 import javax.swing.JComboBox;
 
-import org.fest.swing.core.ComponentMatcher;
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.data.Index;
 import org.fest.swing.data.TableCell;
-import org.fest.swing.edt.GuiTask;
-import org.fest.swing.finder.DialogFinder;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableCellFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
-
-import beast.app.beauti.TaxonSetDialog;
 
 
 

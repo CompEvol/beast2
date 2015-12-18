@@ -1,9 +1,9 @@
 package test.beast.beast2vs1.trace;
 
+import beast.core.BEASTObject;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
 
 

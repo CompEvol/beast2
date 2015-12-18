@@ -28,12 +28,12 @@ package beast.evolution.branchratemodel;
 
 import java.io.PrintStream;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.Loggable;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;

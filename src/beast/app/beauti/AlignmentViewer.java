@@ -1,19 +1,30 @@
 package beast.app.beauti;
 
-import javax.swing.*;
-import javax.swing.table.*;
-
-import beast.evolution.alignment.Alignment;
-import beast.evolution.datatype.DataType;
-import beast.util.NexusParser;
-
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.Box;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
+import beast.evolution.alignment.Alignment;
+import beast.evolution.datatype.DataType;
+import beast.util.NexusParser;
 
 
 public class AlignmentViewer extends JPanel {
@@ -42,7 +53,7 @@ public class AlignmentViewer extends JPanel {
     public AlignmentViewer(Alignment data) throws Exception {
         m_alignment = data;
         int nSites = data.getSiteCount();
-        int nTaxa = data.getNrTaxa();
+        int nTaxa = data.getTaxonCount();
         tableData = new Object[nTaxa][nSites + 1];
         char[] headerChar = updateTableData();
 
@@ -147,7 +158,7 @@ public class AlignmentViewer extends JPanel {
 
     private char[] updateTableData() {
         int nSites = m_alignment.getSiteCount();
-        int nTaxa = m_alignment.getNrTaxa();
+        int nTaxa = m_alignment.getTaxonCount();
 
         // set up table content
         DataType dataType = m_alignment.getDataType();

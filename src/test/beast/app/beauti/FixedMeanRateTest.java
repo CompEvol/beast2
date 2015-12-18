@@ -4,14 +4,12 @@ package test.beast.app.beauti;
 import java.io.File;
 import java.util.List;
 
-import org.fest.assertions.AssertExtension;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;
 
-import junit.framework.TestCase;
-import beast.app.beauti.SiteModelInputEditor;
 import beast.evolution.operators.DeltaExchangeOperator;
+import junit.framework.TestCase;
 
 /** test how the FixedMeanRate flag interact with link/unlink **/
 public class FixedMeanRateTest extends BeautiBase {

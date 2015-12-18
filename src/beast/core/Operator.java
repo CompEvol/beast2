@@ -25,19 +25,17 @@
 package beast.core;
 
 
-import beast.core.Input.Validate;
-import beast.core.util.Evaluator;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 //import org.json.JSONWriter;
-
 import org.json.JSONStringer;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import beast.core.Input.Validate;
+import beast.core.util.Evaluator;
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {

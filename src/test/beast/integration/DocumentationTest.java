@@ -4,13 +4,13 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.util.AddOnManager;
+import junit.framework.TestCase;
 
 
 

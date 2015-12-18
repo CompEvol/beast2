@@ -1,14 +1,13 @@
 package beast.app.beauti;
 
 
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.evolution.tree.TreeDistribution;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.ParametricDistribution;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -18,6 +17,13 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.commons.math.MathException;
+
+import beast.app.draw.BEASTObjectInputEditor;
+import beast.core.BEASTInterface;
+import beast.core.Input;
+import beast.evolution.tree.TreeDistribution;
+import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.ParametricDistribution;
 
 public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 

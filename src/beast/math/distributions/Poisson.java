@@ -1,11 +1,11 @@
 package beast.math.distributions;
 
 
+import org.apache.commons.math.distribution.PoissonDistributionImpl;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import org.apache.commons.math.distribution.IntegerDistribution;
-import org.apache.commons.math.distribution.PoissonDistributionImpl;
 
 
 @Description("Poisson distribution, used as prior  f(k; lambda)=\\frac{lambda^k e^{-lambda}}{k!}  " +

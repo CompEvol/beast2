@@ -6,9 +6,6 @@ import org.junit.Test;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel;
 import beast.util.XMLParser;
-
-
-
 import junit.framework.TestCase;
 
 public class LogNormalDistributionModelTest extends TestCase {

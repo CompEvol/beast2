@@ -1,15 +1,21 @@
 package beast.app.seqgen;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import beast.app.beauti.BeautiDoc;
-import beast.core.*;
-import beast.core.Input.*;
-import beast.evolution.alignment.*;
-import beast.util.*;
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
+import beast.util.XMLParser;
+import beast.util.XMLProducer;
 
 @Description("Helper for Sequence Simulator, allows specifying template input file and destination output file")
 public class MergeDataWith extends BEASTObject {

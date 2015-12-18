@@ -1,17 +1,34 @@
 package beast.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import beast.core.util.Log;
-import beast.evolution.alignment.*;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.FilteredAlignment;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.evolution.datatype.UserDataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
-
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -664,8 +681,8 @@ public class NexusParser {
         }
 
         alignment.initAndValidate();
-        if (nTaxa > 0 && nTaxa != alignment.getNrTaxa()) {
-            throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getNrTaxa() + " taxa found");
+        if (nTaxa > 0 && nTaxa != alignment.getTaxonCount()) {
+            throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getTaxonCount() + " taxa found");
         }
         return alignment;
     } // parseDataBlock

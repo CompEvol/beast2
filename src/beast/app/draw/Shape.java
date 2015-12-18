@@ -29,11 +29,10 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-
 import java.awt.Rectangle;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 

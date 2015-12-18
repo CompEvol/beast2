@@ -2,16 +2,19 @@ package beast.core.parameter;
 
 import java.io.PrintStream;
 import java.lang.reflect.Array;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import beast.core.*;
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
+import beast.core.StateNode;
 
 public interface Parameter<T> extends Function {
 

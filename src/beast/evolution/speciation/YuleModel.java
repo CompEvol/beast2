@@ -7,7 +7,6 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 
 

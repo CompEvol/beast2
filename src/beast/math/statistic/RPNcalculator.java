@@ -2,13 +2,17 @@ package beast.math.statistic;
 
 
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import beast.core.*;
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
+import beast.core.Loggable;
 import beast.core.parameter.Parameter;
 
 

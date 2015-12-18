@@ -1,6 +1,8 @@
 package beast.app.util;
 
-import java.util.logging.*;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.StreamHandler;
 
 public class MessageLogHandler extends StreamHandler {
 

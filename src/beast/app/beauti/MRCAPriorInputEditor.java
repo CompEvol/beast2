@@ -13,8 +13,8 @@ import javax.swing.JComboBox;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallButton;
-import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.MRCAPrior;

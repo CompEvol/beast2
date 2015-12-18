@@ -1,8 +1,6 @@
 package beast.app.beauti;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,10 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import beast.app.draw.InputEditor;
 import beast.app.draw.BEASTObjectDialog;
-import beast.core.Input;
+import beast.app.draw.InputEditor;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.Prior;

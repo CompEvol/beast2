@@ -25,9 +25,9 @@
 package beast.core.parameter;
 
 
-import beast.core.Description;
-
 import java.io.PrintStream;
+
+import beast.core.Description;
 
 
 /**

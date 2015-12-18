@@ -8,9 +8,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import beast.app.draw.InputEditor;
-import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.evolution.speciation.GeneTreeForSpeciesTreeDistribution;
 
 

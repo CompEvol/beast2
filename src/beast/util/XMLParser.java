@@ -25,29 +25,42 @@
 package beast.util;
 
 
+import static beast.util.XMLParserUtils.processPlates;
+import static beast.util.XMLParserUtils.replaceVariable;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import beast.app.beauti.PartitionContext;
-import beast.core.*;
+import beast.core.BEASTInterface;
+import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.Logger;
+import beast.core.Operator;
 import beast.core.Runnable;
+import beast.core.State;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
-
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.util.*;
-
-import static beast.util.XMLParserUtils.processPlates;
-import static beast.util.XMLParserUtils.replaceVariable;
 
 
 /**

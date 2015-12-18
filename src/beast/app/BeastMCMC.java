@@ -25,8 +25,6 @@
 package beast.app;
 
 
-import jam.util.IconUtils;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -62,14 +60,13 @@ import beast.app.beauti.Beauti;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.util.Version;
 import beast.core.Logger;
-import beast.core.Logger.LogFileMode;
 import beast.core.Runnable;
-
 import beast.util.AddOnManager;
 import beast.util.JSONParser;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLParserException;
+import jam.util.IconUtils;
 
 /**
  * Main application for performing MCMC runs.

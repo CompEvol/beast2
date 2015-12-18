@@ -2,10 +2,12 @@ package beast.evolution.alignment;
 
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import beast.core.Description;
 import beast.core.BEASTObject;
+import beast.core.Description;
 
 
 @Description("For identifying a single taxon")

@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.core.Input;
 import beast.core.BEASTObject;
+import beast.core.Input;
 import beast.util.AddOnManager;
-
-
 import junit.framework.TestCase;
 
 public class InputTypeTest  extends TestCase {

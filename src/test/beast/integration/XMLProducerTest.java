@@ -5,8 +5,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import beast.core.BEASTInterface;
@@ -14,6 +12,7 @@ import beast.core.Logger;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
+import junit.framework.TestCase;
 
 public class XMLProducerTest extends TestCase {
 

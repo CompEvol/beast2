@@ -32,16 +32,15 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
-import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.util.Randomizer;
 
 
@@ -82,9 +81,6 @@ public class BEASTObjectShape extends Shape {
         	m_plugin.setID(sID);
         }
         //System.err.println("\n>>>>" + m_plugin.getID());        
-        if (m_plugin.getID().equals("mcmc")) {
-        	int h = 3;
-        }
         List<Input<?>> sInputs = m_plugin.listInputs();
         for (Input<?> input_ : sInputs) {
 			String longInputName = m_plugin.getClass().getName() + "." + input_.getName(); 
@@ -131,7 +127,7 @@ public class BEASTObjectShape extends Shape {
     void adjustInputs() {
         if (m_plugin != null) {
             try {
-                List<Input<?>> inputs = m_plugin.listInputs();
+                //List<Input<?>> inputs = m_plugin.listInputs();
                 for (int i = 0; i < m_inputs.size(); i++) {
                     InputShape input = m_inputs.get(i);
                     //input.m_input = inputs.get(i);
@@ -190,7 +186,7 @@ public class BEASTObjectShape extends Shape {
                 String[] sInputID = sInputIDs.split(" ");
                 m_inputs = new ArrayList<>();
                 try {
-                    List<Input<?>> inputs = m_plugin.listInputs();
+                    //List<Input<?>> inputs = m_plugin.listInputs();
                     for (int i = 0; i < sInputID.length; i++) {
                         InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
                         m_inputs.add(ellipse);

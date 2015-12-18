@@ -1,8 +1,8 @@
 package beast.core;
 
-import org.w3c.dom.Node;
-
 import java.io.PrintStream;
+
+import org.w3c.dom.Node;
 
 /**
  * This class represents a node of the state. Concrete classes include Parameters and Trees.

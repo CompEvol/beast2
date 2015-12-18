@@ -28,10 +28,9 @@ import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
 
+import beast.app.util.Utils;
 import test.beast.beast2vs1.TestFramework;
 import test.beast.beast2vs1.trace.Expectation;
-
-import beast.app.util.Utils;
 
 
 

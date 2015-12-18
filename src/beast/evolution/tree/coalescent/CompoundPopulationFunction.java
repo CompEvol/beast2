@@ -1,25 +1,16 @@
 package beast.evolution.tree.coalescent;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.coalescent.IntervalType;
-import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.math.statistic.DiscreteStatistics;
 
 
 /**

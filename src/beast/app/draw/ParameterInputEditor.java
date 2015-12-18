@@ -18,13 +18,11 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.PartitionContext;
 import beast.app.util.Utils;
+import beast.core.BEASTInterface;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
 

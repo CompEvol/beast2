@@ -50,7 +50,6 @@
 package beast.util;
 
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.io.Serializable;
 
 import beast.math.GammaFunction;

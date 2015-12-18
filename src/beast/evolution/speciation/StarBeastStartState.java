@@ -1,7 +1,23 @@
 package beast.evolution.speciation;
 
-import beast.core.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.StateNode;
+import beast.core.StateNodeInitialiser;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
@@ -10,12 +26,7 @@ import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeInterface;
 import beast.util.ClusterTree;
-
-import java.util.*;
-
-import static java.lang.Math.*;
 
 /**
 * @author Joseph Heled

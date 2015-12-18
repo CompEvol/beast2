@@ -25,12 +25,12 @@
 package beast.evolution.alignment;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.evolution.datatype.DataType;
 
 @Description("Single sequence in an alignment.")

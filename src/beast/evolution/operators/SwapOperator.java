@@ -6,8 +6,8 @@ import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Operator;
 import beast.core.Input.Validate;
+import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;

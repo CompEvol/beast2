@@ -32,7 +32,6 @@ import java.util.Random;
 
 import beast.core.Description;
 import beast.core.State;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreeInterface;
 

@@ -27,11 +27,16 @@ package beast.util;
 
 
 
-import beast.core.BEASTInterface;
-import beast.core.Input;
-
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -40,11 +45,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.util.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import beast.core.BEASTInterface;
+import beast.core.Input;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser

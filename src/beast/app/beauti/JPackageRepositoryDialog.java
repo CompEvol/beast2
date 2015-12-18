@@ -18,7 +18,6 @@
  */
 package beast.app.beauti;
 
-import beast.util.AddOnManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -30,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -39,12 +39,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import beast.util.AddOnManager;
+
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class JPackageRepositoryDialog extends JDialog {
 
-    public JPackageRepositoryDialog(final JFrame frame) {
+	private static final long serialVersionUID = 1L;
+
+	public JPackageRepositoryDialog(final JFrame frame) {
         super(frame);
 
         setModal(true);
@@ -153,8 +157,9 @@ public class JPackageRepositoryDialog extends JDialog {
      * Class of tables containing the current list of package repositories.
      */
     class RepoTableModel extends AbstractTableModel {
-
-        public List<String> URLs;
+		private static final long serialVersionUID = 1L;
+		
+		public List<String> URLs;
 
         public RepoTableModel(List<String> URLs) {
             this.URLs = URLs;

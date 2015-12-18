@@ -25,13 +25,17 @@
 package beast.core;
 
 
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-
 import java.io.File;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+
+import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 
 
 /**

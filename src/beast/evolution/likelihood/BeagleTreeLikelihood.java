@@ -25,7 +25,15 @@
 
 package beast.evolution.likelihood;
 
-import beagle.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import beagle.Beagle;
+import beagle.BeagleFactory;
+import beagle.BeagleFlag;
+import beagle.BeagleInfo;
+import beagle.InstanceDetails;
+import beagle.ResourceDetails;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -33,8 +41,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-
-import java.util.*;
 
 
 /**
@@ -762,7 +768,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         int nodeNum = node.getNr();
 
-        Node parent = node.getParent();
+        //Node parent = node.getParent();
 
         if (operatorNumber != null) {
             operatorNumber[0] = -1;

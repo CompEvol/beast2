@@ -25,19 +25,6 @@
 package beast.util;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import beast.app.beauti.PartitionContext;
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.Runnable;
-import beast.core.parameter.Map;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -52,6 +39,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import beast.app.beauti.PartitionContext;
+import beast.core.BEASTInterface;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.Param;
+import beast.core.Runnable;
+import beast.core.State;
+import beast.core.parameter.Map;
+import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 
 /** parses BEAST JSON file into a set of BEAST objects **/
 public class JSONParser {

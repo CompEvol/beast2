@@ -8,7 +8,6 @@ import java.util.Set;
 import org.junit.Test;
 
 import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;

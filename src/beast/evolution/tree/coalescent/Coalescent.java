@@ -8,8 +8,8 @@ import java.util.Random;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.State;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
 

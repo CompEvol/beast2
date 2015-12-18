@@ -1,15 +1,18 @@
 package test.beast.util;
 
-import junit.framework.TestCase;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
 import beast.util.NexusParser;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.StringReader;
-import java.util.*;
+import junit.framework.TestCase;
 
 public class NexusParserTest extends TestCase {
 

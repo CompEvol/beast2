@@ -1,5 +1,10 @@
 package beast.app.beauti.guiutil;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 //http://www.java2s.com/Code/Java/Swing-Components/JComboBoxaddingautomaticcompletionHandlingtheinitialselection.htm
 //Code from: http://www.orbital-computer.de/JComboBox/
 /*
@@ -15,15 +20,13 @@ Handling the initial selection
 It is a quiet annoying that the initially selected item is not shown in the combo box. This
 can be easily changed in the constructor of the auto completing document.
 */
-import javax.swing.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class S11InitialSelection extends PlainDocument {
     JComboBox comboBox;

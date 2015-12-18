@@ -1,20 +1,28 @@
 package beast.app.beastapp;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.EventListenerList;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 
 public class WholeNumberField extends JTextField
         implements FocusListener, DocumentListener {
 
-    protected static char MINUS_CHAR = '-';
+ 	private static final long serialVersionUID = 1L;
+
+ 	protected static char MINUS_CHAR = '-';
     protected EventListenerList changeListeners = new EventListenerList();
     protected long min;
     protected long max;

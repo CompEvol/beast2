@@ -11,9 +11,6 @@ import beast.math.distributions.LogNormalDistributionModel;
 import beast.math.distributions.Normal;
 import beast.math.distributions.Uniform;
 import beast.util.XMLParser;
-
-
-
 import junit.framework.TestCase;
 
 public class MeanOfParametricDistributionTest extends TestCase {

@@ -16,14 +16,15 @@
  */
 package beast.evolution.operators;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Operator;
+import beast.core.StateNode;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

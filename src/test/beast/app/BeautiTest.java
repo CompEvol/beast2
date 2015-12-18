@@ -5,14 +5,10 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
-import test.beast.integration.ExampleXmlParsingTest;
-
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
-
-
-
 import junit.framework.TestCase;
+import test.beast.integration.ExampleXmlParsingTest;
 
 public class BeautiTest extends TestCase {
 	{

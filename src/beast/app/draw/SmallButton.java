@@ -1,9 +1,12 @@
 package beast.app.draw;
 
-import javax.swing.*;
-
-import java.awt.*;
+import java.awt.Image;
 import java.net.URL;
+
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
 /**
  * @author Alexei Drummond

@@ -6,15 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.State;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.IntegerParameter;
-import beast.evolution.speciation.SpeciesTreeDistribution;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;

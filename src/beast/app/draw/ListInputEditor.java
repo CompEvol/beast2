@@ -1,21 +1,30 @@
 package beast.app.draw;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import beast.app.beauti.BeautiDoc;
-import beast.core.Input;
-import beast.core.BEASTInterface;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import beast.app.beauti.BeautiDoc;
+import beast.core.BEASTInterface;
+import beast.core.Input;
 
 public class ListInputEditor extends InputEditor.Base {
 

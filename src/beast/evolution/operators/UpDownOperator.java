@@ -7,9 +7,9 @@ import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.StateNode;
-import beast.core.Input.Validate;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
@@ -137,7 +137,7 @@ public class UpDownOperator extends Operator {
 
     private boolean outsideBounds(final StateNode node) {
         if (node instanceof Parameter<?>) {
-            final Parameter<?> p = (Parameter) node;
+            final Parameter<?> p = (Parameter<?>) node;
             final Double lower = (Double) p.getLower();
             final Double upper = (Double) p.getUpper();
             final Double value = (Double) p.getValue();

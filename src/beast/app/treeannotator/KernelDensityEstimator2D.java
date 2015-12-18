@@ -1,10 +1,10 @@
 package beast.app.treeannotator;
 
+import java.util.Arrays;
+
 import beast.math.statistic.DiscreteStatistics;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
-
-import java.util.Arrays;
 
 
 /**

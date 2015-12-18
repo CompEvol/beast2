@@ -25,6 +25,14 @@
 package beast.util;
 
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.PriorityQueue;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -35,10 +43,6 @@ import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.*;
 
 
 

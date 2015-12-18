@@ -125,7 +125,8 @@ public class JSONObject {
      * @throws NullPointerException if any of the map's keys are null.
      */
     /* (accept a raw type for API compatibility) */
-    public JSONObject(Map copyFrom) {
+    @SuppressWarnings("rawtypes")
+	public JSONObject(Map copyFrom) {
         this();
         Map<?, ?> contentsTyped = (Map<?, ?>) copyFrom;
         for (Map.Entry<?, ?> entry : contentsTyped.entrySet()) {
@@ -785,7 +786,8 @@ public class JSONObject {
      * Otherwise if the object is from a {@code java} package, returns the result of {@code toString}.
      * If wrapping fails, returns null.
      */
-    public static Object wrap(Object o) {
+    @SuppressWarnings("rawtypes")
+	public static Object wrap(Object o) {
         if (o == null) {
             return NULL;
         }

@@ -1,11 +1,19 @@
 package beast.app.beauti;
 
-import beast.app.beauti.guiutil.S11InitialSelection;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import beast.app.beauti.guiutil.S11InitialSelection;
 
 
 public class ClonePartitionPanel extends JPanel {

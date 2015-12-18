@@ -25,6 +25,26 @@
 
 package beast.app.treeannotator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+
+import javax.swing.JFrame;
+
 import beast.app.BEASTVersion;
 import beast.app.beauti.BeautiDoc;
 import beast.app.tools.LogCombiner;
@@ -40,17 +60,6 @@ import beast.util.HeapSort;
 import beast.util.NexusParser;
 import beast.util.TreeParser;
 import jam.console.ConsoleApplication;
-
-import javax.swing.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.*;
 
 //import org.rosuda.JRI.REXP;
 //import org.rosuda.JRI.RVector;

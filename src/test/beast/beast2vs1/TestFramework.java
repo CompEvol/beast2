@@ -1,7 +1,5 @@
 package test.beast.beast2vs1;
 
-import junit.framework.TestCase;
-
 import java.io.File;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import beagle.BeagleFlag;
 import beast.core.Logger;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
+import junit.framework.TestCase;
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
 

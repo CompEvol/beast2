@@ -1,12 +1,12 @@
 package beast.core.parameter;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import beast.core.CalculationNode;
+import beast.core.Description;
+import beast.core.Input;
 
 @Description("Unordered set mapping keys to values")
 abstract public class Map<T> extends CalculationNode {

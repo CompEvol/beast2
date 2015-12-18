@@ -26,37 +26,60 @@ package beast.app.draw;
 
 
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-
-import beast.app.util.Utils;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
-import beast.evolution.alignment.Sequence;
-import beast.util.AddOnManager;
-import beast.util.Randomizer;
-import beast.util.XMLProducer;
-
-
 //import com.itextpdf.awt.PdfGraphics2D;
 //import com.itextpdf.text.pdf.PdfContentByte;
 //import com.itextpdf.text.pdf.PdfWriter;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
+
+import beast.app.util.Utils;
+import beast.core.BEASTInterface;
+import beast.evolution.alignment.Sequence;
+import beast.util.AddOnManager;
+import beast.util.Randomizer;
+import beast.util.XMLProducer;
 
 /**
  * program for drawing BEAST 2.0 models *

@@ -10,7 +10,6 @@ import org.fest.swing.fixture.JButtonFixture;
 import org.fest.swing.fixture.JCheckBoxFixture;
 import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JListFixture;
-import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.junit.Test;

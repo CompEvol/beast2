@@ -26,7 +26,12 @@ package beast.app;
 
 
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -37,11 +42,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import beast.core.BEASTObject;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.BEASTObject;
 import beast.util.AddOnManager;
 
 

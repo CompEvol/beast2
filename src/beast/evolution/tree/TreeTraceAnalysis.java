@@ -17,10 +17,6 @@
 package beast.evolution.tree;
 
 
-import beast.util.CredibleSet;
-import beast.util.FrequencySet;
-import beast.util.NexusParser;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -28,6 +24,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import beast.util.CredibleSet;
+import beast.util.FrequencySet;
+import beast.util.NexusParser;
 
 
 // TODO: Calculate mean node heights for trees in credible set.

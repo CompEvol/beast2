@@ -1,7 +1,6 @@
 package beast.app.seqgen;
 
 import java.io.PrintStream;
-import java.util.List;
 
 import beast.core.Description;
 import beast.core.Input;

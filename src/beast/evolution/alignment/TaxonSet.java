@@ -2,10 +2,16 @@ package beast.evolution.alignment;
 
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import beast.core.Description;
 import beast.core.Input;
-
-import java.util.*;
 
 
 @Description("A TaxonSet is an ordered set of taxa. The order on the taxa is provided at the time of construction" +

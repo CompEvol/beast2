@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import beast.app.BEASTVersion;
-import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
 

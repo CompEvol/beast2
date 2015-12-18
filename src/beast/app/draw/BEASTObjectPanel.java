@@ -3,20 +3,26 @@ package beast.app.draw;
 
 
 
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import beast.app.beauti.BeautiDoc;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
-import beast.core.BEASTInterface;
-import beast.evolution.alignment.Taxon;
 import beast.util.XMLProducer;
-
-
-import java.awt.*;
-import java.io.File;
-import java.util.*;
-import java.util.List;
 
 /**
  * Panel for editing Plugins.

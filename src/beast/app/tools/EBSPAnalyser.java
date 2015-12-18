@@ -1,8 +1,5 @@
 package beast.app.tools;
 
-import jam.console.ConsoleApplication;
-import jam.panels.OptionsPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -32,6 +29,8 @@ import beast.app.util.WholeNumberField;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction.Type;
 import beast.math.statistic.DiscreteStatistics;
+import jam.console.ConsoleApplication;
+import jam.panels.OptionsPanel;
 
 
 

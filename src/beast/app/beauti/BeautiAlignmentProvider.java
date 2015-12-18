@@ -4,7 +4,10 @@ package beast.app.beauti;
 
 
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,10 +22,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import beast.core.BEASTInterface;
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;

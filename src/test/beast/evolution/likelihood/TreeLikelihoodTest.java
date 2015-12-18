@@ -1,7 +1,6 @@
 package test.beast.evolution.likelihood;
 
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
@@ -25,7 +24,7 @@ import beast.evolution.substitutionmodel.MutationDeathModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
-
+import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 import test.beast.evolution.alignment.UncertainAlignmentTest;
 

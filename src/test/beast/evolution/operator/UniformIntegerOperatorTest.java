@@ -6,8 +6,6 @@ import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.operators.UniformOperator;
-
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

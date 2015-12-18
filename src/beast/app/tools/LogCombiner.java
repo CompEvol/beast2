@@ -1,20 +1,24 @@
 package beast.app.tools;
 
 
-import beast.app.BEASTVersion;
-import beast.util.LogAnalyser;
-import jam.console.ConsoleApplication;
-
-import javax.swing.*;
-import javax.swing.table.TableCellEditor;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import javax.swing.JFrame;
+import javax.swing.table.TableCellEditor;
+
+import beast.app.BEASTVersion;
+import beast.util.LogAnalyser;
+import jam.console.ConsoleApplication;
 
 
 /**

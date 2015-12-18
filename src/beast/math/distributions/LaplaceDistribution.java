@@ -1,13 +1,11 @@
 package beast.math.distributions;
 
-import org.apache.commons.math.distribution.ContinuousDistribution;
-import org.apache.commons.math.distribution.NormalDistributionImpl;
 import org.apache.commons.math.MathException;
+import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
 
 @Description("Laplace distribution.    f(x|\\mu,b) = \\frac{1}{2b} \\exp \\left( -\\frac{|x-\\mu|}{b} \\right)" +
         "The probability density function of the Laplace distribution is also reminiscent of the normal distribution; " +

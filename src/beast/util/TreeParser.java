@@ -24,11 +24,26 @@
 */
 package beast.util;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
-import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -37,14 +52,6 @@ import beast.evolution.tree.TreeUtils;
 import beast.util.treeparser.NewickBaseVisitor;
 import beast.util.treeparser.NewickLexer;
 import beast.util.treeparser.NewickParser;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")

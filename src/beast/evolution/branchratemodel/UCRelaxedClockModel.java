@@ -1,6 +1,10 @@
 package beast.evolution.branchratemodel;
 
 
+import java.util.Arrays;
+
+import org.apache.commons.math.MathException;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -11,9 +15,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
-import org.apache.commons.math.MathException;
-
-import java.util.Arrays;
 
 /**
  * @author Alexei Drummond

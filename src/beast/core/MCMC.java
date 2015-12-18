@@ -24,12 +24,15 @@
 */
 package beast.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
 import beast.core.util.Log;
 import beast.util.Randomizer;
-
-import java.util.*;
 
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +

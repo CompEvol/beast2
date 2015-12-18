@@ -4,8 +4,13 @@ package beast.math.distributions;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.*;
+import beast.core.BEASTObject;
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Function;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 

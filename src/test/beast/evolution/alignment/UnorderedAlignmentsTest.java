@@ -1,6 +1,12 @@
 package test.beast.evolution.alignment;
 
 
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.junit.Test;
+
 import beast.app.seqgen.SimulatedAlignment;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -15,11 +21,6 @@ import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import junit.framework.TestCase;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class UnorderedAlignmentsTest extends TestCase {
 
@@ -67,7 +68,7 @@ public class UnorderedAlignmentsTest extends TestCase {
 
     static public Alignment getAlignment(TaxonSet taxa, Tree tree, SiteModel siteModel) throws Exception {
         Alignment dummy = new Alignment();
-        String[] args = new String[2 * taxa.getTaxonCount() + 2];
+        Object [] args = new String[2 * taxa.getTaxonCount() + 2];
         args[args.length - 2] = "dataType";
         args[args.length - 1] = "nucleotide";
         for (int i = 0; i < taxa.getTaxonCount(); ++i) {

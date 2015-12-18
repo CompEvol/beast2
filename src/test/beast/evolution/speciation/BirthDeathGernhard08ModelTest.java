@@ -6,8 +6,8 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.speciation.BirthDeathGernhard08Model;
 import beast.evolution.tree.Tree;
-import test.beast.BEASTTestCase;
 import junit.framework.TestCase;
+import test.beast.BEASTTestCase;
 
 public class BirthDeathGernhard08ModelTest extends TestCase {
 

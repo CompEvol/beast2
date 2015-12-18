@@ -1,18 +1,15 @@
 package beast.app.beauti;
 
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
 import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.Input;
-import beast.core.BEASTObject;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.substitutionmodel.Frequencies;

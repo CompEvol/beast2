@@ -22,8 +22,8 @@ import javax.swing.event.ListSelectionListener;
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
-import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 
 /**
  * Base class for editors that provide a GUI for manipulating an Input for a Plugin.

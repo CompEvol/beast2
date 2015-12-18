@@ -3,10 +3,9 @@ package beast.app.beauti;
 import java.util.List;
 
 import beast.app.draw.ListInputEditor;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 
 
 

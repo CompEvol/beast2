@@ -1,15 +1,16 @@
 package test.beast.evolution.tree;
 
-import beast.app.treeannotator.CladeSystem;
-import beast.app.treeannotator.TreeAnnotator;
-import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
+import java.util.BitSet;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.BitSet;
-import java.util.Map;
+import beast.app.treeannotator.CladeSystem;
+import beast.app.treeannotator.TreeAnnotator;
+import beast.evolution.tree.Tree;
+import beast.util.TreeParser;
 
 /**
  * @author Walter Xie

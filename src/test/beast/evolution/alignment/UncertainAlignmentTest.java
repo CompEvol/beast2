@@ -1,10 +1,7 @@
 package test.beast.evolution.alignment;
 
 
-import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 
@@ -13,6 +10,7 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import junit.framework.TestCase;
 
 public class UncertainAlignmentTest extends TestCase {
 

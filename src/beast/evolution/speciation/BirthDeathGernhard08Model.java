@@ -26,16 +26,16 @@
 package beast.evolution.speciation;
 
 
+import static org.apache.commons.math.special.Gamma.logGamma;
+
+import java.util.Arrays;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.TreeInterface;
-
-import java.util.Arrays;
-
-import static org.apache.commons.math.special.Gamma.logGamma;
 
 /* Ported from Beast 1.6
  * @author Joseph Heled

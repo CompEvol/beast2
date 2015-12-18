@@ -1,6 +1,5 @@
 package beast.app.beauti;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +12,10 @@ import javax.swing.event.DocumentListener;
 
 import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.StateNode;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 
 
 

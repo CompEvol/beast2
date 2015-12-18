@@ -4,8 +4,8 @@ import java.text.DecimalFormat;
 
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Operator;
 import beast.core.Input.Validate;
+import beast.core.Operator;
 import beast.core.parameter.RealParameter;
 import beast.util.Randomizer;
 

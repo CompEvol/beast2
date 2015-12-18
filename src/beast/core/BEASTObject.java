@@ -24,12 +24,7 @@
 package beast.core;
 
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 // This class was formerly called 'Plugin'

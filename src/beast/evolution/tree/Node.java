@@ -25,11 +25,16 @@
 package beast.evolution.tree;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.util.HeapSort;
-
-import java.util.*;
 
 
 @Description("Nodes in building beast.tree data structure.")

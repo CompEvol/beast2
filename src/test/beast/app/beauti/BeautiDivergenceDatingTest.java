@@ -1,24 +1,35 @@
 package test.beast.app.beauti;
 
 
-import org.fest.swing.data.Index;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.*;
-import org.fest.swing.image.ScreenshotTaker;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
-import test.beast.beast2vs1.TestFramework;
-import test.beast.beast2vs1.trace.Expectation;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+
+import org.fest.swing.data.Index;
+import org.fest.swing.data.TableCell;
+import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JButtonFixture;
+import org.fest.swing.fixture.JCheckBoxFixture;
+import org.fest.swing.fixture.JComboBoxFixture;
+import org.fest.swing.fixture.JListFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.JTabbedPaneFixture;
+import org.fest.swing.fixture.JTableCellFixture;
+import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.image.ScreenshotTaker;
+import org.junit.Test;
+
+import test.beast.beast2vs1.TestFramework;
+import test.beast.beast2vs1.trace.Expectation;
 
 public class BeautiDivergenceDatingTest extends BeautiBase {
     final static String PREFIX = "doc/tutorials/DivergenceDating/figures/BEAUti_";

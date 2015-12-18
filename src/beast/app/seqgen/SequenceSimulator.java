@@ -8,9 +8,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.BEASTInterface;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;

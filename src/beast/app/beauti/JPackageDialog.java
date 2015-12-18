@@ -1,16 +1,18 @@
 package beast.app.beauti;
 
-import beast.core.Description;
-import beast.util.AddOnManager;
-import beast.util.Package;
+import static beast.util.AddOnManager.NO_CONNECTION_MESSAGE;
+import static beast.util.AddOnManager.beastVersion;
+import static beast.util.AddOnManager.getPackageSystemDir;
+import static beast.util.AddOnManager.getPackageUserDir;
+import static beast.util.AddOnManager.getPackages;
+import static beast.util.AddOnManager.getToDeleteListFile;
+import static beast.util.AddOnManager.installPackage;
+import static beast.util.AddOnManager.uninstallPackage;
 
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-
-import com.sun.java.swing.SwingUtilities3;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,7 +22,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static beast.util.AddOnManager.*;
+import javax.swing.Box;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+
+import beast.core.Description;
+import beast.util.AddOnManager;
+import beast.util.Package;
 
 /**
  * dialog for managing Package.

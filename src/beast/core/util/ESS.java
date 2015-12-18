@@ -4,12 +4,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.BEASTObject;
 import beast.core.Input.Validate;
+import beast.core.Loggable;
 
 
 //import beast.core.Distribution;

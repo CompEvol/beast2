@@ -1,9 +1,14 @@
 package beast.app.treeannotator;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-
-import java.util.*;
 
 /**
  * extracted from TreeAnnotator

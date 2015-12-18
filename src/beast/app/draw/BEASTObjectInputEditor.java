@@ -2,20 +2,23 @@ package beast.app.draw;
 
 
 
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.EtchedBorder;
 
 import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
-import beast.core.Input;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.util.AddOnManager;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.List;
 
 public class BEASTObjectInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;

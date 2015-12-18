@@ -13,16 +13,16 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.app.draw.InputEditor;
 import beast.app.draw.IntegerInputEditor;
 import beast.app.draw.ParameterInputEditor;
 import beast.app.draw.SmallLabel;
-import beast.app.draw.BEASTObjectInputEditor;
+import beast.core.BEASTInterface;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
-import beast.core.BEASTInterface;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;

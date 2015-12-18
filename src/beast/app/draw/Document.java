@@ -26,25 +26,32 @@ package beast.app.draw;
 
 
 
+import java.awt.Color;
+import java.io.File;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Runnable;
-import beast.core.BEASTObject;
-import beast.core.BEASTInterface;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
-
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringReader;
-import java.util.*;
-import java.util.List;
 
 /**
  * The Document class is the Document part in the doc-view pattern of
