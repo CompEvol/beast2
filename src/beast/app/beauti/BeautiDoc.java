@@ -103,6 +103,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * list of all plugins in the model, mapped by its ID *
      */
     public HashMap<String, BEASTInterface> pluginmap = null;
+    private Map<BEASTInterface, String> reversePluginmap;
     /**
      * list of all plugins in the model that have an impact on the posterior
      */
@@ -291,6 +292,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         tipTextMap = new HashMap<String, String>();
 
         pluginmap = new HashMap<String, BEASTInterface>();
+        reversePluginmap = new HashMap<>();
         taxaset = new HashMap<String, Taxon>();
         fileName = "";
         linked = new HashSet<Input<?>>();
@@ -301,24 +303,35 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         unregisterPlugin(plugin);
 
         pluginmap.put(plugin.getID(), plugin);
+        reversePluginmap.put(plugin, plugin.getID());
         if (plugin instanceof Taxon) {
         	Taxon taxon = (Taxon) plugin;
             taxaset.put(taxon.getID(), taxon);
         }
     }
 
-    public void unregisterPlugin(BEASTInterface plugin) {
-        String oldID = null;
-        for (String id : pluginmap.keySet()) {
-            if (pluginmap.get(id).equals(plugin)) {
-                oldID = id;
-                break;
-            }
+    public void unregisterPlugin(BEASTInterface beastObject) {
+        taxaset.remove(beastObject.getID());
+        // directly remove beast object from HashMap
+        // relies on hashes of String being unique (which they should be).
+        // is much more efficient (O(1)) than lookup in keySet (O(n)), 
+        // which matter when a lot of partitions are loaded 
+        // but less reliable since ID may have changed.
+        String id = reversePluginmap.get(beastObject);
+        if (id != null && pluginmap.containsKey(id)) {
+            pluginmap.remove(id);
         }
-        if (oldID != null) {
-            pluginmap.remove(oldID);
-        }
-        taxaset.remove(plugin.getID());
+        
+//        String oldID = null;
+//        for (String id : pluginmap.keySet()) {
+//            if (pluginmap.get(id).equals(plugin)) {
+//                oldID = id;
+//                break;
+//            }
+//        }
+//        if (oldID != null) {
+//            pluginmap.remove(oldID);
+//        }
     }
 
     /**
