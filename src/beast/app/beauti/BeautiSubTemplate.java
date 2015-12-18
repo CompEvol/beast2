@@ -39,15 +39,15 @@ import beast.util.XMLParser;
 @Description("Template that specifies which sub-net needs to be created when " +
         "a plugin of a paricular class is created.")
 public class BeautiSubTemplate extends BEASTObject {
-    public Input<String> sClassInput = new Input<String>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
-    public Input<String> sMainInput = new Input<String>("mainid", "specifies id of the main plugin to be created by the template", Validate.REQUIRED);
-    //public Input<XML> sXMLInput = new Input<XML>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-    public Input<String> sXMLInput = new Input<String>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-    public Input<List<BeautiConnector>> connectorsInput = new Input<List<BeautiConnector>>("connect", "Specifies which part of the template get connected to the main network", new ArrayList<BeautiConnector>());
-    public Input<String> suppressedInputs = new Input<String>("suppressInputs", "comma separated list of inputs that should not be shown");
-    public Input<String> inlineInput = new Input<String>("inlineInputs", "comma separated list of inputs that should " +
+    public Input<String> sClassInput = new Input<>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
+    public Input<String> sMainInput = new Input<>("mainid", "specifies id of the main plugin to be created by the template", Validate.REQUIRED);
+    //public Input<XML> sXMLInput = new Input<>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+    public Input<String> sXMLInput = new Input<>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+    public Input<List<BeautiConnector>> connectorsInput = new Input<>("connect", "Specifies which part of the template get connected to the main network", new ArrayList<>());
+    public Input<String> suppressedInputs = new Input<>("suppressInputs", "comma separated list of inputs that should not be shown");
+    public Input<String> inlineInput = new Input<>("inlineInputs", "comma separated list of inputs that should " +
             "go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
-    public Input<String> collapsedInput = new Input<String>("collapsedInputs", "comma separated list of inputs that should " +
+    public Input<String> collapsedInput = new Input<>("collapsedInputs", "comma separated list of inputs that should " +
             "go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
 
     Class<?> _class = null;
@@ -310,7 +310,7 @@ public class BeautiSubTemplate extends BEASTObject {
 
     BEASTInterface createSubNet(Alignment data, BeautiDoc doc, boolean init) {
         String sPartition = data.getID();
-        HashMap<String, BEASTInterface> sIDMap = doc.pluginmap;//new HashMap<String, Plugin>();
+        HashMap<String, BEASTInterface> sIDMap = doc.pluginmap;//new HashMap<>();
         sIDMap.put(sPartition, data);
         return createSubNet(new PartitionContext(sPartition), sIDMap, init);
     }

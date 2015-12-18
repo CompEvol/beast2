@@ -55,13 +55,13 @@ public class Document {
     /**
      * list of PluginShapes, InputShapes and connecting Arrows *
      */
-    public List<Shape> m_objects = new ArrayList<Shape>();
+    public List<Shape> m_objects = new ArrayList<>();
     public List<Shape> m_tmpobjects;
 
     /**
      * undo/redo related stuff *
      */
-    List<UndoAction> m_undoStack = new ArrayList<UndoAction>();
+    List<UndoAction> m_undoStack = new ArrayList<>();
     int m_nCurrentEditAction = -1;
 
 
@@ -98,7 +98,7 @@ public class Document {
         // load all parsers
         List<String> sPlugInNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = sPlugInNames.toArray(new String[0]);
-        tabulist = new HashSet<String>();
+        tabulist = new HashSet<>();
         Properties properties = new Properties();
         try {
         	
@@ -116,8 +116,8 @@ public class Document {
 
 //    /** change order of shapes to ensure arrows are drawn before the rest **/
 //    void moveArrowsToBack() {
-//        ArrayList<Shape> arrows = new ArrayList<Shape>();
-//        List<Shape> others = new ArrayList<Shape>();
+//        ArrayList<Shape> arrows = new ArrayList<>();
+//        List<Shape> others = new ArrayList<>();
 //
 //        for (Shape shape : m_objects) {
 //            if (shape instanceof Arrow) {
@@ -291,7 +291,7 @@ public class Document {
         }
         m_objects.add(shape);
         if (shape instanceof BEASTObjectShape) {
-            List<Integer> iObjects = new ArrayList<Integer>();
+            List<Integer> iObjects = new ArrayList<>();
             iObjects.add(m_objects.size() - 1);
             checkForOtherPluginShapes(iObjects, (BEASTObjectShape) shape);
             if (iObjects.size() == 1) {
@@ -349,7 +349,7 @@ public class Document {
     }
 
     List<String> getIncomingArrows(List<String> sIDs) {
-        List<String> selection = new ArrayList<String>();
+        List<String> selection = new ArrayList<>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
             if (shape instanceof Arrow) {
@@ -367,7 +367,7 @@ public class Document {
     }
 
     List<String> getOutgoingArrows(List<String> sIDs) {
-        List<String> selection = new ArrayList<String>();
+        List<String> selection = new ArrayList<>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = (Shape) m_objects.get(i);
             if (shape instanceof Arrow) {
@@ -385,7 +385,7 @@ public class Document {
     }
 
     public void deleteShapes(List<Integer> selection) {
-        List<String> sIDs = new ArrayList<String>();
+        List<String> sIDs = new ArrayList<>();
         for (int j = 0; j < selection.size(); j++) {
             sIDs.add(((Shape) m_objects.get(((Integer) selection.get(j)).intValue())).getID());
 
@@ -415,7 +415,7 @@ public class Document {
         if (shapes.size() == 0) {
             return;
         }
-        List<Integer> nPositions = new ArrayList<Integer>();
+        List<Integer> nPositions = new ArrayList<>();
         for (Shape shape : shapes) {
             if (shape instanceof Arrow) {
                 ((Arrow) shape).setID(getNewID(null));
@@ -970,7 +970,7 @@ public class Document {
                 return;
             }
             m_nActionType = nActionType;
-            m_nPositions = new ArrayList<Integer>();
+            m_nPositions = new ArrayList<>();
             m_nPositions.add(nSelection);
             init();
         }
@@ -978,7 +978,7 @@ public class Document {
 
         public UndoAction(List<Integer> selection, int nActionType) {
             m_nActionType = nActionType;
-            m_nPositions = new ArrayList<Integer>();
+            m_nPositions = new ArrayList<>();
             for (int i = 0; i < selection.size(); i++) {
                 if (m_objects.get(selection.get(i)) instanceof BEASTObjectShape) {
                     m_nPositions.add(new Integer(((Integer) selection.get(i)).intValue()));
@@ -1058,7 +1058,7 @@ public class Document {
             // assumes pluginShape + all its inputs has just been added
             m_nActionType = nActionType;
             BEASTObjectShape pluginShape = (BEASTObjectShape) m_objects.get(nPosition);
-            m_nPositions = new ArrayList<Integer>();
+            m_nPositions = new ArrayList<>();
             m_nPositions.add(nPosition);
             nPosition--;
             while (nPosition >= 0 &&
@@ -1117,7 +1117,7 @@ public class Document {
     class ArrowAction extends UndoAction {
         public ArrowAction(int nPosition, int nArrowAction) {
             m_nActionType = nArrowAction;
-            m_nPositions = new ArrayList<Integer>();
+            m_nPositions = new ArrayList<>();
             m_nPositions.add(nPosition);
             init();
         }
@@ -1187,14 +1187,12 @@ public class Document {
 
         MultiObjectAction(List<Integer> nPositions, int nActionType) {
             m_nActionType = nActionType;
-            m_actions = new ArrayList<UndoAction>();
+            m_actions = new ArrayList<>();
             // remove duplicates, if any
-            Collections.sort(nPositions, new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
+            Collections.sort(nPositions, (Integer o1, Integer o2) -> {
                     return (o2 - o1);
                 }
-            });
+            );
             for (int i = 1; i < nPositions.size(); i++) {
                 if ((int) nPositions.get(i) == (int) nPositions.get(i - 1)) {
                     nPositions.remove(i);
@@ -1202,8 +1200,8 @@ public class Document {
                 }
             }
             // split in plugins and arrows
-            List<Integer> iArrows = new ArrayList<Integer>();
-            List<Integer> iPluginsShapes = new ArrayList<Integer>();
+            List<Integer> iArrows = new ArrayList<>();
+            List<Integer> iPluginsShapes = new ArrayList<>();
             for (int i : nPositions) {
                 Shape shape = m_objects.get(i);
                 if (shape instanceof BEASTObjectShape) {
@@ -1303,7 +1301,7 @@ public class Document {
      * remove all actions from the undo stack
      */
     public void clearUndoStack() {
-        m_undoStack = new ArrayList<UndoAction>();
+        m_undoStack = new ArrayList<>();
         m_nCurrentEditAction = -1;
     } // clearUndoStack
 
@@ -1481,7 +1479,7 @@ public class Document {
     } // init
 
     List<Shape> XML2Shapes(String sXML, boolean bReconstructPlugins) {
-        List<Shape> shapes = new ArrayList<Shape>();
+        List<Shape> shapes = new ArrayList<>();
         m_tmpobjects = shapes;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -1556,7 +1554,7 @@ public class Document {
      * convert m_objects in set of plugins *
      */
     Collection<BEASTInterface> getPlugins() {
-        Collection<BEASTInterface> plugins = new HashSet<BEASTInterface>();
+        Collection<BEASTInterface> plugins = new HashSet<>();
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape) {
                 plugins.add(((BEASTObjectShape) shape).m_plugin);
@@ -1596,12 +1594,12 @@ public class Document {
      */
     void layout() {
         // first construct input map for ease of navigation
-        HashMap<BEASTObjectShape, List<BEASTObjectShape>> inputMap = new HashMap<BEASTObjectShape, List<BEASTObjectShape>>();
-        HashMap<BEASTObjectShape, List<BEASTObjectShape>> outputMap = new HashMap<BEASTObjectShape, List<BEASTObjectShape>>();
+        HashMap<BEASTObjectShape, List<BEASTObjectShape>> inputMap = new HashMap<>();
+        HashMap<BEASTObjectShape, List<BEASTObjectShape>> outputMap = new HashMap<>();
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape && shape.m_bNeedsDrawing) {
-                inputMap.put((BEASTObjectShape) shape, new ArrayList<BEASTObjectShape>());
-                outputMap.put((BEASTObjectShape) shape, new ArrayList<BEASTObjectShape>());
+                inputMap.put((BEASTObjectShape) shape, new ArrayList<>());
+                outputMap.put((BEASTObjectShape) shape, new ArrayList<>());
             }
         }
         for (Shape shape : m_objects) {
@@ -1670,7 +1668,7 @@ public class Document {
         boolean bProgress = true;
         int iX = DX;
         while (bProgress) {
-            List<BEASTObjectShape> shapes = new ArrayList<BEASTObjectShape>();
+            List<BEASTObjectShape> shapes = new ArrayList<>();
             // find shapes with same x-coordinate
             for (BEASTObjectShape shape : inputMap.keySet()) {
                 if (shape.m_x == iX) {
@@ -1678,7 +1676,7 @@ public class Document {
                 }
             }
             int k = 1;
-            HashMap<Integer, BEASTObjectShape> ycoordMap = new HashMap<Integer, BEASTObjectShape>();
+            HashMap<Integer, BEASTObjectShape> ycoordMap = new HashMap<>();
             // set y-coordinate as mean of inputs
             // if there are no inputs, order them top to bottom at DY intervals
             for (BEASTObjectShape shape : shapes) {
@@ -1700,7 +1698,7 @@ public class Document {
             }
             // ensure shapes are sufficiently far apart - at least DY between them
             int nPrevY = 0;
-            ArrayList<Integer> yCoords = new ArrayList<Integer>();
+            ArrayList<Integer> yCoords = new ArrayList<>();
             yCoords.addAll(ycoordMap.keySet());
             Collections.sort(yCoords);
             int dY = 0;
@@ -1730,7 +1728,7 @@ public class Document {
      * apply spring model algorithm to the placement of plug-in shapes *
      */
     public void relax(boolean bAllowXToMove) {
-        List<Shape> objects = new ArrayList<Shape>();
+        List<Shape> objects = new ArrayList<>();
         for (Shape shape : m_objects) {
             if (shape.m_bNeedsDrawing) {
                 objects.add(shape);
@@ -1738,7 +1736,7 @@ public class Document {
         }
 
         // Step 0: determine degrees
-        HashMap<String, Integer> degreeMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> degreeMap = new HashMap<>();
         for (Shape shape : objects) {
 
             if (shape instanceof Arrow) {
@@ -1884,7 +1882,7 @@ public class Document {
             }
         }
         // build map for quick resolution of PluginShapes
-        HashMap<BEASTInterface, BEASTObjectShape> map = new HashMap<BEASTInterface, BEASTObjectShape>();
+        HashMap<BEASTInterface, BEASTObjectShape> map = new HashMap<>();
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape) {
                 map.put(((BEASTObjectShape) shape).m_plugin, (BEASTObjectShape) shape);

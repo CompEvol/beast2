@@ -50,9 +50,9 @@ import beast.util.Randomizer;
 public class RandomTree extends Tree implements StateNodeInitialiser {
     public Input<Alignment> taxaInput = new Input<>("taxa", "set of taxa to initialise tree specified by alignment");
 
-    public Input<PopulationFunction> populationFunctionInput = new Input<PopulationFunction>("populationModel", "population function for generating coalescent???", Validate.REQUIRED);
-    public Input<List<MRCAPrior>> calibrationsInput = new Input<List<MRCAPrior>>("constraint", "specifies (monophyletic or height distribution) constraints on internal nodes", new ArrayList<MRCAPrior>());
-    public Input<Double> rootHeightInput = new Input<Double>("rootHeight", "If specified the tree will be scaled to match the root height, if constraints allow this");
+    public Input<PopulationFunction> populationFunctionInput = new Input<>("populationModel", "population function for generating coalescent???", Validate.REQUIRED);
+    public Input<List<MRCAPrior>> calibrationsInput = new Input<>("constraint", "specifies (monophyletic or height distribution) constraints on internal nodes", new ArrayList<>());
+    public Input<Double> rootHeightInput = new Input<>("rootHeight", "If specified the tree will be scaled to match the root height, if constraints allow this");
 
     // total nr of taxa
     int nrOfTaxa;
@@ -155,7 +155,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         }
 
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
-        List<MRCAPrior> calibrations = new ArrayList<MRCAPrior>();
+        List<MRCAPrior> calibrations = new ArrayList<>();
         calibrations.addAll(calibrationsInput.get());
 //    	for (Plugin plugin : outputs) {
 //    	// pick up constraints in outputs
@@ -205,7 +205,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            final ParametricDistribution distr = prior.distInput.get();
 	            final Bound bounds = new Bound();
 	            if (distr != null) {
-	        		List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+	        		List<BEASTInterface> plugins = new ArrayList<>();
 	        		distr.getPredecessors(plugins);
 	        		for (int i = plugins.size() - 1; i >= 0 ; i--) {
 	        			plugins.get(i).initAndValidate();
@@ -272,7 +272,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         final int[] nParent = new int[lastMonophyletic];
         children = new List[lastMonophyletic + 1];
         for (int i = 0; i < lastMonophyletic + 1; i++) {
-            children[i] = new ArrayList<Integer>();
+            children[i] = new ArrayList<>();
         }
         for (int i = 0; i < lastMonophyletic; i++) {
             int j = i + 1;
@@ -415,7 +415,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                     processCandidateTraits(candidates, m_traitList.get());
                 }
 
-                final Map<String,Node> allCandidates = new TreeMap<String,Node>();
+                final Map<String,Node> allCandidates = new TreeMap<>();
                 for (Node node: candidates) {
                     allCandidates.put(node.getID(),node);
                 }
@@ -453,7 +453,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     private Node simulateCoalescent(final int iIsMonophyleticNode, final Map<String,Node> allCandidates, final Set<Node> candidates, final PopulationFunction demoFunction)
             throws ConstraintViolatedException {
-        final List<Node> remainingCandidates = new ArrayList<Node>();
+        final List<Node> remainingCandidates = new ArrayList<>();
         final Set<String> taxaDone = new TreeSet<>();
         for (final int iMonoNode : children[iIsMonophyleticNode]) {
             // create list of leaf nodes for this monophyletic MRCA
@@ -783,7 +783,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         return m_sTaxaNames;
     }
 
-    final private ArrayList<Node> nodeList = new ArrayList<Node>();
+    final private ArrayList<Node> nodeList = new ArrayList<>();
     private int activeNodeCount = 0;
 
 

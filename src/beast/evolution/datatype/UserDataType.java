@@ -13,9 +13,9 @@ import beast.evolution.datatype.DataType.Base;
 
 @Description("User defined datatype. Allows custom symbols to map onto statesets.")
 public class UserDataType extends Base {
-    public Input<Integer> stateCountInput = new Input<Integer>("states", "total number of states", Validate.REQUIRED);
-    public Input<Integer> codeLengthInput = new Input<Integer>("codelength", "length of code, if negative a variable length code is assumed, default 1", 1);
-    public Input<String> codeMapInput = new Input<String>("codeMap", "mapping of codes to states. " +
+    public Input<Integer> stateCountInput = new Input<>("states", "total number of states", Validate.REQUIRED);
+    public Input<Integer> codeLengthInput = new Input<>("codelength", "length of code, if negative a variable length code is assumed, default 1", 1);
+    public Input<String> codeMapInput = new Input<>("codeMap", "mapping of codes to states. " +
             "A comma separated string of codes with a subset of states. " +
             "A state set is a space separates list of zero based integers, up to the number of states, " +
             "e.g. A=0, C=1, R=0 2, ? = 0 1 2 3", Validate.REQUIRED);
@@ -76,7 +76,7 @@ public class UserDataType extends Base {
                     codeMap += ",";
                 }
                 // parse the state set
-                List<Integer> stateSet = new ArrayList<Integer>();
+                List<Integer> stateSet = new ArrayList<>();
                 sStrs2 = sStrs2[1].split("\\s+");
                 for (String sStr2 : sStrs2) {
                     if (sStr2.length() > 0) {

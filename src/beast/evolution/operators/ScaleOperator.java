@@ -40,30 +40,30 @@ import java.text.DecimalFormat;
 @Description("Scales a parameter or a complete beast.tree (depending on which of the two is specified.")
 public class ScaleOperator extends Operator {
 
-    public final Input<Tree> treeInput = new Input<Tree>("tree", "if specified, all beast.tree divergence times are scaled");
+    public final Input<Tree> treeInput = new Input<>("tree", "if specified, all beast.tree divergence times are scaled");
 
-    public final Input<RealParameter> parameterInput = new Input<RealParameter>("parameter", "if specified, this parameter is scaled",
+    public final Input<RealParameter> parameterInput = new Input<>("parameter", "if specified, this parameter is scaled",
             Input.Validate.XOR, treeInput);
 
-    public final Input<Double> scaleFactorInput = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public final Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
     public final Input<Boolean> scaleAllInput =
-            new Input<Boolean>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
+            new Input<>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
     public final Input<Boolean> scaleAllIndependentlyInput =
-            new Input<Boolean>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
+            new Input<>("scaleAllIndependently", "if true, all elements of a parameter (not beast.tree) are scaled with " +
                     "a different factor, otherwise a single factor is used", false);
 
-    public Input<Integer> degreesOfFreedomInput = new Input<Integer>("degreesOfFreedom", "Degrees of freedom used when " +
+    public Input<Integer> degreesOfFreedomInput = new Input<>("degreesOfFreedom", "Degrees of freedom used when " +
             "scaleAllIndependently=false and scaleAll=true to override default in calculation of Hasting ratio. " +
             "Ignored when less than 1, default 0.", 0);
-    public Input<BooleanParameter> indicatorInput = new Input<BooleanParameter>("indicator", "indicates which of the dimension " +
+    public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "indicates which of the dimension " +
             "of the parameters can be scaled. Only used when scaleAllIndependently=false and scaleAll=false. If not specified " +
             "it is assumed all dimensions are allowed to be scaled.");
-    public Input<Boolean> rootOnlyInput = new Input<Boolean>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
-    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
+    public Input<Boolean> rootOnlyInput = new Input<>("rootOnly", "scale root of a tree only, ignored if tree is not specified (default false)", false);
+    public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
-    public Input<Double> scaleUpperLimit = new Input<Double>("upper", "Upper Limit of scale factor", 1.0 - 1e-8);
-    public Input<Double> scaleLowerLimit = new Input<Double>("lower", "Lower limit of scale factor", 1e-8);
+    public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0 - 1e-8);
+    public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 1e-8);
 
     /**
      * shadows input *

@@ -10,9 +10,9 @@ import java.util.List;
 @Description("State node describing a list of real-valued parameters.")
 public class RealParameterList extends GeneralParameterList<Double> {
     
-    public Input<Double> lowerBoundInput = new Input<Double>("lower",
+    public Input<Double> lowerBoundInput = new Input<>("lower",
             "Lower bound on parameter values.", Double.NEGATIVE_INFINITY);
-    public Input<Double> upperBoundInput = new Input<Double>("upper",
+    public Input<Double> upperBoundInput = new Input<>("upper",
             "Upper bound on parameter values.", Double.POSITIVE_INFINITY);
     
     @Override

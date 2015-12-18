@@ -58,9 +58,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML, MERGE_AND_WRITE_XML
     }
 
-    public List<Alignment> alignments = new ArrayList<Alignment>();
+    public List<Alignment> alignments = new ArrayList<>();
 
-    public Input<beast.core.Runnable> mcmc = new Input<beast.core.Runnable>("runnable", "main entry of analysis",
+    public Input<beast.core.Runnable> mcmc = new Input<>("runnable", "main entry of analysis",
             Validate.REQUIRED);
 
     protected List<BranchRateModel> clockModels;
@@ -88,8 +88,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     List<BEASTInterface>[] pPartition;
     private List<Integer>[] nCurrentPartitions;
     // partition names
-    List<PartitionContext> sPartitionNames = new ArrayList<PartitionContext>();
-    Set<PartitionContext> possibleContexts = new HashSet<PartitionContext>();
+    List<PartitionContext> sPartitionNames = new ArrayList<>();
+    Set<PartitionContext> possibleContexts = new HashSet<>();
 
     public BeautiConfig beautiConfig;
     Beauti beauti;
@@ -97,7 +97,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     private String templateName = null;
     private String templateFileName = STANDARD_TEMPLATE;
 
-    Map<String, String> tipTextMap = new HashMap<String, String>();
+    Map<String, String> tipTextMap = new HashMap<>();
 
     /**
      * list of all plugins in the model, mapped by its ID *
@@ -117,7 +117,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     private boolean isExpertMode = false;
 
-    public Set<InputEditor> currentInputEditors = new HashSet<InputEditor>();
+    public Set<InputEditor> currentInputEditors = new HashSet<>();
 
     /**
      * name of current file, used for saving (as opposed to saveAs) *
@@ -268,7 +268,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 + "-xml [beast file]\n" + "-out [output file name]\n" + "-exitaction [writexml|usetemplate|usexml]\n";
     }
 
-    private Set<BeautiDocListener> listeners = new HashSet<BeautiDocListener>();
+    private Set<BeautiDocListener> listeners = new HashSet<>();
 
     public void addBeautiDocListener(BeautiDocListener listener) {
         listeners.add(listener);
@@ -276,26 +276,26 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     @SuppressWarnings("unchecked")
     void clear() {
-        clockModels = new ArrayList<BranchRateModel>();
-        // treePriors = new ArrayList<TreeDistribution>();
-        alignments = new ArrayList<Alignment>();
+        clockModels = new ArrayList<>();
+        // treePriors = new ArrayList<>();
+        alignments = new ArrayList<>();
 
         pPartitionByAlignments = new List[3];
         pPartition = new List[3];
         nCurrentPartitions = new List[3];
-        sPartitionNames = new ArrayList<PartitionContext>();
+        sPartitionNames = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            pPartitionByAlignments[i] = new ArrayList<BEASTInterface>();
-            pPartition[i] = new ArrayList<BEASTInterface>();
-            nCurrentPartitions[i] = new ArrayList<Integer>();
+            pPartitionByAlignments[i] = new ArrayList<>();
+            pPartition[i] = new ArrayList<>();
+            nCurrentPartitions[i] = new ArrayList<>();
         }
-        tipTextMap = new HashMap<String, String>();
+        tipTextMap = new HashMap<>();
 
-        pluginmap = new HashMap<String, BEASTInterface>();
+        pluginmap = new HashMap<>();
         reversePluginmap = new HashMap<>();
-        taxaset = new HashMap<String, Taxon>();
+        taxaset = new HashMap<>();
         fileName = "";
-        linked = new HashSet<Input<?>>();
+        linked = new HashSet<>();
     }
 
     public void registerPlugin(BEASTInterface plugin) {
@@ -454,7 +454,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public String processTemplate(String sFileName) throws Exception {
         final String MERGE_ELEMENT = "mergepoint";
         // first gather the set of potential directories with templates
-        Set<String> sDirs = new HashSet<String>();// AddOnManager.getBeastDirectories();
+        Set<String> sDirs = new HashSet<>();// AddOnManager.getBeastDirectories();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
         String fileSep = System.getProperty("file.separator");
@@ -490,7 +490,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         // find merge points
         int i = 0;
-        HashMap<String, String> sMergePoints = new HashMap<String, String>();
+        HashMap<String, String> sMergePoints = new HashMap<>();
         while (i >= 0) {
             i = sTemplateXML.indexOf("<" + MERGE_ELEMENT, i + 1);
             if (i > 0) {
@@ -508,7 +508,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // ensure processed templates are unique in name.
         // This prevents loading templates twice, once from the development area
         // and once from .beast2-addon area
-        Set<String> loadedTemplates = new HashSet<String>();
+        Set<String> loadedTemplates = new HashSet<>();
         for (String sDir : sDirs) {
             System.out.println("Investigating " + sDir);
             File templates = new File(sDir + fileSep + "templates");
@@ -702,7 +702,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     } // save
 
     private String toJSON() {
-        Set<BEASTInterface> plugins = new HashSet<BEASTInterface>();
+        Set<BEASTInterface> plugins = new HashSet<>();
         String json = new JSONProducer().toJSON(mcmc.get(), plugins);
 
         json = json.replaceFirst("\\{", "{ beautitemplate:\"" + templateName + "\", beautistatus:\"" + getBeautiStatus() + "\", ");
@@ -710,7 +710,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public String toXML() {
-        Set<BEASTInterface> plugins = new HashSet<BEASTInterface>();
+        Set<BEASTInterface> plugins = new HashSet<>();
 //		for (Plugin plugin : pluginmap.values()) {
 //			String sName = plugin.getClass().getName();
 //			if (!sName.startsWith("beast.app.beauti")) {
@@ -889,7 +889,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // load the template and its beauti configuration parts
         XMLParser parser = new XMLParser();
         BEASTObjectPanel.init();
-        List<BEASTInterface> plugins = parser.parseTemplate(sXML, new HashMap<String, BEASTInterface>(), true);
+        List<BEASTInterface> plugins = parser.parseTemplate(sXML, new HashMap<>(), true);
         for (BEASTInterface plugin : plugins) {
             if (plugin instanceof beast.core.Runnable) {
                 mcmc.setValue(plugin, this);
@@ -1106,7 +1106,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     }
                 }
 
-                List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+                List<BeautiSubTemplate> templates = new ArrayList<>();
                 templates.add(beautiConfig.partitionTemplate.get());
                 templates.addAll(beautiConfig.subTemplates);
 
@@ -1120,7 +1120,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 // not have been triggered properly
                 // so we need to check that the model changed, and if so,
                 // revisit the BeautiConnectors
-                List<BEASTInterface> posteriorPredecessors2 = new ArrayList<BEASTInterface>();
+                List<BEASTInterface> posteriorPredecessors2 = new ArrayList<>();
                 collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors2);
                 if (posteriorPredecessors.size() != posteriorPredecessors2.size()) {
                     bProgress = true;
@@ -1134,7 +1134,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             }
 
-            List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+            List<BeautiSubTemplate> templates = new ArrayList<>();
             templates.add(beautiConfig.hyperPriorTemplate);
             for (BEASTInterface plugin : pluginmap.values()) {
                 if (plugin instanceof RealParameter) {
@@ -1163,9 +1163,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     } // scrubAll
 
     protected void setUpActivePlugins() {
-        posteriorPredecessors = new ArrayList<BEASTInterface>();
+        posteriorPredecessors = new ArrayList<>();
         collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors);
-        likelihoodPredecessors = new ArrayList<BEASTInterface>();
+        likelihoodPredecessors = new ArrayList<>();
         if (pluginmap.containsKey("likelihood")) {
             collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
         }
@@ -1458,7 +1458,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     	if (!(mcmc.get() instanceof MCMC)) {
     		return;
     	}
-    	List<Operator> speciesOperators = new ArrayList<Operator>(); 
+    	List<Operator> speciesOperators = new ArrayList<>(); 
     	double totalWeight = 0;
     	double speciesWeight = 0;
     	for (Operator operator : ((MCMC)mcmc.get()).operatorsInput.get()) {
@@ -1554,7 +1554,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             pPartition[i].clear();
             nCurrentPartitions[i].clear();
         }
-        List<GenericTreeLikelihood> treeLikelihoods = new ArrayList<GenericTreeLikelihood>();
+        List<GenericTreeLikelihood> treeLikelihoods = new ArrayList<>();
         for (Distribution distr : likelihood.pDistributions.get()) {
             if (distr instanceof GenericTreeLikelihood) {
                 GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
@@ -1675,7 +1675,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             return pPartition[2];
         }
         if (sType.contains("Partitions")) {
-            List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+            List<BEASTInterface> plugins = new ArrayList<>();
             plugins.addAll(alignments);
             return plugins;
         }
@@ -1746,7 +1746,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                              PartitionContext partitionContext, BeautiDoc doc, List<BEASTInterface> tabooList)
             throws Exception {
         /** taboo = list of plugins that should not be copied **/
-        Set<BEASTInterface> taboo = new HashSet<BEASTInterface>();
+        Set<BEASTInterface> taboo = new HashSet<>();
         taboo.add(parent);
         // add state
         taboo.add(mcmc.startStateInput.get());
@@ -1786,23 +1786,23 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
 
         // find predecessors of plugin to be copied
-        List<BEASTInterface> predecessors = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> predecessors = new ArrayList<>();
         collectPredecessors(plugin, predecessors);
 
         // find ancestors of StateNodes that are predecessors + the plugin
         // itself
-        Set<BEASTInterface> ancestors = new HashSet<BEASTInterface>();
+        Set<BEASTInterface> ancestors = new HashSet<>();
         collectAncestors(plugin, ancestors, taboo);
 		System.out.print(Arrays.toString(ancestors.toArray()));
         for (BEASTInterface plugin2 : predecessors) {
             if (plugin2 instanceof StateNode) {
-                Set<BEASTInterface> ancestors2 = new HashSet<BEASTInterface>();
+                Set<BEASTInterface> ancestors2 = new HashSet<>();
                 collectAncestors(plugin2, ancestors2, taboo);
                 ancestors.addAll(ancestors2);
             } else if (plugin2 instanceof Alignment || plugin2 instanceof FilteredAlignment) {
                 for (Object output : plugin2.getOutputs()) {
                     if (!taboo.contains(output)) {
-                        Set<BEASTInterface> ancestors2 = new HashSet<BEASTInterface>();
+                        Set<BEASTInterface> ancestors2 = new HashSet<>();
                         collectAncestors((BEASTInterface)output, ancestors2, taboo);
                         ancestors.addAll(ancestors2);
                     }
@@ -1930,7 +1930,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         // first need to sort copySet by topology, before we can initAndValidate
         // them
-        List<BEASTInterface> sorted = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> sorted = new ArrayList<>();
         Collection<BEASTInterface> values = copySet.values();
         while (values.size() > 0) {
             for (BEASTInterface copy : values) {
@@ -1948,7 +1948,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             values.remove(sorted.get(sorted.size() - 1));
         }
         // initialise copied plugins
-        Set<BEASTInterface> done = new HashSet<BEASTInterface>();
+        Set<BEASTInterface> done = new HashSet<>();
         for (BEASTInterface copy : sorted) {
             try {
                 if (!done.contains(copy)) {
@@ -2190,7 +2190,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         linked.clear();
         for (BEASTInterface plugin : posteriorPredecessors) {
-            Map<String, Integer> outputIDs = new HashMap<String, Integer>();
+            Map<String, Integer> outputIDs = new HashMap<>();
             for (Object output : plugin.getOutputs()) {
                 if (posteriorPredecessors.contains(output)) {
                     String sID = ((BEASTInterface)output).getID();
@@ -2297,7 +2297,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      */
     public List<BEASTInterface> suggestedLinks(BEASTInterface plugin) {
         String sID = plugin.getID();
-        List<BEASTInterface> list = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> list = new ArrayList<>();
         String partitionID = null;
         if (sID.indexOf('.') >= 0) {
             partitionID = sID.substring(sID.indexOf('.') + 1);

@@ -14,8 +14,8 @@ import beast.core.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Beta extends ParametricDistribution {
-    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "first shape parameter, defaults to 1");
-    public Input<RealParameter> betaInput = new Input<RealParameter>("beta", "the other shape parameter, defaults to 1");
+    public Input<RealParameter> alphaInput = new Input<>("alpha", "first shape parameter, defaults to 1");
+    public Input<RealParameter> betaInput = new Input<>("beta", "the other shape parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.BetaDistribution m_dist = new BetaDistributionImpl(1, 1);
 

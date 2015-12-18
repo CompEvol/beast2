@@ -178,7 +178,7 @@ public class XMLParser {
     static HashMap<String, String> element2ClassMap;
     static Set<String> reservedElements;
     static {
-        element2ClassMap = new HashMap<String, String>();
+        element2ClassMap = new HashMap<>();
         element2ClassMap.put(DISTRIBUTION_ELEMENT, LIKELIHOOD_CLASS);
         element2ClassMap.put(OPERATOR_ELEMENT, OPERATOR_CLASS);
         element2ClassMap.put(INPUT_ELEMENT, INPUT_CLASS);
@@ -188,7 +188,7 @@ public class XMLParser {
         element2ClassMap.put(SEQUENCE_ELEMENT, SEQUENCE_CLASS);
         element2ClassMap.put(TREE_ELEMENT, TREE_CLASS);
         element2ClassMap.put(REAL_PARAMETER_ELEMENT, REAL_PARAMETER_CLASS);
-        reservedElements = new HashSet<String>();
+        reservedElements = new HashSet<>();
         for (final String element : element2ClassMap.keySet()) {
         	reservedElements.add(element);
         }
@@ -218,8 +218,8 @@ public class XMLParser {
     PartitionContext partitionContext = null;
 
     public XMLParser() {
-        pluginsWaitingToInit = new ArrayList<BEASTInterface>();
-        nodesWaitingToInit = new ArrayList<Node>();
+        pluginsWaitingToInit = new ArrayList<>();
+        nodesWaitingToInit = new ArrayList<>();
     }
 
     public Runnable parseFile(final File file) throws Exception {
@@ -243,9 +243,9 @@ public class XMLParser {
         replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
                 String.valueOf(Randomizer.getSeed()));
         
-        IDMap = new HashMap<String, BEASTInterface>();
-        likelihoodMap = new HashMap<String, Integer[]>();
-        IDNodeMap = new HashMap<String, Node>();
+        IDMap = new HashMap<>();
+        likelihoodMap = new HashMap<>();
+        IDNodeMap = new HashMap<>();
 
         
         parse();
@@ -273,11 +273,11 @@ public class XMLParser {
         
         //XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
 
-        IDMap = sIDMap;//new HashMap<String, Plugin>();
-        likelihoodMap = new HashMap<String, Integer[]>();
-        IDNodeMap = new HashMap<String, Node>();
+        IDMap = sIDMap;//new HashMap<>();
+        likelihoodMap = new HashMap<>();
+        IDNodeMap = new HashMap<>();
 
-        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+        final List<BEASTInterface> plugins = new ArrayList<>();
 
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
@@ -344,9 +344,9 @@ public class XMLParser {
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
-        IDMap = new HashMap<String, BEASTInterface>();
-        likelihoodMap = new HashMap<String, Integer[]>();
-        IDNodeMap = new HashMap<String, Node>();
+        IDMap = new HashMap<>();
+        likelihoodMap = new HashMap<>();
+        IDNodeMap = new HashMap<>();
 
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
@@ -416,7 +416,7 @@ public class XMLParser {
         parseNameSpaceAndMap(topNode);
 
         final NodeList children = topNode.getChildNodes();
-        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+        final List<BEASTInterface> plugins = new ArrayList<>();
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 final BEASTInterface plugin = createObject(children.item(i), PLUGIN_CLASS, null);

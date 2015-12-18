@@ -15,20 +15,20 @@ import beast.evolution.tree.Tree;
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
     public Input<BooleanParameter> indicatorParamInput =
-            new Input<BooleanParameter>("indicators",
+            new Input<>("indicators",
                     "the indicators associated with nodes in the tree for sampling of individual rate changes among branches.",
                     Input.Validate.REQUIRED);
     public Input<RealParameter> rateParamInput =
-            new Input<RealParameter>("rates",
+            new Input<>("rates",
                     "the rate parameters associated with nodes in the tree for sampling of individual rates among branches.",
                     Input.Validate.REQUIRED);
     //    public Input<RealParameter> meanRateInput =
-//            new Input<RealParameter>("meanRate",
+//            new Input<>("meanRate",
 //                    "an optional parameter to set the mean rate across the whole tree");
     public Input<Tree> treeInput =
-            new Input<Tree>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
+            new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
     public Input<Boolean> ratesAreMultipliersInput =
-            new Input<Boolean>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
+            new Input<>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
 
     Tree m_tree;
     RealParameter meanRate;

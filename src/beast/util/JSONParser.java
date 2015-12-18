@@ -79,8 +79,8 @@ public class JSONParser {
 	static HashMap<String, String> element2ClassMap;
 	static Set<String> reservedElements;
 	static {
-		element2ClassMap = new HashMap<String, String>();
-		reservedElements = new HashSet<String>();
+		element2ClassMap = new HashMap<>();
+		reservedElements = new HashSet<>();
 		for (String element : element2ClassMap.keySet()) {
 			reservedElements.add(element);
 		}
@@ -149,9 +149,9 @@ public class JSONParser {
         replaceVariable(doc, "seed", String.valueOf(Randomizer.getSeed()));
 
 		
-		IDMap = new HashMap<String, BEASTInterface>();
-		likelihoodMap = new HashMap<String, Integer[]>();
-		IDNodeMap = new HashMap<String, JSONObject>();
+		IDMap = new HashMap<>();
+		likelihoodMap = new HashMap<>();
+		IDNodeMap = new HashMap<>();
 
 		parse();
 		// assert m_runnable == null || m_runnable instanceof Runnable;
@@ -214,11 +214,11 @@ public class JSONParser {
 	// StringReader(sXML)));
 	// processPlates();
 	//
-	// IDMap = sIDMap;//new HashMap<String, Plugin>();
-	// likelihoodMap = new HashMap<String, Integer[]>();
-	// IDNodeMap = new HashMap<String, JSONObject>();
+	// IDMap = sIDMap;//new HashMap<>();
+	// likelihoodMap = new HashMap<>();
+	// IDNodeMap = new HashMap<>();
 	//
-	// List<Plugin> plugins = new ArrayList<Plugin>();
+	// List<Plugin> plugins = new ArrayList<>();
 	//
 	// // find top level beast element
 	// NodeList nodes = doc.getElementsByTagName("*");
@@ -418,9 +418,9 @@ public class JSONParser {
 	// doc.normalize();
 	// processPlates();
 	//
-	// IDMap = new HashMap<String, Plugin>();
-	// likelihoodMap = new HashMap<String, Integer[]>();
-	// IDNodeMap = new HashMap<String, Node>();
+	// IDMap = new HashMap<>();
+	// likelihoodMap = new HashMap<>();
+	// IDNodeMap = new HashMap<>();
 	//
 	// // find top level beast element
 	// NodeList nodes = doc.getElementsByTagName("*");
@@ -494,7 +494,7 @@ public class JSONParser {
 	// parseNameSpaceAndMap(topNode);
 	//
 	// NodeList children = topNode.getChildNodes();
-	// List<Plugin> plugins = new ArrayList<Plugin>();
+	// List<Plugin> plugins = new ArrayList<>();
 	// for (int i = 0; i < children.getLength(); i++) {
 	// if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
 	// Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
@@ -1051,7 +1051,7 @@ public class JSONParser {
 				// parse inputs in occurrence of inputs in the parent object
 				// this determines the order in which initAndValidate is called
 				List<InputType> inputs = listInputs(className);
-				Set<String> done = new HashSet<String>();
+				Set<String> done = new HashSet<>();
 				for (InputType input : inputs) {
 					String name = input.name;
 					processInput(name, node, inputInfo, inputs);

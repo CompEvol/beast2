@@ -67,7 +67,7 @@ public class JSONProducer {
      * representing the plug-in. This assumes plugin is Runnable
      */
     public String toJSON(BEASTInterface plugin) {
-    	return toJSON(plugin, new ArrayList<BEASTInterface>());
+    	return toJSON(plugin, new ArrayList<>());
     }
 
 	@SuppressWarnings("rawtypes")
@@ -79,12 +79,12 @@ public class JSONProducer {
             buf.append("{version: \"" + (new BEASTVersion()).getMajorVersion() + "\",\nnamespace: \"" + DEFAULT_NAMESPACE + "\",\n\n" +
             		XMLParser.BEAST_ELEMENT + ": [\n");
             //buf.append("\n\n");
-            isDone = new HashSet<BEASTInterface>();
-            isInputsDone = new HashSet<Input>();
-            IDs = new HashSet<String>();
+            isDone = new HashSet<>();
+            isInputsDone = new HashSet<>();
+            IDs = new HashSet<>();
             indentCount = 1;
             
-            List<BEASTInterface> priorityPlugins = new ArrayList<BEASTInterface>();
+            List<BEASTInterface> priorityPlugins = new ArrayList<>();
             findPriorityPlugins(plugin, priorityPlugins);
             for (BEASTInterface plugin2 : priorityPlugins) {
             	if (!isDone.contains(plugin2)) {
@@ -133,9 +133,9 @@ public class JSONProducer {
 //    public String toJSON(Plugin plugin, String sName) {
 //        try {
 //            StringBuffer buf = new StringBuffer();
-//            isDone = new HashSet<Plugin>();
-//            isInputsDone = new HashSet<Input>();
-//            ids = new HashSet<String>();
+//            isDone = new HashSet<>();
+//            isInputsDone = new HashSet<>();
+//            ids = new HashSet<>();
 //            indentCount = 0;
 //            pluginToJSON(plugin, Plugin.class, buf, sName, false);
 //            return buf.toString();
@@ -151,8 +151,8 @@ public class JSONProducer {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("<" + XMLParser.beast_ELEMENT + " version='2.0'>\n");
-            isDone = new HashSet<BEASTInterface>();
-            IDs = new HashSet<String>();
+            isDone = new HashSet<>();
+            IDs = new HashSet<>();
             indentCount = 1;
             pluginToJSON(plugin, null, buf, null, false);
             return buf.toString();
@@ -311,7 +311,7 @@ public class JSONProducer {
 	                        		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
 	                        	}
 	                        	boolean needsComma = false;
-	                        	List<String> keys = new ArrayList<String>();
+	                        	List<String> keys = new ArrayList<>();
 	                        	keys.addAll(map.keySet());
 	                        	Collections.sort(keys);
 	                        	for (String key : keys) {

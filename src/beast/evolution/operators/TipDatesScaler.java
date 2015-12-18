@@ -16,10 +16,10 @@ import beast.util.Randomizer;
 @Description("Scales tip dates on a tree by randomly selecting one from (a subset of) taxa")
 public class TipDatesScaler extends TreeOperator {
     // perhaps multiple trees may be necessary if they share the same taxon?
-    // public Input<List<Tree>> m_treesInput = new Input<List<Tree>>("tree" ,"tree to operate on", new ArrayList<Tree>(), Validate.REQUIRED);
+    // public Input<List<Tree>> m_treesInput = new Input<>("tree" ,"tree to operate on", new ArrayList<>(), Validate.REQUIRED);
 
-    public Input<Double> scaleFactorInput = new Input<Double>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
-    public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
+    public Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public Input<TaxonSet> taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
 
     /**
      * shadows input *
@@ -36,7 +36,7 @@ public class TipDatesScaler extends TreeOperator {
 
         // determine taxon set to choose from
         if (taxonsetInput.get() != null) {
-            List<String> sTaxaNames = new ArrayList<String>();
+            List<String> sTaxaNames = new ArrayList<>();
             for (String sTaxon : treeInput.get().getTaxaNames()) {
                 sTaxaNames.add(sTaxon);
             }

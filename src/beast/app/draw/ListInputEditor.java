@@ -50,8 +50,8 @@ public class ListInputEditor extends InputEditor.Base {
     // the box containing any buttons
     protected Box buttonBox;
 
-    static protected Set<String> g_collapsedIDs = new HashSet<String>();
-    static Set<String> g_initiallyCollapsedIDs = new HashSet<String>();
+    static protected Set<String> g_collapsedIDs = new HashSet<>();
+    static Set<String> g_initiallyCollapsedIDs = new HashSet<>();
 
     public abstract class ActionListenerObject implements ActionListener {
         public Object m_o;
@@ -76,10 +76,10 @@ public class ListInputEditor extends InputEditor.Base {
     //public ListInputEditor() {}
     public ListInputEditor(BeautiDoc doc) {
         super(doc);
-        m_entries = new ArrayList<JTextField>();
-        delButtonList = new ArrayList<SmallButton>();
-        m_editButton = new ArrayList<SmallButton>();
-        m_validateLabels = new ArrayList<SmallLabel>();
+        m_entries = new ArrayList<>();
+        delButtonList = new ArrayList<>();
+        m_editButton = new ArrayList<>();
+        m_validateLabels = new ArrayList<>();
         m_bExpandOption = ExpandOption.FALSE;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
@@ -138,7 +138,7 @@ public class ListInputEditor extends InputEditor.Base {
             buttonBox.add(addButton);
             if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
-                List<String> sTabuList = new ArrayList<String>();
+                List<String> sTabuList = new ArrayList<>();
                 for (int i = 0; i < m_entries.size(); i++) {
                     sTabuList.add(m_entries.get(i).getText());
                 }
@@ -327,7 +327,7 @@ public class ListInputEditor extends InputEditor.Base {
     }
 
     protected void addItem() {
-        List<String> sTabuList = new ArrayList<String>();
+        List<String> sTabuList = new ArrayList<>();
         for (int i = 0; i < m_entries.size(); i++) {
             sTabuList.add(m_entries.get(i).getText());
         }
@@ -396,7 +396,7 @@ public class ListInputEditor extends InputEditor.Base {
      * Return null if nothing is selected.
      */
     protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
-        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> selectedPlugins = new ArrayList<>();
         List<String> sPlugins = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
         /* select a plugin **/
         String sClassName = null;

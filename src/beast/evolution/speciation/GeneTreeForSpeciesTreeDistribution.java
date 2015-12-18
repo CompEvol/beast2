@@ -25,21 +25,21 @@ import beast.evolution.tree.TreeInterface;
 @Description("Calculates probability of gene tree conditioned on a species tree (multi-species coalescent)")
 public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     public Input<TreeInterface> speciesTreeInput =
-            new Input<TreeInterface>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
+            new Input<>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
 //    public enum PLOIDY {autosomal_nuclear, X, Y, mitrochondrial};
     
     public Input<Double> ploidyInput =
-            new Input<Double>("ploidy", "ploidy (copy number) for this gene, typically a whole number or half (default 2 for autosomal_nuclear)", 2.0);
+            new Input<>("ploidy", "ploidy (copy number) for this gene, typically a whole number or half (default 2 for autosomal_nuclear)", 2.0);
 //    public Input<PLOIDY> m_ploidy =
-//        new Input<PLOIDY>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
+//        new Input<>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
     
     public Input<SpeciesTreePrior> speciesTreePriorInput =
-            new Input<SpeciesTreePrior>("speciesTreePrior", "defines population function and its parameters", Validate.REQUIRED);
+            new Input<>("speciesTreePrior", "defines population function and its parameters", Validate.REQUIRED);
 
     public Input<TreeTopFinder> treeTopFinderInput =
-            new Input<TreeTopFinder>("treetop", "calculates height of species tree, required only for linear *beast analysis");
+            new Input<>("treetop", "calculates height of species tree, required only for linear *beast analysis");
 
     // intervals for each of the species tree branches
     private PriorityQueue<Double>[] intervalsInput;
@@ -85,7 +85,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         // reserve memory for priority queues
         intervalsInput = new PriorityQueue[nSpecies];
         for (int i = 0; i < nSpecies; i++) {
-            intervalsInput[i] = new PriorityQueue<Double>();
+            intervalsInput[i] = new PriorityQueue<>();
         }
 
         // sanity check lineage nodes are all at height=0

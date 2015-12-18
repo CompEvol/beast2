@@ -80,7 +80,7 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     public String toXML(BEASTInterface plugin) {
-        return toXML(plugin, new ArrayList<BEASTInterface>());
+        return toXML(plugin, new ArrayList<>());
     }
 
     public String toXML(BEASTInterface plugin, Collection<BEASTInterface> others) {
@@ -93,9 +93,9 @@ public class XMLProducer extends XMLParser {
             	}
             }
             buf.append("\n\n");
-            isDone = new HashSet<BEASTInterface>();
-            inputsDone = new HashSet<Input>();
-            IDs = new HashSet<String>();
+            isDone = new HashSet<>();
+            inputsDone = new HashSet<>();
+            IDs = new HashSet<>();
             indent = 0;
             pluginToXML(plugin, buf, null, true);
             String sEndBeast = "</" + XMLParser.BEAST_ELEMENT + ">";
@@ -387,9 +387,9 @@ public class XMLProducer extends XMLParser {
     public String toRawXML(BEASTInterface plugin, String sName) {
         try {
             StringBuffer buf = new StringBuffer();
-            isDone = new HashSet<BEASTInterface>();
-            inputsDone = new HashSet<Input>();
-            IDs = new HashSet<String>();
+            isDone = new HashSet<>();
+            inputsDone = new HashSet<>();
+            IDs = new HashSet<>();
             indent = 0;
             pluginToXML(plugin, buf, sName, false);
             return buf.toString();
@@ -405,8 +405,8 @@ public class XMLProducer extends XMLParser {
         try {
             StringBuffer buf = new StringBuffer();
             //buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0'>\n");
-            isDone = new HashSet<BEASTInterface>();
-            IDs = new HashSet<String>();
+            isDone = new HashSet<>();
+            IDs = new HashSet<>();
             indent = 0;
             pluginToXML(plugin, buf, null, false);
             return buf.toString();
@@ -469,7 +469,7 @@ public class XMLProducer extends XMLParser {
         for (int iChild = 0; iChild < children.getLength(); iChild++) {
             Node child = children.item(iChild);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                List<Node> comparables = new ArrayList<Node>();
+                List<Node> comparables = new ArrayList<>();
                 for (int iSibling = iChild + 1; iSibling < children.getLength(); iSibling++) {
                     if (children.item(iSibling).getNodeType() == Node.ELEMENT_NODE) {
                         Node sibling = children.item(iSibling);
@@ -925,7 +925,7 @@ public class XMLProducer extends XMLParser {
 	                        	Map<String,?> map = (Map<String,?>) input.get();
 	                        	// determine label width
 	                        	int whiteSpaceWidth = 0;
-	                        	List<String> keys = new ArrayList<String>();
+	                        	List<String> keys = new ArrayList<>();
 	                        	keys.addAll(map.keySet());
 	                        	Collections.sort(keys);
 	                        	for (String key : keys) {

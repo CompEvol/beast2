@@ -40,9 +40,9 @@ import beast.core.parameter.RealParameter;
  */
 @Description("Coalescent intervals for a exponentially growing population.")
 public class ExponentialGrowth extends PopulationFunction.Abstract {
-    public Input<RealParameter> popSizeParameterInput = new Input<RealParameter>("popSize",
+    public Input<RealParameter> popSizeParameterInput = new Input<>("popSize",
             "present-day population size (defaults to 1.0). ");
-    public Input<RealParameter> growthRateParameterInput = new Input<RealParameter>("growthRate",
+    public Input<RealParameter> growthRateParameterInput = new Input<>("growthRate",
             "growth rate is the exponent of the exponential growth");
 
     //

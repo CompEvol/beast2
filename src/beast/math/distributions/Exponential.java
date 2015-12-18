@@ -13,7 +13,7 @@ import beast.core.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Exponential extends ParametricDistribution {
-    public Input<RealParameter> lambdaInput = new Input<RealParameter>("mean", "mean parameter, defaults to 1");
+    public Input<RealParameter> lambdaInput = new Input<>("mean", "mean parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1);
 

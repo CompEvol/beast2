@@ -12,11 +12,11 @@ import java.util.List;
 @Description("Integer data type to describe discrete morphological characters with polymorphisms")
 public class StandardData extends DataType.Base {
 
-    public Input<Integer> maxNrOfStatesInput = new Input<Integer>("nrOfStates", "specifies the maximum number of " +
+    public Input<Integer> maxNrOfStatesInput = new Input<>("nrOfStates", "specifies the maximum number of " +
             "character states in data matrix or in the filtered alignment");
-    public Input<String> listOfAmbiguitiesInput = new Input<String>("ambiguities", "all possible ambiguities presented " +
+    public Input<String> listOfAmbiguitiesInput = new Input<>("ambiguities", "all possible ambiguities presented " +
             "as space separated sets of ordered elements. Elements are digits 0..9.");
-    public Input<List<UserDataType>> charStateLabelsInput = new Input<List<UserDataType>>("charstatelabels",
+    public Input<List<UserDataType>> charStateLabelsInput = new Input<>("charstatelabels",
             "list of morphological character descriptions. Position in the list corresponds to the position of the" +
                     "character in the alignment", new ArrayList<>());
 
@@ -46,7 +46,7 @@ public class StandardData extends DataType.Base {
         }
 
         ambCount = ambiguities.length;
-        codeMapping = new ArrayList<String>();
+        codeMapping = new ArrayList<>();
         for (int i=0; i<stateCount; i++) {
             codeMapping.add(Integer.toString(i));
         }
@@ -90,11 +90,11 @@ public class StandardData extends DataType.Base {
     @Override
     public List<Integer> string2state(String data) throws Exception {
         List<Integer> sequence;
-        sequence = new ArrayList<Integer>();
+        sequence = new ArrayList<>();
         // remove spaces
         data = data.replaceAll("\\s", "");
 
-        ArrayList<Integer> amb = new ArrayList<Integer>();
+        ArrayList<Integer> amb = new ArrayList<>();
         boolean readingAmb=false;
         for (byte c : data.getBytes()) {
             if (!readingAmb) {
@@ -152,7 +152,7 @@ public class StandardData extends DataType.Base {
 //    @Description("A class to store the description of a character")
 //    public class CharStateLabels extends BEASTObject {
 //
-//        public Input<Integer> nrOfStatesInput = new Input<Integer>("states", "number of states fro this character");
+//        public Input<Integer> nrOfStatesInput = new Input<>("states", "number of states fro this character");
 //        public Input<String> characterNameInput = new Input<>("characterName", "the name of the charcter");
 //        public Input<List<String>> stateNamesInput = new Input<>("stateNames", "the list of the state names ordered " +
 //                "according to codes given, that is the first in the list is coded by 0, second, by 1 and so forth.", new ArrayList<>());

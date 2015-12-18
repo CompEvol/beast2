@@ -10,10 +10,10 @@ import beast.evolution.tree.Node;
 @Description("Mutation Death substitution model, can be used as Stochastic Dollo model.")
 public class MutationDeathModel extends SubstitutionModel.Base {
 
-    public Input<RealParameter> delParameter = new Input<RealParameter>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
+    public Input<RealParameter> delParameter = new Input<>("deathprob", "rate of death, used to calculate death probability", Validate.REQUIRED);
     // mutation rate is already provided in SiteModel, so no need to duplicate it here
-    //public Input<RealParameter> mutationRate = new Input<RealParameter>("mu", "mutation rate, default 1");
-    public Input<SubstitutionModel.Base> CTMCModelInput = new Input<SubstitutionModel.Base>("substmodel", "CTMC Model for the life states, so should have " +
+    //public Input<RealParameter> mutationRate = new Input<>("mu", "mutation rate, default 1");
+    public Input<SubstitutionModel.Base> CTMCModelInput = new Input<>("substmodel", "CTMC Model for the life states, so should have " +
             "a state-space one less than this model. If not specified, ...");
     // TODO: figure out the end of the last sentence
 

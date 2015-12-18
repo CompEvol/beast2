@@ -12,16 +12,16 @@ import beast.math.distributions.ParametricDistribution;
 
 @Description("Specification of a single calibration point of the calibrated Yule.")
 public class CalibrationPoint extends BEASTObject {
-    public Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset",
+    public Input<TaxonSet> taxonsetInput = new Input<>("taxonset",
             "Set of taxa. The prior distribution is applied to their TMRCA.", Input.Validate.REQUIRED);
 
-    public Input<ParametricDistribution> distInput = new Input<ParametricDistribution>("distr",
+    public Input<ParametricDistribution> distInput = new Input<>("distr",
             "Prior distribution applied to time of clade MRCA", Input.Validate.REQUIRED);
 
-//    public Input<Boolean> m_bIsMonophyleticInput = new Input<Boolean>("monophyletic",
+//    public Input<Boolean> m_bIsMonophyleticInput = new Input<>("monophyletic",
 //            "whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
 
-    public Input<Boolean> forParentInput = new Input<Boolean>("parentOf",
+    public Input<Boolean> forParentInput = new Input<>("parentOf",
             "Use time of clade parent. Default is false.", false);
 
 

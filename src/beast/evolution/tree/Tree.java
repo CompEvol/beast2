@@ -15,13 +15,13 @@ import java.util.List;
         + " beast.tree, language history, or other time-beast.tree"
         + " relationships among sequence data.")
 public class Tree extends StateNode implements TreeInterface {
-    public Input<Tree> m_initial = new Input<Tree>("initial", "tree to start with");
-    public Input<List<TraitSet>> m_traitList = new Input<List<TraitSet>>("trait",
+    public Input<Tree> m_initial = new Input<>("initial", "tree to start with");
+    public Input<List<TraitSet>> m_traitList = new Input<>("trait",
             "trait information for initializing traits (like node dates) in the tree",
-            new ArrayList<TraitSet>());
-    public Input<TaxonSet> m_taxonset = new Input<TaxonSet>("taxonset",
+            new ArrayList<>());
+    public Input<TaxonSet> m_taxonset = new Input<>("taxonset",
             "set of taxa that correspond to the leafs in the tree");
-    public Input<String> nodeTypeInput = new Input<String>("nodetype",
+    public Input<String> nodeTypeInput = new Input<>("nodetype",
             "type of the nodes in the beast.tree", Node.class.getName());
 
     /**
@@ -257,7 +257,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @return a list of external (leaf) nodes contained in this tree
      */
     public List<Node> getExternalNodes() {
-        final ArrayList<Node> externalNodes = new ArrayList<Node>();
+        final ArrayList<Node> externalNodes = new ArrayList<>();
         for (int i = 0; i < getNodeCount(); i++) {
             final Node node = getNode(i);
             if (node.isLeaf()) externalNodes.add(node);
@@ -269,7 +269,7 @@ public class Tree extends StateNode implements TreeInterface {
      * @return a list of internal (ancestral) nodes contained in this tree, including the root node
      */
     public List<Node> getInternalNodes() {
-        final ArrayList<Node> internalNodes = new ArrayList<Node>();
+        final ArrayList<Node> internalNodes = new ArrayList<>();
         for (int i = 0; i < getNodeCount(); i++) {
             final Node node = getNode(i);
             if (!node.isLeaf()) internalNodes.add(node);
@@ -628,7 +628,7 @@ public class Tree extends StateNode implements TreeInterface {
      * print translate block for NEXUS beast.tree file
      */
     public static void printTranslate(final Node node, final PrintStream out, final int nNodeCount) {
-        final List<String> translateLines = new ArrayList<String>();
+        final List<String> translateLines = new ArrayList<>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
         for (final String sLine : translateLines) {
@@ -658,7 +658,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     public static void printTaxa(final Node node, final PrintStream out, final int nNodeCount) {
-        final List<String> translateLines = new ArrayList<String>();
+        final List<String> translateLines = new ArrayList<>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
         for (String sLine : translateLines) {

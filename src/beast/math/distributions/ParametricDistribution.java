@@ -48,7 +48,7 @@ import beast.util.Randomizer;
         "parameters/valuables as inputs and can produce (cumulative) densities and inverse " +
         "cumulative densities.")
 public abstract class ParametricDistribution extends CalculationNode implements ContinuousDistribution {
-    public final Input<Double> offsetInput = new Input<Double>("offset", "offset of origin (defaults to 0)", 0.0);
+    public final Input<Double> offsetInput = new Input<>("offset", "offset of origin (defaults to 0)", 0.0);
 
     abstract public org.apache.commons.math.distribution.Distribution getDistribution();
 

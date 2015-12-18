@@ -88,7 +88,7 @@ public class CladeSet extends FrequencySet<BitSet> {
 
     private SortedSet<String> getTaxaSet(BitSet bits) {
 
-        SortedSet<String> taxaSet = new TreeSet<String>();
+        SortedSet<String> taxaSet = new TreeSet<>();
 
         for (int i = 0; i < bits.length(); i++) {
             if (bits.get(i)) {
@@ -256,6 +256,6 @@ public class CladeSet extends FrequencySet<BitSet> {
     // Private stuff
     //
     private TaxonSet taxonSet = null;
-    private final Map<BitSet, Double> totalNodeHeight = new HashMap<BitSet, Double>();
+    private final Map<BitSet, Double> totalNodeHeight = new HashMap<>();
     private int totalTrees = 0;
 }

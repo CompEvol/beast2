@@ -139,7 +139,7 @@ public class SnyderContour {
         if ((iflag == 2) || (iflag == 3)) { // start new path
             u = ((xy[0] - 1.0) * deltaX) + offsetX;
             v = ((xy[1] - 1.0) * deltaY) + offsetY;
-            LinkedList<Point2D> path = new LinkedList<Point2D>();
+            LinkedList<Point2D> path = new LinkedList<>();
             path.add(new Point2D.Double(u, v));
             allPaths.add(path);
         }

@@ -36,7 +36,7 @@ public interface SiteModelInterface {
     @Description(value = "Base implementation of a site model with substitution model and rate categories.", isInheritable = false)
     public abstract class Base extends CalculationNode implements SiteModelInterface {
     	public Input<SubstitutionModel.Base> substModelInput =
-                new Input<SubstitutionModel.Base>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
+                new Input<>("substModel", "substitution model along branches in the beast.tree", null, Validate.REQUIRED);
 
     	/**
          * Specifies whether SiteModel should integrate over the different categories at
@@ -169,7 +169,7 @@ public interface SiteModelInterface {
         public void addCondition(final Input<? extends StateNode> stateNode) {
             if (stateNode.get() == null) return;
 
-            if (conditions == null) conditions = new ArrayList<String>();
+            if (conditions == null) conditions = new ArrayList<>();
 
             conditions.add(stateNode.get().getID());
         }

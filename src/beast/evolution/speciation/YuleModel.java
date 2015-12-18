@@ -22,11 +22,11 @@ import beast.evolution.tree.TreeInterface;
 @Description("Pure birth model (i.e. no deaths)")
 public class YuleModel extends SpeciesTreeDistribution {
     public Input<RealParameter> birthDiffRateParameterInput =
-            new Input<RealParameter>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
+            new Input<>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
     public Input<RealParameter> originHeightParameterInput =
-            new Input<RealParameter>("originHeight", "the height of the point of origin of the process");
+            new Input<>("originHeight", "the height of the point of origin of the process");
     public Input<Boolean> conditionalOnRootInput =
-            new Input<Boolean>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
+            new Input<>("conditionalOnRoot", "Whether to condition on the root (default false)", false);
 
     protected boolean conditionalOnRoot;
     protected boolean conditionalOnOrigin;

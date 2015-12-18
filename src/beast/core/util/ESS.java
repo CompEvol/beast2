@@ -18,7 +18,7 @@ import beast.core.Input.Validate;
         "This uses the same criterion as Tracer and assumes 10% burn in.")
 public class ESS extends BEASTObject implements Loggable {
     public Input<Function> functionInput =
-            new Input<Function>("arg", "value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
+            new Input<>("arg", "value (e.g. parameter or distribution) to report ESS for", Validate.REQUIRED);
 
     /**
      * values from which the ESS is calculated *
@@ -35,8 +35,8 @@ public class ESS extends BEASTObject implements Loggable {
 
     @Override
     public void initAndValidate() {
-        trace = new ArrayList<Double>();
-        squareLaggedSums = new ArrayList<Double>();
+        trace = new ArrayList<>();
+        squareLaggedSums = new ArrayList<>();
     }
 
     @Override

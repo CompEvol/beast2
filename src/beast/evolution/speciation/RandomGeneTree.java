@@ -16,7 +16,7 @@ import beast.evolution.tree.coalescent.PopulationFunction;
         "that the root of the species tree is lower than any coalescent events in " +
         "the gene tree")
 public class RandomGeneTree extends RandomTree {
-    public Input<Tree> speciesTreeInput = new Input<Tree>("speciesTree", "The species tree in which this random gene tree needs to fit", Validate.REQUIRED);
+    public Input<Tree> speciesTreeInput = new Input<>("speciesTree", "The species tree in which this random gene tree needs to fit", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() throws Exception {

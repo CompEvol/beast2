@@ -36,7 +36,7 @@ import beast.util.XMLParser;
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
 public class BeautiAlignmentProvider extends BEASTObject {
 	
-	public Input<BeautiSubTemplate> template = new Input<BeautiSubTemplate>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
+	public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 
 	
 	@Override
@@ -72,7 +72,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
      * @return
      */
     public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
-        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> selectedPlugins = new ArrayList<>();
         for (File file : files) {
             String fileName = file.getName();
 			String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
@@ -91,7 +91,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 							 * overlap
 							 **/
 							int[] used = new int[parser.m_alignment.getSiteCount()];
-							Set<Integer> overlap = new HashSet<Integer>();
+							Set<Integer> overlap = new HashSet<>();
 							int partitionNr = 1;
 							for (Alignment data : parser.filteredAlignments) {
 								int[] indices = ((FilteredAlignment) data).indices();
@@ -229,8 +229,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
     private Alignment getFASTAData(File file) {
     	try {
     		// grab alignment data
-        	Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
-        	List<String> sTaxa = new ArrayList<String>();
+        	Map<String, StringBuilder> seqMap = new HashMap<>();
+        	List<String> sTaxa = new ArrayList<>();
         	String currentTaxon = null;
 			BufferedReader fin = new BufferedReader(new FileReader(file));
 	        String sMissing = "?";

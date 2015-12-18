@@ -65,13 +65,13 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     double EPSILON = 1e-10;
 
-    public Input<Type> clusterTypeInput = new Input<Type>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
+    public Input<Type> clusterTypeInput = new Input<>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
             "Should be one of " + Type.values() + " (default " + Type.average + ")", Type.average, Type.values());
-    public Input<Alignment> dataInput = new Input<Alignment>("taxa", "alignment data used for calculating distances for clustering");
+    public Input<Alignment> dataInput = new Input<>("taxa", "alignment data used for calculating distances for clustering");
 
-    public Input<Distance> distanceInput = new Input<Distance>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
+    public Input<Distance> distanceInput = new Input<>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
-    public Input<RealParameter> clockRateInput = new Input<RealParameter>("clock.rate",
+    public Input<RealParameter> clockRateInput = new Input<>("clock.rate",
             "the clock rate parameter, used to divide all divergence times by, to convert from substitutions to times. (default 1.0)",
             new RealParameter(new Double[] {1.0}));
 
@@ -362,7 +362,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         // starting with one cluster per instance
         final List<Integer>[] nClusterID = new ArrayList[nTaxa];
         for (int i = 0; i < nTaxa; i++) {
-            nClusterID[i] = new ArrayList<Integer>();
+            nClusterID[i] = new ArrayList<>();
             nClusterID[i].add(i);
         }
         // calculate distance matrix
@@ -520,7 +520,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      */
     void doLinkClustering(int nClusters, final List<Integer>[] nClusterID, final NodeX[] clusterNodes) {
         final int nInstances = taxaNames.size();
-        final PriorityQueue<Tuple> queue = new PriorityQueue<Tuple>(nClusters * nClusters / 2, new TupleComparator());
+        final PriorityQueue<Tuple> queue = new PriorityQueue<>(nClusters * nClusters / 2, new TupleComparator());
         final double[][] fDistance0 = new double[nClusters][nClusters];
         for (int i = 0; i < nClusters; i++) {
             fDistance0[i][i] = 0;
@@ -616,7 +616,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // centroids of the cluster and its members.
                 final double ESS1 = calcESS(cluster1);
                 final double ESS2 = calcESS(cluster2);
-                final List<Integer> merged = new ArrayList<Integer>();
+                final List<Integer> merged = new ArrayList<>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
                 final double ESS = calcESS(merged);
@@ -708,7 +708,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 break;
             case mean: {
                 // calculates the mean distance of a merged cluster (akak Group-average agglomerative clustering)
-                final List<Integer> merged = new ArrayList<Integer>();
+                final List<Integer> merged = new ArrayList<>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
                 fBestDist = 0;
@@ -752,7 +752,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 // centroids of the cluster and its members.
                 final double ESS1 = calcESS(cluster1);
                 final double ESS2 = calcESS(cluster2);
-                final List<Integer> merged = new ArrayList<Integer>();
+                final List<Integer> merged = new ArrayList<>();
                 merged.addAll(cluster1);
                 merged.addAll(cluster2);
                 final double ESS = calcESS(merged);

@@ -55,7 +55,7 @@ public class Alignment extends Map<String> {
     /**
      * list of data type descriptions, obtained from DataType classes *
      */
-    static List<String> types = new ArrayList<String>();
+    static List<String> types = new ArrayList<>();
 
     static {
         findDataTypes();
@@ -145,7 +145,7 @@ public class Alignment extends Map<String> {
      * Probabilities associated with each tip of the tree, for use when the
      * characters are uncertain.
      */
-    public List<double[][]> tipLikelihoods = new ArrayList<double[][]>(); // #taxa x #sites x #states
+    public List<double[][]> tipLikelihoods = new ArrayList<>(); // #taxa x #sites x #states
     private boolean usingTipLikelihoods = false;
     
     /**
@@ -334,12 +334,10 @@ public class Alignment extends Map<String> {
 
         List<Sequence> sortedSeqs = new ArrayList<>();
         sortedSeqs.addAll(sequences);
-        Collections.sort(sortedSeqs, new Comparator<Sequence>() {
-            @Override
-            public int compare(Sequence o1, Sequence o2) {
+        Collections.sort(sortedSeqs, (Sequence o1, Sequence o2) -> {
                 return Integer.compare(toSortBy.getTaxonIndex(o1.getTaxon()), toSortBy.getTaxonIndex(o2.getTaxon()));
             }
-        });
+        );
         initializeWithSequenceList(sortedSeqs, false);
     }
 
@@ -351,7 +349,7 @@ public class Alignment extends Map<String> {
             int iFrom = excludefromInput.get();
             int iTo = excludetoInput.get();
             int iEvery = excludeeveryInput.get();
-            excludedPatterns = new HashSet<Integer>();
+            excludedPatterns = new HashSet<>();
             for (int i = iFrom; i < iTo; i += iEvery) {
                 int iPattern = patternIndex[i];
                 // reduce weight, so it does not confuse the tree likelihood
@@ -727,12 +725,10 @@ public class Alignment extends Map<String> {
      */
     @Deprecated
     static public void sortByTaxonName(List<Sequence> seqs) {
-        Collections.sort(seqs, new Comparator<Sequence>() {
-            @Override
-            public int compare(Sequence o1, Sequence o2) {
+        Collections.sort(seqs, (Sequence o1, Sequence o2) -> {
                 return o1.taxonInput.get().compareTo(o2.taxonInput.get());
             }
-        });
+        );
     }
 
     /** 

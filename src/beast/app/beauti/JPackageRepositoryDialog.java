@@ -55,7 +55,7 @@ public class JPackageRepositoryDialog extends JDialog {
         try {
             URLs = AddOnManager.getPackagesURL();
         } catch (MalformedURLException exception) {
-            URLs = new ArrayList<String>();
+            URLs = new ArrayList<>();
             URLs.add(AddOnManager.PACKAGES_XML);
         }
 

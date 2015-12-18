@@ -93,7 +93,7 @@ public class Utils {
                     Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
                     Method method = qm.getMethod("setExcludedUIs", Set.class);
 
-                    Set<String> excludes = new HashSet<String>();
+                    Set<String> excludes = new HashSet<>();
                     excludes.add("Button");
                     excludes.add("ToolBar");
                     method.invoke(null, excludes);

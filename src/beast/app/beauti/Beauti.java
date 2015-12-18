@@ -915,7 +915,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     }
 
 	private List<AbstractAction> getTemplateActions() {
-        List<AbstractAction> actions = new ArrayList<AbstractAction>();
+        List<AbstractAction> actions = new ArrayList<>();
         List<String> sBeastDirectories = AddOnManager.getBeastDirectories();
         for (String sDir : sBeastDirectories) {
             File dir = new File(sDir + "/templates");
@@ -956,7 +956,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     }
 
     private List<AbstractAction> getWorkDirActions() {
-        List<AbstractAction> actions = new ArrayList<AbstractAction>();
+        List<AbstractAction> actions = new ArrayList<>();
         List<String> beastDirectories = AddOnManager.getBeastDirectories();
         for (String dir : beastDirectories) {
         	String exampledir = dir + File.separator+ "examples";

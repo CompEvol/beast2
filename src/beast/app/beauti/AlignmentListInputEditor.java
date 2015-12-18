@@ -109,11 +109,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			alignments = (List<Alignment>) input.get();
 		} else {
 			// we just have a single Alignment
-			alignments = new ArrayList<Alignment>();
+			alignments = new ArrayList<>();
 			alignments.add((Alignment) input.get());
 		}
-		linkButtons = new ArrayList<JButton>();
-		unlinkButtons = new ArrayList<JButton>();
+		linkButtons = new ArrayList<>();
+		unlinkButtons = new ArrayList<>();
 		nPartitions = alignments.size();
 
         // override BoxLayout in superclass
@@ -500,7 +500,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 System.err.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
 				TreeInterface oldTree = this.likelihoods[iRow].treeInput.get();
-				List<TreeInterface> tModels = new ArrayList<TreeInterface>();
+				List<TreeInterface> tModels = new ArrayList<>();
 				for (GenericTreeLikelihood likelihood : likelihoods) {
 					if (likelihood.treeInput.get() == oldTree) {
 						tModels.add(likelihood.treeInput.get());
@@ -549,7 +549,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		}
 		tableData[iRow][nColumn] = sPartition;
 		if (needsRePartition) {
-			List<BeautiSubTemplate> templates = new ArrayList<BeautiSubTemplate>();
+			List<BeautiSubTemplate> templates = new ArrayList<>();
 			templates.add(doc.beautiConfig.partitionTemplate.get());
 			templates.addAll(doc.beautiConfig.subTemplates);
 			// keep applying rules till model does not change
@@ -844,7 +844,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		// set up comboboxes
 		Set<String>[] partitionNames = new HashSet[3];
 		for (int i = 0; i < 3; i++) {
-			partitionNames[i] = new HashSet<String>();
+			partitionNames[i] = new HashSet<>();
 		}
 		for (int i = 0; i < nPartitions; i++) {
 			partitionNames[0].add(((BEASTInterface) likelihoods[i].siteModelInput.get()).getID());
@@ -1074,9 +1074,9 @@ System.err.println("needsRePartition = " + needsRePartition);
 			BranchRateModel.Base clockModel = likelihoods[iRow].branchRateModelInput.get();
 			SiteModelInterface siteModel = likelihoods[iRow].siteModelInput.get();
 			TreeInterface tree = likelihoods[iRow].treeInput.get();
-			List<GenericTreeLikelihood> cModels = new ArrayList<GenericTreeLikelihood>();
-			List<GenericTreeLikelihood> sModels = new ArrayList<GenericTreeLikelihood>();
-			List<GenericTreeLikelihood> tModels = new ArrayList<GenericTreeLikelihood>();
+			List<GenericTreeLikelihood> cModels = new ArrayList<>();
+			List<GenericTreeLikelihood> sModels = new ArrayList<>();
+			List<GenericTreeLikelihood> tModels = new ArrayList<>();
 			for (GenericTreeLikelihood likelihood : likelihoods) {
 				if (likelihood != likelihoods[iRow]) {
 				if (likelihood.branchRateModelInput.get() == clockModel) {

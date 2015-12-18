@@ -15,15 +15,15 @@ import beast.evolution.datatype.DataType;
 
 @Description("Alignemnt based on a filter operation on another alignment")
 public class FilteredAlignment extends Alignment {
-    public Input<String> filterInput = new Input<String>("filter", "specifies which of the sites in the input alignment should be selected " +
+    public Input<String> filterInput = new Input<>("filter", "specifies which of the sites in the input alignment should be selected " +
             "First site is 1." +
             "Filter specs are comma separated, either a singleton, a range [from]-[to] or iteration [from]:[to]:[step]; " +
             "1-100 defines a range, " +
             "1-100\3 or 1:100:3 defines every third in range 1-100, " +
             "1::3,2::3 removes every third site. " +
             "Default for range [1]-[last site], default for iterator [1]:[last site]:[1]", Validate.REQUIRED);
-    public Input<Alignment> alignmentInput = new Input<Alignment>("data", "alignment to be filtered", Validate.REQUIRED);
-    public Input<IntegerParameter> constantSiteWeightsInput = new Input<IntegerParameter>("constantSiteWeights", "if specified, constant " +
+    public Input<Alignment> alignmentInput = new Input<>("data", "alignment to be filtered", Validate.REQUIRED);
+    public Input<IntegerParameter> constantSiteWeightsInput = new Input<>("constantSiteWeights", "if specified, constant " +
     		"sites will be added with weights specified by the input. The dimension and order of weights must match the datatype. " +
     		"For example for nucleotide data, a 4 dimensional " +
     		"parameter with weights for A, C, G and T respectively need to be specified.");

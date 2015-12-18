@@ -35,7 +35,7 @@ public class ContourWithSynder extends KernelDensityEstimator2D  {
             contourPlot.setDeltas(getXGrid()[1]-getXGrid()[0],getYGrid()[1]-getYGrid()[0] );
             contourPlot.setOffsets(getXGrid()[0],getYGrid()[0]);
 
-            List<LinkedList<Point2D>> allPaths = new ArrayList<LinkedList<Point2D>>();
+            List<LinkedList<Point2D>> allPaths = new ArrayList<>();
             contourPlot.ContourKernel(getKDE(),allPaths,thresholdDensity);
 
             contourPaths = new ContourPath[allPaths.size()];

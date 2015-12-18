@@ -75,16 +75,16 @@ public class EBSPAnalyser {
         fin = new BufferedReader(new FileReader(sFile));
 
         // process log
-        final List<List<Double>> times = new ArrayList<List<Double>>();
-        final List<List<Double>> popSizes = new ArrayList<List<Double>>();
+        final List<List<Double>> times = new ArrayList<>();
+        final List<List<Double>> popSizes = new ArrayList<>();
         double[] alltimes = null;
         while (fin.ready()) {
             sStr = fin.readLine();
             if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
                 if (++nData > 0) {
                     final String[] sStrs = sStr.split("\t");
-                    final List<Double> times2 = new ArrayList<Double>();
-                    final List<Double> popSizes2 = new ArrayList<Double>();
+                    final List<Double> times2 = new ArrayList<>();
+                    final List<Double> popSizes2 = new ArrayList<>();
                     if (alltimes == null) {
                         alltimes = new double[sStrs.length - 1];
                     }
@@ -349,7 +349,7 @@ public class EBSPAnalyser {
         }
 
         public String[] getArgs() {
-            java.util.List<String> args = new ArrayList<String>();
+            java.util.List<String> args = new ArrayList<>();
             if (inputFile != null) {
                 args.add("-i");
                 args.add(inputFile.getPath());

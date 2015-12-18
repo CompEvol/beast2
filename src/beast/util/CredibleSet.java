@@ -21,7 +21,7 @@ public class CredibleSet<T> {
     public double targetCum = 1.0;
 
     public CredibleSet(double credSetProbability) {
-        credibleSetList = new ArrayList<T>();
+        credibleSetList = new ArrayList<>();
         this.credSetProbability = credSetProbability;
     }
 

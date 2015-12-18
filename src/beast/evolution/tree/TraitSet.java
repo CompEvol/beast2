@@ -30,14 +30,14 @@ public class TraitSet extends BEASTObject {
         year, month, day
     }
 
-    public Input<String> traitNameInput = new Input<String>("traitname", "name of the trait, used as meta data name for the tree. " +
+    public Input<String> traitNameInput = new Input<>("traitname", "name of the trait, used as meta data name for the tree. " +
             "Special traitnames that are recognized are '" + DATE_TRAIT + "','" + DATE_FORWARD_TRAIT + "' and '" + DATE_BACKWARD_TRAIT + "'.", Validate.REQUIRED);
-    public Input<Units> unitsInput = new Input<Units>("units", "name of the units in which values are posed, " +
+    public Input<Units> unitsInput = new Input<>("units", "name of the units in which values are posed, " +
             "used for conversion to a real value. This can be " + Arrays.toString(Units.values()) + " (default 'year')", Units.year, Units.values());
-    public Input<String> traitsInput = new Input<String>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
-    public Input<TaxonSet> taxaInput = new Input<TaxonSet>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
+    public Input<String> traitsInput = new Input<>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);
+    public Input<TaxonSet> taxaInput = new Input<>("taxa", "contains list of taxa to map traits to", Validate.REQUIRED);
 
-    public Input<String> dateTimeFormatInput = new Input<String>("dateFormat", "the date/time format to be parsed, (e.g., 'dd/M/yyyy')");
+    public Input<String> dateTimeFormatInput = new Input<>("dateFormat", "the date/time format to be parsed, (e.g., 'dd/M/yyyy')");
 
     final public static String DATE_TRAIT = "date";
     final public static String DATE_FORWARD_TRAIT = "date-forward";
@@ -71,7 +71,7 @@ public class TraitSet extends BEASTObject {
         // first, determine taxon numbers associated with traits
         // The Taxon number is the index in the alignment, and
         // used as node number in a tree.
-        map = new HashMap<String, Integer>();
+        map = new HashMap<>();
         List<String> labels = taxaInput.get().asStringList();
         String[] traits = traitsInput.get().split(",");
         taxonValues = new String[labels.size()];

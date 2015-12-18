@@ -68,7 +68,7 @@ public class LogCombinerDialog {
     private final JCheckBox resampleCheck = new JCheckBox("Resample states at lower frequency: ");
     private final WholeNumberField resampleText = new WholeNumberField(0, Integer.MAX_VALUE);
 
-    private final List<FileInfo> files = new ArrayList<FileInfo>();
+    private final List<FileInfo> files = new ArrayList<>();
 
     private final JTextField fileNameText = new JTextField("not selected", 16);
     private File outputFile = null;

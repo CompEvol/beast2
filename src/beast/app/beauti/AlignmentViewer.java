@@ -25,7 +25,7 @@ public class AlignmentViewer extends JPanel {
     // flag to indicate that the most frequently occurring character is shown as a dot
     boolean useDots = true;
     Alignment m_alignment;
-    Map<Character, Color> m_customColorMap = new HashMap<Character, Color>();
+    Map<Character, Color> m_customColorMap = new HashMap<>();
 
     /**
      * define which character maps to which color *

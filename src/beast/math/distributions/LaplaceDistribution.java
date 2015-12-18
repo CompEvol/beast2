@@ -15,8 +15,8 @@ import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
         "the Laplace density is expressed in terms of the absolute difference from the mean. Consequently the Laplace " +
         "distribution has fatter tails than the normal distribution.")
 public class LaplaceDistribution extends ParametricDistribution {
-    public Input<RealParameter> muInput = new Input<RealParameter>("mu", "location parameter, defaults to 0");
-    public Input<RealParameter> scaleInput = new Input<RealParameter>("scale", "scale parameter, defaults to 1");
+    public Input<RealParameter> muInput = new Input<>("mu", "location parameter, defaults to 0");
+    public Input<RealParameter> scaleInput = new Input<>("scale", "scale parameter, defaults to 1");
 
     // the mean parameter
     double mu;

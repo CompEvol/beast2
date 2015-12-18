@@ -64,10 +64,10 @@ import beast.evolution.datatype.TwoStateCovarion;
  */
 @Description("Covarion model for Binary data")
 public class BinaryCovarion extends GeneralSubstitutionModel {
-    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "the rate of evolution in slow mode", Validate.REQUIRED);
-    public Input<RealParameter> switchRateInput = new Input<RealParameter>("switchRate", "the rate of flipping between slow and fast modes", Validate.REQUIRED);
-    public Input<RealParameter> frequenciesInput = new Input<RealParameter>("vfrequencies", "the frequencies of the visible states", Validate.REQUIRED);
-    public Input<RealParameter> hfrequenciesInput = new Input<RealParameter>("hfrequencies", "the frequencies of the hidden rates");
+    public Input<RealParameter> alphaInput = new Input<>("alpha", "the rate of evolution in slow mode", Validate.REQUIRED);
+    public Input<RealParameter> switchRateInput = new Input<>("switchRate", "the rate of flipping between slow and fast modes", Validate.REQUIRED);
+    public Input<RealParameter> frequenciesInput = new Input<>("vfrequencies", "the frequencies of the visible states", Validate.REQUIRED);
+    public Input<RealParameter> hfrequenciesInput = new Input<>("hfrequencies", "the frequencies of the hidden rates");
 
     public enum MODE {BEAST, REVERSIBLE, TUFFLEYSTEEL};
 	public Input<MODE> modeInput = new Input<>("mode","one of BEAST, REVERSIBLE, TUFFLESTEEL "

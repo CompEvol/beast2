@@ -11,7 +11,7 @@ import beast.evolution.tree.Node;
 @Description("Defines a mean rate for each branch in the beast.tree.")
 public class StrictClockModel extends BranchRateModel.Base {
 
-    //public Input<RealParameter> muParameterInput = new Input<RealParameter>("clock.rate", "the clock rate (defaults to 1.0)");
+    //public Input<RealParameter> muParameterInput = new Input<>("clock.rate", "the clock rate (defaults to 1.0)");
 
     RealParameter muParameter;
 

@@ -33,10 +33,10 @@ import java.util.logging.Logger;
         + " of the state.")
 public class JointOperator extends Operator {
     
-    public Input<List<Operator>> operatorsInput = new Input<List<Operator>>(
+    public Input<List<Operator>> operatorsInput = new Input<>(
             "operator",
             "List of operators to combine into one operation.",
-            new ArrayList<Operator>());
+            new ArrayList<>());
 
     @Override
     public void initAndValidate() { }
@@ -68,7 +68,7 @@ public class JointOperator extends Operator {
     
     @Override
     public List<StateNode> listStateNodes() throws Exception {
-        List<StateNode> stateNodeList = new ArrayList<StateNode>();
+        List<StateNode> stateNodeList = new ArrayList<>();
         
         for (Operator op : operatorsInput.get())
             stateNodeList.addAll(op.listStateNodes());

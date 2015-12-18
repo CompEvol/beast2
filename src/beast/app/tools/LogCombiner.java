@@ -23,7 +23,7 @@ import java.util.Locale;
  */
 public class LogCombiner extends LogAnalyser {
 
-    List<String> m_sLogFileName = new ArrayList<String>();
+    List<String> m_sLogFileName = new ArrayList<>();
     String m_sParticleDir;
     int m_nParticles = -1;
     String m_sFileOut;
@@ -45,7 +45,7 @@ public class LogCombiner extends LogAnalyser {
     private void parseArgs(String[] args) throws Exception {
         int i = 0;
         format = new DecimalFormat("#.############E0", new DecimalFormatSymbols(Locale.US));
-        m_sLogFileName = new ArrayList<String>();
+        m_sLogFileName = new ArrayList<>();
         try {
             while (i < args.length) {
                 int iOld = i;
@@ -107,7 +107,7 @@ public class LogCombiner extends LogAnalyser {
     Double[][] m_fCombinedTraces;
 
     private void combineParticleLogs() throws Exception {
-        List<String> sLogs = new ArrayList<String>();
+        List<String> sLogs = new ArrayList<>();
         for (int i = 0; i < m_nParticles; i++) {
             String sDir = m_sParticleDir + "/particle" + i;
             File dir = new File(sDir);
@@ -192,7 +192,7 @@ public class LogCombiner extends LogAnalyser {
         int nBurnIn = nData * nBurnInPercentage / 100;
         logln(" skipping " + nBurnIn + " trees\n\n" + BAR);
         if (m_sTrees == null) {
-            m_sTrees = new ArrayList<String>();
+            m_sTrees = new ArrayList<>();
         }
         fin = new BufferedReader(new FileReader(sFile));
         nData = -nBurnIn - 1;

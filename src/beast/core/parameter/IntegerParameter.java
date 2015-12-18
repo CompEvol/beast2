@@ -14,8 +14,8 @@ import java.io.PrintStream;
 @Description("An integer-valued parameter represents a value (or array of values if the dimension is larger than one) " +
         "in the state space that can be changed by operators.")
 public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
-    public Input<Integer> lowerValueInput = new Input<Integer>("lower", "lower value for this parameter (default -infinity)");
-    public Input<Integer> upperValueInput = new Input<Integer>("upper", "upper value for this parameter  (default +infinity)");
+    public Input<Integer> lowerValueInput = new Input<>("lower", "lower value for this parameter (default -infinity)");
+    public Input<Integer> upperValueInput = new Input<>("upper", "upper value for this parameter  (default +infinity)");
 
     public IntegerParameter() {
     }

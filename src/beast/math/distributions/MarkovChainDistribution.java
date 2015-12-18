@@ -27,13 +27,13 @@ import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
         "Handy for population parameters. ")
 public class MarkovChainDistribution extends Distribution {
 
-    public Input<Boolean> isJeffreysInput = new Input<Boolean>("jeffreys", "use Jeffrey's prior (default false)", false);
-    public Input<Boolean> isReverseInput = new Input<Boolean>("reverse", "parameter in reverse (default false)", false);
-    public Input<Boolean> useLogInput = new Input<Boolean>("uselog", "use logarithm of parameter values (default false)", false);
-    public Input<Double> shapeInput = new Input<Double>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
+    public Input<Boolean> isJeffreysInput = new Input<>("jeffreys", "use Jeffrey's prior (default false)", false);
+    public Input<Boolean> isReverseInput = new Input<>("reverse", "parameter in reverse (default false)", false);
+    public Input<Boolean> useLogInput = new Input<>("uselog", "use logarithm of parameter values (default false)", false);
+    public Input<Double> shapeInput = new Input<>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
     		" or precision parameter if the log normal is used.", 1.0);
-    public Input<RealParameter> parameterInput = new Input<RealParameter>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
-    public Input<Boolean> useLogNormalInput = new Input<Boolean>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
+    public Input<RealParameter> parameterInput = new Input<>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
+    public Input<Boolean> useLogNormalInput = new Input<>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
 
     // **************************************************************
     // Private instance variables

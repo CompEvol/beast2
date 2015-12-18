@@ -50,12 +50,12 @@ import beast.evolution.tree.TreeInterface;
         "Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
 public class TreeLikelihood extends GenericTreeLikelihood {
 
-    public Input<Boolean> m_useAmbiguities = new Input<Boolean>("useAmbiguities", "flag to indicate that sites containing ambiguous states should be handled instead of ignored (the default)", false);
-    public Input<Boolean> m_useTipLikelihoods = new Input<Boolean>("useTipLikelihoods", "flag to indicate that partial likelihoods are provided at the tips", false);
+    public Input<Boolean> m_useAmbiguities = new Input<>("useAmbiguities", "flag to indicate that sites containing ambiguous states should be handled instead of ignored (the default)", false);
+    public Input<Boolean> m_useTipLikelihoods = new Input<>("useTipLikelihoods", "flag to indicate that partial likelihoods are provided at the tips", false);
     
     
     public static enum Scaling {none, always, _default};
-    public Input<Scaling> scaling = new Input<TreeLikelihood.Scaling>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
+    public Input<Scaling> scaling = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
     
 
     /**
@@ -202,7 +202,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * // the 'site invariant' category.
      */
     void calcConstantPatternIndices(final int nPatterns, final int nStateCount) {
-        constantPattern = new ArrayList<Integer>();
+        constantPattern = new ArrayList<>();
         for (int i = 0; i < nPatterns; i++) {
             final int[] pattern = dataInput.get().getPattern(i);
             final boolean[] bIsInvariant = new boolean[nStateCount];

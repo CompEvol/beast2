@@ -93,7 +93,7 @@ abstract public class Shape {
     } // drawLabel
 
     List<TrackPoint> getTracker() {
-        List<TrackPoint> tracker = new ArrayList<TrackPoint>(8);
+        List<TrackPoint> tracker = new ArrayList<>(8);
         tracker.add(new TrackPoint(m_x, m_y, Cursor.NW_RESIZE_CURSOR));
         tracker.add(new TrackPoint(m_x + m_w, m_y, Cursor.NE_RESIZE_CURSOR));
         tracker.add(new TrackPoint(m_x, m_y + m_h, Cursor.SW_RESIZE_CURSOR));

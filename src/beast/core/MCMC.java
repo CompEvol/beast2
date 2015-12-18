@@ -43,44 +43,44 @@ import java.util.*;
 public class MCMC extends Runnable {
 
     public Input<Integer> chainLengthInput =
-            new Input<Integer>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop",
+            new Input<>("chainLength", "Length of the MCMC chain i.e. number of samples taken in main loop",
                     Input.Validate.REQUIRED);
 
     public Input<State> startStateInput =
-            new Input<State>("state", "elements of the state space");
+            new Input<>("state", "elements of the state space");
 
     public Input<List<StateNodeInitialiser>> initialisersInput =
-            new Input<List<StateNodeInitialiser>>("init", "one or more state node initilisers used for determining " +
+            new Input<>("init", "one or more state node initilisers used for determining " +
                     "the start state of the chain",
-                    new ArrayList<StateNodeInitialiser>());
+                    new ArrayList<>());
 
     public Input<Integer> storeEveryInput =
-            new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
+            new Input<>("storeEvery", "store the state to disk every X number of samples so that we can " +
                     "resume computation later on if the process failed half-way.", -1);
 
     public Input<Integer> burnInInput =
-            new Input<Integer>("preBurnin", "Number of burn in samples taken before entering the main loop", 0);
+            new Input<>("preBurnin", "Number of burn in samples taken before entering the main loop", 0);
 
 
     public Input<Integer> numInitializationAttempts =
-            new Input<Integer>("numInitializationAttempts", "Number of initialization attempts before failing (default=10)", 10);
+            new Input<>("numInitializationAttempts", "Number of initialization attempts before failing (default=10)", 10);
 
     public Input<Distribution> posteriorInput =
-            new Input<Distribution>("distribution", "probability distribution to sample over (e.g. a posterior)",
+            new Input<>("distribution", "probability distribution to sample over (e.g. a posterior)",
                     Input.Validate.REQUIRED);
 
     public Input<List<Operator>> operatorsInput =
-            new Input<List<Operator>>("operator", "operator for generating proposals in MCMC state space",
-                    new ArrayList<Operator>());//, Input.Validate.REQUIRED);
+            new Input<>("operator", "operator for generating proposals in MCMC state space",
+                    new ArrayList<>());//, Input.Validate.REQUIRED);
 
     public Input<List<Logger>> loggersInput =
-            new Input<List<Logger>>("logger", "loggers for reporting progress of MCMC chain",
-                    new ArrayList<Logger>(), Input.Validate.REQUIRED);
+            new Input<>("logger", "loggers for reporting progress of MCMC chain",
+                    new ArrayList<>(), Input.Validate.REQUIRED);
 
-    public Input<Boolean> sampleFromPriorInput = new Input<Boolean>("sampleFromPrior", "whether to ignore the likelihood when sampling (default false). " +
+    public Input<Boolean> sampleFromPriorInput = new Input<>("sampleFromPrior", "whether to ignore the likelihood when sampling (default false). " +
             "The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
 
-    public Input<OperatorSchedule> operatorScheduleInput = new Input<OperatorSchedule>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
+    public Input<OperatorSchedule> operatorScheduleInput = new Input<>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
 
     /**
      * Alternative representation of operatorsInput that allows random selection
@@ -196,10 +196,10 @@ public class MCMC extends Runnable {
 
         // StateNode initialisation, only required when the state is not read from file
         if (restoreFromFile) {
-            final HashSet<StateNode> initialisedStateNodes = new HashSet<StateNode>();
+            final HashSet<StateNode> initialisedStateNodes = new HashSet<>();
             for (final StateNodeInitialiser initialiser : initialisersInput.get()) {
                 // make sure that the initialiser does not re-initialises a StateNode
-                final List<StateNode> list = new ArrayList<StateNode>(1);
+                final List<StateNode> list = new ArrayList<>(1);
                 initialiser.getInitialisedStateNodes(list);
                 for (final StateNode stateNode : list) {
                     if (initialisedStateNodes.contains(stateNode)) {
@@ -214,7 +214,7 @@ public class MCMC extends Runnable {
         }
 
         // State initialisation
-        final HashSet<StateNode> operatorStateNodes = new HashSet<StateNode>();
+        final HashSet<StateNode> operatorStateNodes = new HashSet<>();
         for (final Operator op : operatorsInput.get()) {
             for (final StateNode stateNode : op.listStateNodes()) {
                 operatorStateNodes.add(stateNode);

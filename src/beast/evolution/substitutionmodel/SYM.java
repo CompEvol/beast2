@@ -10,12 +10,12 @@ import beast.evolution.datatype.Nucleotide;
 @Description("Symmetrical model of nucleotide evolution with equal base frequencies." +
         "Rates that are not specified are assumed to be 1.")
 public class SYM extends GeneralSubstitutionModel {
-    public Input<RealParameter> rateACInput = new Input<RealParameter>("rateAC", "substitution rate for A to C (default 1)");
-    public Input<RealParameter> rateAGInput = new Input<RealParameter>("rateAG", "substitution rate for A to G (default 1)");
-    public Input<RealParameter> rateATInput = new Input<RealParameter>("rateAT", "substitution rate for A to T (default 1)");
-    public Input<RealParameter> rateCGInput = new Input<RealParameter>("rateCG", "substitution rate for C to G (default 1)");
-    public Input<RealParameter> rateCTInput = new Input<RealParameter>("rateCT", "substitution rate for C to T (default 1)");
-    public Input<RealParameter> rateGTInput = new Input<RealParameter>("rateGT", "substitution rate for G to T (default 1)");
+    public Input<RealParameter> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
+    public Input<RealParameter> rateAGInput = new Input<>("rateAG", "substitution rate for A to G (default 1)");
+    public Input<RealParameter> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
+    public Input<RealParameter> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
+    public Input<RealParameter> rateCTInput = new Input<>("rateCT", "substitution rate for C to T (default 1)");
+    public Input<RealParameter> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
 
     RealParameter rateAC;
     RealParameter rateAG;

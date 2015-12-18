@@ -17,19 +17,19 @@ import beast.evolution.tree.Tree;
 @Description("Prior over set of taxa, useful for defining monophyletic constraints and "
         + "distributions over MRCA times or (sets of) tips of trees")
 public class MRCAPrior extends Distribution {
-    public final Input<Tree> treeInput = new Input<Tree>("tree", "the tree containing the taxon set", Validate.REQUIRED);
-    public final Input<TaxonSet> taxonsetInput = new Input<TaxonSet>("taxonset",
+    public final Input<Tree> treeInput = new Input<>("tree", "the tree containing the taxon set", Validate.REQUIRED);
+    public final Input<TaxonSet> taxonsetInput = new Input<>("taxonset",
             "set of taxa for which prior information is available");
-    public final Input<Boolean> isMonophyleticInput = new Input<Boolean>("monophyletic",
+    public final Input<Boolean> isMonophyleticInput = new Input<>("monophyletic",
             "whether the taxon set is monophyletic (forms a clade without other taxa) or nor. Default is false.", false);
-    public final Input<ParametricDistribution> distInput = new Input<ParametricDistribution>("distr",
+    public final Input<ParametricDistribution> distInput = new Input<>("distr",
             "distribution used to calculate prior over MRCA time, "
                     + "e.g. normal, beta, gamma. If not specified, monophyletic must be true");
-    public final Input<Boolean> onlyUseTipsInput = new Input<Boolean>("tipsonly",
+    public final Input<Boolean> onlyUseTipsInput = new Input<>("tipsonly",
             "flag to indicate tip dates are to be used instead of the MRCA node. " +
                     "If set to true, the prior is applied to the height of all tips in the taxonset " +
                     "and the monophyletic flag is ignored. Default is false.", false);
-    public final Input<Boolean> useOriginateInput = new Input<Boolean>("useOriginate", "Use parent of clade instead of clade. Cannot be used with tipsonly, or on the root.", false);
+    public final Input<Boolean> useOriginateInput = new Input<>("useOriginate", "Use parent of clade instead of clade. Cannot be used with tipsonly, or on the root.", false);
 
     /**
      * shadow members *

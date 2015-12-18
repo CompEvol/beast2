@@ -39,7 +39,7 @@ public class JPackageDialog extends JPanel {
     JFrame frame;
     JTable dataTable = null;
 
-    List<Package> packages = new ArrayList<Package>();
+    List<Package> packages = new ArrayList<>();
 
     boolean isRunning;
     Thread t;

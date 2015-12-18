@@ -93,7 +93,7 @@ public class RPNexpressionCalculator {
      * @return evaluate expression given context (i.e. variables)
      */
     public double evaluate(GetVariable variables) {
-        Stack<Double> stack = new Stack<Double>();
+        Stack<Double> stack = new Stack<>();
 
         for (Eelement elem : expression) {
             switch (elem.op) {

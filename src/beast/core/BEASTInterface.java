@@ -130,7 +130,7 @@ public interface BEASTInterface {
      * @return references for this plug in and all its inputs *
      */
     default public String getCitations() {
-        return getCitations(new HashSet<String>(), new HashSet<String>());
+        return getCitations(new HashSet<>(), new HashSet<>());
     }
 
     default String getCitations(final HashSet<String> citations, final HashSet<String> IDs) {
@@ -167,7 +167,7 @@ public interface BEASTInterface {
      * create list of inputs to this plug-in *
      */
     default public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
-        final List<Input<?>> inputs = new ArrayList<Input<?>>();
+        final List<Input<?>> inputs = new ArrayList<>();
         final Field[] fields = getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
@@ -188,7 +188,7 @@ public interface BEASTInterface {
      * @throws IllegalArgumentException
      */
     default public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
-        final List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+        final List<BEASTInterface> plugins = new ArrayList<>();
         final Field[] fields = getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
@@ -351,7 +351,7 @@ public interface BEASTInterface {
 //         * @deprecate use getOuputs() or BEASTInterface.getOuputs(object) instead
 //         */
 //    	@Deprecated
-//        public Set<BEASTInterface> outputs = new HashSet<BEASTInterface>();
+//        public Set<BEASTInterface> outputs = new HashSet<>();
 //    	
 //        /**
 //         * @return set of Objects that have this Object in one of its Inputs

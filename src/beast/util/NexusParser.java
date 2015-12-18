@@ -27,7 +27,7 @@ public class NexusParser {
      * Beast II objects reconstructed from the file*
      */
     public Alignment m_alignment;
-    public List<Alignment> filteredAlignments = new ArrayList<Alignment>();
+    public List<Alignment> filteredAlignments = new ArrayList<>();
     public TraitSet traitSet;
 
     public List<String> taxa;
@@ -107,7 +107,7 @@ public class NexusParser {
     } // parseFile
 
     private void parseTreesBlock(final BufferedReader fin) throws Exception {
-        trees = new ArrayList<Tree>();
+        trees = new ArrayList<>();
         // read to first non-empty line within trees block
         String sStr = fin.readLine().trim();
         while (sStr.equals("")) {
@@ -182,7 +182,7 @@ public class NexusParser {
      */
     private int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
 
-        final SortedSet<Integer> indices = new TreeSet<Integer>();
+        final SortedSet<Integer> indices = new TreeSet<>();
 
         int count = 0;
         for (final String key : translationMap.keySet()) {
@@ -204,7 +204,7 @@ public class NexusParser {
      */
     private Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
 
-        final Map<String, String> translationMap = new HashMap<String, String>();
+        final Map<String, String> translationMap = new HashMap<>();
 
         String line = reader.readLine();
         final StringBuilder translateBlock = new StringBuilder();
@@ -226,7 +226,7 @@ public class NexusParser {
     }
 
     private void parseTaxaBlock(final BufferedReader fin) throws Exception {
-        taxa = new ArrayList<String>();
+        taxa = new ArrayList<>();
         int nTaxaExpected = -1;
         String sStr;
         do {
@@ -510,8 +510,8 @@ public class NexusParser {
 
         // read character data
         // Use string builder for efficiency
-        final Map<String, StringBuilder> seqMap = new HashMap<String, StringBuilder>();
-        final List<String> sTaxa = new ArrayList<String>();
+        final Map<String, StringBuilder> seqMap = new HashMap<>();
+        final List<String> sTaxa = new ArrayList<>();
         String sPrevTaxon = null;
         int seqLen = 0;
         while (true) {
@@ -591,7 +591,7 @@ public class NexusParser {
             seqMap.put(sTaxon, new StringBuilder(sData));
 
             //collect all ambiguities in the sequence
-            List<String> ambiguities = new ArrayList<String>();
+            List<String> ambiguities = new ArrayList<>();
             Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(sData);
             while (m.find()) {
                 int mLength = m.group().length();

@@ -30,8 +30,8 @@ import beast.evolution.operators.DeltaExchangeOperator;
 
 public class ClockModelListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
-    List<JTextField> textFields = new ArrayList<JTextField>();
-    List<Operator> operators = new ArrayList<Operator>();
+    List<JTextField> textFields = new ArrayList<>();
+    List<Operator> operators = new ArrayList<>();
 
 	public ClockModelListInputEditor(BeautiDoc doc) {
 		super(doc);

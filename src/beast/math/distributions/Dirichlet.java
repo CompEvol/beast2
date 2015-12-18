@@ -15,7 +15,7 @@ import beast.core.parameter.RealParameter;
 @Description("Dirichlet distribution.  p(x_1,...,x_n;alpha_1,...,alpha_n) = 1/B(alpha) prod_{i=1}^K x_i^{alpha_i - 1} " +
         "where B() is the beta function B(alpha) = prod_{i=1}^K Gamma(alpha_i)/ Gamma(sum_{i=1}^K alpha_i}. ")
 public class Dirichlet extends ParametricDistribution {
-    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
+    public Input<RealParameter> alphaInput = new Input<>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() throws Exception {

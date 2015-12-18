@@ -25,18 +25,18 @@ import beast.util.Randomizer;
  */
 @Description("A generic operator for use with a sum-constrained (possibly weighted) vector parameter.")
 public class DeltaExchangeOperator extends Operator {
-    //public Input<Tree> m_pTree = new Input<Tree>("tree", "if specified, all beast.tree branch length are scaled");
+    //public Input<Tree> m_pTree = new Input<>("tree", "if specified, all beast.tree branch length are scaled");
 
-    public final Input<List<RealParameter>> parameterInput = new Input<List<RealParameter>>("parameter",
-            "if specified, this parameter is operated on", new ArrayList<RealParameter>());
-    public final Input<List<IntegerParameter>> intparameterInput = new Input<List<IntegerParameter>>("intparameter",
-            "if specified, this parameter is operated on", new ArrayList<IntegerParameter>());
+    public final Input<List<RealParameter>> parameterInput = new Input<>("parameter",
+            "if specified, this parameter is operated on", new ArrayList<>());
+    public final Input<List<IntegerParameter>> intparameterInput = new Input<>("intparameter",
+            "if specified, this parameter is operated on", new ArrayList<>());
 
-    public final Input<Double> deltaInput = new Input<Double>("delta", "Magnitude of change for two randomly picked values.", 1.0);
+    public final Input<Double> deltaInput = new Input<>("delta", "Magnitude of change for two randomly picked values.", 1.0);
     public final Input<Boolean> autoOptimizeiInput =
-            new Input<Boolean>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
-    public final Input<Boolean> sIntegerOperatorInput = new Input<Boolean>("integer", "if true, changes are all integers.", false);
-    public final Input<IntegerParameter> parameterWeightsInput = new Input<IntegerParameter>("weightvector", "weights on a vector parameter");
+            new Input<>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
+    public final Input<Boolean> sIntegerOperatorInput = new Input<>("integer", "if true, changes are all integers.", false);
+    public final Input<IntegerParameter> parameterWeightsInput = new Input<>("weightvector", "weights on a vector parameter");
 
     private boolean autoOptimize;
     private double delta;

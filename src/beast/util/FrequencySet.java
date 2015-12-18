@@ -137,7 +137,7 @@ public class FrequencySet<T> {
      * @return
      */
     public CredibleSet<T> getCredibleSet(T target) {
-        CredibleSet<T> credibleSet = new CredibleSet<T>(getCredSetProbability());
+        CredibleSet<T> credibleSet = new CredibleSet<>(getCredSetProbability());
         credibleSet.setCredibleSetList(target, this);
         return credibleSet;
     }
@@ -171,8 +171,8 @@ public class FrequencySet<T> {
     // Private stuff
     //
 
-    private List<T> sortedList = new ArrayList<T>();
-    private Map<T, Integer> frequencyMap = new HashMap<T, Integer>();
+    private List<T> sortedList = new ArrayList<>();
+    private Map<T, Integer> frequencyMap = new HashMap<>();
     private boolean sorted = false;
     private double credSetProbability = 0;
 

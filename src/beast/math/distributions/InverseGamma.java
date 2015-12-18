@@ -15,8 +15,8 @@ import beast.core.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class InverseGamma extends ParametricDistribution {
-    public Input<RealParameter> alphaInput = new Input<RealParameter>("alpha", "shape parameter, defaults to 2");
-    public Input<RealParameter> betaInput = new Input<RealParameter>("beta", "scale parameter, defaults to 2");
+    public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
+    public Input<RealParameter> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
 
     InverseGammaImpl dist = new InverseGammaImpl(2, 2);
 

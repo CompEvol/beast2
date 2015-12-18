@@ -13,7 +13,7 @@ public class Taxon extends BEASTObject {
     // we can use the ID to identify a taxon name/taxon label
     // if there are multiple taxaset with the same taxa, use
     // idref to refer to the single taxon.
-//	public Input<String> m_sLabel = new Input<String>("label", "name of the taxon", Validate.REQUIRED);
+//	public Input<String> m_sLabel = new Input<>("label", "name of the taxon", Validate.REQUIRED);
 
     public Taxon(final String id) throws Exception {
         setID(id);
@@ -56,7 +56,7 @@ public class Taxon extends BEASTObject {
 //        for (final String taxaName : taxaNames) {
 //            taxa.add(new Taxon(taxaName));
 //        }
-//        Collections.sort(taxa, new Comparator<Taxon>() {
+//        Collections.sort(taxa, new Comparator<>() {
 //            @Override // assumes IDs are not null
 //            public int compare(Taxon o1, Taxon o2) {
 //                return o1.getID().compareTo(o2.getID());

@@ -16,9 +16,9 @@ import beast.core.parameter.RealParameter;
  */
 @Description("A log-normal distribution with mean and variance parameters.")
 public class LogNormalDistributionModel extends ParametricDistribution {
-    public Input<RealParameter> MParameterInput = new Input<RealParameter>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
-    public Input<RealParameter> SParameterInput = new Input<RealParameter>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
-    public Input<Boolean> hasMeanInRealSpaceInput = new Input<Boolean>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
+    public Input<RealParameter> MParameterInput = new Input<>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
+    public Input<RealParameter> SParameterInput = new Input<>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
+    public Input<Boolean> hasMeanInRealSpaceInput = new Input<>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 
     boolean hasMeanInRealSpace;
     LogNormalImpl dist = new LogNormalImpl(0, 1);

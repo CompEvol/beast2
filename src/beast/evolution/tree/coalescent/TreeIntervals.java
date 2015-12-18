@@ -49,7 +49,7 @@ import beast.util.HeapSort;
 @Description("Extracts the intervals from a tree. Points in the intervals " +
         "are defined by the heights of nodes in the tree.")
 public class TreeIntervals extends CalculationNode implements IntervalList {
-    public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
+    public Input<Tree> treeInput = new Input<>("tree", "tree for which to calculate the intervals", Validate.REQUIRED);
 
     public TreeIntervals() {
         super();
@@ -205,7 +205,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 //
 //        if (lineages[interval] == null) {
 //
-//            List<Node> lines = new ArrayList<Node>();
+//            List<Node> lines = new ArrayList<>();
 //            for (int i = 0; i <= interval; i++) {
 //                if (lineagesAdded[i] != null) lines.addAll(lineagesAdded[i]);
 //                if (lineagesRemoved[i] != null) lines.removeAll(lineagesRemoved[i]);
@@ -422,12 +422,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     }
 
     protected void addLineage(int interval, Node node) {
-        if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<Node>();
+        if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<>();
         lineagesAdded[interval].add(node);
     }
 
     protected void removeLineage(int interval, Node node) {
-        if (lineagesRemoved[interval] == null) lineagesRemoved[interval] = new ArrayList<Node>();
+        if (lineagesRemoved[interval] == null) lineagesRemoved[interval] = new ArrayList<>();
         lineagesRemoved[interval].add(node);
     }
 

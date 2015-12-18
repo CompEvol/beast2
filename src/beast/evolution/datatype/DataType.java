@@ -127,7 +127,7 @@ public interface DataType {
         @Override
         public List<Integer> string2state(String data) throws Exception {
             List<Integer> sequence;
-            sequence = new ArrayList<Integer>();
+            sequence = new ArrayList<>();
             // remove spaces
             data = data.replaceAll("\\s", "");
             data = data.toUpperCase();
@@ -170,7 +170,7 @@ public interface DataType {
                     // multi-character codes of fixed length
 
                     // use code map to resolve state codes
-                    Map<String, Integer> map = new HashMap<String, Integer>();
+                    Map<String, Integer> map = new HashMap<>();
                     // fixed length code
                     for (int i = 0; i < codeMap.length(); i += codeLength) {
                         String code = codeMap.substring(i, i + codeLength);

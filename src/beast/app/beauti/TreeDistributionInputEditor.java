@@ -33,7 +33,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
     }
 //	@Override
 //	public Class<?>[] types() {
-//		ArrayList<Class> types = new ArrayList<Class>();
+//		ArrayList<Class> types = new ArrayList<>();
 //		types.add(TreeDistribution.class);
 //		types.add(BirthDeathGernhard08Model.class);
 //		types.add(YuleModel.class);

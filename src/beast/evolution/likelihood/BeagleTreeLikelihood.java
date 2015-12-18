@@ -331,7 +331,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     }
 
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
-        List<Integer> order = new ArrayList<Integer>();
+        List<Integer> order = new ArrayList<>();
         String r = System.getProperty(propertyName);
         if (r != null) {
             String[] parts = r.split(",");
@@ -349,7 +349,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     private static List<String> parseSystemPropertyStringArray(String propertyName) {
 
-        List<String> order = new ArrayList<String>();
+        List<String> order = new ArrayList<>();
 
         String r = System.getProperty(propertyName);
         if (r != null) {

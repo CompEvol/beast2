@@ -45,7 +45,7 @@ public class EnumInputEditor extends InputEditor.Base {
 		this.itemNr = itemNr;
 
         addInputLabel();
-        List<String> sAvailableValues = new ArrayList<String>();
+        List<String> sAvailableValues = new ArrayList<>();
         for (int i = 0; i < input.possibleValues.length; i++) {
             sAvailableValues.add(input.possibleValues[i].toString());
         }

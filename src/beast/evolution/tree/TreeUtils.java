@@ -249,7 +249,7 @@ public class TreeUtils {
      */
     public static double[] getIntervals(Tree tree) {
 
-        List<Double> heights = new ArrayList<Double>();
+        List<Double> heights = new ArrayList<>();
 
         for (Node node : tree.getInternalNodes()) {
             heights.add(node.getHeight());
@@ -276,7 +276,7 @@ public class TreeUtils {
      */
     public static Set<String> getDescendantLeaves(Tree tree, Node node) {
 
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
         getDescendantLeaves(tree, node, set);
         return set;
     }
@@ -353,7 +353,7 @@ public class TreeUtils {
         } else {
             StringBuilder builder = new StringBuilder("(");
 
-            List<String> subTrees = new ArrayList<String>();
+            List<String> subTrees = new ArrayList<>();
             for (int i = 0; i < node.getChildCount(); i++) {
                 subTrees.add(sortedNewickTopology(node.getChild(i), isTaxaLabel));
             }

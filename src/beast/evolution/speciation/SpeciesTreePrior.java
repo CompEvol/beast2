@@ -19,25 +19,25 @@ import beast.math.distributions.Gamma;
 
 @Description("Species tree prior for *BEAST analysis")
 public class SpeciesTreePrior extends TreeDistribution {
-    //public Input<Tree> m_speciesTree = new Input<Tree>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
+    //public Input<Tree> m_speciesTree = new Input<>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
 
     protected enum TreePopSizeFunction {constant, linear, linear_with_constant_root}
 
-    public final Input<TreePopSizeFunction> popFunctionInput = new Input<TreePopSizeFunction>("popFunction", "Population function. " +
+    public final Input<TreePopSizeFunction> popFunctionInput = new Input<>("popFunction", "Population function. " +
             "This can be " + Arrays.toString(TreePopSizeFunction.values()) + " (default 'constant')", TreePopSizeFunction.constant, TreePopSizeFunction.values());
 
-    public final Input<RealParameter> popSizesBottomInput = new Input<RealParameter>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
+    public final Input<RealParameter> popSizesBottomInput = new Input<>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
             "For linear population function, this is the same at the top of the branch.", Validate.REQUIRED);
-    public final Input<RealParameter> popSizesTopInput = new Input<RealParameter>("topPopSize", "population size parameter at the top of a branch. " +
+    public final Input<RealParameter> popSizesTopInput = new Input<>("topPopSize", "population size parameter at the top of a branch. " +
             "Ignored for constant population function, but required for linear population function.");
 
-    public final Input<RealParameter> gammaParameterInput = new Input<RealParameter>("gammaParameter", "shape parameter of the gamma distribution", Validate.REQUIRED);
+    public final Input<RealParameter> gammaParameterInput = new Input<>("gammaParameter", "shape parameter of the gamma distribution", Validate.REQUIRED);
 
-//	public Input<RealParameter> m_rootHeightParameter = new Input<RealParameter>("rootBranchHeight","height of the node above the root, representing the root branch", Validate.REQUIRED);
+//	public Input<RealParameter> m_rootHeightParameter = new Input<>("rootBranchHeight","height of the node above the root, representing the root branch", Validate.REQUIRED);
     /**
      * m_taxonSet is used by GeneTreeForSpeciesTreeDistribution *
      */
-    public Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
+    public Input<TaxonSet> taxonSetInput = new Input<>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
 
 
     private TreePopSizeFunction popFunction;

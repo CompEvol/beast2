@@ -87,7 +87,7 @@ public class TreeTraceAnalysis {
      */
     public void analyze(double credSetProbability) {
         // set credSetProbability
-        topologiesFrequencySet = new FrequencySet<String>();
+        topologiesFrequencySet = new FrequencySet<>();
         topologiesFrequencySet.setCredSetProbability(credSetProbability);
 
         for (Tree tree : treeInTrace) {
@@ -252,7 +252,7 @@ public class TreeTraceAnalysis {
          */
         public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start, int end) {
             assert start < end;
-            return new ArrayList<Tree>(rawTreeList.subList(start, end));
+            return new ArrayList<>(rawTreeList.subList(start, end));
         }
 
         public static List<Tree> getSubListOfTrees(List<Tree> rawTreeList, int start) {

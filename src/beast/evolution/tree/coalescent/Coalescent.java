@@ -23,7 +23,7 @@ import beast.math.Binomial;
         "in account, in other words, the constant required for making this a proper distribution that integrates " +
         "to unity is not calculated (partly, because we don't know how for sequentially sampled data).")
 public class Coalescent extends TreeDistribution {
-    public Input<PopulationFunction> popSizeInput = new Input<PopulationFunction>("populationModel", "A population size model", Validate.REQUIRED);
+    public Input<PopulationFunction> popSizeInput = new Input<>("populationModel", "A population size model", Validate.REQUIRED);
 
     TreeIntervals intervals;
 

@@ -20,63 +20,63 @@ import javax.swing.*;
 @Description("Beauti configuration object, used to find Beauti configuration " +
         "information from Beauti template files.")
 public class BeautiConfig extends BEASTObject {
-    public Input<String> inlineInput = new Input<String>("inlinePlugins", "comma separated list of inputs that should " +
+    public Input<String> inlineInput = new Input<>("inlinePlugins", "comma separated list of inputs that should " +
             "go inline, e.g. beast.evolution.sitemodel.SiteModel.substModel");
-    public Input<String> collapsedInput = new Input<String>("collapsedPlugins", "comma separated list of inputs that should " +
+    public Input<String> collapsedInput = new Input<>("collapsedPlugins", "comma separated list of inputs that should " +
             "go inline, but are initially collapsed, e.g. beast.core.MCMC.logger");
-    public Input<String> suppressInputs = new Input<String>("suppressPlugins", "comma separated list of inputs that should " +
+    public Input<String> suppressInputs = new Input<>("suppressPlugins", "comma separated list of inputs that should " +
             "be suppressed. e.g. beast.core.MCMC.operator");
-    public Input<String> inputLabelMapInput = new Input<String>("inputLabelMap", "comma separated list of inputs and their " +
+    public Input<String> inputLabelMapInput = new Input<>("inputLabelMap", "comma separated list of inputs and their " +
             "display labels separated by a '=', e.g. beast.core.MCMC.logger=Loggers ");
-    //	public Input<String> m_hidePanels = new Input<String>("hidePanels","comma separated list of panes that should not" +
+    //	public Input<String> m_hidePanels = new Input<>("hidePanels","comma separated list of panes that should not" +
 //			"be displayed when starting beauti, e.g. TAXON_SETS_PANEL,TIP_DATES_PANEL");
-    public Input<String> buttonLabelMapInput = new Input<String>("buttonLabelMap", "comma separated list of buttons in dialogs and their " +
+    public Input<String> buttonLabelMapInput = new Input<>("buttonLabelMap", "comma separated list of buttons in dialogs and their " +
             "display labels separated by a '=', e.g. beast.app.beauti.BeautiInitDlg.&gt;&gt; details=Edit parameters");
-    public Input<String> disableMenus = new Input<String>("disableMenus", "comma separated list of menus that should " +
+    public Input<String> disableMenus = new Input<>("disableMenus", "comma separated list of menus that should " +
             "not be visible, e.g., View.Show Data Panel,Mode");
-    public Input<String> disableButtons = new Input<String>("disableButtons", "comma separated list of buttons that should " +
+    public Input<String> disableButtons = new Input<>("disableButtons", "comma separated list of buttons that should " +
             "not be visible, e.g., beast.app.beauti.BeautiInitDlg.Analysis template:");
-//	public Input<String> m_editButtonStatus = new Input<String>("editButtonStatus","comma separated list of list-inputs with custom " +
+//	public Input<String> m_editButtonStatus = new Input<>("editButtonStatus","comma separated list of list-inputs with custom " +
 //	"button status. One of 'none', 'addonly' 'delonly' +, e.g., beast.core.MCMC.operator=addonly");
 
-    public Input<List<BeautiPanelConfig>> panelsInput = new Input<List<BeautiPanelConfig>>("panel", "define custom panels and their properties",
-            new ArrayList<BeautiPanelConfig>());
-    public Input<Boolean> bIsExpertInput = new Input<Boolean>("isExpert", "flag to indicate Beauti should start in expert mode", false);
+    public Input<List<BeautiPanelConfig>> panelsInput = new Input<>("panel", "define custom panels and their properties",
+            new ArrayList<>());
+    public Input<Boolean> bIsExpertInput = new Input<>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 
 
-    public Input<BeautiSubTemplate> partitionTemplate = new Input<BeautiSubTemplate>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
-    public Input<List<BeautiSubTemplate>> subTemplatesInput = new Input<List<BeautiSubTemplate>>("subtemplate", "defines subtemplates for creating selected classes",
-            new ArrayList<BeautiSubTemplate>());
+    public Input<BeautiSubTemplate> partitionTemplate = new Input<>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
+    public Input<List<BeautiSubTemplate>> subTemplatesInput = new Input<>("subtemplate", "defines subtemplates for creating selected classes",
+            new ArrayList<>());
 
-    public Input<List<BeautiAlignmentProvider>> alignmentProviderInput = new Input<List<BeautiAlignmentProvider>>("alignmentProvider", "defines providers for adding new alignments",
-            new ArrayList<BeautiAlignmentProvider>());
+    public Input<List<BeautiAlignmentProvider>> alignmentProviderInput = new Input<>("alignmentProvider", "defines providers for adding new alignments",
+            new ArrayList<>());
 
     /**
      * list of inputs for which the input editor should be expanded inline in a dialog
      * in the format <className>.<inputName>, e.g. beast.evolution.sitemodel.SiteModel.substModel
      */
-    public Set<String> inlinePlugins = new HashSet<String>();
+    public Set<String> inlinePlugins = new HashSet<>();
     /**
      * list of inputs for which the input editor should be expanded inline in a dialog but initially collapsed.
      * e.g. beast.evolution.sitemodel.SiteModel.substModel
      */
-    public Set<String> collapsedPlugins = new HashSet<String>();
+    public Set<String> collapsedPlugins = new HashSet<>();
     /**
      * list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins*
      */
-    public Set<String> suppressPlugins = new HashSet<String>();
+    public Set<String> suppressPlugins = new HashSet<>();
     /**
      * map that identifies the label to be used for a particular input *
      */
-    public HashMap<String, String> inputLabelMap = new HashMap<String, String>();
-    public HashMap<String, String> buttonLabelMap = new HashMap<String, String>();
-//	public static HashMap<String, String> g_sEditButtonStatus = new HashMap<String, String>();
+    public HashMap<String, String> inputLabelMap = new HashMap<>();
+    public HashMap<String, String> buttonLabelMap = new HashMap<>();
+//	public static HashMap<String, String> g_sEditButtonStatus = new HashMap<>();
 
-    //	public static Set<String> g_sHidePanels = new HashSet<String>();
-    public Set<String> sDisabledMenus = new HashSet<String>();
-    public Set<String> sDisabledButtons = new HashSet<String>();
+    //	public static Set<String> g_sHidePanels = new HashSet<>();
+    public Set<String> sDisabledMenus = new HashSet<>();
+    public Set<String> sDisabledButtons = new HashSet<>();
 
-    public List<BeautiPanelConfig> panels = new ArrayList<BeautiPanelConfig>();
+    public List<BeautiPanelConfig> panels = new ArrayList<>();
 
     public List<BeautiSubTemplate> subTemplates;
     public List<BeautiAlignmentProvider> alignmentProvider;
@@ -152,14 +152,14 @@ public class BeautiConfig extends BEASTObject {
     }
 
     public void clear() {
-        inlinePlugins = new HashSet<String>();
-        collapsedPlugins = new HashSet<String>();
-        suppressPlugins = new HashSet<String>();
-        inputLabelMap = new HashMap<String, String>();
-        buttonLabelMap = new HashMap<String, String>();
-        sDisabledMenus = new HashSet<String>();
-        sDisabledButtons = new HashSet<String>();
-        panels = new ArrayList<BeautiPanelConfig>();
+        inlinePlugins = new HashSet<>();
+        collapsedPlugins = new HashSet<>();
+        suppressPlugins = new HashSet<>();
+        inputLabelMap = new HashMap<>();
+        buttonLabelMap = new HashMap<>();
+        sDisabledMenus = new HashSet<>();
+        sDisabledButtons = new HashSet<>();
+        panels = new ArrayList<>();
     }
 
     /**
@@ -198,7 +198,7 @@ public class BeautiConfig extends BEASTObject {
     } // selectAlignments
     
     public List<BeautiSubTemplate> getInputCandidates(BEASTInterface plugin, Input<?> input, Class<?> type) {
-        List<BeautiSubTemplate> candidates = new ArrayList<BeautiSubTemplate>();
+        List<BeautiSubTemplate> candidates = new ArrayList<>();
         for (BeautiSubTemplate template : subTemplates) {
             if (type.isAssignableFrom(template._class)) {
                 try {

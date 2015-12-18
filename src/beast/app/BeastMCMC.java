@@ -165,7 +165,7 @@ public class BeastMCMC {
         if (beastFile == null) {
             // Not resuming so get starting options...
 
-            List<String> MCMCargs = new ArrayList<String>();
+            List<String> MCMCargs = new ArrayList<>();
             Version version = new BEASTVersion();
             String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
@@ -327,7 +327,7 @@ public class BeastMCMC {
         }
 
         String[] getArgs() {
-            List<String> sArgs = new ArrayList<String>();
+            List<String> sArgs = new ArrayList<>();
             sArgs.add("-seed");
             sArgs.add(m_seedEntry.getText());
             switch (m_mode.getSelectedIndex()) {

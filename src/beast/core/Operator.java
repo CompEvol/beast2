@@ -41,7 +41,7 @@ import java.util.List;
 
 @Description("Proposes a move in state space.")
 public abstract class Operator extends BEASTObject {
-    public Input<Double> m_pWeight = new Input<Double>("weight", "weight with which this operator is selected", Validate.REQUIRED);
+    public Input<Double> m_pWeight = new Input<>("weight", "weight with which this operator is selected", Validate.REQUIRED);
 
     private final String STANDARD_OPERATOR_PACKAGE = "beast.evolution.operators";
 
@@ -214,7 +214,7 @@ public abstract class Operator extends BEASTObject {
      */
     public List<StateNode> listStateNodes() throws Exception {
         // pick up all inputs that are stateNodes that are estimated
-        final List<StateNode> list = new ArrayList<StateNode>();
+        final List<StateNode> list = new ArrayList<>();
         for (BEASTInterface o : listActivePlugins()) {
             if (o instanceof StateNode) {
                 final StateNode stateNode = (StateNode) o;

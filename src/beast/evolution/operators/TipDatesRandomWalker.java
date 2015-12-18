@@ -15,13 +15,13 @@ import beast.util.Randomizer;
 @Description("Randomly moves tip dates on a tree by randomly selecting one from (a subset of) taxa")
 public class TipDatesRandomWalker extends TreeOperator {
     // perhaps multiple trees may be necessary if they share the same taxon?
-    // public Input<List<Tree>> m_treesInput = new Input<List<Tree>>("tree" ,"tree to operate on", new ArrayList<Tree>(), Validate.REQUIRED);
+    // public Input<List<Tree>> m_treesInput = new Input<>("tree" ,"tree to operate on", new ArrayList<>(), Validate.REQUIRED);
 
     public Input<Double> windowSizeInput =
-            new Input<Double>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
-    public Input<TaxonSet> m_taxonsetInput = new Input<TaxonSet>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
+            new Input<>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
+    public Input<TaxonSet> m_taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
     public Input<Boolean> useGaussianInput =
-            new Input<Boolean>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
+            new Input<>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
     /**
      * node indices of taxa to choose from *
@@ -43,7 +43,7 @@ public class TipDatesRandomWalker extends TreeOperator {
 
         // determine taxon set to choose from
         if (m_taxonsetInput.get() != null) {
-            List<String> sTaxaNames = new ArrayList<String>();
+            List<String> sTaxaNames = new ArrayList<>();
             for (String sTaxon : treeInput.get().getTaxaNames()) {
                 sTaxaNames.add(sTaxon);
             }

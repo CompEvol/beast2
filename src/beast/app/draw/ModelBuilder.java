@@ -1730,7 +1730,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         if (shape instanceof BEASTObjectShape) {
                             BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
 
-                            List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+                            List<BEASTInterface> plugins = new ArrayList<>();
                             for (Shape shape2 : m_doc.m_objects) {
                                 if (shape2 instanceof BEASTObjectShape) {
                                     plugins.add(((BEASTObjectShape) shape2).m_plugin);

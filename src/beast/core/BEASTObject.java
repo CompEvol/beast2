@@ -44,7 +44,7 @@ abstract public class BEASTObject implements BEASTInterface{
      * @deprecate use getOuputs() or BEASTObject.getOuputs(object) instead
      */
 	@Deprecated
-    public Set<BEASTObject> outputs = new HashSet<BEASTObject>();
+    public Set<BEASTObject> outputs = new HashSet<>();
 	
     /**
      * @return set of Objects that have this Object in one of its Inputs

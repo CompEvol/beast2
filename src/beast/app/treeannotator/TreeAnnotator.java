@@ -290,7 +290,7 @@ public class TreeAnnotator {
          */
         private Map<String, String> parseTranslateBlock() throws IOException {
 
-            final Map<String, String> translationMap = new HashMap<String, String>();
+            final Map<String, String> translationMap = new HashMap<>();
 
             String line = readLine();
             final StringBuilder translateBlock = new StringBuilder();
@@ -763,7 +763,7 @@ public class TreeAnnotator {
             if (clade.attributeValues != null && clade.attributeValues.size() > 0) {
                 double[] values = new double[clade.attributeValues.size()];
 
-                HashMap<Object, Integer> hashMap = new HashMap<Object, Integer>();
+                HashMap<Object, Integer> hashMap = new HashMap<>();
 
                 Object[] v = clade.attributeValues.get(0);
                 if (v[i] != null) {
@@ -1169,9 +1169,9 @@ public class TreeAnnotator {
     double posteriorLimit = 0.0;
     double hpd2D = 0.80;
 
-    private final List<TreeAnnotationPlugin> plugins = new ArrayList<TreeAnnotationPlugin>();
+    private final List<TreeAnnotationPlugin> plugins = new ArrayList<>();
 
-    Set<String> attributeNames = new HashSet<String>();
+    Set<String> attributeNames = new HashSet<>();
     TaxonSet taxa = null;
 
     static boolean processBivariateAttributes = false;

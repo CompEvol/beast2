@@ -66,9 +66,7 @@ public class PriorListInputEditor extends ListInputEditor {
     @Override
     public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	List<?> list = (List) input.get();
-    	Collections.sort(list, new Comparator<Object>() {
-			@Override
-			public int compare(Object o1, Object o2) {
+    	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
 					String sID1 = ((BEASTInterface)o1).getID();
 					String sID2 = ((BEASTInterface)o2).getID();
@@ -112,12 +110,12 @@ public class PriorListInputEditor extends ListInputEditor {
 				}
 				return 0;
 			}
-		});
+		);
     	
     	
-        comboBoxes = new ArrayList<JComboBox>();
-        rangeButtons = new ArrayList<JButton>();
-        taxonButtons = new ArrayList<JButton>();
+        comboBoxes = new ArrayList<>();
+        rangeButtons = new ArrayList<>();
+        taxonButtons = new ArrayList<>();
         
         //m_buttonStatus = ButtonStatus.NONE;
         super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
@@ -169,7 +167,7 @@ public class PriorListInputEditor extends ListInputEditor {
     }
 
     Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
-        Set<Taxon> candidates = new HashSet<Taxon>();
+        Set<Taxon> candidates = new HashSet<>();
         Tree tree = prior.treeInput.get();
         String [] taxa = null;
         if (tree.m_taxonset.get() != null) {
@@ -222,7 +220,7 @@ public class PriorListInputEditor extends ListInputEditor {
         MRCAPrior prior = new MRCAPrior();
         try {
 
-            List<Tree> trees = new ArrayList<Tree>();
+            List<Tree> trees = new ArrayList<>();
             getDoc().scrubAll(true, false);
             State state = (State) doc.pluginmap.get("state");
             for (StateNode node : state.stateNodeInput.get()) {
@@ -264,7 +262,7 @@ public class PriorListInputEditor extends ListInputEditor {
         } catch (Exception e) {
             // TODO: handle exception
         }
-        List<BEASTInterface> selectedPlugins = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> selectedPlugins = new ArrayList<>();
         selectedPlugins.add(prior);
         g_collapsedIDs.add(prior.getID());
         return selectedPlugins;

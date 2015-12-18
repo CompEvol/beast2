@@ -23,8 +23,8 @@ import beast.core.BEASTInterface;
 
 public class OperatorListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
-    List<JTextField> textFields = new ArrayList<JTextField>();
-    List<Operator> operators = new ArrayList<Operator>();
+    List<JTextField> textFields = new ArrayList<>();
+    List<Operator> operators = new ArrayList<>();
 
 	public OperatorListInputEditor(BeautiDoc doc) {
 		super(doc);

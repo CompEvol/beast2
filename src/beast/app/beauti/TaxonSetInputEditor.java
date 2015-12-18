@@ -63,7 +63,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         if (taxonset == null) {
             return;
         }
-        List<Taxon> taxonsets = new ArrayList<Taxon>();
+        List<Taxon> taxonsets = new ArrayList<>();
 
         List<Taxon> taxa = taxonset.taxonsetInput.get();
         for (Taxon taxon : taxa) {
@@ -91,8 +91,8 @@ public class TaxonSetInputEditor extends InputEditor.Base {
 
     private Component getContent(List<Taxon> taxonset) {
         m_taxonset = taxonset;
-        m_taxonMap = new HashMap<String, String>();
-        m_lineageset = new ArrayList<Taxon>();
+        m_taxonMap = new HashMap<>();
+        m_lineageset = new ArrayList<>();
         for (Taxon taxonset2 : m_taxonset) {
             for (Taxon taxon : ((TaxonSet) taxonset2).taxonsetInput.get()) {
                 m_lineageset.add(taxon);
@@ -304,10 +304,10 @@ public class TaxonSetInputEditor extends InputEditor.Base {
      */
     public int guessTaxonSets(String sRegexp, int nMinSize) throws Exception {
         m_taxonset.clear();
-        HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
+        HashMap<String, TaxonSet> map = new HashMap<>();
         Pattern m_pattern = Pattern.compile(sRegexp);
-        Set<Taxon> taxa = new HashSet<Taxon>();
-        Set<String> taxonIDs = new HashSet<String>();
+        Set<Taxon> taxa = new HashSet<>();
+        Set<String> taxonIDs = new HashSet<>();
         for (Alignment alignment : getDoc().alignments) {
         	for (String sID : alignment.getTaxaNames()) {
                 if (!taxonIDs.contains(sID)) {
@@ -366,7 +366,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     }
 
     void parseTrait(String trait) {
-    	Map<String,String> traitmap = new HashMap<String, String>();
+    	Map<String,String> traitmap = new HashMap<>();
     	for (String line : trait.split(",")) {
     		String [] strs = line.split("=");
     		if (strs.length == 2) {
@@ -376,8 +376,8 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     	
         m_taxonset.clear();
 
-        Set<Taxon> taxa = new HashSet<Taxon>();
-        Set<String> taxonIDs = new HashSet<String>();
+        Set<Taxon> taxa = new HashSet<>();
+        Set<String> taxonIDs = new HashSet<>();
         for (Alignment alignment : getDoc().alignments) {
         	if (alignment instanceof FilteredAlignment) {
         		alignment = ((FilteredAlignment)alignment).alignmentInput.get();
@@ -397,7 +397,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
         }
 
-        HashMap<String, TaxonSet> map = new HashMap<String, TaxonSet>();
+        HashMap<String, TaxonSet> map = new HashMap<>();
         for (Taxon taxon : taxa) {
             if (!(taxon instanceof TaxonSet)) {
                 String sMatch = traitmap.get(taxon.getID());
@@ -494,9 +494,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
 
         @SuppressWarnings("rawtypes")
         Vector data = m_model.getDataVector();
-        Collections.sort(data, new Comparator<Vector<?>>() {
-            @Override
-            public int compare(Vector<?> v1, Vector<?> v2) {
+        Collections.sort(data, (Vector<?> v1, Vector<?> v2) -> {
                 String o1 = (String) v1.get(m_sortByColumn);
                 String o2 = (String) v2.get(m_sortByColumn);
                 if (o1.equals(o2)) {
@@ -510,7 +508,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                 }
             }
 
-        });
+        );
         m_model.fireTableRowsInserted(0, m_model.getRowCount());
     }
 

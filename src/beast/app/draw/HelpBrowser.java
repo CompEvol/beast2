@@ -58,7 +58,7 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
     /**
      * browser stack *
      */
-    List<String> m_sPlugins = new ArrayList<String>();
+    List<String> m_sPlugins = new ArrayList<>();
     int m_iCurrentPlugin = 0;
 
     /**

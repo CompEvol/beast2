@@ -59,10 +59,10 @@ public interface Parameter<T> extends Function {
          * wants to set the dimension, say, this will make it the responsibility
          * of the other class to maintain internal consistency of the parameter.
          */
-        public Input<List<T>> valuesInput = new Input<List<T>>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", new ArrayList<T>(), beast.core.Input.Validate.REQUIRED, getMax().getClass());
+        public Input<List<T>> valuesInput = new Input<>("value", "start value(s) for this parameter. If multiple values are specified, they should be separated by whitespace.", new ArrayList<>(), beast.core.Input.Validate.REQUIRED, getMax().getClass());
         public final Input<java.lang.Integer> dimensionInput =
-                new Input<java.lang.Integer>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
-        public final Input<Integer> minorDimensionInput = new Input<Integer>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
+                new Input<>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
+        public final Input<Integer> minorDimensionInput = new Input<>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
 
         /**
          * constructors *

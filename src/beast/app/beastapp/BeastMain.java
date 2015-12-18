@@ -233,7 +233,7 @@ public class BeastMain {
     //Main method
     public static void main(final String[] args) throws java.io.IOException {
 
-        final List<String> MCMCargs = new ArrayList<String>();
+        final List<String> MCMCargs = new ArrayList<>();
 //    	Utils.loadUIManager();
 
         final Arguments arguments = new Arguments(

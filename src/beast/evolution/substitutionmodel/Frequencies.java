@@ -43,9 +43,9 @@ import beast.evolution.datatype.DataType;
         "Calculates empirical frequencies of characters in sequence data, or simply assumes a uniform " +
         "distribution if the estimate flag is set to false.")
 public class Frequencies extends CalculationNode {
-    public Input<Alignment> dataInput = new Input<Alignment>("data", "Sequence data for which frequencies are calculated");
-    public Input<Boolean> estimateInput = new Input<Boolean>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
-    public Input<RealParameter> frequenciesInput = new Input<RealParameter>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, dataInput);
+    public Input<Alignment> dataInput = new Input<>("data", "Sequence data for which frequencies are calculated");
+    public Input<Boolean> estimateInput = new Input<>("estimate", "Whether to estimate the frequencies from data (true=default) or assume a uniform distribution over characters (false)", true);
+    public Input<RealParameter> frequenciesInput = new Input<>("frequencies", "A set of frequencies specified as space separated values summing to 1", Validate.XOR, dataInput);
 
     /**
      * contains frequency distribution *

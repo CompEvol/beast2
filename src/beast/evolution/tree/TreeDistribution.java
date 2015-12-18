@@ -14,8 +14,8 @@ import beast.evolution.tree.coalescent.TreeIntervals;
 
 @Description("Distribution on a tree, typically a prior such as Coalescent or Yule")
 public class TreeDistribution extends Distribution {
-    public Input<TreeInterface> treeInput = new Input<TreeInterface>("tree", "tree over which to calculate a prior or likelihood");
-    public Input<TreeIntervals> treeIntervalsInput = new Input<TreeIntervals>("treeIntervals", "Intervals for a phylogenetic beast tree", Validate.XOR, treeInput);
+    public Input<TreeInterface> treeInput = new Input<>("tree", "tree over which to calculate a prior or likelihood");
+    public Input<TreeIntervals> treeIntervalsInput = new Input<>("treeIntervals", "Intervals for a phylogenetic beast tree", Validate.XOR, treeInput);
 
     @Override
     public List<String> getArguments() {

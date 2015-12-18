@@ -38,10 +38,10 @@ import beast.util.Randomizer;
 @Description("Flip one bit in an array of boolean bits. The hastings ratio is designed so that all subsets of vectors with the" +
         " same number of 'on' bits are equiprobable.")
 public class BitFlipOperator extends Operator {
-    public Input<Boolean> uniformInput = new Input<Boolean>("uniform", "when on, total probability of combinations with k" +
+    public Input<Boolean> uniformInput = new Input<>("uniform", "when on, total probability of combinations with k" +
             " 'on' bits is equal. Otherwise uniform on all combinations (default true)", true);
 
-    public Input<BooleanParameter> parameterInput = new Input<BooleanParameter>("parameter", "the parameter to operate a flip on.", Validate.REQUIRED);
+    public Input<BooleanParameter> parameterInput = new Input<>("parameter", "the parameter to operate a flip on.", Validate.REQUIRED);
 
     private boolean usesPriorOnSum = true;
 

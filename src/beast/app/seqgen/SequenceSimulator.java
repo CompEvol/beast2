@@ -32,19 +32,19 @@ import beast.util.XMLProducer;
 @Description("Performs random sequence generation for a given site model. " +
         "Sequences for the leave nodes in the tree are returned as an alignment.")
 public class SequenceSimulator extends beast.core.Runnable {
-    public Input<Alignment> m_data = new Input<Alignment>("data", "alignment data which specifies datatype and taxa of the beast.tree", Validate.REQUIRED);
-    public Input<Tree> m_treeInput = new Input<Tree>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
-    public Input<SiteModel.Base> m_pSiteModelInput = new Input<SiteModel.Base>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
-    public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<BranchRateModel.Base>("branchRateModel",
+    public Input<Alignment> m_data = new Input<>("data", "alignment data which specifies datatype and taxa of the beast.tree", Validate.REQUIRED);
+    public Input<Tree> m_treeInput = new Input<>("tree", "phylogenetic beast.tree with sequence data in the leafs", Validate.REQUIRED);
+    public Input<SiteModel.Base> m_pSiteModelInput = new Input<>("siteModel", "site model for leafs in the beast.tree", Validate.REQUIRED);
+    public Input<BranchRateModel.Base> m_pBranchRateModelInput = new Input<>("branchRateModel",
             "A model describing the rates on the branches of the beast.tree.");
-    public Input<Integer> m_sequenceLengthInput = new Input<Integer>("sequencelength", "nr of samples to generate (default 1000).", 1000);
-    public Input<String> m_outputFileNameInput = new Input<String>(
+    public Input<Integer> m_sequenceLengthInput = new Input<>("sequencelength", "nr of samples to generate (default 1000).", 1000);
+    public Input<String> m_outputFileNameInput = new Input<>(
             "outputFileName",
             "If provided, simulated alignment is written to this file rather "
             + "than to standard out.");
 
-    public Input<List<MergeDataWith>> mergeListInput = new Input<List<MergeDataWith>>("merge", "specifies template used to merge the generated alignment with", new ArrayList<MergeDataWith>());
-    public Input<Integer> iterationsInput = new Input<Integer>("iterations","number of times the data is generated", 1);
+    public Input<List<MergeDataWith>> mergeListInput = new Input<>("merge", "specifies template used to merge the generated alignment with", new ArrayList<>());
+    public Input<Integer> iterationsInput = new Input<>("iterations","number of times the data is generated", 1);
     
     /**
      * nr of samples to generate *

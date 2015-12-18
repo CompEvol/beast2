@@ -21,8 +21,8 @@ import beast.util.Randomizer;
 @Description("Tree operator which randomly changes the height of a node, " +
         "then reconstructs the tree from node heights.")
 public class NodeReheight extends TreeOperator {
-    public final Input<TaxonSet> taxonSetInput = new Input<TaxonSet>("taxonset", "taxon set describing species tree taxa and their gene trees", Validate.REQUIRED);
-    public final Input<List<Tree>> geneTreesInput = new Input<List<Tree>>("genetree", "list of gene trees that constrain species tree movement", new ArrayList<Tree>());
+    public final Input<TaxonSet> taxonSetInput = new Input<>("taxonset", "taxon set describing species tree taxa and their gene trees", Validate.REQUIRED);
+    public final Input<List<Tree>> geneTreesInput = new Input<>("genetree", "list of gene trees that constrain species tree movement", new ArrayList<>());
     Node[] m_nodes;
 
 
@@ -36,7 +36,7 @@ public class NodeReheight extends TreeOperator {
     @Override
     public void initAndValidate() throws Exception {
         /** maps gene taxa names to species number **/
-        final Map<String, Integer> taxonMap = new HashMap<String, Integer>();
+        final Map<String, Integer> taxonMap = new HashMap<>();
         final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();
         
         if (list.size() <= 1) {
@@ -56,9 +56,9 @@ public class NodeReheight extends TreeOperator {
         }
 
         /** build the taxon map for each gene tree **/
-        m_taxonMap = new ArrayList<Map<Integer, Integer>>();
+        m_taxonMap = new ArrayList<>();
         for (final Tree tree : geneTreesInput.get()) {
-            final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+            final Map<Integer, Integer> map = new HashMap<>();
             setupTaxaMap(tree.getRoot(), map, taxonMap);
             m_taxonMap.add(map);
         }

@@ -51,18 +51,18 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
     // Q2R does this makes sense, or it has to be a realParameter??
     public Input<RealParameter> birthRateInput =
-            new Input<RealParameter>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
+            new Input<>("birthRate", "birth rate of splitting a linage into two", Validate.REQUIRED);
 
     public Input<List<CalibrationPoint>> calibrationsInput =
-            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>());
+            new Input<>("calibrations", "Set of calibrated nodes", new ArrayList<>());
 
-    public Input<Type> correctionTypeInput = new Input<Type>("type", "Type of correction: none for no correction " +
+    public Input<Type> correctionTypeInput = new Input<>("type", "Type of correction: none for no correction " +
             "(same as BEAST1), full for Yule-like over calibrated times, and restricted for Yule-like over calibrated" +
             " times and ranked topology (default 'full'). However, 'full'" +
             " is generally slow except for in a few special cases, such as a single clade or two nested clades.",
             Type.OVER_ALL_TOPOS, Type.values());
 
-    public Input<RPNcalculator> userMarInput = new Input<RPNcalculator>("logMarginal",
+    public Input<RPNcalculator> userMarInput = new Input<>("logMarginal",
             "Used provided correction (log of marginal) for special cases.", (RPNcalculator) null);
 
     // Which correction to apply
@@ -97,9 +97,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         final TreeInterface tree = treeInput.get();
 
         // shallow copy. we shall change cals later
-        final List<CalibrationPoint> cals = new ArrayList<CalibrationPoint>(calibrationsInput.get());
+        final List<CalibrationPoint> cals = new ArrayList<>(calibrationsInput.get());
         int nCals = cals.size();
-        final List<TaxonSet> taxaSets = new ArrayList<TaxonSet>(nCals);
+        final List<TaxonSet> taxaSets = new ArrayList<>(nCals);
         if (cals.size() > 0) {
             xclades = new int[nCals][];
 
@@ -198,7 +198,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         // tio[i] will contain all taxaSets contained in the i'th clade, in the form of thier index into orderedCalibrations
         final List<Integer>[] tio = new List[orderedCalibrations.length];
         for (int k = 0; k < orderedCalibrations.length; ++k) {
-            tio[k] = new ArrayList<Integer>();
+            tio[k] = new ArrayList<>();
         }
 
         for (int k = 0; k < orderedCalibrations.length; ++k) {
@@ -319,7 +319,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         final Node[] subTree = new Node[nCals];
         for (int k = 0; k < nCals; ++k) {
-            final List<Integer> freeTaxa = new ArrayList<Integer>();
+            final List<Integer> freeTaxa = new ArrayList<>();
             for (final int ti : xclades[k]) {
                 freeTaxa.add(ti);
             }
@@ -329,7 +329,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 }
             }
 
-            final List<Node> sbs = new ArrayList<Node>();
+            final List<Node> sbs = new ArrayList<>();
             for (final int i : freeTaxa) {
                 final Node n = new Node(tree.getNode(i).getID());
                 n.setNr(++curLeaf);

@@ -28,16 +28,16 @@ import beast.math.Binomial;
 public class BayesianSkyline extends TreeDistribution {
 //public class BayesianSkyline extends PopulationFunction.Abstract {
 
-    public Input<Function> popSizeParamInput = new Input<Function>("popSizes", "present-day population size. "
+    public Input<Function> popSizeParamInput = new Input<>("popSizes", "present-day population size. "
             + "If time units are set to Units.EXPECTED_SUBSTITUTIONS then"
             + "the N0 parameter will be interpreted as N0 * mu. "
             + "Also note that if you are dealing with a diploid population " + "N0 will be out by a factor of 2.",
             Validate.REQUIRED);
-    public Input<IntegerParameter> groupSizeParamInput = new Input<IntegerParameter>("groupSizes",
+    public Input<IntegerParameter> groupSizeParamInput = new Input<>("groupSizes",
             "the group sizes parameter", Validate.REQUIRED);
-    // public Input<Tree> treeInput = new Input<Tree>("tree",
+    // public Input<Tree> treeInput = new Input<>("tree",
     // "The tree containing coalescent node times for use in defining BSP.");
-//	public Input<TreeIntervals> m_treeIntervals = new Input<TreeIntervals>("treeIntervals",
+//	public Input<TreeIntervals> m_treeIntervals = new Input<>("treeIntervals",
 //			"The intervals of the tree containing coalescent node times for use in defining BSP.", Validate.REQUIRED);
 
     Function popSizes;
@@ -161,7 +161,7 @@ public class BayesianSkyline extends TreeDistribution {
 
     public List<String> getParameterIds() {
 
-        List<String> paramIDs = new ArrayList<String>();
+        List<String> paramIDs = new ArrayList<>();
         paramIDs.add(((BEASTObject) popSizes).getID());
         paramIDs.add(groupSizes.getID());
 

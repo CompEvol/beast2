@@ -43,8 +43,8 @@ public class InputEditorFactory {
 
     public void init() {
         // register input editors
-        inputEditorMap = new HashMap<Class<?>, String>();
-        listInputEditorMap = new HashMap<Class<?>, String>();
+        inputEditorMap = new HashMap<>();
+        listInputEditorMap = new HashMap<>();
 
 //        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
 //        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
@@ -93,7 +93,7 @@ public class InputEditorFactory {
     public List<InputEditor> addInputs(Box box, BEASTInterface plugin, InputEditor editor, InputEditor validateListener, BeautiDoc doc) {
         /* add individual inputs **/
         List<Input<?>> inputs = null;
-        List<InputEditor> editors = new ArrayList<InputEditor>();
+        List<InputEditor> editors = new ArrayList<>();
     	
         try {
             inputs = plugin.listInputs();
@@ -271,7 +271,7 @@ public class InputEditorFactory {
     public List<String> getAvailablePlugins(Input<?> input, BEASTInterface parent, List<String> sTabuList, BeautiDoc doc) {
 
         //List<String> sPlugins = BeautiConfig.getInputCandidates(parent, input);
-        List<String> sPlugins = new ArrayList<String>();
+        List<String> sPlugins = new ArrayList<>();
         if (sPlugins != null) {
             return sPlugins;
         }
@@ -279,7 +279,7 @@ public class InputEditorFactory {
 
         /* add ascendants to tabu list */
         if (sTabuList == null) {
-            sTabuList = new ArrayList<String>();
+            sTabuList = new ArrayList<>();
         }
         if (!doc.isExpertMode()) {
             for (BEASTInterface plugin : BEASTObjectPanel.listAscendants(parent, doc.pluginmap.values())) {
@@ -289,7 +289,7 @@ public class InputEditorFactory {
         //System.err.println(sTabuList);
 
         /* collect all plugins in the system, that are not in the tabu list*/
-        sPlugins = new ArrayList<String>();
+        sPlugins = new ArrayList<>();
         for (BEASTInterface plugin : doc.pluginmap.values()) {
             if (input.getType().isAssignableFrom(plugin.getClass())) {
                 boolean bIsTabu = false;

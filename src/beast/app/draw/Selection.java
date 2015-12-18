@@ -33,7 +33,7 @@ public class Selection {
     Document m_doc = null;
 
     public Selection() {
-        m_Selection = new ArrayList<Integer>(1);
+        m_Selection = new ArrayList<>(1);
     } // c'tor
 
     public void setDocument(Document doc) {
@@ -85,7 +85,7 @@ public class Selection {
         m_Selection.add(new Integer(iSelection));
         List<TrackPoint> tracker = ((Shape) m_doc.m_objects.get(iSelection)).getTracker();
         if (m_tracker == null) {
-            m_tracker = new ArrayList<TrackPoint>();
+            m_tracker = new ArrayList<>();
         }
         m_tracker.addAll(tracker);
     } // addToSelection
@@ -149,7 +149,7 @@ public class Selection {
 
     public void refreshTracker() {
         if (m_tracker == null) {
-            m_tracker = new ArrayList<TrackPoint>();
+            m_tracker = new ArrayList<>();
         }
         m_tracker.removeAll(m_tracker);
         for (int i = 0; i < m_Selection.size(); i++) {

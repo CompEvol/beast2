@@ -20,8 +20,8 @@ public class BEASTInterfaceTest extends TestCase {
 	@Description("class that impements BEASTInterface but is not a BEASTObject")
 	@Citation("this is a dummy citation")
 	public class BEASTi implements BEASTInterface {
-		public Input<String> msgInput = new Input<String>("value", "message for this BEASTi object", Validate.REQUIRED);
-		public Input<BEASTi> beastiInput = new Input<BEASTi>("other", "link to another BEASTi object");
+		public Input<String> msgInput = new Input<>("value", "message for this BEASTi object", Validate.REQUIRED);
+		public Input<BEASTi> beastiInput = new Input<>("other", "link to another BEASTi object");
 		String ID;
 		Set<BEASTInterface> outputs = new HashSet<BEASTInterface>();
 

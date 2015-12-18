@@ -421,7 +421,7 @@ public class FileDrop {
 
     private static File[] createFileArray(BufferedReader bReader, PrintStream out) {
         try {
-            java.util.List<File> list = new java.util.ArrayList<File>();
+            java.util.List<File> list = new java.util.ArrayList<>();
             java.lang.String line = null;
             while ((line = bReader.readLine()) != null) {
                 try {

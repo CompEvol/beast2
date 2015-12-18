@@ -64,8 +64,8 @@ public class BEASTObjectPanel extends JPanel {
 
     public static void init() {
 //        // register input editors
-//        g_inputEditorMap = new HashMap<Class<?>, String>();
-//        g_listInputEditorMap = new HashMap<Class<?>, String>();
+//        g_inputEditorMap = new HashMap<>, String>();
+//        g_listInputEditorMap = new HashMap<>, String>();
 //
 ////        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
 ////        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
@@ -77,16 +77,16 @@ public class BEASTObjectPanel extends JPanel {
 //        }
 
         m_position = new Point(0, 0);
-        g_plugins = new HashMap<String, BEASTInterface>();
-//        g_operators = new HashSet<Operator>();
-//        g_stateNodes = new HashSet<StateNode>();
-//        g_loggers = new HashSet<Loggable>();
-//        g_distributions = new HashSet<Distribution>();
+        g_plugins = new HashMap<>();
+//        g_operators = new HashSet<>();
+//        g_stateNodes = new HashSet<>();
+//        g_loggers = new HashSet<>();
+//        g_distributions = new HashSet<>();
     }
 
 
     public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, List<BEASTInterface> plugins, BeautiDoc doc) {
-        //g_plugins = new HashMap<String, Plugin>();
+        //g_plugins = new HashMap<>();
         for (BEASTInterface plugin2 : plugins) {
             String sID = getID(plugin2);
             // ensure IDs are unique
@@ -315,7 +315,7 @@ public class BEASTObjectPanel extends JPanel {
         /* First, calculate outputs for each plugin */
         HashMap<BEASTInterface, List<BEASTInterface>> outputs = getOutputs(plugins);
         /* process outputs */
-        List<BEASTInterface> ascendants = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> ascendants = new ArrayList<>();
         ascendants.add(parent);
         boolean bProgress = true;
         while (bProgress) {
@@ -341,9 +341,9 @@ public class BEASTObjectPanel extends JPanel {
       * ArrayList<Plugin> output = outputs.get(plugin)*/
 
     static HashMap<BEASTInterface, List<BEASTInterface>> getOutputs(Collection<BEASTInterface> plugins) {
-        HashMap<BEASTInterface, List<BEASTInterface>> outputs = new HashMap<BEASTInterface, List<BEASTInterface>>();
+        HashMap<BEASTInterface, List<BEASTInterface>> outputs = new HashMap<>();
         for (BEASTInterface plugin : plugins) {
-            outputs.put(plugin, new ArrayList<BEASTInterface>());
+            outputs.put(plugin, new ArrayList<>());
         }
         for (BEASTInterface plugin : plugins) {
             try {
@@ -380,7 +380,7 @@ public class BEASTObjectPanel extends JPanel {
     } // getOutputs
 
     public void initPlugins(BEASTInterface plugin, BeautiDoc doc) {
-        //g_plugins = new HashMap<String, Plugin>();
+        //g_plugins = new HashMap<>();
         addPluginToMap(plugin, doc);
     }
 

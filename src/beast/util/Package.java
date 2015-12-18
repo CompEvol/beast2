@@ -29,7 +29,7 @@ public class Package {
     public String installedVersion = ""; // get from local /version.xml
     public String latestVersion = ""; // get from packages.xml
 
-    public Set<PackageDependency> dependencies = new TreeSet<PackageDependency>();
+    public Set<PackageDependency> dependencies = new TreeSet<>();
 
     public Package(Element packageE) {
         url = packageE.getAttribute("url");

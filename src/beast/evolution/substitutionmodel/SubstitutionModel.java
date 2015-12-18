@@ -96,7 +96,7 @@ public interface SubstitutionModel {
     @Description(value = "Base implementation of a substitution model.", isInheritable = false)
     public abstract class Base extends CalculationNode implements SubstitutionModel {
         public Input<Frequencies> frequenciesInput =
-                new Input<Frequencies>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
+                new Input<>("frequencies", "substitution model equilibrium state frequencies", Validate.REQUIRED);
 
         /**
          * shadows frequencies, or can be set by subst model *

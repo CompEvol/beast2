@@ -24,8 +24,8 @@ import beast.core.parameter.Parameter;
 public class RPNcalculator extends CalculationNode implements Loggable, Function {
 
 
-    public Input<String> strExpressionInput = new Input<String>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
-    public Input<List<Parameter>> parametersInput = new Input<List<Parameter>>("parameter", "Parameters needed for the calculations", new ArrayList<Parameter>());
+    public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
+    public Input<List<Parameter>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
 
     private RPNexpressionCalculator[] expressions;
     private List<String> names;
@@ -36,7 +36,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
     public void initAndValidate() throws Exception {
 
-        names = new ArrayList<String>();
+        names = new ArrayList<>();
         dim = parametersInput.get().get(0).getDimension();
 
         int pdim;
@@ -55,7 +55,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
             for (int i = 0; i < pdim; i++) {
 
-                variables = new HashMap<String, Double[]>();
+                variables = new HashMap<>();
 
                 variables.put(p.getID(), p.getValues());
             }
@@ -159,7 +159,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     }
 
     public List<String> getArguments() {
-        final List<String> arguments = new ArrayList<String>();
+        final List<String> arguments = new ArrayList<>();
         for (final Parameter par : parametersInput.get()) {
             arguments.add(par.getID());
         }

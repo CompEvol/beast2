@@ -46,11 +46,11 @@ import beast.math.statistic.DiscreteStatistics;
         "It has three dimensions, one for each statistic.")
 public class RateStatistic extends BEASTObject implements Loggable, Function {
 	
-    public Input<GenericTreeLikelihood> likelihoodInput = new Input<GenericTreeLikelihood>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
-    public Input<BranchRateModel> branchRateModelInput = new Input<BranchRateModel>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
-    public Input<Tree> treeInput = new Input<Tree>("tree", "tree for which the rates apply");
-    public Input<Boolean> internalInput = new Input<Boolean>("internal", "consider internal nodes, default true", true);
-    public Input<Boolean> externalInput = new Input<Boolean>("external", "consider external nodes, default true", true);
+    public Input<GenericTreeLikelihood> likelihoodInput = new Input<>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
+    public Input<BranchRateModel> branchRateModelInput = new Input<>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
+    public Input<Tree> treeInput = new Input<>("tree", "tree for which the rates apply");
+    public Input<Boolean> internalInput = new Input<>("internal", "consider internal nodes, default true", true);
+    public Input<Boolean> externalInput = new Input<>("external", "consider external nodes, default true", true);
 
     private Tree tree = null;
     private BranchRateModel branchRateModel = null;

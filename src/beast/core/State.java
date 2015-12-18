@@ -51,12 +51,12 @@ import beast.core.Input;
 public class State extends BEASTObject {
 
     public final Input<List<StateNode>> stateNodeInput =
-            new Input<List<StateNode>>("stateNode", "anything that is part of the state", new ArrayList<StateNode>());
+            new Input<>("stateNode", "anything that is part of the state", new ArrayList<>());
     public Input<Integer> m_storeEvery =
-            new Input<Integer>("storeEvery", "store the state to disk every X number of samples so that we can " +
+            new Input<>("storeEvery", "store the state to disk every X number of samples so that we can " +
                     "resume computation later on if the process failed half-way.", -1);
 //    public Input<Boolean> m_checkPoint =
-//            new Input<Boolean>("checkpoint", "keep saved states (every X samples).", false);
+//            new Input<>("checkpoint", "keep saved states (every X samples).", false);
 
     /**
      * The components of the state, for instance tree & parameters.
@@ -201,7 +201,7 @@ public class State extends BEASTObject {
         nrOfChangedStateNodes = 0;
         trie = new Trie();
         // add the empty list for the case none of the StateNodes have changed
-        trie.list = new ArrayList<CalculationNode>();
+        trie.list = new ArrayList<>();
     } // initAndValidate
 
 
@@ -466,10 +466,10 @@ public class State extends BEASTObject {
         // CalculationNodes need to be taken in account, but for
         // debugging purposes (developer forgot to derive from CalculationNode)
         // we keep track of the lot.
-        outputMap = new HashMap<BEASTInterface, List<BEASTInterface>>();
-        outputMap.put(posterior, new ArrayList<BEASTInterface>());
+        outputMap = new HashMap<>();
+        outputMap.put(posterior, new ArrayList<>());
         boolean bProgress = true;
-        List<BEASTInterface> plugins = new ArrayList<BEASTInterface>();
+        List<BEASTInterface> plugins = new ArrayList<>();
         plugins.add(posterior);
         while (bProgress) {
             bProgress = false;
@@ -480,7 +480,7 @@ public class State extends BEASTObject {
                 try {
                     for (BEASTInterface inputPlugin : plugin.listActivePlugins()) {
                         if (!outputMap.containsKey(inputPlugin)) {
-                            outputMap.put(inputPlugin, new ArrayList<BEASTInterface>());
+                            outputMap.put(inputPlugin, new ArrayList<>());
                             plugins.add(inputPlugin);
                             bProgress = true;
                         }
@@ -499,7 +499,7 @@ public class State extends BEASTObject {
         // to use another method to find the outputs, an array in this case.
         stateNodeOutputs = new List[stateNode.length];
         for (int i = 0; i < stateNode.length; i++) {
-            stateNodeOutputs[i] = new ArrayList<CalculationNode>();
+            stateNodeOutputs[i] = new ArrayList<>();
             if (outputMap.containsKey(stateNode[i])) {
                 for (BEASTInterface plugin : outputMap.get(stateNode[i])) {
                     if (plugin instanceof CalculationNode) {
@@ -549,7 +549,7 @@ public class State extends BEASTObject {
      * partial order as determined by the Plugins input relations.
      */
     private List<CalculationNode> calculateCalcNodePath() throws Exception {
-        final List<CalculationNode> calcNodes = new ArrayList<CalculationNode>();
+        final List<CalculationNode> calcNodes = new ArrayList<>();
 //    	for (int i = 0; i < stateNode.length; i++) {
 //    		if (m_changedStateNodeCode.get(i)) {
         for (int k = 0; k < nrOfChangedStateNodes; k++) {

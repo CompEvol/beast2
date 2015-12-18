@@ -18,10 +18,10 @@ import beast.evolution.tree.coalescent.PopulationFunction;
 
 @Description("Scale a demographic function by a constant factor")
 public class ScaledPopulationFunction extends PopulationFunction.Abstract {
-    public Input<PopulationFunction> popParameterInput = new Input<PopulationFunction>("population",
+    public Input<PopulationFunction> popParameterInput = new Input<>("population",
             "population function to scale. ", Validate.REQUIRED);
 
-    public Input<RealParameter> scaleFactorInput = new Input<RealParameter>("factor",
+    public Input<RealParameter> scaleFactorInput = new Input<>("factor",
             "scale population by this facor.", Validate.REQUIRED);
 
     public ScaledPopulationFunction() {

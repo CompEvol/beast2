@@ -99,12 +99,12 @@ public class DocMaker {
         // find plug ins to document
         m_sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         /** determine hierarchical relation between plug-ins **/
-        m_isa = new HashMap<String, String[]>();
-        m_ancestors = new HashMap<String, List<String>>();
-        m_descriptions = new HashMap<String, String>();
-        m_sLoggables = new HashSet<String>();
+        m_isa = new HashMap<>();
+        m_ancestors = new HashMap<>();
+        m_descriptions = new HashMap<>();
+        m_sLoggables = new HashSet<>();
         for (String sPlugin : m_sPluginNames) {
-            m_ancestors.put(sPlugin, new ArrayList<String>());
+            m_ancestors.put(sPlugin, new ArrayList<>());
         }
         for (String sPlugin : m_sPluginNames) {
             try {
@@ -320,7 +320,7 @@ public class DocMaker {
      */
     String[] getImplementations(BEASTObject plugin) {
         String sName = plugin.getClass().getName();
-        List<String> sImplementations = new ArrayList<String>();
+        List<String> sImplementations = new ArrayList<>();
         for (String sPlugin : m_sPluginNames) {
             try {
                 if (!sPlugin.equals(sName) && plugin.getClass().isAssignableFrom(Class.forName(sPlugin))) {

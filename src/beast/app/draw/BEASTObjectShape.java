@@ -75,7 +75,7 @@ public class BEASTObjectShape extends Shape {
         if (m_plugin == null) {
             m_plugin = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
         }
-        m_inputs = new ArrayList<InputShape>();
+        m_inputs = new ArrayList<>();
         if (m_plugin.getID() == null) {
         	String sID = m_plugin.getClass().getName();
         	sID = sID.substring(sID.lastIndexOf('.') + 1);
@@ -188,7 +188,7 @@ public class BEASTObjectShape extends Shape {
             if (node.getAttributes().getNamedItem("inputids") != null) {
                 String sInputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
                 String[] sInputID = sInputIDs.split(" ");
-                m_inputs = new ArrayList<InputShape>();
+                m_inputs = new ArrayList<>();
                 try {
                     List<Input<?>> inputs = m_plugin.listInputs();
                     for (int i = 0; i < sInputID.length; i++) {

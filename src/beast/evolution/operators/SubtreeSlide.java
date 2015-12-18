@@ -70,10 +70,10 @@ import java.util.List;
         "slide down into.")
 public class SubtreeSlide extends TreeOperator {
 
-    public Input<Double> sizeInput = new Input<Double>("size", "size of the slide, default 1.0", 1.0);
-    public Input<Boolean> gaussianInput = new Input<Boolean>("gaussian", "Gaussian (=true=default) or uniform delta", true);
-    public Input<Boolean> optimiseInput = new Input<Boolean>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
-    public Input<Double> limitInput = new Input<Double>("limit", "limit on step size, default disable, " +
+    public Input<Double> sizeInput = new Input<>("size", "size of the slide, default 1.0", 1.0);
+    public Input<Boolean> gaussianInput = new Input<>("gaussian", "Gaussian (=true=default) or uniform delta", true);
+    public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
+    public Input<Double> limitInput = new Input<>("limit", "limit on step size, default disable, " +
             "i.e. -1. (when positive, gets multiplied by tree-height/log2(n-taxa).", -1.0);
     // shadows size
     double fSize;
@@ -170,7 +170,7 @@ public class SubtreeSlide extends TreeOperator {
             // 4.1 will the move change the topology
             if (CiP.getHeight() > newHeight) {
 
-                final List<Node> newChildren = new ArrayList<Node>();
+                final List<Node> newChildren = new ArrayList<>();
                 final int possibleDestinations = intersectingEdges(CiP, newHeight, newChildren);
 
                 // if no valid destinations then return a failure

@@ -41,7 +41,7 @@ import beast.core.parameter.RealParameter;
  */
 @Description("coalescent intervals for a constant population")
 public class ConstantPopulation extends PopulationFunction.Abstract {
-    public Input<RealParameter> popSizeParameter = new Input<RealParameter>("popSize",
+    public Input<RealParameter> popSizeParameter = new Input<>("popSize",
             "constant (effective) population size value.", Validate.REQUIRED);
 
     //

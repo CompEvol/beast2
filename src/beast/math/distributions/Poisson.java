@@ -12,7 +12,7 @@ import org.apache.commons.math.distribution.PoissonDistributionImpl;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Poisson extends ParametricDistribution {
-    public Input<RealParameter> lambdaInput = new Input<RealParameter>("lambda", "rate parameter, defaults to 1");
+    public Input<RealParameter> lambdaInput = new Input<>("lambda", "rate parameter, defaults to 1");
 
     static org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
 

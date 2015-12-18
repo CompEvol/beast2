@@ -118,7 +118,7 @@ public class IntegerListInputEditor extends ListInputEditor {
 
         public void addValidationListener(InputEditor validateListener) {
             if (m_validateListeners == null) {
-                m_validateListeners = new ArrayList<InputEditor>();
+                m_validateListeners = new ArrayList<>();
             }
             m_validateListeners.add(validateListener);
         }
@@ -297,7 +297,7 @@ public class IntegerListInputEditor extends ListInputEditor {
                 }
                 // recurse
                 try {
-                    validateRecursively(m_input, new HashSet<Input<?>>());
+                    validateRecursively(m_input, new HashSet<>());
                 } catch (Exception e) {
                     notifyValidationListeners(ValidationStatus.HAS_INVALIDMEMBERS);
                     if (m_validateLabel != null) {

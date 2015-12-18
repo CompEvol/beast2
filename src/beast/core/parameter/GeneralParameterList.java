@@ -42,15 +42,15 @@ import org.w3c.dom.Node;
         + "parameters must have identical dimensions and bounds.")
 public abstract class GeneralParameterList<T> extends StateNode {
     
-    public Input<List<Parameter.Base>> initialParamsInput = new Input<List<Parameter.Base>>(
+    public Input<List<Parameter.Base>> initialParamsInput = new Input<>(
             "initialParam",
             "Parameter whose value will initially be in parameter list.",
-            new ArrayList<Parameter.Base>());
+            new ArrayList<>());
     
-    public Input<Integer> dimensionInput = new Input<Integer>("dimension",
+    public Input<Integer> dimensionInput = new Input<>("dimension",
             "Dimension of individual parameters in list.  Default 1.", 1);
     
-    public Input<Integer> minorDimensionInput = new Input<Integer>("minordimension",
+    public Input<Integer> minorDimensionInput = new Input<>("minordimension",
             "Minor dimension of individual parameters in list. Default 1.", 1);
     
 
@@ -67,10 +67,10 @@ public abstract class GeneralParameterList<T> extends StateNode {
     
     @Override
     public void initAndValidate() {
-        pList = new ArrayList<QuietParameter>();
-        pListStored = new ArrayList<QuietParameter>();
-        deallocatedKeys = new TreeSet<Integer>();
-        deallocatedKeysStored = new TreeSet<Integer>();
+        pList = new ArrayList<>();
+        pListStored = new ArrayList<>();
+        deallocatedKeys = new TreeSet<>();
+        deallocatedKeysStored = new TreeSet<>();
         nextUnallocatedKey = 0;
         nextUnallocatedKeyStored = 0;
         
@@ -279,7 +279,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
         otherParamList.minorDimension = minorDimension;
         otherParamList.lowerBound = lowerBound;
         otherParamList.upperBound = upperBound;
-        otherParamList.deallocatedKeys = new TreeSet<Integer>(deallocatedKeys);
+        otherParamList.deallocatedKeys = new TreeSet<>(deallocatedKeys);
         otherParamList.nextUnallocatedKey = nextUnallocatedKey;
     }
 
@@ -299,7 +299,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
         minorDimension = otherParamList.minorDimension;
         lowerBound = otherParamList.lowerBound;
         upperBound = otherParamList.upperBound;
-        deallocatedKeys = new TreeSet<Integer>(otherParamList.deallocatedKeys);
+        deallocatedKeys = new TreeSet<>(otherParamList.deallocatedKeys);
         nextUnallocatedKey = otherParamList.nextUnallocatedKey;
     }
 
@@ -387,7 +387,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
         // non-abstract classes (where type T is known).
         String [] boundsStr = matcher.group(2).split(",");
         
-        List<String[]> parameterValueStrings = new ArrayList<String[]>();
+        List<String[]> parameterValueStrings = new ArrayList<>();
         String parameterListString = matcher.group(5).trim();
         
         pattern = Pattern.compile("\\[([^]]*)]");
@@ -397,7 +397,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
             parameterValueStrings.add(parameterMatcher.group(1).split(","));
         
         // Parse key strings:
-        List<Integer> keys = new ArrayList<Integer>();
+        List<Integer> keys = new ArrayList<>();
         for (String keyString : matcher.group(6).split(","))
             keys.add(Integer.parseInt(keyString.trim()));
         

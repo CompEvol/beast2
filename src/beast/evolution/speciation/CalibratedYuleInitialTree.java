@@ -43,7 +43,7 @@ import java.util.List;
 public class CalibratedYuleInitialTree extends Tree implements StateNodeInitialiser {
 
     public Input<List<CalibrationPoint>> calibrationsInput =
-            new Input<List<CalibrationPoint>>("calibrations", "Set of calibrated nodes", new ArrayList<CalibrationPoint>(),
+            new Input<>("calibrations", "Set of calibrated nodes", new ArrayList<>(),
                     Input.Validate.REQUIRED);
 
     @Override

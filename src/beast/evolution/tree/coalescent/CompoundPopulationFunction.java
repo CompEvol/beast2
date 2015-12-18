@@ -29,20 +29,20 @@ import beast.math.statistic.DiscreteStatistics;
 @Description("An effective population size function based on coalecent times from a set of trees.")
 public class CompoundPopulationFunction extends PopulationFunction.Abstract implements Loggable {
 
-    public Input<RealParameter> popSizeParameterInput = new Input<RealParameter>("populationSizes",
+    public Input<RealParameter> popSizeParameterInput = new Input<>("populationSizes",
             "population value at each point.", Input.Validate.REQUIRED);
 
-    public Input<BooleanParameter> indicatorsParameterInput = new Input<BooleanParameter>("populationIndicators",
+    public Input<BooleanParameter> indicatorsParameterInput = new Input<>("populationIndicators",
             "Include/exclude population value from the population function.", Input.Validate.REQUIRED);
 
-    public Input<List<TreeIntervals>> treesInput = new Input<List<TreeIntervals>>("itree", "Coalecent intervals of this tree are " +
-            "used in the compound population function.", new ArrayList<TreeIntervals>(), Input.Validate.REQUIRED);
+    public Input<List<TreeIntervals>> treesInput = new Input<>("itree", "Coalecent intervals of this tree are " +
+            "used in the compound population function.", new ArrayList<>(), Input.Validate.REQUIRED);
 
-    public Input<String> demographicTypeInput = new Input<String>("type", "Flavour of demographic: either linear or stepwise for " +
+    public Input<String> demographicTypeInput = new Input<>("type", "Flavour of demographic: either linear or stepwise for " +
             " piecewise-linear or piecewise-constant.",
             "linear");
 
-    public Input<Boolean> useMiddleInput = new Input<Boolean>("useIntervalsMiddle", "When true, the demographic X axis points are " +
+    public Input<Boolean> useMiddleInput = new Input<>("useIntervalsMiddle", "When true, the demographic X axis points are " +
             "in the middle of the coalescent intervals. By default they are at the beginning.",
             false);
 
@@ -128,7 +128,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
 
     @Override
     public List<String> getParameterIds() {
-        List<String> paramIDs = new ArrayList<String>();
+        List<String> paramIDs = new ArrayList<>();
         paramIDs.add(popSizeParameter.getID());
         paramIDs.add(indicatorsParameter.getID());
 

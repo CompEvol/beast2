@@ -57,9 +57,9 @@ public class TreeSetParser {
 	boolean m_bAllowSingleChild = false;
 	
 	public TreeSetParser(int nBurnInPercentage, boolean bAllowSingleChild) {
-		m_sLabels = new ArrayList<String>();
-		m_fLongitude = new ArrayList<Float>();
-		m_fLatitude = new ArrayList<Float>();
+		m_sLabels = new ArrayList<>();
+		m_fLongitude = new ArrayList<>();
+		m_fLatitude = new ArrayList<>();
 		m_nBurnInPercentage = Math.max(nBurnInPercentage, 0);
 		m_fMinLat = 90; m_fMinLong = 180;
 		m_fMaxLat = -90; m_fMaxLong = -180;
@@ -85,8 +85,8 @@ public class TreeSetParser {
 
 	
 	public Node [] parseFile(String sFile) throws Exception {
-		//List<String> sNewickTrees = new List<String>();
-		List<Node> trees = new ArrayList<Node>();
+		//List<String> sNewickTrees = new List<>();
+		List<Node> trees = new ArrayList<>();
 		m_nOffset = 0;
 		// parse Newick tree file
 		File file = new File(sFile);
@@ -432,9 +432,9 @@ public class TreeSetParser {
 			return null;
 		}
 		m_iTokenEnd = m_iTokenStart;
-		Vector<Node> stack = new Vector<Node>();
-		Vector<Boolean> isFirstChild =  new Vector<Boolean>();
-		Vector<String> sMetaData =  new Vector<String>();
+		Vector<Node> stack = new Vector<>();
+		Vector<Boolean> isFirstChild =  new Vector<>();
+		Vector<String> sMetaData =  new Vector<>();
 		stack.add(new Node());
 		isFirstChild.add(true);
 		stack.lastElement().setHeight(DEFAULT_LENGTH);
