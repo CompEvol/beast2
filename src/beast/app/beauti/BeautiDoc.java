@@ -1857,13 +1857,16 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             if (o instanceof BEASTInterface) {
                             	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, partitionContext, doc);
                             	// make sure it is not already in the list
-                            	List<?> currentList = (List<?>) copy.getInput(input.getName()).get();
+                            	Object o2 = copy.getInput(input.getName()).get();
                             	boolean alreadyInList = false;
-                            	for (Object v : currentList) {
-                            		if (v == value) {
-                            			alreadyInList = true;
-                            			break;
-                            		}
+                            	if (o2 instanceof List) {
+                            		List<?> currentList = (List<?>) o2; 
+	                            	for (Object v : currentList) {
+	                            		if (v == value) {
+	                            			alreadyInList = true;
+	                            			break;
+	                            		}
+	                            	}
                             	}
                             	if (!alreadyInList) {
                             		// add to the list
