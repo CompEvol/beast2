@@ -85,7 +85,8 @@ public class BeautiPanelConfig extends BEASTObject {
             super("xx", "", arrayList);
         }
 
-        public void setType(Class<?> type) {
+        @Override
+		public void setType(Class<?> type) {
             theClass = type;
         }
     }

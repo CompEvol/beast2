@@ -60,8 +60,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
             sText += distr.treeIntervalsInput.get().treeInput.get().getID();
         }
         JLabel label = new JLabel(sText);
-        label.setMinimumSize(PriorListInputEditor.PREFERRED_SIZE);
-        label.setPreferredSize(PriorListInputEditor.PREFERRED_SIZE);
+        label.setMinimumSize(Base.PREFERRED_SIZE);
+        label.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(label);
         // List<String> sAvailablePlugins =
         // PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
@@ -111,7 +111,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
                         @SuppressWarnings("unchecked")
                         List<BEASTInterface> list = (List<BEASTInterface>) m_input.get();
                         BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
-                        PartitionContext partitionContext = doc.getContextFor((BEASTInterface) list.get(itemNr));
+                        PartitionContext partitionContext = doc.getContextFor(list.get(itemNr));
                         try {
                             template.createSubNet(partitionContext, list, itemNr, true);
                         } catch (Exception ex) {

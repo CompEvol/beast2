@@ -116,6 +116,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		return types;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		this.itemNr = itemNr;
@@ -148,7 +149,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
         Color focusColor = UIManager.getColor("Focus.color");
         Border focusBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, focusColor);
         new FileDrop(null, scrollPane, focusBorder, new FileDrop.Listener() {
-            public void filesDropped(java.io.File[] files) {
+            @Override
+			public void filesDropped(java.io.File[] files) {
                 addFiles(files);
             }   // end filesDropped
         }); // end FileDrop.Listener
@@ -1014,6 +1016,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			setOpaque(true);
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 				boolean hasFocus, int row, int column) {
 			if (isSelected) {
@@ -1038,6 +1041,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			setOpaque(true);
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 				boolean hasFocus, int row, int column) {
 			if (hasUseAmbiguitiesInput(row)) {

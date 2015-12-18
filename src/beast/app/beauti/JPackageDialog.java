@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
@@ -72,14 +73,16 @@ public class JPackageDialog extends JPanel {
         // update pacakges using a 30 second time out
         isRunning = true;
         t = new Thread() {
-        	public void run() {
+        	@Override
+			public void run() {
                 resetPackages();
         		isRunning = false;
         	}
         };
         t.start();
     	Thread t2 = new Thread() {
-    		public void run() {
+    		@Override
+			public void run() {
     			try {
     				// wait 30 seconds
 					sleep(30000);
@@ -141,9 +144,10 @@ public class JPackageDialog extends JPanel {
         //dataTable.setAutoCreateRowSorter(true);
         // ...if all processing was done based on the data in the table, 
         // instead of the row number alone.
-        dataTable.setSelectionMode(DefaultListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        dataTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         dataTable.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     Package selPackage = getSelectedPackage(dataTable.getSelectedRow());
                     showDetail(selPackage);
@@ -305,7 +309,8 @@ public class JPackageDialog extends JPanel {
         JButton button = new JButton("?");
         button.setToolTipText(getPackageUserDir() + " " + getPackageSystemDir());
         button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(scrollPane, "<html>By default, packages are installed in <br><br><em>" + getPackageUserDir() +
                         "</em><br><br>and are available only to you.<br>" +
                         "<br>Packages can also be moved manually to <br><br><em>" + getPackageSystemDir() +
@@ -359,15 +364,18 @@ public class JPackageDialog extends JPanel {
 	class DataTableModel extends AbstractTableModel {
         String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
 
-        public int getColumnCount() {
+        @Override
+		public int getColumnCount() {
             return columnNames.length;
         }
 
-        public int getRowCount() {
+        @Override
+		public int getRowCount() {
             return packages.size();
         }
 
-        public Object getValueAt(int row, int col) {
+        @Override
+		public Object getValueAt(int row, int col) {
             Package aPackage = packages.get(row);
             switch (col) {
                 case 0:
@@ -385,11 +393,13 @@ public class JPackageDialog extends JPanel {
             }
         }
 
-        public String getColumnName(int column) {
+        @Override
+		public String getColumnName(int column) {
             return columnNames[column];
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             StringBuffer buffer = new StringBuffer();
 
             buffer.append(getColumnName(0));

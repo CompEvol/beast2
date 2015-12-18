@@ -254,7 +254,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     i += 2;
                 } else if (args[i].equals("-noerr")) {
                     System.setErr(new PrintStream(new OutputStream() {
-                        public void write(int b) {
+                        @Override
+						public void write(int b) {
                         }
                     }));
                     i += 1;
@@ -1316,7 +1317,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
                     boolean bNeedsEstimation = bNeedsEstimationBySPTree;
                     if (i > 0) {
-                        BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.branchRateModelInput.get();
+                        BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
                         bNeedsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
                     } else {
                         // TODO: this might not be a valid type conversion from TreeInterface to Tree
@@ -1335,7 +1336,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             }
                         }
                     }
-                    BranchRateModel.Base model = (BranchRateModel.Base) treeLikelihood.branchRateModelInput.get();
+                    BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
                     if (model != null) {
                         RealParameter clockRate = model.meanRateInput.get();
                         clockRate.isEstimatedInput.setValue(bNeedsEstimation, clockRate);
@@ -1860,7 +1861,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	            	BEASTInterface org = doc.pluginmap.get(copyID);
 	                copySet.put(id, org);
 	            } else {
-	            	BEASTInterface copy = (BEASTInterface) plugin2.getClass().newInstance();
+	            	BEASTInterface copy = plugin2.getClass().newInstance();
 	            	copy.setID(copyID);
 	                copySet.put(id, copy);
 	            }
@@ -2240,7 +2241,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     if (sID.indexOf('.') >= 0) {
                         sID = sID.substring(0, sID.indexOf('.'));
                         if (outputIDs.get(sID) > 1) {
-                            addLink((BEASTInterface)plugin, (BEASTInterface)output);
+                            addLink(plugin, (BEASTInterface)output);
                         }
                     }
                 }
@@ -2261,7 +2262,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                 // ignore
                             }
                             if (nrOfSubstModelsInOutput > 1) {
-                                addLink((BEASTInterface)plugin, (BEASTInterface)output);
+                                addLink(plugin, (BEASTInterface)output);
                             }
                         }
                     }

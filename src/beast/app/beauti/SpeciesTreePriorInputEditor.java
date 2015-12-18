@@ -27,7 +27,8 @@ public class SpeciesTreePriorInputEditor extends BEASTObjectInputEditor {
 		super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 	}
 
-    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
+    @Override
+	protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
     	m_bAddButtons = true;
     	String label = "Species Tree Population Size";
     	addInputLabel(label, label);

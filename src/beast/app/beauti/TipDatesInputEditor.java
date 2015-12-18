@@ -73,7 +73,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            m_plugin = (BEASTInterface) tree;
+            m_plugin = tree;
             traitSet = tree.getDateTrait();
 
             Box box = Box.createVerticalBox();
@@ -547,7 +547,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         unitsComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String sSelected = (String) unitsComboBox.getSelectedItem().toString();
+                String sSelected = unitsComboBox.getSelectedItem().toString();
                 try {
                     traitSet.unitsInput.setValue(sSelected, traitSet);
                     //System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());

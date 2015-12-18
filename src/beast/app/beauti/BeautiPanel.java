@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -139,7 +140,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         partitionComponent = new JPanel();
         partitionComponent.setLayout(new BorderLayout());
         JLabel partitionLabel = new JLabel("Partition");
-        partitionLabel.setHorizontalAlignment(JLabel.CENTER);
+        partitionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
         listModel = new DefaultListModel();
         listOfPartitions = new JList(listModel);
@@ -180,7 +181,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         	if (type.equals("SiteModel")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).siteModelInput.get();
         	} else if (type.equals("ClockModel")) {
-        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        		partition = ((GenericTreeLikelihood) partition).branchRateModelInput.get();
         	} else if (type.equals("Tree")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}
@@ -307,7 +308,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         	if (type.equals("SiteModel")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).siteModelInput.get();
         	} else if (type.equals("ClockModel")) {
-        		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).branchRateModelInput.get();
+        		partition = ((GenericTreeLikelihood) partition).branchRateModelInput.get();
         	} else if (type.equals("Tree")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}

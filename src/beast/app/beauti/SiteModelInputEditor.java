@@ -134,10 +134,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         categoryCountEditor = new IntegerInputEditor(doc) {
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void validateInput() {
         		super.validateInput();
             	SiteModel sitemodel = (SiteModel) m_plugin; 
-                if (sitemodel.gammaCategoryCount.get() < 2 && ((RealParameter)sitemodel.shapeParameterInput.get()).isEstimatedInput.get()) {
+                if (sitemodel.gammaCategoryCount.get() < 2 && sitemodel.shapeParameterInput.get().isEstimatedInput.get()) {
                 	m_validateLabel.m_circleColor = Color.orange;
                 	m_validateLabel.setToolTipText("shape parameter is estimated, but not used");
                 	m_validateLabel.setVisible(true);

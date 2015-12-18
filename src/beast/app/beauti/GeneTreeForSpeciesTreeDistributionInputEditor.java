@@ -68,7 +68,8 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 
 	            m_selectPluginBox.addActionListener(new ActionListener() {
 	                // implements ActionListener
-	                public void actionPerformed(ActionEvent e) {
+	                @Override
+					public void actionPerformed(ActionEvent e) {
 	                    int i = m_selectPluginBox.getSelectedIndex();
 	                    if (i == OTHER) {
 	                    	setSelection();

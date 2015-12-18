@@ -231,7 +231,8 @@ public class TaxonSetDialog extends JDialog {
         JButton selectButton = new JButton(">>");
         selectButton.setName(">>");
         selectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 int[] nSelected = listOfTaxonCandidates.getSelectedIndices();
                 for (int i : nSelected) {
                     listModel2.addElement(listModel1.get(i));
@@ -245,7 +246,8 @@ public class TaxonSetDialog extends JDialog {
         JButton deselectButton = new JButton("<<");
         deselectButton.setName("<<");
         deselectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 int[] nSelected = listOfTaxonSet.getSelectedIndices();
                 for (int i : nSelected) {
                     listModel1.addElement(listModel2.get(i));
@@ -276,7 +278,8 @@ public class TaxonSetDialog extends JDialog {
         JButton okButton = new JButton("Ok");
         okButton.setName("OK");
         okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 taxonSet.setID(sID);
                 List<Taxon> taxa = taxonSet.taxonsetInput.get();
                 while (taxa.size() > 0) {
@@ -292,7 +295,8 @@ public class TaxonSetDialog extends JDialog {
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setName("Cancel");
         cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });

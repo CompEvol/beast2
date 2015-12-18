@@ -80,7 +80,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
 
         List<Taxon> taxa = taxonset.taxonsetInput.get();
         for (Taxon taxon : taxa) {
-            taxonsets.add((TaxonSet) taxon);
+            taxonsets.add(taxon);
         }
         add(getContent(taxonsets));
         if (taxa.size() == 1 && taxa.get(0).getID().equals("Beauti2DummyTaxonSet") || taxa.size() == 0) {
@@ -266,7 +266,8 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     }
 
     public class ColumnHeaderListener extends MouseAdapter {
-        public void mouseClicked(MouseEvent evt) {
+        @Override
+		public void mouseClicked(MouseEvent evt) {
             // The index of the column whose header was clicked
             int vColIndex = m_table.getColumnModel().getColumnIndexAtX(evt.getX());
             if (vColIndex == -1) {

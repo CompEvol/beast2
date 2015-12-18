@@ -111,25 +111,29 @@ public class GuessPatternDialog extends JDialog {
         group.add(bReadFromFile);
         group.setSelected(bUseEverything.getModel(), true);
         bUseEverything.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
         bUseEverything.setName(bUseEverything.getText());
         bSplitOnChar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
         bSplitOnChar.setName(bSplitOnChar.getText());
         bUseRegexp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
         bUseRegexp.setName(bUseRegexp.getText());
         bReadFromFile.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
@@ -187,7 +191,8 @@ public class GuessPatternDialog extends JDialog {
 
         btnBrowse = new JButton("Browse");
         btnBrowse.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 File file = Utils.getLoadFile("Load trait from file", new File(Beauti.g_sDir), "Select trait file", "dat","txt");
                 if (file != null) {
                     txtFile.setText(file.getPath());
@@ -216,7 +221,8 @@ public class GuessPatternDialog extends JDialog {
         JButton btnHelp = new JButton("?");
         btnHelp.setToolTipText("Show format of trait file");
         btnHelp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(m_parent, EXAMPLE_FORMAT);
             }
         });
@@ -230,7 +236,8 @@ public class GuessPatternDialog extends JDialog {
         chckbxAddFixedValue = new JCheckBox("Add fixed value");
         chckbxAddFixedValue.setName("Add fixed value");
         chckbxAddFixedValue.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });
@@ -264,7 +271,8 @@ public class GuessPatternDialog extends JDialog {
         chckbxUnlessLessThan = new JCheckBox("Unless less than...");
         chckbxUnlessLessThan.setName("Unless less than");
         chckbxUnlessLessThan.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+			public void actionPerformed(ActionEvent e) {
                 updateFields();
             }
         });

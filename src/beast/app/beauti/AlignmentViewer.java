@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -83,19 +84,23 @@ public class AlignmentViewer extends JPanel {
         final TableModel fixedColumnModel = new AbstractTableModel() {
             private static final long serialVersionUID = 1L;
 
-            public int getColumnCount() {
+            @Override
+			public int getColumnCount() {
                 return 1;
             }
 
-            public String getColumnName(int column) {
+            @Override
+			public String getColumnName(int column) {
                 return columnData[column] + "";
             }
 
-            public int getRowCount() {
+            @Override
+			public int getRowCount() {
                 return tableData.length;
             }
 
-            public Object getValueAt(int row, int column) {
+            @Override
+			public Object getValueAt(int row, int column) {
                 return tableData[row][column];
             }
         };
@@ -103,19 +108,23 @@ public class AlignmentViewer extends JPanel {
         final TableModel mainModel = new AbstractTableModel() {
             private static final long serialVersionUID = 1L;
 
-            public int getColumnCount() {
+            @Override
+			public int getColumnCount() {
                 return columnData.length - 1;
             }
 
-            public String getColumnName(int column) {
+            @Override
+			public String getColumnName(int column) {
                 return columnData[column + 1] + "";
             }
 
-            public int getRowCount() {
+            @Override
+			public int getRowCount() {
                 return tableData.length;
             }
 
-            public Object getValueAt(int row, int column) {
+            @Override
+			public Object getValueAt(int row, int column) {
                 return tableData[row][column + 1];
             }
         };
@@ -148,7 +157,7 @@ public class AlignmentViewer extends JPanel {
         viewport.setView(fixedTable);
         viewport.setPreferredSize(fixedSize);
         viewport.setMaximumSize(fixedSize);
-        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, fixedTable.getTableHeader());
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, fixedTable.getTableHeader());
         scrollPane.setRowHeaderView(viewport);
 
 

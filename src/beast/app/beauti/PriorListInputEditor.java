@@ -64,7 +64,7 @@ public class PriorListInputEditor extends ListInputEditor {
 
     @Override
     public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-    	List<?> list = (List) input.get();
+    	List<?> list = (List<?>) input.get();
     	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
 					String sID1 = ((BEASTInterface)o1).getID();
@@ -125,7 +125,8 @@ public class PriorListInputEditor extends ListInputEditor {
 	        addButton.setName("addItem");
 	        addButton.setToolTipText("Add item to the list");
 	        addButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
+	            @Override
+				public void actionPerformed(ActionEvent e) {
 	                addItem();
 	            }
 	        });
@@ -215,7 +216,8 @@ public class PriorListInputEditor extends ListInputEditor {
         refreshPanel();
     } // addItem
 
-    protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
+    @Override
+	protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
         MRCAPrior prior = new MRCAPrior();
         try {
 

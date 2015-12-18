@@ -235,7 +235,8 @@ public class BeautiConnector extends BEASTObject {
         return sTipText.get();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
     	if (sMethodnput.get() != null) {
     		return "call " + sMethodnput.get();
     	}

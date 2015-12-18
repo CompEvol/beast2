@@ -41,6 +41,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -198,7 +199,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             if (!doc.getFileName().equals("")) {
                 if (doc.validateModel() != DOC_STATUS.DIRTY) {
                     JOptionPane.showMessageDialog(null,
@@ -227,7 +229,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             saveAs();
         } // actionPerformed
     } // class ActionSaveAs
@@ -290,7 +293,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("New", "Start new analysis", "new", KeyEvent.VK_N);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             main2(new String[0]);
             // doc.newAnalysis();
             // a_save.setEnabled(false);
@@ -311,7 +315,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super(sName, sToolTipText, sIcon, acceleratorKey);
         }
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             File file = beast.app.util.Utils.getLoadFile("Load Beast XML File",
                     new File(g_sDir), "Beast XML files", "xml");
             // JFileChooser fileChooser = new JFileChooser(g_sDir);
@@ -357,7 +362,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     "template", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
             File file = beast.app.util.Utils
                     .getLoadFile("Load Template XML File");
@@ -392,7 +398,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("Manage Packages", "Manage Packages", "package", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
         	JPackageDialog panel = new JPackageDialog();
         	JDialog dlg = panel.asDialog(frame);
             dlg.setVisible(true);
@@ -463,7 +470,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("Close", "Close Window", "close", KeyEvent.VK_W);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             // if (!m_doc.m_bIsSaved) {
             if (!quit()) {
                 return;
@@ -491,7 +499,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             putValue(Action.MNEMONIC_KEY, new Integer('x'));
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             // if (!m_doc.m_bIsSaved) {
             if (!quit()) {
                 return;
@@ -554,7 +563,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("View all", "View all panels", "viewall", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             for (int nPanelNr = 0; nPanelNr < bPaneIsVisible.length; nPanelNr++) {
                 if (!bPaneIsVisible[nPanelNr]) {
                     toggleVisible(nPanelNr);
@@ -571,7 +581,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("About", "Help about", "about", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             BEASTVersion version = new BEASTVersion();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti " + version.getVersionString(), JOptionPane.PLAIN_MESSAGE,
@@ -586,12 +597,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("Help", "Help on current panel", "help", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
             HelpBrowser b = new HelpBrowser(currentTab.config.getType());
             b.setSize(800, 800);
             b.setVisible(true);
-            b.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            b.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     } // class ActionHelp
@@ -603,12 +615,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("Messages", "Show information, warning and error messages", "msgs", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
-        	if (doc.baos == null) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+        	if (BeautiDoc.baos == null) {
         		JOptionPane.showMessageDialog(frame, "<html>Error and warning messages are printed to Stdout and Stderr<br>" +
         				"To show them here, start BEAUti with the -capture argument.</html>");
         	} else {
-	        	String msgs = doc.baos.toString();
+	        	String msgs = BeautiDoc.baos.toString();
 	        	JTextArea textArea = new JTextArea(msgs);
 	        	textArea.setRows(40);
 	        	textArea.setColumns(50);
@@ -628,7 +641,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     "citation", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             String sCitations = doc.mcmc.get().getCitations();
             try {
                 StringSelection stringSelection = new StringSelection(
@@ -659,7 +673,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("View model", "View model graph", "model", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             JFrame frame = new JFrame("Model Builder");
             ModelBuilder modelBuilder = new ModelBuilder();
             modelBuilder.init();
@@ -702,7 +717,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         autoSetClockRate = new JCheckBoxMenuItem(
                 "Automatic set clock rate", this.doc.bAutoSetClockRate);
         autoSetClockRate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 doc.bAutoSetClockRate = autoSetClockRate.getState();
                 refreshPanel();
             }
@@ -712,7 +728,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         allowLinking = new JCheckBoxMenuItem(
                 "Allow parameter linking", this.doc.bAllowLinking);
         allowLinking.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 doc.bAllowLinking = allowLinking.getState();
                 doc.determineLinks();
                 refreshPanel();
@@ -723,7 +740,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         autoUpdateOperatorWeights = new JCheckBoxMenuItem(
                 "Automatic change operator weights for *BEAST analyses", this.doc.bAutoUpdateOperatorWeights);
         autoUpdateOperatorWeights.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 doc.bAutoUpdateOperatorWeights = autoUpdateOperatorWeights.getState();
                 refreshPanel();
             }
@@ -733,7 +751,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         autoUpdateFixMeanSubstRate = new JCheckBoxMenuItem(
                 "Automatic set fix mean substitution rate flag", this.doc.bAutoUpdateFixMeanSubstRate);
         autoUpdateFixMeanSubstRate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 doc.bAutoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
                 refreshPanel();
             }
@@ -867,7 +886,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(
                     iPanel);
             viewPanelAction.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
+                @Override
+				public void actionPerformed(ActionEvent ae) {
                     viewPanelAction.doAction();
                 }
             });
@@ -1133,7 +1153,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             BEASTObjectPanel.init();
 
             BeautiDoc doc = new BeautiDoc();
-            doc.baos = baos;
+            BeautiDoc.baos = baos;
             if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
                 return null;
             }
@@ -1238,10 +1258,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             frame.setVisible(true);
 
             // check file needs to be save on closing main frame
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             BEAUtiIntances++;
             frame.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
+                @Override
+				public void windowClosing(WindowEvent e) {
                     if (!beauti.quit()) {
                         return;
                     }

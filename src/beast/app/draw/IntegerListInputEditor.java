@@ -29,6 +29,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -56,7 +57,8 @@ public class IntegerListInputEditor extends ListInputEditor {
     /**
      * return type of the list *
      */
-    public Class<?> baseType() {
+    @Override
+	public Class<?> baseType() {
         return Integer.class;
     }
     
@@ -92,13 +94,14 @@ public class IntegerListInputEditor extends ListInputEditor {
         
         protected int itemNr;
 
-        public JTextField getEntry() {
+        @Override
+		public JTextField getEntry() {
             return m_entry;
         }
 
         JLabel m_inputLabel;
-        protected static Dimension PREFERRED_SIZE = new Dimension(200, 25);
-        protected static Dimension MAX_SIZE = new Dimension(1024, 25);
+        //protected static Dimension PREFERRED_SIZE = new Dimension(200, 25);
+        //protected static Dimension MAX_SIZE = new Dimension(1024, 25);
 
         /**
          * flag to indicate label, edit and validate buttons/labels should be added *
@@ -120,14 +123,16 @@ public class IntegerListInputEditor extends ListInputEditor {
          */
         List<InputEditor> m_validateListeners;
 
-        public void addValidationListener(InputEditor validateListener) {
+        @Override
+		public void addValidationListener(InputEditor validateListener) {
             if (m_validateListeners == null) {
                 m_validateListeners = new ArrayList<>();
             }
             m_validateListeners.add(validateListener);
         }
 
-        public void notifyValidationListeners(ValidationStatus state) {
+        @Override
+		public void notifyValidationListeners(ValidationStatus state) {
             if (m_validateListeners != null) {
                 for (InputEditor listener : m_validateListeners) {
                     listener.startValidating(state);
@@ -135,7 +140,8 @@ public class IntegerListInputEditor extends ListInputEditor {
             }
         }
 
-    	protected BeautiDoc getDoc() {
+    	@Override
+		protected BeautiDoc getDoc() {
             if (doc == null) {
                 Component c = this;
                 while (c.getParent() != null) {
@@ -149,7 +155,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         }
 
 
-        public Class<?>[] types() {
+        @Override
+		public Class<?>[] types() {
             Class<?>[] types = new Class<?>[1];
             types[0] = type();
             return types;
@@ -158,7 +165,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         /**
          * construct an editor consisting of a label and input entry *
          */
-        public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+        @Override
+		public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
             m_bAddButtons = bAddButtons;
             m_input = input;
             m_plugin = plugin;
@@ -173,7 +181,8 @@ public class IntegerListInputEditor extends ListInputEditor {
             addValidationLabel();
         } // init
 
-        void setUpEntry() {
+        @Override
+		void setUpEntry() {
             m_entry = new JTextField();
             m_entry.setName(m_input.getName());
             m_entry.setMinimumSize(PREFERRED_SIZE);
@@ -201,7 +210,8 @@ public class IntegerListInputEditor extends ListInputEditor {
             });
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+		@SuppressWarnings({ "unchecked", "rawtypes" })
     	protected void setValue(Object o) throws Exception {
         	if (itemNr < 0) {
         		m_input.setValue(o, m_plugin);
@@ -221,7 +231,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         	}
         }
         
-        protected void processEntry() {
+        @Override
+		protected void processEntry() {
             try {
             	setValue(m_entry.getText());
                 validateInput();
@@ -239,14 +250,16 @@ public class IntegerListInputEditor extends ListInputEditor {
             }
         }
 
-        protected void addInputLabel() {
+        @Override
+		protected void addInputLabel() {
             if (m_bAddButtons) {
                 String sName = formatName(m_input.getName());
                 addInputLabel(sName, m_input.getHTMLTipText());
             }
         }
 
-        protected String formatName(String sName) {
+        @Override
+		protected String formatName(String sName) {
     	    if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName() + "." + sName)) {
     	        sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName() + "." + sName);
     	    } else {
@@ -256,11 +269,12 @@ public class IntegerListInputEditor extends ListInputEditor {
     	    return sName;
         }
 
-        protected void addInputLabel(String sLabel, String sTipText) {
+        @Override
+		protected void addInputLabel(String sLabel, String sTipText) {
             if (m_bAddButtons) {
                 m_inputLabel = new JLabel(sLabel);
                 m_inputLabel.setToolTipText(sTipText);
-                m_inputLabel.setHorizontalTextPosition(JLabel.RIGHT);
+                m_inputLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
                 //Dimension size = new Dimension(g_nLabelWidth, 20);
                 Dimension size = new Dimension(200, 20);
                 m_inputLabel.setMaximumSize(size);
@@ -276,7 +290,8 @@ public class IntegerListInputEditor extends ListInputEditor {
             }
         }
 
-        protected void addValidationLabel() {
+        @Override
+		protected void addValidationLabel() {
             if (m_bAddButtons) {
                 m_validateLabel = new SmallLabel("x", new Color(200, 0, 0));
                 add(m_validateLabel);
@@ -286,7 +301,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         }
 
         /* check the input is valid, continue checking recursively */
-        protected void validateAllEditors() {
+        @Override
+		protected void validateAllEditors() {
             for (InputEditor editor : doc.currentInputEditors) {
                 editor.validateInput();
             }
@@ -330,7 +346,8 @@ public class IntegerListInputEditor extends ListInputEditor {
 
         /* Recurse in any of the input plugins
           * and validate its inputs */
-        void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
+        @Override
+		void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
             if (done.contains(input)) {
                 // this prevent cycles to lock up validation
                 return;
@@ -373,7 +390,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         }
 
 
-        public void refreshPanel() {
+        @Override
+		public void refreshPanel() {
             Component c = this;
             while (c.getParent() != null) {
                 c = c.getParent();
@@ -386,7 +404,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         /**
          * synchronise values in panel with current network *
          */
-        protected void sync() {
+        @Override
+		protected void sync() {
             Component c = this;
             while (c.getParent() != null) {
                 c = c.getParent();
@@ -399,7 +418,8 @@ public class IntegerListInputEditor extends ListInputEditor {
         }
 
         // we should leave it to the component to set its own border
-        @Deprecated
+        @Override
+		@Deprecated
         public void setBorder(Border border) {
     		super.setBorder(border);
         }
@@ -410,13 +430,15 @@ public class IntegerListInputEditor extends ListInputEditor {
         }
 
         // what is this method for? We should leave repainting to the standard mechanism
-        @Deprecated
+        @Override
+		@Deprecated
     	public void repaint() {
     	this.repaint(0);
     		super.repaint();
     	}
 
-    	public Component getComponent() {
+    	@Override
+		public Component getComponent() {
     		return this;
     	}
 
