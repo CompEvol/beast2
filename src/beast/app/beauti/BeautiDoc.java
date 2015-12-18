@@ -1810,7 +1810,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //		}
 
         // now the ancestors contain all plugins to be copied
-        // make a copy of all individual Pluings, before connecting them up
+        // make a copy of all individual Plugins, before connecting them up
         Map<String, BEASTInterface> copySet = new HashMap<>();
         for (BEASTInterface plugin2 : ancestors) {
             String id = plugin2.getID();
@@ -1843,10 +1843,21 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                         for (Object o : (List<?>) input.get()) {
                             if (o instanceof BEASTInterface) {
                             	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, partitionContext, doc);
-                                copy.setInputValue(input.getName(), value);
+                            	// make sure it is not already in the list
+                            	List<?> currentList = (List<?>) copy.getInput(input.getName()).get();
+                            	boolean alreadyInList = false;
+                            	for (Object v : currentList) {
+                            		if (v == value) {
+                            			alreadyInList = true;
+                            			break;
+                            		}
+                            	}
+                            	if (!alreadyInList) {
+                            		// add to the list
+                            		copy.setInputValue(input.getName(), value);
+                            	}
                             } else {
                                 // it is a primitive value
-                            	
                             	if (copy instanceof Parameter.Base && input.getName().equals("value")) {
                             	//	// prevent appending to parameter values
                             		Parameter.Base p = ((Parameter.Base) copy);
