@@ -734,4 +734,27 @@ public class Alignment extends Map<String> {
             }
         });
     }
+
+    /** 
+     * Get String representation of a sequence according to the current datatype
+     * @param taxon the name of the taxon to get the sequence from in the alignment
+     * @return sequence in String representation
+     */
+	public String getSequenceAsString(String taxon) {
+		int i = getTaxonIndex(taxon);		
+
+		// build up string from underlying data using the current datatype
+		int [] states = new int[getSiteCount()];
+		for (int k = 0; k < getSiteCount(); k++) {
+			int d = sitePatterns[patternIndex[k]][i];
+			states[k] = d;
+		}
+		String seq = null;
+		try {
+			seq = m_dataType.state2string(states);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return seq;
+	}
 } // class Data
