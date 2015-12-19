@@ -660,11 +660,16 @@ public class NexusParser {
                 }
             }
 
-//            alignment.setInputValue(sTaxon, sData);
-            final Sequence sequence = new Sequence();
-            sequence.init(nTotalCount, sTaxon, sData);
-            sequence.setID(generateSequenceID(sTaxon));
-            alignment.sequenceInput.setValue(sequence, alignment);
+            if (alignment.dataTypeInput.get().equals("nucleotide") || 
+            	alignment.dataTypeInput.get().equals("binary")  ||
+            	alignment.dataTypeInput.get().equals("aminoacid") ) {
+            	alignment.setInputValue(sTaxon, sData);
+            } else {
+	            final Sequence sequence = new Sequence();
+	            sequence.init(nTotalCount, sTaxon, sData);
+	            sequence.setID(generateSequenceID(sTaxon));
+	            alignment.sequenceInput.setValue(sequence, alignment);
+            }
         }
 
 
