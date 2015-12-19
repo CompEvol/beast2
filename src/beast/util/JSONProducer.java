@@ -3,20 +3,26 @@ package beast.util;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import beast.app.BEASTVersion;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.Parameter;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 
 
@@ -45,9 +51,9 @@ public class JSONProducer {
     /**
      * list of objects already converted to JSON, so an idref suffices
      */
-    HashSet<BEASTInterface> isDone;
+    Set<BEASTInterface> isDone;
     @SuppressWarnings("rawtypes")
-    HashSet<Input> isInputsDone;
+    Map<BEASTInterface, Set<String>> isInputsDone;
     /**
      * list of IDs of elements produces, used to prevent duplicate ID generation
      */
@@ -81,7 +87,7 @@ public class JSONProducer {
             		XMLParser.BEAST_ELEMENT + ": [\n");
             //buf.append("\n\n");
             isDone = new HashSet<>();
-            isInputsDone = new HashSet<>();
+            isInputsDone = new HashMap<>();
             IDs = new HashSet<>();
             indentCount = 1;
             
@@ -207,10 +213,12 @@ public class JSONProducer {
         if (!skipInputs) {
             // process inputs of this beastObject
             // first, collect values as attributes
-            List<Input<?>> inputs = beastObject.listInputs();
-            for (Input<?> input : inputs) {
+            //List<Input<?>> inputs = beastObject.listInputs();
+            List<InputType> inputs = JSONParser.listInputs(beastObject.getClass().getName());
+            for (InputType input : inputs) {
             	StringBuffer buf2 = new StringBuffer();
-                inputToJSON(input.getName(), beastObject, buf2, true, indent);
+            	Object value = getValue(beastObject, input);
+                inputToJSON(input, value, beastObject, buf2, true, indent);
                 if (buf2.length() > 0) {
                 	buf.append((needsComma == true) ? "," : "");
                 	buf.append(buf2);
@@ -219,9 +227,10 @@ public class JSONProducer {
             }
             // next, collect values as input elements
             StringBuffer buf2 = new StringBuffer();
-            for (Input<?> input : inputs) {
+            for (InputType input : inputs) {
             	StringBuffer buf3 = new StringBuffer();
-                inputToJSON(input.getName(), beastObject, buf3, false, indent);
+            	Object value = getValue(beastObject, input);
+                inputToJSON(input, value, beastObject, buf3, false, indent);
                 if (buf3.length() > 0) {
                 	buf2.append((needsComma == true) ? ",\n" : "\n");
                 	buf2.append(buf3);
@@ -257,7 +266,28 @@ public class JSONProducer {
     } // beastObjectToJSON
 
 
-    /**
+    private Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
+    	if (input.isInput()) {
+    		// input represents simple Input
+    		return beastObject.getInput(input.getName()).get();
+    	} else {
+    		// input represents Param annotation
+    		String methodName = "get" + 
+    		    	input.getName().substring(0, 1).toUpperCase() +
+    		    	input.getName().substring(1);
+    		Method method;
+			try {
+				method = beastObject.getClass().getMethod(methodName);
+				return method.invoke(beastObject);
+			} catch (NoSuchMethodException | SecurityException |IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				Log.err.println("Programmer error: when getting here an InputType was identified, but no Input or getter for Param annotation found");
+				e.printStackTrace();
+				return null;
+			}
+    	}
+	}
+
+	/**
      * produce JSON for an input of a beastObject, both as attribute/value pairs for
      * primitive inputs (if isShort=true) and as individual elements (if bShort=false)
      *
@@ -268,136 +298,127 @@ public class JSONProducer {
      * @throws Exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void inputToJSON(String input0, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) throws Exception {
-        Field[] fields = beastObject.getClass().getFields();
-        
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getType().isAssignableFrom(Input.class)) {
-                final Input input = (Input) fields[i].get(beastObject);
-                if (input.getName().equals(input0)) {
+    private void inputToJSON(InputType input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) throws Exception {
+        if (value != null) {
+        	
+            // distinguish between Map, List, BEASTObject and primitive input types
+            if (value instanceof Map) {
+                if (!isShort) {
+                	Map<String,?> map = (Map<String,?>) value;
+                	StringBuffer buf2 = new StringBuffer();
                 	
-                    // found the input with name input0
-                    if (input.get() != null) {
-                    	
-                        // distinguish between Map, List, BEASTObject and primitive input types
-                        if (input.get() instanceof Map) {
-                            if (!isShort) {
-	                        	Map<String,?> map = (Map<String,?>) input.get();
-	                        	StringBuffer buf2 = new StringBuffer();
-	                        	
-	                        	// determine label width
-	                        	int whiteSpaceWidth = 0;
-	                        	for (String key : map.keySet()) {
-	                        		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
-	                        	}
-	                        	boolean needsComma = false;
-	                        	List<String> keys = new ArrayList<>();
-	                        	keys.addAll(map.keySet());
-	                        	Collections.sort(keys);
-	                        	for (String key : keys) {
-	                            	if (needsComma) {
-	                            		buf2.append(",\n");
-	                            	}
-	                        		buf2.append(indent + " " + key);
-	                        		for (int k = key.length(); k < whiteSpaceWidth; k++) {
-	                        			buf2.append(' ');
-	                        		}
-	                        		buf2.append(" :\"" + map.get(key) +"\"");
-	                        		needsComma = true;
-	                        	}
-	                        	buf.append(buf2);
-                            }
-                        	return;
-                        } else if (input.get() instanceof List) {
-                            if (!isShort) {
-                            	StringBuffer buf2 = new StringBuffer();
-                            	//buf2.append(indent + " \"" + input0 + "\": [\n");
-                            	buf2.append(indent + " " + input0 + ": [\n");
-                            	boolean needsComma = false;
-                            	int oldLen = buf2.length();
-                                for (Object o2 : (List) input.get()) {
-                                	if (needsComma) {
-                                		buf2.append(",\n");
-                                	}
-                                	StringBuffer buf3 = new StringBuffer();
-                                	if (o2 instanceof BEASTInterface) {
-                                		beastObjectToJSON((BEASTInterface) o2, input.getType(), buf3, null, false);
-                                	} else {
-                                		buf2.append(o2.toString());
-                                	}
-                                    buf2.append(buf3);
-                                    needsComma = oldLen < buf2.length();
-                                }
-                                if (buf2.length() != oldLen) {
-                                	buf.append(buf2);
-                                	buf.append("\n" + indent + "  ]");
-                                }
-                            }
-                            return;
-                        } else if (input.get() instanceof BEASTInterface) {
-                        	if (!input.get().equals(input.defaultValue)) {
-                        		
-                        		// Parameters can use short hand notation if they are not in the state 
-                        		// Note this means lower and upper bounds are lost -- no problem for BEAST, but maybe for BEAUti
-                        		if (input.get() instanceof Parameter.Base) {
-                        			Parameter.Base parameter = (Parameter.Base) input.get();
-                        			boolean isInState = false;
-                        			for (Object o : parameter.getOutputs()) {
-                        				if (o instanceof State) {
-                        					isInState = true;
-                        					break;
-                        				}
-                        			}
-                        			if (!isInState) {
-                        				if (isShort) {
-        	                                buf.append(" " + input0 + ": \"" + parameter.getValue() + "\"");
-                        				} else {
-                        					return;
-                        				}
-                        			}
-                        		}
-                        		
-	                            if (isShort && isDone.contains((BEASTInterface) input.get())) {
-	                                buf.append(" " + input0 + ": \"@" + ((BEASTInterface) input.get()).getID() + "\"");
-	                                isInputsDone.add(input);
-	                            }
-	                            if (!isShort && !isInputsDone.contains(input)) {
-	                                beastObjectToJSON((BEASTInterface) input.get(), input.getType(), buf, input0, false);
-	                            }
-                        	}
-                            return;
-                        } else {
-                            // primitive type
-
-                        	if (!input.get().equals(input.defaultValue)) {
-                        		
-	                            String sValue = input.get().toString();
-	                            if (isShort) {
-	                                if (sValue.indexOf('\n') < 0) {
-	                                    buf.append(" " + input0 + ": " + normalise(input, input.get().toString()) + "");
-	                                }
-	                            } else {
-	                                if (sValue.indexOf('\n') >= 0) {
-	                                        buf.append(indent + "" + input0 + ": " + normalise(input, input.get().toString()) + "");
-	                                }
-	                            }
-                        	}
-                            return;
-                        }
-                    } else {
-                        // value=null, no JSON to produce
-                        return;
+                	// determine label width
+                	int whiteSpaceWidth = 0;
+                	for (String key : map.keySet()) {
+                		whiteSpaceWidth = Math.max(whiteSpaceWidth, key.length());
+                	}
+                	boolean needsComma = false;
+                	List<String> keys = new ArrayList<>();
+                	keys.addAll(map.keySet());
+                	Collections.sort(keys);
+                	for (String key : keys) {
+                    	if (needsComma) {
+                    		buf2.append(",\n");
+                    	}
+                		buf2.append(indent + " " + key);
+                		for (int k = key.length(); k < whiteSpaceWidth; k++) {
+                			buf2.append(' ');
+                		}
+                		buf2.append(" :\"" + map.get(key) +"\"");
+                		needsComma = true;
+                	}
+                	buf.append(buf2);
+                }
+            	return;
+            } else if (value instanceof List) {
+                if (!isShort) {
+                	StringBuffer buf2 = new StringBuffer();
+                	//buf2.append(indent + " \"" + input0 + "\": [\n");
+                	buf2.append(indent + " " + input.getName() + ": [\n");
+                	boolean needsComma = false;
+                	int oldLen = buf2.length();
+                    for (Object o2 : (List) value) {
+                    	if (needsComma) {
+                    		buf2.append(",\n");
+                    	}
+                    	StringBuffer buf3 = new StringBuffer();
+                    	if (o2 instanceof BEASTInterface) {
+                    		beastObjectToJSON((BEASTInterface) o2, input.getType(), buf3, null, false);
+                    	} else {
+                    		buf2.append(o2.toString());
+                    	}
+                        buf2.append(buf3);
+                        needsComma = oldLen < buf2.length();
+                    }
+                    if (buf2.length() != oldLen) {
+                    	buf.append(buf2);
+                    	buf.append("\n" + indent + "  ]");
                     }
                 }
+                return;
+            } else if (value instanceof BEASTInterface) {
+            	if (!value.equals(input.getDefaultValue())) {
+            		
+            		// Parameters can use short hand notation if they are not in the state 
+            		// Note this means lower and upper bounds are lost -- no problem for BEAST, but maybe for BEAUti
+            		if (value instanceof Parameter.Base) {
+            			Parameter.Base parameter = (Parameter.Base) value;
+            			boolean isInState = false;
+            			for (Object o : parameter.getOutputs()) {
+            				if (o instanceof State) {
+            					isInState = true;
+            					break;
+            				}
+            			}
+            			if (!isInState) {
+            				if (isShort) {
+                                buf.append(" " + input.getName() + ": \"" + parameter.getValue() + "\"");
+            				} else {
+            					return;
+            				}
+            			}
+            		}
+            		
+                    if (isShort && isDone.contains((BEASTInterface) value)) {
+                        buf.append(" " + input.getName() + ": \"@" + ((BEASTInterface) value).getID() + "\"");
+                        if (!isInputsDone.containsKey(beastObject)) {
+                        	isInputsDone.put(beastObject, new HashSet<>());
+                        }
+                        isInputsDone.get(beastObject).add(input.getName());
+                    }
+                    if (!isShort && (!isInputsDone.containsKey(beastObject) ||
+                    		!isInputsDone.get(beastObject).contains(input.getName()))) {
+                        beastObjectToJSON((BEASTInterface) value, input.getType(), buf, input.getName(), false);
+                    }
+            	}
+                return;
+            } else {
+                // primitive type
+
+            	if (!value.equals(input.getDefaultValue())) {
+            		
+                    String sValue = value.toString();
+                    if (isShort) {
+                        if (sValue.indexOf('\n') < 0) {
+                            buf.append(" " + input.getName() + ": " + normalise(input, value.toString()) + "");
+                        }
+                    } else {
+                        if (sValue.indexOf('\n') >= 0) {
+                                buf.append(indent + "" + input.getName() + ": " + normalise(input, value.toString()) + "");
+                        }
+                    }
+            	}
+                return;
             }
+        } else {
+            // value=null, no JSON to produce
+            return;
         }
-        // should never get here
-        throw new Exception("Could not find input " + input0 + " in beastObject " + beastObject.getID() + " " + beastObject.getClass().getName());
     } // inputToJSON
 
     
    /** convert plain text string to JSON string, replacing some entities **/
-    String normalise(Input<?> input, String str) {
+    private String normalise(InputType input, String str) {
     	str = str.replaceAll("\\\\", "\\\\\\\\");
     	str = str.replaceAll("/", "\\\\/");
     	str = str.replaceAll("\b", "\\\\b");

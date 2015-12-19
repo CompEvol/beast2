@@ -1077,17 +1077,8 @@ public class JSONParser {
 		return inputInfo;
 	} // setInputs
 
-	
-	class InputType {
-		String name;
-		Class<?> type;
-		public InputType(String name, Class<?> type) {
-			this.name = name;
-			this.type = type;
-		}
-	}
-	
-	private List<InputType> listInputs(String className) throws InstantiationException , IllegalAccessException {
+		
+	public static List<InputType> listInputs(String className) throws InstantiationException , IllegalAccessException {
 		List<InputType> inputTypes = new ArrayList<>();
 
 		// First, collect Input members
@@ -1109,7 +1100,7 @@ public class JSONParser {
 					if (input.getType() == null) {
 						input.determineClass(o);
 					}
-					inputTypes.add(new InputType(input.getName(), input.getType()));
+					inputTypes.add(new InputType(input.getName(), input.getType(), true, input.defaultValue));
 				} catch (Exception e) {
 					// seems safe to ignore
 					e.printStackTrace();
@@ -1134,17 +1125,21 @@ public class JSONParser {
 	    	}
 	    	Class<?>[] types  = ctor.getParameterTypes();	    	
     		Type[] gtypes = ctor.getGenericParameterTypes();
-	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
-	    		for (int i = 0; i < types.length; i++) {
+	    	if (types.length > 0 && paramAnnotations.size() > 0) {
+	    		int offset = 0;
+	    		if (types.length == paramAnnotations.size() + 1) {
+	    			offset = 1;
+	    		}
+	    		for (int i = 0; i < paramAnnotations.size(); i++) {
 	    			Param param = paramAnnotations.get(i);
-	    			Type type = types[i];
+	    			Type type = types[i + offset];
 	    			if (type instanceof List) {
-                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i]).getActualTypeArguments();
+                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
                         Class<?> theClass = (Class<?>) genericTypes2[0];
-	    				InputType t = new InputType(param.name(), theClass);
+	    				InputType t = new InputType(param.name(), theClass, false, param.defaultValue());
 	    				inputTypes.add(t);
 	    			} else {
-	    				InputType t = new InputType(param.name(), types[i]);
+	    				InputType t = new InputType(param.name(), types[i + offset], false, param.defaultValue());
 	    				inputTypes.add(t);
 	    			}
 	    		}
@@ -1166,7 +1161,7 @@ public class JSONParser {
 		String closest = null;
 		for (String beastObjectName : beastObjectNames) {
 			String className2 = beastObjectName.substring(beastObjectName.lastIndexOf('.') + 1);
-			int distance = getLevenshteinDistance(name, className2);
+			int distance = XMLParser.getLevenshteinDistance(name, className2);
 
 			if (distance < bestDistance) {
 				bestDistance = distance;
@@ -1174,55 +1169,6 @@ public class JSONParser {
 			}
 		}
 		return closest;
-	}
-
-	/**
-	 * Compute edit distance between two strings = Levenshtein distance *
-	 */
-	public static int getLevenshteinDistance(String s, String t) {
-		if (s == null || t == null) {
-			throw new IllegalArgumentException("Strings must not be null");
-		}
-
-		int n = s.length(); // length of s
-		int m = t.length(); // length of t
-
-		if (n == 0) {
-			return m;
-		} else if (m == 0) {
-			return n;
-		}
-
-		int p[] = new int[n + 1]; // 'previous' cost array, horizontally
-		int d[] = new int[n + 1]; // cost array, horizontally
-		int _d[]; // placeholder to assist in swapping p and d
-
-		// indexes into strings s and t
-		int i; // iterates through s
-		int j; // iterates through t
-		char t_j; // jth character of t
-		int cost; // cost
-		for (i = 0; i <= n; i++) {
-			p[i] = i;
-		}
-		for (j = 1; j <= m; j++) {
-			t_j = t.charAt(j - 1);
-			d[0] = j;
-			for (i = 1; i <= n; i++) {
-				cost = s.charAt(i - 1) == t_j ? 0 : 1;
-				// minimum of cell to the left+1, to the top+1, diagonally left
-				// and up +cost
-				d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
-			}
-			// copy current distance counts to 'previous row' distance counts
-			_d = p;
-			p = d;
-			d = _d;
-		}
-
-		// our last action in the above loop was to switch d and p, so p now
-		// actually has the most recent cost counts
-		return p[n];
 	}
 
 	class NameValuePair {
