@@ -31,6 +31,10 @@ import static beast.util.XMLParserUtils.replaceVariable;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,8 +57,10 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Logger;
 import beast.core.Operator;
+import beast.core.Param;
 import beast.core.Runnable;
 import beast.core.State;
+import beast.core.parameter.Map;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
@@ -149,7 +155,7 @@ public class XMLParser {
     final static String LOG_CLASS = Logger.class.getName();
     final static String OPERATOR_CLASS = Operator.class.getName();
     final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
-    final static String PLUGIN_CLASS = BEASTInterface.class.getName();
+    final static String BEAST_INTERFACE_CLASS = BEASTInterface.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
     final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
@@ -188,6 +194,7 @@ public class XMLParser {
     HashMap<String, Integer[]> likelihoodMap;
     HashMap<String, Node> IDNodeMap;
 
+
     static HashMap<String, String> element2ClassMap;
     static Set<String> reservedElements;
     static {
@@ -206,7 +213,16 @@ public class XMLParser {
         	reservedElements.add(element);
         }
     }
-    
+
+    public class NameValuePair {
+		String name;
+		Object value;
+		public NameValuePair(String name, Object value) {
+			this.name = name;
+			this.value = value;
+		}
+	}
+
     List<BEASTInterface> beastObjectsWaitingToInit;
     List<Node> nodesWaitingToInit;
 
@@ -319,7 +335,7 @@ public class XMLParser {
                 final Node child = children.item(i);
                 System.err.println(child.getNodeName());
                 if (!child.getNodeName().equals(MAP_ELEMENT)) {
-                    beastObjects.add(createObject(child, PLUGIN_CLASS, null));
+                    beastObjects.add(createObject(child, BEAST_INTERFACE_CLASS));
                 }
             }
         }
@@ -389,14 +405,14 @@ public class XMLParser {
             throw new Exception("Need at least one child element");
         }
 
-        final BEASTInterface beastObject = createObject(children.item(i), PLUGIN_CLASS, null);
+        final BEASTInterface beastObject = createObject(children.item(i), BEAST_INTERFACE_CLASS);
         initPlugins();
         return beastObject;
     } // parseFragment
 
     /**
      * Parse XML fragment that will be wrapped in a beast element
-     * before parsing. This allows for ease of creating Plugin objects,
+     * before parsing. This allows for ease of creating beast objects,
      * like this:
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
@@ -432,7 +448,7 @@ public class XMLParser {
         final List<BEASTInterface> beastObjects = new ArrayList<>();
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                final BEASTInterface beastObject = createObject(children.item(i), PLUGIN_CLASS, null);
+                final BEASTInterface beastObject = createObject(children.item(i), BEAST_INTERFACE_CLASS);
                 beastObjects.add(beastObject);
             }
         }
@@ -580,7 +596,7 @@ public class XMLParser {
         }
         final Node mcmc = nodes.item(0);
 
-        m_runnable = (Runnable) createObject(mcmc, RUNNABLE_CLASS, null);
+        m_runnable = (Runnable) createObject(mcmc, RUNNABLE_CLASS);
     } // parseMCMC
 
     /**
@@ -599,7 +615,7 @@ public class XMLParser {
         return false;
     } // checkType
 
-    BEASTInterface createObject(final Node node, final String classname, final BEASTInterface parent) throws Exception {
+    BEASTInterface createObject(final Node node, final String classname) throws Exception {
         // try the IDMap first
         final String id = getID(node);
 
@@ -630,7 +646,7 @@ public class XMLParser {
                 }
                 throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
             } else if (IDNodeMap.containsKey(sIDRef)) {
-                final BEASTInterface beastObject = createObject(IDNodeMap.get(sIDRef), classname, parent);
+                final BEASTInterface beastObject = createObject(IDNodeMap.get(sIDRef), classname);
                 if (checkType(classname, beastObject)) {
                     return beastObject;
                 }
@@ -654,62 +670,53 @@ public class XMLParser {
     	if (specClass.indexOf("BEASTInterface") > 0) {
     		System.out.println(specClass);
     	}
-
-    	Object o = null;
-        // try to create object from sSpecName, taking namespaces in account
-        try {
+        
+		String clazzName = null;
+		// determine clazzName from sSpecName, taking name spaces in account
+		for (String nameSpace : nameSpaces) {
+			if (clazzName == null) {
+				if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
+					clazzName = nameSpace + specClass;
+					break;
+				}
+			}
+		}
+		if (clazzName == null) {
+			// try to create the old-fashioned way by creating the class
             boolean bDone = false;
-            for (final String nameSpace : this.nameSpaces) {
+            for (final String nameSpace : nameSpaces) {
                 try {
                     if (!bDone) {
-                        o = Class.forName(nameSpace + specClass).newInstance();
+                        Class.forName(nameSpace + specClass);
+                        clazzName = nameSpace + specClass;
                         bDone = true;
                     }
-                } catch (InstantiationException e) {
-                    // we only get here when the class exists, but cannot be created
-                    // for instance because it is abstract or an interface
-
-                    throw new Exception("Cannot instantiate class (" + specClass + "). Please check the spec attribute.");
                 } catch (ClassNotFoundException e) {
-                    // TODO: handle exception
+                    // class does not exist -- try another namespace
                 }
             }
-            if (!bDone) {
-                throw new Exception("Class could not be found. Did you mean " + guessClass(specClass) + "?");
-                //throw new ClassNotFoundException(sSpecClass);
-            }
-            // hack required to make log-parsing easier
-            if (o instanceof State) {
-                m_state = (State) o;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new XMLParserException(node, "Cannot create class: " + specClass + ". " + e.getMessage(), 122);
-        }
-        // sanity check
-        if (!(o instanceof BEASTInterface)) {
-            if (o instanceof Input) {
-                // if we got this far, it is a basic input,
-                // that is, one of the form <input name='xyz'>value</input>
-                String name = getAttribute(node, "name");
-                if (name == null) {
-                    name = "value";
-                }
-                final String text = node.getTextContent();
-                if (text.length() > 0) {
-                    setInput(node, parent, name, text);
-                }
-                return null;
-            } else {
-                throw new XMLParserException(node, "Expected object to be instance of Plugin", 108);
-            }
-        }
-        // set id
-        final BEASTInterface beastObject = (BEASTInterface) o;
-        beastObject.setID(id);
-        register(node, beastObject);
-        // process inputs
-        parseInputs(beastObject, node);
+		}
+		if (clazzName == null) {
+			throw new XMLParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
+			// throw new ClassNotFoundException(sSpecClass);
+		}
+				
+		// sanity check		
+		try {
+			Class<?> clazz = Class.forName(clazzName);
+			if (!BEASTInterface.class.isAssignableFrom(clazz)) {
+				throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
+			}
+		} catch (ClassNotFoundException e1) {
+			// should never happen since clazzName is in the list of classes collected by the AddOnManager
+			e1.printStackTrace();
+			throw new RuntimeException(e1);
+		}
+		
+		// process inputs
+		List<NameValuePair> inputInfo = parseInputs(node, clazzName);
+		BEASTInterface beastObject = createBeastObject(node, id, clazzName, inputInfo);
+
         // initialise
         if (needsInitialisation) {
             try {
@@ -727,80 +734,171 @@ public class XMLParser {
         return beastObject;
     } // createObject
 
-    /**
-     * find closest matching class to named class *
-     */
-    String guessClass(final String classname) {
-        String name = classname;
-        if (classname.contains(".")) {
-            name = classname.substring(classname.lastIndexOf('.') + 1);
-        }
-        final List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
-        int bestDistance = Integer.MAX_VALUE;
-        String closestName = null;
-        for (final String beastObject : beastObjectNames) {
-            final String classname2 = beastObject.substring(beastObject.lastIndexOf('.') + 1);
-            final int distance = getLevenshteinDistance(name, classname2);
+    
+	/** create BEASTInterface either using Inputs, or using annotated constructor **/
+	@SuppressWarnings("unchecked")
+	private BEASTInterface createBeastObject(Node node, String ID, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
+		BEASTInterface beastObject = useAnnotatedConstructor(node, ID, clazzName, inputInfo);
+		if (beastObject != null) {
+			return beastObject;
+		}
+		
+		// create new instance using class name
+		Object o = null;
+		try {
+			Class<?> c = Class.forName(clazzName); 
+				o = c.newInstance();
+		} catch (InstantiationException e) {
+			// we only get here when the class exists, but cannot be
+			// created for instance because it is abstract
+			throw new XMLParserException(node, "Cannot instantiate class. Please check the spec attribute.", 1006);
+		} catch (ClassNotFoundException e) {
+			// ignore -- class was found in beastObjectNames before
+		} catch (IllegalAccessException e) {
+			// T O D O Auto-generated catch block
+			e.printStackTrace();
+			throw new XMLParserException(node, "Cannot access class. Please check the spec attribute.", 1011);
+		}
+		
+		// set id
+		beastObject = (BEASTInterface) o;
+		beastObject.setID(ID);
+
+		// hack required to make log-parsing easier
+		if (o instanceof State) {
+			m_state = (State) o;
+		}
+
+		// process inputs for annotated constructors
+		for (NameValuePair pair : inputInfo) {
+			if (pair.value instanceof BEASTInterface) {
+				setInput(node, beastObject, pair.name, (BEASTInterface) pair.value);
+			} else if (pair.value instanceof String) {
+				setInput(node, beastObject, pair.name, (String) pair.value);
+			} else {
+				throw new RuntimeException("Programmer error: value should be String or BEASTInterface");
+			}
+		}
+		
+		// fill in missing inputs, if an input provider is available
+		try {
+			if (requiredInputProvider != null) {
+				for (Input<?> input : beastObject.listInputs()) {
+					if (input.get() == null && input.getRule() == Validate.REQUIRED) {
+						Object o2 = requiredInputProvider.createInput(beastObject, input, partitionContext);
+						if (o2 != null) {
+							input.setValue(o2, beastObject);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new XMLParserException(node, e.getMessage(), 1008);			
+		}
+		
+		// sanity check: all attributes should be valid input names
+		if (!(beastObject instanceof Map)) {
+			for (NameValuePair pair : inputInfo) {
+				String name = pair.name;
+				if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
+					try {
+						beastObject.getInput(name);
+					} catch (Exception e) {
+						throw new XMLParserException(node, e.getMessage(), 1009);
+					}
+				}
+			}
+		}
+		
+		// make sure object o is in outputs of inputs
+		for (NameValuePair pair : inputInfo) {
+			if (pair.value instanceof BEASTInterface) {
+				((BEASTInterface) pair.value).getOutputs().add(o);
+			}	
+		}
+		
+
+		register(node, beastObject);
+		return beastObject;
+	}
+
+    
+	@SuppressWarnings("rawtypes")
+	private BEASTInterface useAnnotatedConstructor(Node node, String iD, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(clazzName);
+		} catch (ClassNotFoundException e) {
+			// cannot get here, since we checked the class existed before
+			e.printStackTrace();
+		}
+	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
+	    for (Constructor<?> ctor : allConstructors) {
+	    	Annotation[][] annotations = ctor.getParameterAnnotations();
+	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	for (Annotation [] a0 : annotations) {
+		    	for (Annotation a : a0) {
+		    		if (a instanceof Param) {
+		    			paramAnnotations.add((Param) a);
+		    		}
+	    		}
+	    	}
+	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+    		//Type[] gtypes = ctor.getGenericParameterTypes();
+	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
+	    		Object [] args = new Object[types.length];
+	    		for (int i = 0; i < types.length; i++) {
+	    			Param param = paramAnnotations.get(i);
+	    			Type type = types[i];
+	    			if (type instanceof List) {
+	    				if (args[i] == null) {
+	    					// no need to parameterise list due to type erasure
+	    					args[i] = new ArrayList();
+	    				}
+	    				Object value = getValue(param, types[i], inputInfo);
+	    				((List)args[i]).add(value);
+	    			} else {
+	    				args[i] = getValue(param, types[i], inputInfo);
+	    			}
+	    		}
+	    		// TODO: more error checking here to ensure all inputs are used
+	    		try {
+					Object o = ctor.newInstance(args);
+					BEASTInterface beastObject = (BEASTInterface) o;
+					register(node, beastObject);
+					return beastObject;
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new XMLParserException(node, "Could not create object: " + e.getMessage(), 1012);
+				}
+	    	}
+		}
+		return null;
+	}
+
+	private Object getValue(Param param, Class<?> type, List<NameValuePair> inputInfo) {
+		for (NameValuePair pair : inputInfo) {
+			if (pair.name.equals(param.name())) {
+				if (type.isAssignableFrom(Integer.class)) {
+					return Integer.parseInt((String) pair.value);
+				}
+				if (type.isAssignableFrom(Double.class)) {
+					return Double.parseDouble((String) pair.value);
+				}
+				return pair.value;
+			}
+		}
+		return param.defaultValue();
+	}
 
 
-            if (distance < bestDistance) {
-                bestDistance = distance;
-                closestName = beastObject;
-            }
-        }
-        return closestName;
-    }
 
-
-    /**
-     * Compute edit distance between two strings = Levenshtein distance *
-     */
+	@Deprecated // use XMLParserUtils.getLevenshteinDistance instead
     public static int getLevenshteinDistance(final String s, final String t) {
-        if (s == null || t == null) {
-            throw new IllegalArgumentException("Strings must not be null");
-        }
-
-        final int n = s.length(); // length of s
-        final int m = t.length(); // length of t
-
-        if (n == 0) {
-            return m;
-        } else if (m == 0) {
-            return n;
-        }
-
-        int p[] = new int[n + 1]; //'previous' cost array, horizontally
-        int d[] = new int[n + 1]; // cost array, horizontally
-        int _d[]; //placeholder to assist in swapping p and d
-
-        // indexes into strings s and t
-        int i; // iterates through s
-        int j; // iterates through t
-        char t_j; // jth character of t
-        int cost; // cost
-        for (i = 0; i <= n; i++) {
-            p[i] = i;
-        }
-        for (j = 1; j <= m; j++) {
-            t_j = t.charAt(j - 1);
-            d[0] = j;
-            for (i = 1; i <= n; i++) {
-                cost = s.charAt(i - 1) == t_j ? 0 : 1;
-                // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
-                d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
-            }
-            // copy current distance counts to 'previous row' distance counts
-            _d = p;
-            p = d;
-            d = _d;
-        }
-
-        // our last action in the above loop was to switch d and p, so p now
-        // actually has the most recent cost counts
-        return p[n];
+    	return XMLParserUtils.getLevenshteinDistance(s, t);
     }
-
-    void parseInputs(final BEASTInterface parent, final Node node) throws Exception {
+    
+    private List<NameValuePair> parseInputs(Node node, String clazzName) throws Exception {
+    	List<NameValuePair> inputInfo = new ArrayList<>();
         // first, process attributes
         final NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
@@ -817,12 +915,12 @@ public class XMLParser {
                         element.setAttribute("idref", idRef);
                         // add child in case things go belly up, and an XMLParserException is thrown
                         node.appendChild(element);
-                        final BEASTInterface beastObject = createObject(element, PLUGIN_CLASS, parent);
-                        // it is save to remove the elment now
+                        final BEASTInterface beastObject = createObject(element, BEAST_INTERFACE_CLASS);
+                        // it is save to remove the element now
                         node.removeChild(element);
-                        setInput(node, parent, name, beastObject);
+                        inputInfo.add(new NameValuePair(name, beastObject));
                     } else {
-                        setInput(node, parent, name, value);
+                        inputInfo.add(new NameValuePair(name, value));
                     }
                 }
             }
@@ -841,13 +939,13 @@ public class XMLParser {
                     name = element;
                 }
                 // resolve base class
-                String classname = PLUGIN_CLASS;
+                String classname = BEAST_INTERFACE_CLASS;
                 if (element2ClassMap.containsKey(element)) {
                     classname = element2ClassMap.get(element);
                 }
-                final BEASTInterface childItem = createObject(child, classname, parent);
+                final BEASTInterface childItem = createObject(child, classname);
                 if (childItem != null) {
-                    setInput(node, parent, name, childItem);
+                	inputInfo.add(new NameValuePair(name, childItem));
                 }
                 childElements++;
             } else if (child.getNodeType() == Node.CDATA_SECTION_NODE ||
@@ -856,31 +954,21 @@ public class XMLParser {
             }
         }
         if (!text.matches("\\s*")) {
-            setInput(node, parent, "value", text);
+        	inputInfo.add(new NameValuePair("value", text));
         }
 
         if (childElements == 0) {
             final String content = node.getTextContent();
             if (content != null && content.length() > 0 && content.replaceAll("\\s", "").length() > 0) {
                 try {
-                    setInput(node, parent, "value", content);
+                	inputInfo.add(new NameValuePair("value", content));
                 } catch (Exception e) {
                     //
                 }
             }
         }
 
-        // fill in missing inputs, if an input provider is available
-        if (requiredInputProvider != null) {
-            for (final Input<?> input : parent.listInputs()) {
-                if (input.get() == null && input.getRule() == Validate.REQUIRED) {
-                    final Object o = requiredInputProvider.createInput(parent, input, partitionContext);
-                    if (o != null) {
-                        input.setValue(o, parent);
-                    }
-                }
-            }
-        }
+        return inputInfo;
     } // setInputs
 
     void setInput(final Node node, final BEASTInterface beastObject, final String name, final BEASTInterface beastObject2) throws XMLParserException {
@@ -939,7 +1027,7 @@ public class XMLParser {
     }
 
     /**
-     * records id in IDMap, for ease of retrieving Plugins associated with idrefs *
+     * records id in IDMap, for ease of retrieving beast objects associated with idrefs *
      */
     void register(final Node node, final BEASTInterface beastObject) {
         final String sID = getID(node);

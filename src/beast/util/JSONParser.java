@@ -58,7 +58,7 @@ import beast.core.util.Log;
 /** parses BEAST JSON file into a set of BEAST objects **/
 public class JSONParser {
 	final static String INPUT_CLASS = Input.class.getName();
-	final static String YOBJECT_CLASS = BEASTInterface.class.getName();
+	final static String BEAST_OBJECT_CLASS = BEASTInterface.class.getName();
 	final static String RUNNABLE_CLASS = Runnable.class.getName();
 
 	Runnable runnable;
@@ -76,7 +76,6 @@ public class JSONParser {
 	HashMap<String, BEASTInterface> IDMap;
 	HashMap<String, Integer[]> likelihoodMap;
 	HashMap<String, JSONObject> IDNodeMap;
-	List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
 
 	static HashMap<String, String> element2ClassMap;
 	static Set<String> reservedElements;
@@ -791,7 +790,7 @@ public class JSONParser {
 		// determine clazzName from sSpecName, taking name spaces in account
 		for (String nameSpace : nameSpaces) {
 			if (clazzName == null) {
-				if (beastObjectNames.contains(nameSpace + specClass)) {
+				if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
 					clazzName = nameSpace + specClass;
 					break;
 				}
@@ -813,7 +812,7 @@ public class JSONParser {
             }
 		}
 		if (clazzName == null) {
-			throw new JSONParserException(node, "Class could not be found. Did you mean " + guessClass(specClass) + "?", 1017);
+			throw new JSONParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
 			// throw new ClassNotFoundException(sSpecClass);
 		}
 				
@@ -844,7 +843,7 @@ public class JSONParser {
 		}
 		
 		// process inputs
-		List<NameValuePair> inputInfo = parseInputs(node, clazzName);
+		List<JSONNameValuePair> inputInfo = parseInputs(node, clazzName);
 		BEASTInterface beastObject = createBeastObject(node, ID, clazzName, inputInfo);
 		// initialise
 		if (initialise) {
@@ -907,7 +906,7 @@ public class JSONParser {
 
 	/** create BEASTInterface either using Inputs, or using annotated constructor **/
 	@SuppressWarnings("unchecked")
-	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
+	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<JSONNameValuePair> inputInfo) throws JSONParserException {
 		BEASTInterface beastObject = useAnnotatedConstructor(node, ID, clazzName, inputInfo);
 		if (beastObject != null) {
 			return beastObject;
@@ -940,7 +939,7 @@ public class JSONParser {
 		}
 
 		// process inputs for annotated constructors
-		for (NameValuePair pair : inputInfo) {
+		for (JSONNameValuePair pair : inputInfo) {
 			setInput(node, beastObject, pair.name, pair.value);
 		}
 		
@@ -974,7 +973,7 @@ public class JSONParser {
 		}
 		
 		// make sure object o is in outputs of inputs
-		for (NameValuePair pair : inputInfo) {
+		for (JSONNameValuePair pair : inputInfo) {
 			if (pair.value instanceof BEASTInterface) {
 				((BEASTInterface) pair.value).getOutputs().add(o);
 			}	
@@ -986,7 +985,7 @@ public class JSONParser {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
+	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<JSONNameValuePair> inputInfo) throws JSONParserException {
 		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(clazzName);
@@ -1027,6 +1026,7 @@ public class JSONParser {
 	    		try {
 					Object o = ctor.newInstance(args);
 					BEASTInterface beastObject = (BEASTInterface) o;
+					register(node, beastObject);
 					return beastObject;
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					throw new JSONParserException(node, "Could not create object: " + e.getMessage(), 1012);
@@ -1036,8 +1036,8 @@ public class JSONParser {
 		return null;
 	}
 
-	private Object getValue(Param param, List<NameValuePair> inputInfo) {
-		for (NameValuePair pair : inputInfo) {
+	private Object getValue(Param param, List<JSONNameValuePair> inputInfo) {
+		for (JSONNameValuePair pair : inputInfo) {
 			if (pair.name.equals(param.name())) {
 				return pair.value;
 			}
@@ -1045,8 +1045,8 @@ public class JSONParser {
 		return param.defaultValue();
 	}
 
-	List<NameValuePair> parseInputs(JSONObject node, String className) throws JSONParserException {
-		List<NameValuePair> inputInfo = new ArrayList<>();
+	List<JSONNameValuePair> parseInputs(JSONObject node, String className) throws JSONParserException {
+		List<JSONNameValuePair> inputInfo = new ArrayList<>();
 
 		if (node.keySet() != null) {
 			try {
@@ -1076,40 +1076,17 @@ public class JSONParser {
 		return inputInfo;
 	} // setInputs
 
-		
 
-	/**
-	 * find closest matching class to named class *
-	 */
-	private String guessClass(String className) {
-		String name = className;
-		if (className.contains(".")) {
-			name = className.substring(className.lastIndexOf('.') + 1);
-		}
-		int bestDistance = Integer.MAX_VALUE;
-		String closest = null;
-		for (String beastObjectName : beastObjectNames) {
-			String className2 = beastObjectName.substring(beastObjectName.lastIndexOf('.') + 1);
-			int distance = XMLParser.getLevenshteinDistance(name, className2);
-
-			if (distance < bestDistance) {
-				bestDistance = distance;
-				closest = beastObjectName;
-			}
-		}
-		return closest;
-	}
-
-	class NameValuePair {
+	class JSONNameValuePair {
 		String name;
 		Object value;
-		public NameValuePair(String name, Object value) {
+		public JSONNameValuePair(String name, Object value) {
 			this.name = name;
 			this.value = value;
 		}
 	}
 	
-	private void processInput(String name, JSONObject node, List<NameValuePair> map, List<InputType> inputs) throws Exception {
+	private void processInput(String name, JSONObject node, List<JSONNameValuePair> map, List<InputType> inputs) throws Exception {
 		if (node.has(name)) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
 				Object o = node.get(name);
@@ -1119,25 +1096,25 @@ public class JSONParser {
 						String IDRef = value.substring(1);
 						JSONObject element = new JSONObject();
 						element.put("idref", IDRef);
-						BEASTInterface beastObject = createObject(element, YOBJECT_CLASS);
-						map.add(new NameValuePair(name, beastObject));
+						BEASTInterface beastObject = createObject(element, BEAST_OBJECT_CLASS);
+						map.add(new JSONNameValuePair(name, beastObject));
 						//setInput(node, parent, name, beastObject);
 					} else {
-						map.add(new NameValuePair(name, value));
+						map.add(new JSONNameValuePair(name, value));
 						//setInput(node, parent, name, value);
 					}
 				} else if (o instanceof Number) {
-					map.add(new NameValuePair(name, o));
+					map.add(new JSONNameValuePair(name, o));
 					//parent.setInputValue(name, o);
 				} else if (o instanceof Boolean) {
-					map.add(new NameValuePair(name, o));
+					map.add(new JSONNameValuePair(name, o));
 					//parent.setInputValue(name, o);
 				} else if (o instanceof JSONObject) {
 					JSONObject child = (JSONObject) o;
 					String className = getClassName(child, name, inputs);
 					BEASTInterface childItem = createObject(child, className);
 					if (childItem != null) {
-						map.add(new NameValuePair(name, childItem));
+						map.add(new JSONNameValuePair(name, childItem));
 						//setInput(node, parent, name, childItem);
 					}
 					// nChildElements++;
@@ -1150,11 +1127,11 @@ public class JSONParser {
 							String className = getClassName(child, name, inputs);
 							BEASTInterface childItem = createObject(child, className);
 							if (childItem != null) {
-								map.add(new NameValuePair(name, childItem));
+								map.add(new JSONNameValuePair(name, childItem));
 								//setInput(node, parent, name, childItem);
 							}
 						} else {
-							map.add(new NameValuePair(name, o2));
+							map.add(new JSONNameValuePair(name, o2));
 							//parent.setInputValue(name, o2);									
 						}
 					}
