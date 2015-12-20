@@ -900,7 +900,7 @@ public class XMLParser {
     private List<NameValuePair> parseInputs(Node node, String clazzName) throws Exception {
     	List<NameValuePair> inputInfo = new ArrayList<>();
         // first, process attributes
-        final NamedNodeMap atts = node.getAttributes();
+        NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
             for (int i = 0; i < atts.getLength(); i++) {
                 final String name = atts.item(i).getNodeName();
@@ -943,10 +943,33 @@ public class XMLParser {
                 if (element2ClassMap.containsKey(element)) {
                     classname = element2ClassMap.get(element);
                 }
-                final BEASTInterface childItem = createObject(child, classname);
-                if (childItem != null) {
-                	inputInfo.add(new NameValuePair(name, childItem));
+                // test for special cases: <xyz>value</xyz>  and <input name="xyz">value</input>
+                // where value is a string
+                boolean done = false;
+                atts = child.getAttributes();
+                if (atts.getLength() == 0 || (element.equals("input") && atts.getLength() == 1 && name != null)) {
+                	NodeList grantchildren = child.getChildNodes();
+                	boolean hasElements = false;
+                	for (int j = 0; j < grantchildren.getLength(); j++) {
+                		if (grantchildren.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                			hasElements = true;
+                			break;
+                		}
+                	}
+                	if (!hasElements) {
+                		String content = child.getTextContent();
+                		inputInfo.add(new NameValuePair(name, content));
+                		done = true;
+                	}
                 }
+                
+                // create object from element, if not already done so
+                if (!done) {
+                    final BEASTInterface childItem = createObject(child, classname);
+                    if (childItem != null) {
+                    	inputInfo.add(new NameValuePair(name, childItem));
+                    }                		
+            	}
                 childElements++;
             } else if (child.getNodeType() == Node.CDATA_SECTION_NODE ||
                     child.getNodeType() == Node.TEXT_NODE) {
