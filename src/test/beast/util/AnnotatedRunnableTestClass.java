@@ -4,10 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import beast.core.BEASTInterface;
+import beast.core.Description;
 import beast.core.Param;
 import beast.core.Runnable;
 
-public class JSONTestRunnable extends Runnable {
+@Description("Used for testing purposed only")
+public class AnnotatedRunnableTestClass extends Runnable {
     
     int param1;
     
@@ -19,7 +21,7 @@ public class JSONTestRunnable extends Runnable {
 		this.param1 = param1;
 	}
 
-	public JSONTestRunnable(@Param(description = "test to see whether the JSON parser/producer can handle annotated constructors", name = "param1", defaultValue = "10") Integer param1) {
+	public AnnotatedRunnableTestClass(@Param(description = "test to see whether the JSON parser/producer can handle annotated constructors", name = "param1", defaultValue = "10") Integer param1) {
     	this.param1 = param1;
     }
     

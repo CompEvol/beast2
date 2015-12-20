@@ -31,7 +31,7 @@ public class JSONTest extends TestCase {
 	
     @Test
     public void testAnnotatedConstructor() throws Exception {
-    	JSONTestRunnable t = new JSONTestRunnable(3);
+    	AnnotatedRunnableTestClass t = new AnnotatedRunnableTestClass(3);
     	
     	JSONProducer producer = new JSONProducer();
     	String json = producer.toJSON(t);
@@ -46,6 +46,7 @@ public class JSONTest extends TestCase {
     	
     	JSONParser parser = new JSONParser();
     	BEASTInterface b = parser.parseFile(new File("/tmp/JSONTest.json"));
-    	assertEquals(3, ((JSONTestRunnable) b).getParam1());
+    	assertEquals(3, ((AnnotatedRunnableTestClass) b).getParam1());
     }
+
 }
