@@ -32,7 +32,6 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1053,7 +1052,7 @@ public class JSONParser {
 			try {
 				// parse inputs in occurrence of inputs in the parent object
 				// this determines the order in which initAndValidate is called
-				List<InputType> inputs = listInputs(className);
+				List<InputType> inputs = XMLParserUtils.listInputs(Class.forName(className), null);
 				Set<String> done = new HashSet<>();
 				for (InputType input : inputs) {
 					String name = input.name;
@@ -1078,76 +1077,6 @@ public class JSONParser {
 	} // setInputs
 
 		
-	public static List<InputType> listInputs(String className) throws InstantiationException , IllegalAccessException {
-		List<InputType> inputTypes = new ArrayList<>();
-
-		// First, collect Input members
-		BEASTInterface o = null;
-		Class<?> clazz = null;
-		try {
-			clazz = Class.forName(className);
-		} catch (ClassNotFoundException e1) {
-			// cannot get here -- it was already checked the name exists
-			e1.printStackTrace();
-		}
-		try {
-			o = (BEASTInterface) clazz.newInstance();
-			List<Input<?>> inputs = null;
-			inputs = o.listInputs();
-			for (Input<?> input : inputs) {
-				try {
-					// force class types to be determined
-					if (input.getType() == null) {
-						input.determineClass(o);
-					}
-					inputTypes.add(new InputType(input.getName(), input.getType(), true, input.defaultValue));
-				} catch (Exception e) {
-					// seems safe to ignore
-					e.printStackTrace();
-				}
-			}
-		} catch (InstantiationException e) {
-			// this can happen if there is no constructor without arguments
-		}
-		
-		
-		// Second, collect types of annotated constructor
-	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
-	    for (Constructor<?> ctor : allConstructors) {
-	    	Annotation[][] annotations = ctor.getParameterAnnotations();
-	    	List<Param> paramAnnotations = new ArrayList<>();
-	    	for (Annotation [] a0 : annotations) {
-		    	for (Annotation a : a0) {
-		    		if (a instanceof Param) {
-		    			paramAnnotations.add((Param) a);
-		    		}
-		    	}
-	    	}
-	    	Class<?>[] types  = ctor.getParameterTypes();	    	
-    		Type[] gtypes = ctor.getGenericParameterTypes();
-	    	if (types.length > 0 && paramAnnotations.size() > 0) {
-	    		int offset = 0;
-	    		if (types.length == paramAnnotations.size() + 1) {
-	    			offset = 1;
-	    		}
-	    		for (int i = 0; i < paramAnnotations.size(); i++) {
-	    			Param param = paramAnnotations.get(i);
-	    			Type type = types[i + offset];
-	    			if (type instanceof List) {
-                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
-                        Class<?> theClass = (Class<?>) genericTypes2[0];
-	    				InputType t = new InputType(param.name(), theClass, false, param.defaultValue());
-	    				inputTypes.add(t);
-	    			} else {
-	    				InputType t = new InputType(param.name(), types[i + offset], false, param.defaultValue());
-	    				inputTypes.add(t);
-	    			}
-	    		}
-	    	}
-		}
-		
-		return inputTypes;
-	}
 
 	/**
 	 * find closest matching class to named class *

@@ -2,9 +2,6 @@ package beast.util;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,13 +13,10 @@ import java.util.Set;
 
 import beast.app.BEASTVersion;
 import beast.core.BEASTInterface;
-import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.Parameter;
-import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 
 
@@ -52,7 +46,6 @@ public class JSONProducer {
      * list of objects already converted to JSON, so an idref suffices
      */
     Set<BEASTInterface> isDone;
-    @SuppressWarnings("rawtypes")
     Map<BEASTInterface, Set<String>> isInputsDone;
     /**
      * list of IDs of elements produces, used to prevent duplicate ID generation
@@ -214,10 +207,10 @@ public class JSONProducer {
             // process inputs of this beastObject
             // first, collect values as attributes
             //List<Input<?>> inputs = beastObject.listInputs();
-            List<InputType> inputs = JSONParser.listInputs(beastObject.getClass().getName());
+            List<InputType> inputs = XMLParserUtils.listInputs(beastObject.getClass(), beastObject);
             for (InputType input : inputs) {
             	StringBuffer buf2 = new StringBuffer();
-            	Object value = getValue(beastObject, input);
+            	Object value = XMLParserUtils.getValue(beastObject, input);
                 inputToJSON(input, value, beastObject, buf2, true, indent);
                 if (buf2.length() > 0) {
                 	buf.append((needsComma == true) ? "," : "");
@@ -229,7 +222,7 @@ public class JSONProducer {
             StringBuffer buf2 = new StringBuffer();
             for (InputType input : inputs) {
             	StringBuffer buf3 = new StringBuffer();
-            	Object value = getValue(beastObject, input);
+            	Object value = XMLParserUtils.getValue(beastObject, input);
                 inputToJSON(input, value, beastObject, buf3, false, indent);
                 if (buf3.length() > 0) {
                 	buf2.append((needsComma == true) ? ",\n" : "\n");
@@ -265,27 +258,6 @@ public class JSONProducer {
         //}
     } // beastObjectToJSON
 
-
-    private Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
-    	if (input.isInput()) {
-    		// input represents simple Input
-    		return beastObject.getInput(input.getName()).get();
-    	} else {
-    		// input represents Param annotation
-    		String methodName = "get" + 
-    		    	input.getName().substring(0, 1).toUpperCase() +
-    		    	input.getName().substring(1);
-    		Method method;
-			try {
-				method = beastObject.getClass().getMethod(methodName);
-				return method.invoke(beastObject);
-			} catch (NoSuchMethodException | SecurityException |IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				Log.err.println("Programmer error: when getting here an InputType was identified, but no Input or getter for Param annotation found");
-				e.printStackTrace();
-				return null;
-			}
-    	}
-	}
 
 	/**
      * produce JSON for an input of a beastObject, both as attribute/value pairs for

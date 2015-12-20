@@ -1,6 +1,12 @@
 package beast.util;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +25,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
+
+import beast.core.BEASTInterface;
+import beast.core.Input;
+import beast.core.Param;
+import beast.core.util.Log;
 
 /**
  *
@@ -156,6 +167,99 @@ public class XMLParserUtils {
         }
     } // replace
 
+    
+    /** return list of input types specified by Inputs or Param annotations 
+     * @param clazz Class to generate the list for
+     * @param beastObject instantiation of the class, or null if not available
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+	public static List<InputType> listInputs(Class<?> clazz, BEASTInterface beastObject) throws InstantiationException , IllegalAccessException {
+		List<InputType> inputTypes = new ArrayList<>();
 
+		// First, collect Input members
+		try {
+			if (beastObject == null) {
+				beastObject = (BEASTInterface) clazz.newInstance();
+			}
+			List<Input<?>> inputs = null;
+			inputs = beastObject.listInputs();
+			for (Input<?> input : inputs) {
+				try {
+					// force class types to be determined
+					if (input.getType() == null) {
+						input.determineClass(beastObject);
+					}
+					inputTypes.add(new InputType(input.getName(), input.getType(), true, input.defaultValue));
+				} catch (Exception e) {
+					// seems safe to ignore
+					e.printStackTrace();
+				}
+			}
+		} catch (InstantiationException e) {
+			// this can happen if there is no constructor without arguments, 
+			// e.g. when there are annotated constructors only
+		}
 
+				
+		// Second, collect types of annotated constructor
+	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
+	    for (Constructor<?> ctor : allConstructors) {
+	    	Annotation[][] annotations = ctor.getParameterAnnotations();
+	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	for (Annotation [] a0 : annotations) {
+		    	for (Annotation a : a0) {
+		    		if (a instanceof Param) {
+		    			paramAnnotations.add((Param) a);
+		    		}
+		    	}
+	    	}
+	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+    		Type[] gtypes = ctor.getGenericParameterTypes();
+	    	if (types.length > 0 && paramAnnotations.size() > 0) {
+	    		int offset = 0;
+	    		if (types.length == paramAnnotations.size() + 1) {
+	    			offset = 1;
+	    		}
+	    		for (int i = 0; i < paramAnnotations.size(); i++) {
+	    			Param param = paramAnnotations.get(i);
+	    			Type type = types[i + offset];
+	    			if (type instanceof List) {
+                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
+                        Class<?> theClass = (Class<?>) genericTypes2[0];
+	    				InputType t = new InputType(param.name(), theClass, false, param.defaultValue());
+	    				inputTypes.add(t);
+	    			} else {
+	    				InputType t = new InputType(param.name(), types[i + offset], false, param.defaultValue());
+	    				inputTypes.add(t);
+	    			}
+	    		}
+	    	}
+		}
+		
+		return inputTypes;
+	}
+
+	/** get value of the input of a beast object with name specified in input **/
+    static Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
+    	if (input.isInput()) {
+    		// input represents simple Input
+    		return beastObject.getInput(input.getName()).get();
+    	} else {
+    		// input represents Param annotation
+    		String methodName = "get" + 
+    		    	input.getName().substring(0, 1).toUpperCase() +
+    		    	input.getName().substring(1);
+    		Method method;
+			try {
+				method = beastObject.getClass().getMethod(methodName);
+				return method.invoke(beastObject);
+			} catch (NoSuchMethodException | SecurityException |IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				Log.err.println("Programmer error: when getting here an InputType was identified, but no Input or getter for Param annotation found");
+				e.printStackTrace();
+				return null;
+			}
+    	}
+	}
 }

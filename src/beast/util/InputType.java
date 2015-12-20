@@ -59,4 +59,8 @@ class InputType {
 		this.defaultValue = defaultValue;
 	}
 
+	@Override
+	public String toString() {
+		return getName() + " " + getType().getName() + " " + isInput() + " " + getDefaultValue();
+	}
 }
