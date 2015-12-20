@@ -30,7 +30,6 @@ package beast.util;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +54,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import beast.core.BEASTInterface;
-import beast.core.Input;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -108,19 +106,19 @@ public class XMLProducer extends XMLParser {
             IDs = new HashSet<>();
             indent = 0;
             pluginToXML(beastObject, buf, null, true);
-            String sEndBeast = "</" + XMLParser.BEAST_ELEMENT + ">";
-            buf.append(sEndBeast);
+            String endBeastString = "</" + XMLParser.BEAST_ELEMENT + ">";
+            buf.append(endBeastString);
             //return buf.toString();
             // beautify XML hierarchy
-            String sXML = cleanUpXML(buf.toString(), m_sXMLBeuatifyXSL);
+            String xml = cleanUpXML(buf.toString(), m_sXMLBeuatifyXSL);
             // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
             // String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
-            String sXML2 = sXML;
-            sXML = findPlates(sXML2);
+            String xml2 = xml;
+            xml = findPlates(xml2);
             // beatify by applying name spaces to spec attributes
-            String[] sNameSpaces = DEFAULT_NAMESPACE.split(":");
-            for (String sNameSpace : sNameSpaces) {
-                sXML = sXML.replaceAll("spec=\"" + sNameSpace + ".", "spec=\"");
+            String[] nameSpaces = DEFAULT_NAMESPACE.split(":");
+            for (String nameSpace : nameSpaces) {
+                xml = xml.replaceAll("spec=\"" + nameSpace + ".", "spec=\"");
             }
 
 
@@ -132,31 +130,31 @@ public class XMLProducer extends XMLParser {
                     }
                 }
             }
-            int iEnd = sXML.indexOf(sEndBeast);
+            int endIndex = xml.indexOf(endBeastString);
             String extras = buf.toString();
             // prevent double -- inside XML comment, this can happen in sequences
             extras = extras.replaceAll("--","- - ");
-            sXML = sXML.substring(0, iEnd) //+ "\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n" + 
+            xml = xml.substring(0, endIndex) //+ "\n\n<!-- " + DO_NOT_EDIT_WARNING + " \n\n" + 
             	//extras +  "\n\n-->\n\n" 
-            		+ sEndBeast;
+            		+ endBeastString;
 
-            sXML = sXML.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
+            xml = xml.replaceAll("xmlns=\"http://www.w3.org/TR/xhtml1/strict\"", "");
             
-            sXML = dedupName(sXML);
-            sXML = sortTags(sXML);
+            xml = dedupName(xml);
+            xml = sortTags(xml);
             
 
             //insert newlines in alignments
-            int k = sXML.indexOf("<data ");
-            StringBuffer buf2 = new StringBuffer(sXML); 
+            int k = xml.indexOf("<data ");
+            StringBuffer buf2 = new StringBuffer(xml); 
             while (k > 0) {
-            	while (sXML.charAt(k) != '>') {
-            		if (sXML.charAt(k) == ' ' && !sXML.startsWith("idref", k+1)) {
+            	while (xml.charAt(k) != '>') {
+            		if (xml.charAt(k) == ' ' && !xml.startsWith("idref", k+1)) {
             			buf2.setCharAt(k, '\n');
             		}
             		k++;
             	}
-            	k = sXML.indexOf("<data ", k + 1);
+            	k = xml.indexOf("<data ", k + 1);
             }
             
 
@@ -168,9 +166,9 @@ public class XMLProducer extends XMLParser {
     } // toXML
 
     // ensure attributes are ordered so that id goes first, then spec, then remainder of attributes
-    private String sortTags(String sXML) {
+    private String sortTags(String xml) {
     	//if (true) return sXML;
-    	String [] strs = sXML.split("<");
+    	String [] strs = xml.split("<");
     	StringBuilder bf = new StringBuilder();
     	bf.append(strs[0]);
     	for (int i = 1; i < strs.length; i++) {
@@ -250,44 +248,44 @@ public class XMLProducer extends XMLParser {
     	return s.toArray(new String []{});
     }
 
-	String dedupName(String sXML) {
+	String dedupName(String xml) {
         // replace <$x name="$y" idref="$z"/> and <$x idref="$z" name="$y"/> 
         // with <$y idref="$z"/>
         StringBuilder sb = new StringBuilder();
         int i = -1;
-        while (++i < sXML.length()) {
-        	char c = sXML.charAt(i);
+        while (++i < xml.length()) {
+        	char c = xml.charAt(i);
         	if (c == '<') {
                 StringBuilder tag = new StringBuilder();
         		tag.append(c);
-        		while (((c = sXML.charAt(++i)) != ' ') && (c != '/') && c != '>') {
+        		while (((c = xml.charAt(++i)) != ' ') && (c != '/') && c != '>') {
         			tag.append(c);
         		}
         		if (c != '/' && c != '>') {
                     StringBuilder tag2 = new StringBuilder();
-            		while ((c = sXML.charAt(++i)) != '=') {
+            		while ((c = xml.charAt(++i)) != '=') {
             			tag2.append(c);
             		}
             		if (tag2.toString().equals("name")) {
                         ++i;
                         StringBuilder value2 = new StringBuilder();
-                		while ((c = sXML.charAt(++i)) != '"') {
+                		while ((c = xml.charAt(++i)) != '"') {
                 			value2.append(c);
                 		}
                         StringBuilder tag3 = new StringBuilder();
-                    	c = sXML.charAt(++i);
+                    	c = xml.charAt(++i);
                         if (c != '>') {
                             if (c == '/') {
                         		tag3.append(c);
                             }
-                        	while (((c = sXML.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
+                        	while (((c = xml.charAt(++i)) != '=') && (c != '/') && (c != '>')) {
                         		tag3.append(c);
                         	}
                         }
                 		if (c != '/' && c != '>' && tag3.toString().equals("idref")) {
                 			tag3.append(c);
-                			tag3.append(sXML.charAt(++i));
-                    		while ((c = sXML.charAt(++i)) != '"') {
+                			tag3.append(xml.charAt(++i));
+                    		while ((c = xml.charAt(++i)) != '"') {
                     			tag3.append(c);
                     		}
                     		sb.append('<');
@@ -295,7 +293,7 @@ public class XMLProducer extends XMLParser {
                     		sb.append('=');
                     		sb.append(tag3);
                     		sb.append("/>");
-                    		while ((c = sXML.charAt(++i)) != '>') {}
+                    		while ((c = xml.charAt(++i)) != '>') {}
                 		} else {
                 			sb.append(tag);
                 			sb.append(' ');
@@ -309,19 +307,19 @@ public class XMLProducer extends XMLParser {
                 		}
             		} else if (tag2.toString().equals("idref")) {
             			tag2.append(c);
-            			tag2.append(sXML.charAt(++i));
-                		while (((c = sXML.charAt(++i)) != ' ') && (c != '/') && c != '>') {
+            			tag2.append(xml.charAt(++i));
+                		while (((c = xml.charAt(++i)) != ' ') && (c != '/') && c != '>') {
                 			tag2.append(c);
                 		}
                 		if (c != '/' && c != '>') {
                             StringBuilder tag3 = new StringBuilder();
-                    		while ((c = sXML.charAt(++i)) != '=') {
+                    		while ((c = xml.charAt(++i)) != '=') {
                     			tag3.append(c);
                     		}
                     		if (tag3.toString().equals("name")) {
                                 ++i;
                                 StringBuilder value2 = new StringBuilder();
-                        		while ((c = sXML.charAt(++i)) != '"') {
+                        		while ((c = xml.charAt(++i)) != '"') {
                         			value2.append(c);
                         		}
                         		sb.append('<');
@@ -329,7 +327,7 @@ public class XMLProducer extends XMLParser {
                         		sb.append(' ');
                         		sb.append(tag2);
                         		sb.append("/>");
-                        		while ((c = sXML.charAt(++i)) != '>') {}
+                        		while ((c = xml.charAt(++i)) != '>') {}
                     		} else {
                     			sb.append(tag);
                     			sb.append(' ');
@@ -430,12 +428,12 @@ public class XMLProducer extends XMLParser {
      * outside MCMC element.
      * Tries to compress common parts into plates.
      */
-    String cleanUpXML(String sXML, String sXSL) throws TransformerException {
+    String cleanUpXML(String xml, String xsl) throws TransformerException {
         StringWriter strWriter = new StringWriter();
-        Reader xmlInput = new StringReader(sXML);
+        Reader xmlInput = new StringReader(xml);
         javax.xml.transform.Source xmlSource =
                 new javax.xml.transform.stream.StreamSource(xmlInput);
-        Reader xslInput = new StringReader(sXSL);
+        Reader xslInput = new StringReader(xsl);
         javax.xml.transform.Source xsltSource =
                 new javax.xml.transform.stream.StreamSource(xslInput);
         javax.xml.transform.Result result =
@@ -445,14 +443,14 @@ public class XMLProducer extends XMLParser {
         javax.xml.transform.Transformer trans = transFact.newTransformer(xsltSource);
         trans.transform(xmlSource, result);
 
-        String sXML2 = strWriter.toString();
-        return sXML2;
+        String xml2 = strWriter.toString();
+        return xml2;
     }
 
     // compress parts into plates
-    String findPlates(String sXML) throws Exception {
+    String findPlates(String xml) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
         doc.normalize();
 
         Node topNode = doc.getElementsByTagName("*").item(0);
@@ -474,18 +472,18 @@ public class XMLProducer extends XMLParser {
      */
     void findPlates(Node node) {
         NodeList children = node.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            Node child = children.item(iChild);
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            Node child = children.item(childIndex);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
                 List<Node> comparables = new ArrayList<>();
-                for (int iSibling = iChild + 1; iSibling < children.getLength(); iSibling++) {
-                    if (children.item(iSibling).getNodeType() == Node.ELEMENT_NODE) {
-                        Node sibling = children.item(iSibling);
+                for (int siblingNr = childIndex + 1; siblingNr < children.getLength(); siblingNr++) {
+                    if (children.item(siblingNr).getNodeType() == Node.ELEMENT_NODE) {
+                        Node sibling = children.item(siblingNr);
                         if (comparable(child, sibling, ".p1", ".p" + (comparables.size() + 2))) {
                             comparables.add(sibling);
                         } else {
                             // break
-                            iSibling = children.getLength();
+                            siblingNr = children.getLength();
                         }
                     }
                 }
@@ -504,8 +502,8 @@ public class XMLProducer extends XMLParser {
         }
         // recurse to lower levels
         children = node.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            findPlates(children.item(iChild));
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            findPlates(children.item(childIndex));
         }
     } // findPlates
 
@@ -533,13 +531,12 @@ public class XMLProducer extends XMLParser {
             for (int i = 0; i < atts.getLength(); i++) {
                 Attr attr = (Attr) atts.item(i);
                 String sValue = attr.getValue().replaceAll(sPattern, "\\$\\(" + sVar + "\\)");
-                ;
                 attr.setValue(sValue);
             }
         }
         NodeList children = node.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            Node child = children.item(iChild);
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            Node child = children.item(childIndex);
             replace(child, sPattern, sVar);
         }
     }
@@ -582,18 +579,18 @@ public class XMLProducer extends XMLParser {
         // compare children
         NodeList children = node1.getChildNodes();
         NodeList children2 = node2.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            Node child = children.item(iChild);
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            Node child = children.item(childIndex);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                String sName = child.getNodeName();
-                boolean bMatch = false;
-                for (int iChild2 = 0; !bMatch && iChild2 < children2.getLength(); iChild2++) {
-                    Node child2 = children2.item(iChild2);
-                    if (child2.getNodeType() == Node.ELEMENT_NODE && sName.equals(child2.getNodeName())) {
-                        bMatch = comparable(child, child2, sPattern1, sPattern2);
+                String name = child.getNodeName();
+                boolean isMatch = false;
+                for (int childIndex2 = 0; !isMatch && childIndex2 < children2.getLength(); childIndex2++) {
+                    Node child2 = children2.item(childIndex2);
+                    if (child2.getNodeType() == Node.ELEMENT_NODE && name.equals(child2.getNodeName())) {
+                        isMatch = comparable(child, child2, sPattern1, sPattern2);
                     }
                 }
-                if (!bMatch) {
+                if (!isMatch) {
                     return false;
                 }
             }
@@ -778,14 +775,14 @@ public class XMLProducer extends XMLParser {
      * that is moderately readable.
      */
     @SuppressWarnings("rawtypes")
-    void pluginToXML(BEASTInterface beastObject, StringBuffer buf, String sName, boolean bIsTopLevel) throws Exception {
+    void pluginToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
-        String sElementName = "input";
+        String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
         	String className = element2ClassMap.get(key);
         	Class _class = Class.forName(className);
         	if (_class.equals(beastObject.getClass())) {
-        		sElementName = key;
+        		elementName = key;
         	}
         }
         
@@ -814,8 +811,8 @@ public class XMLProducer extends XMLParser {
 //            sElementName = XMLParser.TREE_ELEMENT;
 //        }
 
-        if (bIsTopLevel) {
-            sElementName = XMLParser.RUN_ELEMENT;
+        if (isTopLevel) {
+            elementName = XMLParser.RUN_ELEMENT;
         }
         for (int i = 0; i < indent; i++) {
             buf.append("    ");
@@ -823,13 +820,13 @@ public class XMLProducer extends XMLParser {
         indent++;
 
         // open element
-        buf.append("<").append(sElementName);
+        buf.append("<").append(elementName);
 
-        boolean bSkipInputs = false;
+        boolean skipInputs = false;
         if (isDone.stream().anyMatch(x -> x == beastObject)) {
             // XML is already produced, we can idref it
             buf.append(" idref='" + normalise(beastObject.getID()) + "'");
-            bSkipInputs = true;
+            skipInputs = true;
         } else {
             // see whether a reasonable id can be generated
             if (beastObject.getID() != null && !beastObject.getID().equals("")) {
@@ -847,18 +844,18 @@ public class XMLProducer extends XMLParser {
             }
             isDone.add(beastObject);
         }
-        String sClassName = beastObject.getClass().getName();
-        if (bSkipInputs == false && (!element2ClassMap.containsKey(sElementName) ||
-                !element2ClassMap.get(sElementName).equals(sClassName))) {
+        String className = beastObject.getClass().getName();
+        if (skipInputs == false && (!element2ClassMap.containsKey(elementName) ||
+                !element2ClassMap.get(elementName).equals(className))) {
             // only add spec element if it cannot be deduced otherwise (i.e., by idref or default mapping
-            buf.append(" spec='" + sClassName + "'");
+            buf.append(" spec='" + className + "'");
         }
-        if (sName != null && !sName.equals(sElementName)) {
+        if (name != null && !name.equals(elementName)) {
             // only add name element if it differs from element = default name
-            buf.append(" name='" + sName + "'");
+            buf.append(" name='" + name + "'");
         }
 
-        if (!bSkipInputs) {
+        if (!skipInputs) {
             // process inputs of this beast object
             // first, collect values as attributes
             List<InputType> inputs = XMLParserUtils.listInputs(beastObject.getClass(), beastObject);
@@ -891,7 +888,7 @@ public class XMLProducer extends XMLParser {
                     indent--;
             	}
                 // add closing element
-                buf.append("</" + sElementName + ">\n");
+                buf.append("</" + elementName + ">\n");
             }
         } else {
             // close element
@@ -915,11 +912,11 @@ public class XMLProducer extends XMLParser {
      * @throws Exception
      */
     void inputToXML(InputType input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
-    	if (input.getName().equals("*")) {
+    	//if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name
-    		return;
-    	}
+    		//return;
+    	//}
         if (value != null) {
             if (value instanceof Map) {
                 // distinguish between List, Map, BEASTInterface and primitive input types
@@ -946,7 +943,7 @@ public class XMLProducer extends XMLParser {
             } else if (value instanceof List) {
                 if (!isShort) {
                 	int k = 0;
-                	List list = (List) value;
+                	List<?> list = (List<?>) value;
                     for (Object o2 : list) {
                     	if (o2 instanceof BEASTInterface) {
                     		pluginToXML((BEASTInterface) o2, buf, input.getName(), false);
@@ -977,14 +974,14 @@ public class XMLProducer extends XMLParser {
                 return;
             } else {
             	if (!value.equals(input.getDefaultValue())) {
-                    // primitive type, see if
-                    String sValue = value.toString();
+                    // primitive type
+                    String valueString = value.toString();
                     if (isShort) {
-                        if (sValue.indexOf('\n') < 0) {
+                        if (valueString.indexOf('\n') < 0) {
                             buf.append(" " + input.getName() + "='" + normalise(value.toString()) + "'");
                         }
                     } else {
-                        if (sValue.indexOf('\n') >= 0) {
+                        if (valueString.indexOf('\n') >= 0) {
                             for (int j = 0; j < indent; j++) {
                                 buf.append("    ");
                             }

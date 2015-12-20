@@ -369,13 +369,13 @@ public class JSONProducer {
 
             	if (!value.equals(input.getDefaultValue())) {
             		
-                    String sValue = value.toString();
+                    String valueString = value.toString();
                     if (isShort) {
-                        if (sValue.indexOf('\n') < 0) {
+                        if (valueString.indexOf('\n') < 0) {
                             buf.append(" " + input.getName() + ": " + normalise(input, value.toString()) + "");
                         }
                     } else {
-                        if (sValue.indexOf('\n') >= 0) {
+                        if (valueString.indexOf('\n') >= 0) {
                                 buf.append(indent + "" + input.getName() + ": " + normalise(input, value.toString()) + "");
                         }
                     }
