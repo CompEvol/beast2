@@ -915,7 +915,7 @@ public class XMLProducer extends XMLParser {
      * @throws Exception
      */
     void inputToXML(InputType input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
-    	if (input.equals("*")) {
+    	if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name
     		return;
@@ -988,7 +988,7 @@ public class XMLProducer extends XMLParser {
                             for (int j = 0; j < indent; j++) {
                                 buf.append("    ");
                             }
-                            if (input.equals("value")) {
+                            if (input.getName().equals("value")) {
                                 buf.append(normalise(value.toString()));
                             } else {
                                 buf.append("<input name='" + input.getName() + "'>" + normalise(value.toString()) + "</input>\n");

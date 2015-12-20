@@ -1,6 +1,7 @@
 package test.beast.integration;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,15 +46,20 @@ public class XMLProducerTest extends TestCase {
                     System.out.println("Skipping exception " + fileName);
             	} else {
 	                System.out.println("Processing " + fileName);
-	                XMLProducer parser = new XMLProducer();
+	                XMLProducer producer = new XMLProducer();
 	                BEASTInterface o = null;
 	                try {
-	                    o = parser.parseFile(new File(dir + "/" + fileName));
+	                    o = producer.parseFile(new File(dir + "/" + fileName));
 	                } catch (Exception e) {
 	                	o = null;
 	                }
 	                if (o != null) {
-	                	String xml = parser.toXML(o);
+	                	String xml = producer.toXML(o);
+	                	
+	                    //FileWriter outfile = new FileWriter(new File("/tmp/XMLProducerTest.xml"));
+	                    //outfile.write(xml);
+	                    //outfile.close();
+
 	                	XMLParser parser2 = new XMLParser();
 	                    try {
 	                    	parser2.parseFragment(xml, false);
