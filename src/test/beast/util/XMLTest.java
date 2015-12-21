@@ -26,7 +26,7 @@ public class XMLTest extends TestCase {
     	XMLProducer producer = new XMLProducer();
     	String xml = producer.toXML(t);
 
-    	assertEquals(3, t.getParam1());
+    	assertEquals(3, (int) t.getParam1());
 
     	
         FileWriter outfile = new FileWriter(new File("/tmp/XMLTest.xml"));
@@ -36,7 +36,7 @@ public class XMLTest extends TestCase {
     	
     	XMLParser parser = new XMLParser();
     	BEASTInterface b = parser.parseFile(new File("/tmp/XMLTest.xml"));
-    	assertEquals(3, ((AnnotatedRunnableTestClass) b).getParam1());
+    	assertEquals(3, (int) ((AnnotatedRunnableTestClass) b).getParam1());
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     }
 

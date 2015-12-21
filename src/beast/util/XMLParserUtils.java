@@ -177,8 +177,11 @@ public class XMLParserUtils {
      * @return
      * @throws InstantiationException
      * @throws IllegalAccessException
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws IllegalArgumentException 
      */
-	public static List<InputType> listInputs(Class<?> clazz, BEASTInterface beastObject) throws InstantiationException , IllegalAccessException {
+	public static List<InputType> listInputs(Class<?> clazz, BEASTInterface beastObject) throws InstantiationException , IllegalAccessException, IllegalArgumentException, NoSuchMethodException, SecurityException {
 		List<InputType> inputTypes = new ArrayList<>();
 
 		// First, collect Input members
@@ -228,7 +231,14 @@ public class XMLParserUtils {
 	    		for (int i = 0; i < paramAnnotations.size(); i++) {
 	    			Param param = paramAnnotations.get(i);
 	    			Type type = types[i + offset];
-	    			if (type instanceof List) {
+	    			Class<?> clazz2 = null;
+					try {
+						clazz2 = Class.forName(type.getTypeName());
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	    			if (clazz2.isAssignableFrom(List.class)) {
                         Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
                         Class<?> theClass = (Class<?>) genericTypes2[0];
 	    				InputType t = new InputType(param.name(), theClass, false, param.defaultValue());
@@ -244,27 +254,27 @@ public class XMLParserUtils {
 		return inputTypes;
 	}
 
-	/** get value of the input of a beast object with name specified in input **/
-    static Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
-    	if (input.isInput()) {
-    		// input represents simple Input
-    		return beastObject.getInput(input.getName()).get();
-    	} else {
-    		// input represents Param annotation
-    		String methodName = "get" + 
-    		    	input.getName().substring(0, 1).toUpperCase() +
-    		    	input.getName().substring(1);
-    		Method method;
-			try {
-				method = beastObject.getClass().getMethod(methodName);
-				return method.invoke(beastObject);
-			} catch (NoSuchMethodException | SecurityException |IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				Log.err.println("Programmer error: when getting here an InputType was identified, but no Input or getter for Param annotation found");
-				e.printStackTrace();
-				return null;
-			}
-    	}
-	}
+//	/** get value of the input of a beast object with name specified in input **/
+//    static Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
+//    	if (input.isInput()) {
+//    		// input represents simple Input
+//    		return beastObject.getInput(input.getName()).get();
+//    	} else {
+//    		// input represents Param annotation
+//    		String methodName = "get" + 
+//    		    	input.getName().substring(0, 1).toUpperCase() +
+//    		    	input.getName().substring(1);
+//    		Method method;
+//			try {
+//				method = beastObject.getClass().getMethod(methodName);
+//				return method.invoke(beastObject);
+//			} catch (NoSuchMethodException | SecurityException |IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//				Log.err.println("Programmer error: when getting here an InputType was identified, but no Input or getter for Param annotation found");
+//				e.printStackTrace();
+//				return null;
+//			}
+//    	}
+//	}
 
 
     /**

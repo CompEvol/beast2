@@ -17,11 +17,11 @@ public class AnnotatedRunnableTestClass extends Runnable {
     int param1;
     List<Taxon> taxa;
     
-	public int getParam1() {
+	public Integer getParam1() {
 		return param1;
 	}
 
-	public void setParam1(int param1) {
+	public void setParam1(Integer param1) {
 		this.param1 = param1;
 	}
 
@@ -51,7 +51,7 @@ public class AnnotatedRunnableTestClass extends Runnable {
 		return taxa;
 	}
 	
-	public void setNumber(Taxon taxon) {
+	public void setTaxon(Taxon taxon) {
 		this.taxa.add(taxon);
 	}
 	

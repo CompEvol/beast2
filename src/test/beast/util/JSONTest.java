@@ -43,7 +43,7 @@ public class JSONTest extends TestCase {
     	JSONProducer producer = new JSONProducer();
     	String json = producer.toJSON(t);
 
-    	assertEquals(3, t.getParam1());
+    	assertEquals(3, (int) t.getParam1());
 
     	
         FileWriter outfile = new FileWriter(new File("/tmp/JSONTest.json"));
@@ -53,7 +53,7 @@ public class JSONTest extends TestCase {
     	
     	JSONParser parser = new JSONParser();
     	BEASTInterface b = parser.parseFile(new File("/tmp/JSONTest.json"));
-    	assertEquals(3, ((AnnotatedRunnableTestClass) b).getParam1());
+    	assertEquals(3, (int) ((AnnotatedRunnableTestClass) b).getParam1());
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     }
 

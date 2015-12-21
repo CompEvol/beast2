@@ -13,6 +13,7 @@ import java.util.Set;
 
 import beast.app.BEASTVersion;
 import beast.core.BEASTInterface;
+import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.Parameter;
 import beast.evolution.alignment.Alignment;
@@ -206,11 +207,11 @@ public class JSONProducer {
         if (!skipInputs) {
             // process inputs of this beastObject
             // first, collect values as attributes
-            //List<Input<?>> inputs = beastObject.listInputs();
-            List<InputType> inputs = XMLParserUtils.listInputs(beastObject.getClass(), beastObject);
-            for (InputType input : inputs) {
+            List<Input<?>> inputs = beastObject.listInputs();
+            //List<InputType> inputs = XMLParserUtils.listInputs(beastObject.getClass(), beastObject);
+            for (Input<?> input : inputs) {
             	StringBuffer buf2 = new StringBuffer();
-            	Object value = XMLParserUtils.getValue(beastObject, input);
+            	Object value = input.get();
                 inputToJSON(input, value, beastObject, buf2, true, indent);
                 if (buf2.length() > 0) {
                 	buf.append((needsComma == true) ? "," : "");
@@ -220,9 +221,9 @@ public class JSONProducer {
             }
             // next, collect values as input elements
             StringBuffer buf2 = new StringBuffer();
-            for (InputType input : inputs) {
+            for (Input<?> input : inputs) {
             	StringBuffer buf3 = new StringBuffer();
-            	Object value = XMLParserUtils.getValue(beastObject, input);
+            	Object value = input.get();
                 inputToJSON(input, value, beastObject, buf3, false, indent);
                 if (buf3.length() > 0) {
                 	buf2.append((needsComma == true) ? ",\n" : "\n");
@@ -270,7 +271,7 @@ public class JSONProducer {
      * @throws Exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void inputToJSON(InputType input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) throws Exception {
+    private void inputToJSON(Input input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) throws Exception {
         if (value != null) {
         	
             // distinguish between Map, List, BEASTObject and primitive input types
@@ -329,7 +330,7 @@ public class JSONProducer {
                 }
                 return;
             } else if (value instanceof BEASTInterface) {
-            	if (!value.equals(input.getDefaultValue())) {
+            	if (!value.equals(input.defaultValue)) {
             		
             		// Parameters can use short hand notation if they are not in the state 
             		// Note this means lower and upper bounds are lost -- no problem for BEAST, but maybe for BEAUti
@@ -367,7 +368,7 @@ public class JSONProducer {
             } else {
                 // primitive type
 
-            	if (!value.equals(input.getDefaultValue())) {
+            	if (!value.equals(input.defaultValue)) {
             		
                     String valueString = value.toString();
                     if (isShort) {
@@ -390,7 +391,7 @@ public class JSONProducer {
 
     
    /** convert plain text string to JSON string, replacing some entities **/
-    private String normalise(InputType input, String str) {
+    private String normalise(Input<?> input, String str) {
     	str = str.replaceAll("\\\\", "\\\\\\\\");
     	str = str.replaceAll("/", "\\\\/");
     	str = str.replaceAll("\b", "\\\\b");

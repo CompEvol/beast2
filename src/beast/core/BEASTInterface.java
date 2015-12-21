@@ -25,12 +25,17 @@ package beast.core;
 
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import beast.util.InputType;
 
 public interface BEASTInterface {
     public void initAndValidate() throws Exception;
@@ -168,6 +173,8 @@ public interface BEASTInterface {
      */
     default public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
         final List<Input<?>> inputs = new ArrayList<>();
+        
+        // First, collect all Inputs
         final Field[] fields = getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
@@ -175,7 +182,62 @@ public interface BEASTInterface {
                 inputs.add(input);
             }
         }
-        return inputs;
+        
+        // Second, collect InputForAnnotatedConstructors of annotated constructor (if any)
+	    Constructor<?>[] allConstructors = this.getClass().getDeclaredConstructors();
+	    for (Constructor<?> ctor : allConstructors) {
+	    	Annotation[][] annotations = ctor.getParameterAnnotations();
+	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	for (Annotation [] a0 : annotations) {
+		    	for (Annotation a : a0) {
+		    		if (a instanceof Param) {
+		    			paramAnnotations.add((Param) a);
+		    		}
+		    	}
+	    	}
+	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+    		Type[] gtypes = ctor.getGenericParameterTypes();
+	    	if (types.length > 0 && paramAnnotations.size() > 0) {
+	    		int offset = 0;
+	    		if (types.length == paramAnnotations.size() + 1) {
+	    			offset = 1;
+	    		}
+	    		for (int i = 0; i < paramAnnotations.size(); i++) {
+	    			Param param = paramAnnotations.get(i);
+	    			Type type = types[i + offset];
+	    			Class<?> clazz = null;
+					try {
+						clazz = Class.forName(type.getTypeName());
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	    			if (clazz.isAssignableFrom(List.class)) {
+                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
+                        Class<?> theClass = (Class<?>) genericTypes2[0];
+	    				InputForAnnotatedConstructor<?> t = null;
+						try {
+							t = new InputForAnnotatedConstructor<>(this, theClass, param);
+						} catch (NoSuchMethodException | SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    				inputs.add(t);
+	    			} else {
+	    				InputForAnnotatedConstructor<?> t = null;
+						try {
+							t = new InputForAnnotatedConstructor<>(this, types[i + offset], param);
+						} catch (NoSuchMethodException | SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    				inputs.add(t);
+	    			}
+	    		}
+	    	}
+		}
+	    
+	    return inputs;
     } // listInputs
 
     /**

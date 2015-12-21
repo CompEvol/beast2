@@ -54,6 +54,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import beast.core.BEASTInterface;
+import beast.core.Input;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -858,15 +859,15 @@ public class XMLProducer extends XMLParser {
         if (!skipInputs) {
             // process inputs of this beast object
             // first, collect values as attributes
-            List<InputType> inputs = XMLParserUtils.listInputs(beastObject.getClass(), beastObject);
-            for (InputType input : inputs) {
-            	Object value = XMLParserUtils.getValue(beastObject, input);
+            List<Input<?>> inputs = beastObject.listInputs();
+            for (Input<?> input : inputs) {
+            	Object value = input.get();
                 inputToXML(input, value, beastObject, buf, true);
             }
             // next, collect values as input elements
             StringBuffer buf2 = new StringBuffer();
-            for (InputType input : inputs) {
-            	Object value = XMLParserUtils.getValue(beastObject, input);
+            for (Input input : inputs) {
+            	Object value = input.get();
                 inputToXML(input, value, beastObject, buf2, false);
             }
             if (buf2.length() == 0) {
@@ -911,7 +912,7 @@ public class XMLProducer extends XMLParser {
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
      * @throws Exception
      */
-    void inputToXML(InputType input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
+    void inputToXML(Input input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
     	//if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name
@@ -958,7 +959,7 @@ public class XMLProducer extends XMLParser {
                 }
                 return;
             } else if (value instanceof BEASTInterface) {
-            	if (!value.equals(input.getDefaultValue())) {
+            	if (!value.equals(input.defaultValue)) {
                     if (isShort && isDone.contains((BEASTInterface) value)) {
                         buf.append(" " + input.getName() + "='@" + normalise( ((BEASTInterface) value).getID() ) + "'");
                         if (!isInputsDone.containsKey(beastObject)) {
@@ -973,7 +974,7 @@ public class XMLProducer extends XMLParser {
             	}
                 return;
             } else {
-            	if (!value.equals(input.getDefaultValue())) {
+            	if (!value.equals(input.defaultValue)) {
                     // primitive type
                     String valueString = value.toString();
                     if (isShort) {

@@ -1,7 +1,7 @@
 package beast.util;
 
 /** helper class that shares common properties of Inputs and Param annotations **/
-class InputType {
+public class InputType {
 
 	/** name of Input or Param annotation **/
 	String name;
