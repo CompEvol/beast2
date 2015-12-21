@@ -315,10 +315,6 @@ public abstract class Base extends JPanel implements InputEditor {
 //            m_inputLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             // RRB: temporary
             //m_inputLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-            if (sLabel.equals("Subst Model")) {
-            	int h = 3;
-            	h++;
-            }
             add(m_inputLabel);
         }
     }

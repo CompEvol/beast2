@@ -202,7 +202,7 @@ public class BeautiSubTemplate extends BEASTObject {
 	        					}
 	        					String condition = XMLParser.getAttribute(child, "beauti:if");
 	        					if (condition != null) {
-	        						Node ifNode = child.getAttributes().removeNamedItem("beauti:if");
+	        						child.getAttributes().removeNamedItem("beauti:if");
 	        					}
 	
 	        					BeautiConnector connector = new BeautiConnector(sourceID, targetID, inputName, condition);

@@ -517,7 +517,7 @@ public class Input<T> {
                         if (value != null && value instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             theClass = (Class<?>) genericTypes2[0];
-                            // gettting type of map is not possible?!?
+                            // getting type of map is not possible?!?
                             //} else if (value != null && value instanceof Map<?,?>) {
                             //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
                             //    theClass = (Class<?>) genericTypes2[0];

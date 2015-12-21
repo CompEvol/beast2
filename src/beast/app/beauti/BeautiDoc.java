@@ -893,7 +893,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     private void replaceInputs(BEASTInterface plugin, BEASTInterface original, BEASTInterface replacement) {
         try {
-            for (Input input : plugin.listInputs()) {
+            for (Input<?> input : plugin.listInputs()) {
                 if (input.get() != null) {
                     if (input.get() instanceof List) {
                         List list = (List) input.get();
@@ -1904,8 +1904,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                 // it is a primitive value
                             	if (copy instanceof Parameter.Base && input.getName().equals("value")) {
                             	//	// prevent appending to parameter values
-                            		Parameter.Base p = ((Parameter.Base) copy);
-                            		((List) p.valuesInput.get()).clear();
+                            		Parameter.Base<?> p = ((Parameter.Base<?>) copy);
+                            		((List<?>) p.valuesInput.get()).clear();
                             	}
                                 copy.setInputValue(input.getName(), input.get());
                             }

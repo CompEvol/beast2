@@ -79,11 +79,11 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /**
      * list of partitions in m_listBox *
      */
-    JList listOfPartitions;
+    JList<String> listOfPartitions;
     /**
      * model for m_listOfPartitions *
      */
-    DefaultListModel listModel;
+    DefaultListModel<String> listModel;
 
     JScrollPane scroller;
 
@@ -142,8 +142,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         JLabel partitionLabel = new JLabel("Partition");
         partitionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         partitionComponent.add(partitionLabel, BorderLayout.NORTH);
-        listModel = new DefaultListModel();
-        listOfPartitions = new JList(listModel);
+        listModel = new DefaultListModel<>();
+        listOfPartitions = new JList<>(listModel);
         listOfPartitions.setName("listOfPartitions");
         listOfPartitions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
