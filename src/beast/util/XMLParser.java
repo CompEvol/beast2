@@ -737,7 +737,6 @@ public class XMLParser {
 
     
 	/** create BEASTInterface either using Inputs, or using annotated constructor **/
-	@SuppressWarnings("unchecked")
 	private BEASTInterface createBeastObject(Node node, String ID, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
 		BEASTInterface beastObject = useAnnotatedConstructor(node, ID, clazzName, inputInfo);
 		if (beastObject != null) {
@@ -814,7 +813,7 @@ public class XMLParser {
 		// make sure object o is in outputs of inputs
 		for (NameValuePair pair : inputInfo) {
 			if (pair.value instanceof BEASTInterface) {
-				((BEASTInterface) pair.value).getOutputs().add(o);
+				((BEASTInterface) pair.value).getOutputs().add((BEASTInterface) o);
 			}	
 		}
 		

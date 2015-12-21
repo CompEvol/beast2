@@ -1,8 +1,10 @@
 package test.beast.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -23,6 +25,7 @@ public class BEASTInterfaceTest extends TestCase {
 		final public Input<BEASTi> beastiInput = new Input<>("other", "link to another BEASTi object");
 		String ID;
 		Set<BEASTInterface> outputs = new HashSet<BEASTInterface>();
+		Map<String, Input<?>> inputs;
 
 		@Override
 		public String getID() {
@@ -42,6 +45,16 @@ public class BEASTInterfaceTest extends TestCase {
 		@Override
 		public void initAndValidate() throws Exception {
 			// nothting to do;
+		}
+
+		@Override
+		public Map<String, Input<?>> getInputs() {
+			if (inputs == null) {
+				inputs = new HashMap<>();
+				inputs.put("value", msgInput);
+				inputs.put("other", beastiInput);
+			}
+			return inputs;
 		}
 	}
 	

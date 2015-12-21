@@ -33,9 +33,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import beast.util.InputType;
 
 public interface BEASTInterface {
     public void initAndValidate() throws Exception;
@@ -43,9 +42,13 @@ public interface BEASTInterface {
 	/** identifiable **/
 	public String getID();
 	public void setID(String ID);
+	
 	/** return set of Outputs, that is Objects for which this object is an Input **/
-	public Set getOutputs();
+	public Set<BEASTInterface> getOutputs();
 
+	/** return Map of Inputs containing both Inputs and InptForAnnotatedConstructors 
+	 * indexed by Input name **/
+	public Map<String, Input<?>> getInputs();
 	
 	
     /* Utility for testing purposes only.
@@ -93,14 +96,16 @@ public interface BEASTInterface {
   } // initByName
 
 	
-	//@SuppressWarnings("rawtypes") 
-	static Set getOutputs(Object object) {
+	@SuppressWarnings({"unchecked", "rawtypes" }) 
+	static Set<BEASTInterface> getOutputs(Object object) {
     	try {
             Method method = object.getClass().getMethod("getOutputs");
             Object outputs = method.invoke(object);
-            return (Set) outputs;
+            if (outputs instanceof Set<?>)
+            	return (Set) outputs;
+    		throw new RuntimeException("call to getOutputs() on object did not return a java.util.Set");
     	} catch (Exception e) {
-    		throw new RuntimeException("could not call getID() on object: " + e.getMessage());
+    		throw new RuntimeException("could not call getOutputs() on object: " + e.getMessage());
     	}
 	}
 
@@ -250,44 +255,41 @@ public interface BEASTInterface {
      * @throws IllegalArgumentException
      */
     default public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
-        final List<BEASTInterface> plugins = new ArrayList<>();
-        final Field[] fields = getClass().getFields();
-        for (final Field field : fields) {
-            if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
-                if (input.get() != null) {
-                    if (input.get() instanceof List<?>) {
-                        final List<?> vector = (List<?>) input.get();
-                        for (final Object o : vector) {
-                            if (o instanceof BEASTInterface) {
-                                plugins.add((BEASTInterface) o);
-                            }
-                        }
-                    } else if (input.get() != null && input.get() instanceof BEASTInterface) {
-                        plugins.add((BEASTInterface) input.get());
-                    }
-                }
-            }
+        final List<BEASTInterface> beastObjects = new ArrayList<>();
+
+        for (Input<?> input : getInputs().values()) {
+        	if (input.get() != null) {
+        		if (input.get() instanceof List<?>) {
+        			final List<?> list = (List<?>) input.get();
+        			for (final Object o : list) {
+        				if (o instanceof BEASTInterface) {
+        					beastObjects.add((BEASTInterface) o);
+        				}
+        			}
+        		} else if (input.get() != null && input.get() instanceof BEASTInterface) {
+        			beastObjects.add((BEASTInterface) input.get());
+        		}
+        	}
         }
-        return plugins;
+        return beastObjects;
     } // listActivePlugins
 
     /**
      * get description of an input
      *
      * @param name of the input
-     * @return list of inputs
+     * @return description of input
      */
     default public String getTipText(final String name) throws IllegalArgumentException, IllegalAccessException {
-        final Field[] fields = getClass().getDeclaredFields();
-        for (final Field field : fields) {
-            if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
-                if (input.getName().equals(name)) {
-                    return input.getTipText();
-                }
-            }
-        }
+		try {
+	    	Input<?> input = getInput(name);
+	    	if (input != null) {
+	    		return input.getTipText();
+	    	}
+		} catch (Exception e) {
+			// whatever happened, getting a tip text is no reason to interrupt anything,
+			// so ignore and return null
+		}
         return null;
     } // getTipText
 
@@ -304,7 +306,7 @@ public interface BEASTInterface {
         }
 
         assert inputType != null;
-        for (final Class c : new Class[]{Integer.class, Double.class, Boolean.class, String.class}) {
+        for (final Class<?> c : new Class[]{Integer.class, Double.class, Boolean.class, String.class}) {
             if (inputType.isAssignableFrom(c)) {
                 return true;
             }
@@ -347,16 +349,12 @@ public interface BEASTInterface {
      * get input by input name *
      */
     default public Input<?> getInput(final String name) throws Exception {
-        final Field[] fields = getClass().getFields();
-        for (final Field field : fields) {
-            if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
-                if (input.getName().equals(name)) {
-                    return input;
-                }
-            }
-        }
-
+    	
+    	Map<String, Input<?>> inputs = getInputs();
+    	if (inputs.containsKey(name)) {
+    		return inputs.get(name);
+    	}
+    	System.err.println("X");
 
         String inputNames = " "; // <- space here to prevent error in .substring below
         for (final Input<?> input : listInputs()) {

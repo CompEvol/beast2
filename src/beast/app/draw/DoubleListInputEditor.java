@@ -198,7 +198,7 @@ public class DoubleListInputEditor extends ListInputEditor {
         			}
         			list.set(itemNr, o);
         			if (o instanceof BEASTInterface) {
-        				BEASTInterface.getOutputs(o).add(m_plugin);
+        				BEASTInterface.getOutputs(o).add((BEASTInterface) m_plugin);
         			}
         		}
         	}

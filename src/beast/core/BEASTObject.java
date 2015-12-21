@@ -24,7 +24,9 @@
 package beast.core;
 
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 // This class was formerly called 'Plugin'
@@ -39,29 +41,54 @@ abstract public class BEASTObject implements BEASTInterface{
      * @deprecate use getOuputs() or BEASTObject.getOuputs(object) instead
      */
 	@Deprecated
-    public Set<BEASTObject> outputs = new HashSet<>();
+    public Set<BEASTInterface> outputs = new HashSet<>();
+	
+	/** 
+	 * cache collecting all Inputs and InputForAnnotatedConstrutors 
+	 * indexed through input name
+	 */
+    private Map<String,Input<?>> inputcache;
 	
     /**
      * @return set of Objects that have this Object in one of its Inputs
      */
-	@SuppressWarnings("rawtypes")
-	public Set getOutputs() {
+	@Override
+	public Set<BEASTInterface> getOutputs() {
 		return outputs;
 	};
 
-    // identifiable
+	@Override
+	public Map<String, Input<?>> getInputs() {
+		if (inputcache == null) {
+			inputcache = new HashMap<>();
+			try {
+				for (Input<?> input : listInputs()) {
+					inputcache.put(input.getName(), input);
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Problem getting inputs " + e.getClass().getName() + e.getMessage());
+			}
+		}
+		return inputcache;
+	};
+
+	// identifiable
     protected String ID;
 
+	@Override
     public String getID() {
         return ID;
     }
 
+	@Override
     public void setID(final String ID) {
         this.ID = ID;
     }
 
     // A default method in BEASTInterface cannot override
     // a method in Object, so it needs to be in BEASTObject
+	@Override
     public String toString() {
     	return getID();
     }

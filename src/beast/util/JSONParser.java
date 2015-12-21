@@ -905,7 +905,6 @@ public class JSONParser {
 	}
 
 	/** create BEASTInterface either using Inputs, or using annotated constructor **/
-	@SuppressWarnings("unchecked")
 	private BEASTInterface createBeastObject(JSONObject node, String ID, String clazzName, List<JSONNameValuePair> inputInfo) throws JSONParserException {
 		BEASTInterface beastObject = useAnnotatedConstructor(node, ID, clazzName, inputInfo);
 		if (beastObject != null) {
@@ -975,7 +974,7 @@ public class JSONParser {
 		// make sure object o is in outputs of inputs
 		for (JSONNameValuePair pair : inputInfo) {
 			if (pair.value instanceof BEASTInterface) {
-				((BEASTInterface) pair.value).getOutputs().add(o);
+				((BEASTInterface) pair.value).getOutputs().add((BEASTInterface) o);
 			}	
 		}
 		
