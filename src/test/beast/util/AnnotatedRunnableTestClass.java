@@ -1,19 +1,23 @@
 package test.beast.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Param;
 import beast.core.Runnable;
+import beast.evolution.alignment.Taxon;
 
 @Description("Used for testing purposed only")
 public class AnnotatedRunnableTestClass extends Runnable {
     
     int param1;
+    List<Taxon> taxa;
     
-    public int getParam1() {
+	public int getParam1() {
 		return param1;
 	}
 
@@ -21,8 +25,12 @@ public class AnnotatedRunnableTestClass extends Runnable {
 		this.param1 = param1;
 	}
 
-	public AnnotatedRunnableTestClass(@Param(description = "test to see whether the JSON parser/producer can handle annotated constructors", name = "param1", defaultValue = "10") Integer param1) {
+	public AnnotatedRunnableTestClass(
+			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated constructors", name = "param1", defaultValue = "10") Integer param1,
+			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated List", name = "taxon") List<Taxon> taxa) {
     	this.param1 = param1;
+    	this.taxa = new ArrayList<>();
+    	this.taxa.addAll(taxa);
     }
     
 	@Override
@@ -39,6 +47,14 @@ public class AnnotatedRunnableTestClass extends Runnable {
 		// ignore
 	}
 
+    public List<Taxon> getTaxon() {
+		return taxa;
+	}
+	
+	public void setNumber(Taxon taxon) {
+		this.taxa.add(taxon);
+	}
+	
 	Set<BEASTInterface> outputs = new HashSet<>();
 	
 	@Override

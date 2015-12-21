@@ -2,12 +2,15 @@ package test.beast.util;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
 import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
+import beast.evolution.alignment.Taxon;
 import beast.util.JSONParser;
 import beast.util.JSONProducer;
 import junit.framework.TestCase;
@@ -20,9 +23,9 @@ public class JSONTest extends TestCase {
     	JSONParser parser = new JSONParser();
 		BEASTObject plugin = parser.parseFile(new File(JSON_FILE));
 		JSONProducer producer = new JSONProducer();
-		String actual = producer.toJSON(plugin).trim().replaceAll("\\s+", " ");
+		String actual = producer.toJSON(plugin).trim();//.replaceAll("\\s+", " ");
 		
-		String expected = BeautiDoc.load(JSON_FILE).trim().replaceAll("\\s+", " ");
+		String expected = BeautiDoc.load(JSON_FILE).trim();//.replaceAll("\\s+", " ");
 		assertEquals("Produced JSON differs from original", 
 				expected, 
 				actual);
@@ -31,7 +34,11 @@ public class JSONTest extends TestCase {
 	
     @Test
     public void testAnnotatedConstructor() throws Exception {
-    	AnnotatedRunnableTestClass t = new AnnotatedRunnableTestClass(3);
+    	List<Taxon> taxa = new ArrayList<>();
+    	taxa.add(new Taxon("first one"));
+    	taxa.add(new Taxon("second one"));
+    			
+    	AnnotatedRunnableTestClass t = new AnnotatedRunnableTestClass(3, taxa);
     	
     	JSONProducer producer = new JSONProducer();
     	String json = producer.toJSON(t);
@@ -47,6 +54,7 @@ public class JSONTest extends TestCase {
     	JSONParser parser = new JSONParser();
     	BEASTInterface b = parser.parseFile(new File("/tmp/JSONTest.json"));
     	assertEquals(3, ((AnnotatedRunnableTestClass) b).getParam1());
+    	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     }
 
 }

@@ -1011,13 +1011,13 @@ public class JSONParser {
 	    		for (int i = 0; i < types.length; i++) {
 	    			Param param = paramAnnotations.get(i);
 	    			Type type = types[i];
-	    			if (type instanceof List) {
+	    			if (type.getTypeName().equals("java.util.List")) {
 	    				if (args[i] == null) {
 	    					// no need to parameterise list due to type erasure
 	    					args[i] = new ArrayList();
 	    				}
-	    				Object value = getValue(param, inputInfo);
-	    				((List)args[i]).add(value);
+	    				List<?> values = getListOfValues(param, inputInfo);
+	    				((List)args[i]).addAll(values);
 	    			} else {
 	    				args[i] = getValue(param, inputInfo);
 	    			}
@@ -1043,6 +1043,16 @@ public class JSONParser {
 			}
 		}
 		return param.defaultValue();
+	}
+
+	private List<Object> getListOfValues(Param param, List<JSONNameValuePair> inputInfo) {
+		List<Object> values = new ArrayList<>();
+		for (JSONNameValuePair pair : inputInfo) {
+			if (pair.name.equals(param.name())) {
+				values.add(pair.value);
+			}
+		}
+		return values;
 	}
 
 	List<JSONNameValuePair> parseInputs(JSONObject node, String className) throws JSONParserException {

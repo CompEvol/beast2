@@ -67,6 +67,7 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
+import beast.util.JSONParser.JSONNameValuePair;
 
 
 /**
@@ -850,13 +851,13 @@ public class XMLParser {
 	    		for (int i = 0; i < types.length; i++) {
 	    			Param param = paramAnnotations.get(i);
 	    			Type type = types[i];
-	    			if (type instanceof List) {
+	    			if (type.getTypeName().equals("java.util.List")) {
 	    				if (args[i] == null) {
 	    					// no need to parameterise list due to type erasure
 	    					args[i] = new ArrayList();
 	    				}
-	    				Object value = getValue(param, types[i], inputInfo);
-	    				((List)args[i]).add(value);
+	    				List<?> values = getListOfValues(param, inputInfo);
+	    				((List)args[i]).addAll(values);
 	    			} else {
 	    				args[i] = getValue(param, types[i], inputInfo);
 	    			}
@@ -890,6 +891,15 @@ public class XMLParser {
 		return param.defaultValue();
 	}
 
+	private List<Object> getListOfValues(Param param, List<NameValuePair> inputInfo) {
+		List<Object> values = new ArrayList<>();
+		for (NameValuePair pair : inputInfo) {
+			if (pair.name.equals(param.name())) {
+				values.add(pair.value);
+			}
+		}
+		return values;
+	}
 
 
 	@Deprecated // use XMLParserUtils.getLevenshteinDistance instead
