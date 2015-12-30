@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import beast.app.beauti.BeautiConfig;
@@ -250,7 +251,7 @@ public class InputEditorFactory {
         }
         inputEditor.setDoc(doc);
         inputEditor.init(input, plugin, listItemNr, expandOption, bAddButtons);
-        inputEditor.setBorder(BorderFactory.createEmptyBorder());
+        ((JComponent) inputEditor).setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
         //Log.trace.println(inputEditor.getClass().getName());
         return inputEditor;

@@ -378,7 +378,7 @@ abstract public class Shape {
         if (getLabel() != null) {
 
             String sLabel = getLabel();
-            int i = 0;
+            //int i = 0;
             while (sLabel.indexOf('\n') >= 0) {
                 String sStr = sLabel.substring(0, sLabel.indexOf('\n'));
                 out.println("<text x='"
@@ -392,7 +392,7 @@ abstract public class Shape {
                         "stroke='rgb(" + color.getRed() + "," + color.getGreen()
                         + "," + color.getBlue() + ")' text-anchor='" + sTextAnchor + "'>" + sStr + "</text>\n");
                 sLabel = sLabel.substring(sStr.length() + 1);
-                i++;
+                //i++;
             }
             out.println("<text x='"
                     + (m_x + m_w / 2)

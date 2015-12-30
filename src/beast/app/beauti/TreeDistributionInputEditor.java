@@ -77,7 +77,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
         	}
         }
         
-        JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(sAvailablePlugins.toArray(new BeautiSubTemplate[]{}));
         comboBox.setName("TreeDistribution");
 
         for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
@@ -107,7 +107,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        JComboBox currentComboBox = (JComboBox) m_e.getSource();
+                        @SuppressWarnings("unchecked")
+						JComboBox<BeautiSubTemplate> currentComboBox = (JComboBox<BeautiSubTemplate>) m_e.getSource();
                         @SuppressWarnings("unchecked")
                         List<BEASTInterface> list = (List<BEASTInterface>) m_input.get();
                         BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();

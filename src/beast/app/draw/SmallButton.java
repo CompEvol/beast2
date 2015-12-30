@@ -13,7 +13,9 @@ import javax.swing.JButton;
  */
 public class SmallButton extends JButton {
 
-    public enum ButtonType {roundRect, square, toolbar}
+	private static final long serialVersionUID = 1L;
+
+	public enum ButtonType {roundRect, square, toolbar}
     
     public SmallButton(String label, boolean isEnabled) {
         this(label, isEnabled, ButtonType.square);
@@ -29,7 +31,7 @@ public class SmallButton extends JButton {
 
 	private void setIcon(String label) {
         if (label.equals("e")) {
-        	setLabel("");
+        	setText("");
             URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "edit.png");
             Icon icon = new ImageIcon(url);
         	setIcon(icon);

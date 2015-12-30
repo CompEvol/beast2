@@ -231,7 +231,7 @@ public class BEASTObjectPanel extends JPanel {
      */
     Box createPluginBox() {
         Box box = Box.createHorizontalBox();
-        JLabel icon = new JLabel();
+        //sJLabel icon = new JLabel();
         box.add(Box.createHorizontalGlue());
 
         JLabel label = new JLabel(m_pluginClass.getName().replaceAll(".*\\.", "") + ":");
@@ -368,10 +368,7 @@ public class BEASTObjectPanel extends JPanel {
                         for (Object o2 : (List<?>) o) {
                             if (o2 != null && o2 instanceof BEASTInterface) {
                                 List<BEASTInterface> list = outputs.get(o2);
-                                if (list == null) {
-                                    int h = 3;
-                                    h++;
-                                } else {
+                                if (list != null) {
                                     list.add(plugin);
                                 }
                             }

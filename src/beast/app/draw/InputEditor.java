@@ -71,8 +71,8 @@ public interface InputEditor {
     /**
      * set decoration. This method is deprecated, because decoration can be handled by the JComponent with setBorder method on
      **/
-    @Deprecated
-    void setBorder(Border border);
+    //@Deprecated
+    //void setBorder(Border border);
 
     /** prepare to validate input **/
     void startValidating(ValidationStatus state);
@@ -453,10 +453,14 @@ public abstract class Base extends JPanel implements InputEditor {
     }
 
     // what is this method for? We should leave repainting to the standard mechanism
-    @Deprecated
+    // RRB: Did not always work in the past. The following should suffice (though perhaps
+    // slightly less efficient to also revalidate, but have not noticed any difference)
 	public void repaint() {
-	this.repaint(0);
+		// tell Swing that an area of the window is dirty
 		super.repaint();
+		
+		// tell the layout manager to recalculate the layout
+		super.revalidate();
 	}
 
 	public Component getComponent() {

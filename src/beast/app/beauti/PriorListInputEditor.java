@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import beast.app.draw.BEASTObjectPanel;
@@ -42,9 +41,7 @@ import beast.math.distributions.Prior;
 public class PriorListInputEditor extends ListInputEditor {
     private static final long serialVersionUID = 1L;
 
-    List<JComboBox> comboBoxes;
     List<JButton> rangeButtons;
-    JComboBox currentComboBox;
 
     List<JButton> taxonButtons;
 
@@ -112,7 +109,6 @@ public class PriorListInputEditor extends ListInputEditor {
 		);
     	
     	
-        comboBoxes = new ArrayList<>();
         rangeButtons = new ArrayList<>();
         taxonButtons = new ArrayList<>();
         
@@ -146,7 +142,7 @@ public class PriorListInputEditor extends ListInputEditor {
     @Override
     protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
 		try {
-	    	int listItemNr = ((List) m_input.get()).indexOf(plugin);
+	    	int listItemNr = ((List<?>) m_input.get()).indexOf(plugin);
 	    	InputEditor editor = doc.getInputEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
 	    	itemBox.add((Component) editor);
 	    	return editor;

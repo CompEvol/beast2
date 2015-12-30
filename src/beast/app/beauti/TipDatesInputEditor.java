@@ -48,8 +48,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     }
     Tree tree;
     TraitSet traitSet;
-    JComboBox unitsComboBox;
-    JComboBox relativeToComboBox;
+    JComboBox<TraitSet.Units> unitsComboBox;
+    JComboBox<String> relativeToComboBox;
     List<String> sTaxa;
     Object[][] tableData;
     JTable table;
@@ -125,7 +125,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
     private Component createSamplingBox() {
         Box samplingBox = Box.createHorizontalBox();
-        JComboBox comboBox = new JComboBox(new String[]{"no tips sampling", "sample tips from taxon set:"});// ,"sample tips with individual priors"});
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"no tips sampling", "sample tips from taxon set:"});// ,"sample tips with individual priors"});
 
         // determine mode
         m_iMode = NO_TIP_SAMPLING;
@@ -159,7 +159,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 taxonSetIDs.add(taxon.getID());
             }
         }
-        JComboBox comboBox2 = new JComboBox(taxonSetIDs.toArray());
+        JComboBox<String> comboBox2 = new JComboBox<String>(taxonSetIDs.toArray(new String[]{}));
         
         if (operator == null) {
         	comboBox.setEnabled(false);
@@ -185,7 +185,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     }
 
     private void selectTaxonSet(ActionEvent e) {
-        JComboBox comboBox = (JComboBox) e.getSource();
+        @SuppressWarnings("unchecked")
+		JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
         String taxonSetID = (String) comboBox.getSelectedItem();
         Taxon taxonset = null;;
         for (Taxon taxon : taxonsets) {
@@ -240,7 +241,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     }
 
     private void selectMode(ActionEvent e) {
-        JComboBox comboBox = (JComboBox) e.getSource();
+        JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
         m_iMode = comboBox.getSelectedIndex();
         try {
             // clear
@@ -516,7 +517,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     }
 
     /**
-     * synchronise traitSet Plugin with table data
+     * synchronise traitSet BEAST object with table data
      */
     private void convertTableDataToTrait() {
         String sTrait = "";
@@ -542,7 +543,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         JLabel label = new JLabel("Dates specified as: ");
         label.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(label);
-        unitsComboBox = new JComboBox(TraitSet.Units.values());
+        unitsComboBox = new JComboBox<>(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
         unitsComboBox.addActionListener(new ActionListener() {
             @Override
@@ -559,7 +560,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         unitsComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(unitsComboBox);
 
-        relativeToComboBox = new JComboBox(new String[]{"Since some time in the past", "Before the present"});
+        relativeToComboBox = new JComboBox<>(new String[]{"Since some time in the past", "Before the present"});
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             relativeToComboBox.setSelectedIndex(1);
         } else {

@@ -20,19 +20,19 @@ public class ClonePartitionPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     final BeautiPanel beautiPanel;
-    final JComboBox cloneFromComboBox;
+    final JComboBox<Object> cloneFromComboBox;
     final JButton okButton = new JButton("OK");
 
 	public ClonePartitionPanel(BeautiPanel beautiPanel) {
         this.beautiPanel = beautiPanel;
 
-        DefaultListModel listModel = beautiPanel.listModel;
+        DefaultListModel<String> listModel = beautiPanel.listModel;
         Object[] models = new Object[listModel.getSize()];
         for(int i=0; i < listModel.getSize(); i++){
             models[i] = listModel.getElementAt(i);
         }
 
-        cloneFromComboBox = new JComboBox(models);
+        cloneFromComboBox = new JComboBox<>(models);
         // has to be editable
         cloneFromComboBox.setEditable(true);
         // change the editor's document
@@ -74,7 +74,7 @@ public class ClonePartitionPanel extends JPanel {
     protected void clonePartitions() {
         String sourceId = cloneFromComboBox.getSelectedItem().toString();
 
-        for (Object targetId : beautiPanel.listOfPartitions.getSelectedValues()) {
+        for (Object targetId : beautiPanel.listOfPartitions.getSelectedValuesList()) {
              beautiPanel.cloneFrom(sourceId, targetId.toString());
         }
     }

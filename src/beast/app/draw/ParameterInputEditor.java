@@ -64,7 +64,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         		}
         		m_entry.setText(s);
         	} else {
-        		Parameter.Base<?> parameter = (Parameter.Base<?>) ((List)m_input.get()).get(itemNr);
+        		Parameter.Base<?> parameter = (Parameter.Base<?>) ((List<?>)m_input.get()).get(itemNr);
         		String s = "";
         		for (Object d : parameter.valuesInput.get()) {
         			s += d + " ";
@@ -108,7 +108,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         Box paramBox = Box.createHorizontalBox();
         Parameter.Base<?> parameter = null;
         if (itemNr >= 0) {
-        	parameter = (Parameter.Base<?>) ((List) input.get()).get(itemNr);
+        	parameter = (Parameter.Base<?>) ((List<?>) input.get()).get(itemNr);
         } else {
         	parameter = (Parameter.Base<?>) input.get();
         }
@@ -141,7 +141,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 							} else {
 								// create a link
 								List<BEASTInterface> candidates = doc.suggestedLinks((BEASTInterface) m_input.get());
-								JComboBox jcb = new JComboBox(candidates.toArray());
+								JComboBox<BEASTInterface> jcb = new JComboBox<>(candidates.toArray(new BEASTInterface[]{}));
 								JOptionPane.showMessageDialog( null, jcb, "select parameter to link with", JOptionPane.QUESTION_MESSAGE);
 								BEASTInterface candidate = (BEASTInterface) jcb.getSelectedItem();
 								if (candidate != null) {
@@ -244,7 +244,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 	                }
 	            }
             } else {
-	            for (Object plugin2 : ((BEASTInterface) ((List)m_input.get()).get(itemNr)).getOutputs()) {
+	            for (Object plugin2 : ((BEASTInterface) ((List<?>)m_input.get()).get(itemNr)).getOutputs()) {
 	                if (plugin2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);

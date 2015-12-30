@@ -503,6 +503,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					stateNodes.addAll(state.stateNodeInput.get());
 					for (StateNode s : stateNodes) {
 						if (s.getID().endsWith(".t:" + oldContext.tree) && !(s instanceof TreeInterface)) {
+							@SuppressWarnings("unused")
 							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
 						}
 					}
@@ -536,7 +537,8 @@ System.err.println("needsRePartition = " + needsRePartition);
 									//input.setValue(tree, (BEASTInterface) plugin);
 								}
 							} else if (input.get() instanceof List) {
-								List list = (List) input.get();
+								@SuppressWarnings("unchecked")
+								List<TreeInterface> list = (List<TreeInterface>) input.get();
 								if (list.contains(oldTree)) { // && input.getRule() != Validate.REQUIRED) {
 									list.remove(oldTree);
 									if (!list.contains(tree)) {
@@ -858,6 +860,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 	
 	void setUpComboBoxes() {
 		// set up comboboxes
+		@SuppressWarnings("unchecked")
 		Set<String>[] partitionNames = new HashSet[3];
 		for (int i = 0; i < 3; i++) {
 			partitionNames[i] = new HashSet<>();
@@ -877,7 +880,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 			}
 		}
 		TableColumn col = table.getColumnModel().getColumn(SITEMODEL_COLUMN);
-		JComboBox siteModelComboBox = new JComboBox(sPartitionNames[0]);
+		JComboBox<String> siteModelComboBox = new JComboBox<>(sPartitionNames[0]);
 		siteModelComboBox.setEditable(true);
 		siteModelComboBox.addActionListener(new ComboActionListener(SITEMODEL_COLUMN));
 
@@ -887,7 +890,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames[0]));
 		col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
 
-		JComboBox clockModelComboBox = new JComboBox(sPartitionNames[1]);
+		JComboBox<String> clockModelComboBox = new JComboBox<>(sPartitionNames[1]);
 		clockModelComboBox.setEditable(true);
 		clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
 
@@ -895,7 +898,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames[1]));
 		col = table.getColumnModel().getColumn(TREE_COLUMN);
 
-		JComboBox treeComboBox = new JComboBox(sPartitionNames[2]);
+		JComboBox<String> treeComboBox = new JComboBox<>(sPartitionNames[2]);
 		treeComboBox.setEditable(true);
 		treeComboBox.addActionListener(new ComboActionListener(TREE_COLUMN));
 		col.setCellEditor(new DefaultCellEditor(treeComboBox));
@@ -1008,7 +1011,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		}
 	}
 
-	public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+	public class MyComboBoxRenderer extends JComboBox<String> implements TableCellRenderer {
 		private static final long serialVersionUID = 1L;
 
 		public MyComboBoxRenderer(String[] items) {

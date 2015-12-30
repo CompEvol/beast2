@@ -22,7 +22,7 @@ import beast.util.AddOnManager;
 
 public class BEASTObjectInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
-    JComboBox m_selectPluginBox;
+    JComboBox<Object> m_selectPluginBox;
     SmallButton m_editPluginButton;
 
     BEASTObjectInputEditor _this;
@@ -184,12 +184,12 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //        		}
 //
 //        	}
-            m_selectPluginBox = new JComboBox(availableTemplates.toArray());
+            m_selectPluginBox = new JComboBox<>(availableTemplates.toArray());
             m_selectPluginBox.setName(input.getName());
 
             Object o = input.get();
             if (itemNr >= 0) {
-            	o = ((List)o).get(itemNr);
+            	o = ((List<?>)o).get(itemNr);
             }
             String sID;
             if (o == null) {

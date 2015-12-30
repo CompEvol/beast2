@@ -493,7 +493,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     integerLeafLabels = false;
 
                 // RRB: next line is for debugging only?
-                String postText = postCtx.getText();
+                @SuppressWarnings("unused")
+				String postText = postCtx.getText();
 
                 // Treat labels as node numbers in certain situations
                 if (!isLabelledNewickInput.get()

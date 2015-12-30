@@ -896,7 +896,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             for (Input<?> input : plugin.listInputs()) {
                 if (input.get() != null) {
                     if (input.get() instanceof List) {
-                        List list = (List) input.get();
+                        @SuppressWarnings("unchecked")
+						List<BEASTInterface> list = (List<BEASTInterface>) input.get();
                         if (list.contains(original)) {
                             list.remove(original);
                             list.add(replacement);

@@ -228,10 +228,6 @@ public class Document {
 
     boolean containsID(String sID, List<Shape> objects, List<String> tabulist) {
         for (Shape shape : m_objects) {
-            if (shape.getID() == null) {
-                int h = 3;
-                h++;
-            }
             if (shape.getID().equals(sID)) {
                 return true;
             }

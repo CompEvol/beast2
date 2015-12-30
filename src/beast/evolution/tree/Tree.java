@@ -315,11 +315,13 @@ public class Tree extends StateNode implements TreeInterface {
         //return getNode(iNodeNr, root);
     }
 
-    @Deprecated
     /**
      * @returns an array of taxon names in order of their node numbers.
+     * Note that in general no special order of taxa is assumed, just the order
+     * assumed in this tree. Consider using tree.m_taxonset.get().asStringList()
+     * instead.
      */
-    public String[] getTaxaNames() {
+    public String [] getTaxaNames() {
          if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) || m_sTaxaNames.length == 0) {
             final TaxonSet taxonSet = m_taxonset.get();
             if (taxonSet != null) {

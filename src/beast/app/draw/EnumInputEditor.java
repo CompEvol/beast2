@@ -24,7 +24,7 @@ public class EnumInputEditor extends InputEditor.Base {
     //public EnumInputEditor() {}
 
 	private static final long serialVersionUID = 1L;
-    JComboBox m_selectPluginBox;
+    JComboBox<String> m_selectPluginBox;
 
     @Override
     public Class<?> type() {
@@ -49,7 +49,7 @@ public class EnumInputEditor extends InputEditor.Base {
             sAvailableValues.add(input.possibleValues[i].toString());
         }
         if (sAvailableValues.size() > 1) {
-            m_selectPluginBox = new JComboBox(sAvailableValues.toArray(new String[0]));
+            m_selectPluginBox = new JComboBox<>(sAvailableValues.toArray(new String[0]));
             String sSelectString = input.get().toString();
             m_selectPluginBox.setSelectedItem(sSelectString);
 

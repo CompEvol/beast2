@@ -92,7 +92,7 @@ public class BEASTObjectDialog extends JDialog {
             	if (input.get() != null && (input.get() instanceof List)) {
                     // setInpuValue (below) on lists does not lead to expected result
             		// it appends values to the list instead, so we have to clear it first
-                    List list = (List)plugin.getInput(input.getName()).get();
+                    List<?> list = (List<?>)plugin.getInput(input.getName()).get();
                     list.clear();
             	}
             	plugin.setInputValue(input.getName(), input.get());

@@ -29,14 +29,17 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.PlainDocument;
 
 public class S11InitialSelection extends PlainDocument {
-    JComboBox comboBox;
-    ComboBoxModel model;
+	private static final long serialVersionUID = 1L;
+
+	JComboBox<Object> comboBox;
+    ComboBoxModel<Object> model;
     JTextComponent editor;
+    
     // flag to indicate if setSelectedItem has been called
     // subsequent calls to remove/insertString should be ignored
     boolean selecting=false;
 
-    public S11InitialSelection(final JComboBox comboBox) {
+    public S11InitialSelection(final JComboBox<Object> comboBox) {
         this.comboBox = comboBox;
         model = comboBox.getModel();
         editor = (JTextComponent) comboBox.getEditor().getEditorComponent();
@@ -132,7 +135,7 @@ public class S11InitialSelection extends PlainDocument {
 
     private static void createAndShowGUI() {
         // the combo box (add/modify items if you like to)
-        JComboBox comboBox = new JComboBox(new Object[] {"Ester", "Jordi", "Jordina", "Jorge", "Sergi"});
+        JComboBox<Object> comboBox = new JComboBox<>(new Object[] {"Ester", "Jordi", "Jordina", "Jorge", "Sergi"});
         // has to be editable
         comboBox.setEditable(true);
         // change the editor's document

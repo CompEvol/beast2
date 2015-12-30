@@ -44,7 +44,7 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
     protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
         Frequencies freqs = (Frequencies) input.get();
 
-        JComboBox comboBox = new JComboBox(new String[]{"Estimated", "Empirical", "All equal"});
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Estimated", "Empirical", "All equal"});
         if (freqs.frequenciesInput.get() != null) {
             comboBox.setSelectedIndex(0);
             freqsParameter = freqs.frequenciesInput.get();
@@ -61,7 +61,8 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
+                @SuppressWarnings("unchecked")
+				JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
                 int iSelected = comboBox.getSelectedIndex();
                 Frequencies freqs = (Frequencies) m_input.get();
                 try {

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -119,7 +120,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 							}
 							/** add alignments **/
 							for (Alignment data : parser.filteredAlignments) {
-								Alignment.sortByTaxonName(data.sequenceInput.get());
+								sortByTaxonName(data.sequenceInput.get());
 								selectedPlugins.add(data);
 							}
 						} else {
@@ -146,7 +147,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				case ".faa":
 				case ".frn":
 					alignment = getFASTAData(file);
-					Alignment.sortByTaxonName(alignment.sequenceInput.get());
+					sortByTaxonName(alignment.sequenceInput.get());
 					selectedPlugins.add(alignment);
 					break;
 
@@ -166,7 +167,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
         		id = plugin.getID() + k;
         	}
         	plugin.setID(id);
-        	Alignment.sortByTaxonName(((Alignment) plugin).sequenceInput.get());
+        	sortByTaxonName(((Alignment) plugin).sequenceInput.get());
             doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
         }
         return selectedPlugins;
@@ -195,6 +196,13 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	BeautiSubTemplate getStartTemplate() {
 		return template.get();
 	}
+
+    private void sortByTaxonName(List<Sequence> seqs) {
+        Collections.sort(seqs, (Sequence o1, Sequence o2) -> {
+                return o1.taxonInput.get().compareTo(o2.taxonInput.get());
+            }
+        );
+    }
 
 	static public BEASTInterface getXMLData(File file) {
 		String sXML = "";
@@ -259,6 +267,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				} else {
 					// it is a data line
 					if (currentTaxon == null) {
+						fin.close();
 						throw new RuntimeException("Expected taxon defined on first line");
 					}
 					if (seqMap.containsKey(currentTaxon)) {

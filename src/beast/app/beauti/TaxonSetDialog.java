@@ -43,10 +43,10 @@ public class TaxonSetDialog extends JDialog {
 
     JTextField filterEntry;
 
-    JList listOfTaxonCandidates;
-    DefaultListModel listModel1;
-    JList listOfTaxonSet;
-    DefaultListModel listModel2;
+    JList<Taxon> listOfTaxonCandidates;
+    DefaultListModel<Taxon> listModel1;
+    JList<Taxon> listOfTaxonSet;
+    DefaultListModel<Taxon> listModel2;
 
 
     Box box;
@@ -203,8 +203,10 @@ public class TaxonSetDialog extends JDialog {
     }
     
     class TaxonCellRenderer extends DefaultListCellRenderer {
+		private static final long serialVersionUID = 1L;
+
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 			JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			label.setText(((Taxon)value).getID());
@@ -216,8 +218,8 @@ public class TaxonSetDialog extends JDialog {
         Box box = Box.createHorizontalBox();
 
         // list of taxa to select from
-        listModel1 = new DefaultListModel();
-        listOfTaxonCandidates = new JList(listModel1);
+        listModel1 = new DefaultListModel<>();
+        listOfTaxonCandidates = new JList<>(listModel1);
         listOfTaxonCandidates.setName("listOfTaxonCandidates");
         listOfTaxonCandidates.setBorder(BorderFactory.createEtchedBorder());
         listOfTaxonCandidates.setCellRenderer(new TaxonCellRenderer());
@@ -262,8 +264,8 @@ public class TaxonSetDialog extends JDialog {
         box.add(buttonBox);
 
         // list of taxa in taxon set
-        listModel2 = new DefaultListModel();
-        listOfTaxonSet = new JList(listModel2);
+        listModel2 = new DefaultListModel<>();
+        listOfTaxonSet = new JList<>(listModel2);
         listOfTaxonSet.setBorder(BorderFactory.createEtchedBorder());
         listOfTaxonSet.setCellRenderer(new TaxonCellRenderer());
 

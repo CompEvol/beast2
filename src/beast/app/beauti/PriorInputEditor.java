@@ -46,7 +46,7 @@ public class PriorInputEditor extends InputEditor.Base {
         itemBox.add(label);
 
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
-        JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<BeautiSubTemplate>(sAvailablePlugins.toArray(new BeautiSubTemplate[]{}));
         comboBox.setName(sText+".distr");
 
         String sID = prior.distInput.get().getID();
@@ -58,7 +58,8 @@ public class PriorInputEditor extends InputEditor.Base {
             }
         }
         comboBox.addActionListener(e -> {
-            JComboBox comboBox1 = (JComboBox) e.getSource();
+            @SuppressWarnings("unchecked")
+			JComboBox<BeautiSubTemplate> comboBox1 = (JComboBox<BeautiSubTemplate>) e.getSource();
 
             List<?> list = (List<?>) m_input.get();
 

@@ -182,6 +182,8 @@ public class TraitSet extends BEASTObject {
                                 if (sStr.matches(".*[a-zA-Z].*")) {
                                         sStr = sStr.replace('/', '-');
                                 }
+                                // following is deprecated, but the best thing around at the moment
+                                // see also comments in TipDatesInputEditor
                                 long date = Date.parse(sStr);
                                 year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
                                 System.err.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");

@@ -69,8 +69,8 @@ public class GuessPatternDialog extends JDialog {
     int m_splitlocation = 0;
     String m_sDelimiter = ".";
     JTextField textRegExp;
-    JComboBox combo;
-    JComboBox combo_1;
+    JComboBox<String> combo;
+    JComboBox<String> combo_1;
     String pattern;
 
     public String getPattern() {
@@ -385,7 +385,7 @@ public class GuessPatternDialog extends JDialog {
         gbc.gridy = 1;
         guessPanel.add(b, gbc);
 
-        combo = new JComboBox(new String[] { "after first", "after last", "before first", "before last" });
+        combo = new JComboBox<>(new String[] { "after first", "after last", "before first", "before last" });
         combo.setName("delimiterCombo");
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.anchor = GridBagConstraints.WEST;
@@ -397,7 +397,8 @@ public class GuessPatternDialog extends JDialog {
         combo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox combo = (JComboBox) e.getSource();
+                @SuppressWarnings("unchecked")
+				JComboBox<String> combo = (JComboBox<String>) e.getSource();
                 m_location = combo.getSelectedIndex();
                 bUseEverything.setSelected(true);
                 updateFields();
@@ -455,7 +456,7 @@ public class GuessPatternDialog extends JDialog {
         gbc_lblAndTakeGroups.gridy = 4;
         guessPanel.add(lblAndTakeGroups, gbc_lblAndTakeGroups);
 
-        combo_1 = new JComboBox(new String[] { "1", "2", "3", "4", "1-2", "2-3", "3-4", "1-3", "2-4" });
+        combo_1 = new JComboBox<>(new String[] { "1", "2", "3", "4", "1-2", "2-3", "3-4", "1-3", "2-4" });
         combo_1.setName("splitCombo");
         GridBagConstraints gbc_combo_1 = new GridBagConstraints();
         gbc_combo_1.anchor = GridBagConstraints.WEST;
@@ -466,7 +467,8 @@ public class GuessPatternDialog extends JDialog {
         combo_1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox combo = (JComboBox) e.getSource();
+                @SuppressWarnings("unchecked")
+				JComboBox<String> combo = (JComboBox<String>) e.getSource();
                 m_splitlocation = combo.getSelectedIndex();
                 bSplitOnChar.setSelected(true);
                 updateFields();

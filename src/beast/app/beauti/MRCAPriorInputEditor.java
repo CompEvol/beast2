@@ -83,7 +83,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         }
 
         List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
-        JComboBox comboBox = new JComboBox(sAvailablePlugins.toArray());
+        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(sAvailablePlugins.toArray(new BeautiSubTemplate[]{}));
         comboBox.setName(sText+".distr");
 
         if (prior.distInput.get() != null) {
@@ -101,7 +101,8 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
+                @SuppressWarnings("unchecked")
+				JComboBox<BeautiSubTemplate> comboBox = (JComboBox<BeautiSubTemplate>) e.getSource();
                 BeautiSubTemplate template = (BeautiSubTemplate) comboBox.getSelectedItem();
                 List<?> list = (List<?>) m_input.get();
                 MRCAPrior prior = (MRCAPrior) list.get(itemNr);

@@ -660,7 +660,7 @@ public class WAG extends EmpiricalSubstitutionModel {
 
         WAG wag = new WAG();
 
-        String aminoAcids = "ARNDCQEGHILKMFPSTWYV";
+        //String aminoAcids = "ARNDCQEGHILKMFPSTWYV";
         boolean[] class1 = {false,true,false,false,true,true,true,false,false,true,true,
                 false,true,false,false,false,false,true,true,true};
 

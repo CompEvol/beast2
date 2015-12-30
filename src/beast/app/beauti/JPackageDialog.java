@@ -124,10 +124,10 @@ public class JPackageDialog extends JPanel {
         dataTable = new JTable(dataTableModel);
         
         double [] widths = new double[dataTable.getColumnCount()];
-        double total = 0;
+        //double total = 0;
         for (int i = 0; i < dataTable.getColumnCount(); i++) {
         	widths[i] = dataTable.getColumnModel().getColumn(i).getWidth();
-        	total += widths[i]; 
+        	//total += widths[i]; 
         }
         widths[2] /= 4.0;
         dataTable.getColumnModel().getColumn(2).setPreferredWidth((int) widths[2]);
@@ -361,7 +361,9 @@ public class JPackageDialog extends JPanel {
 	}
 
 	class DataTableModel extends AbstractTableModel {
-        String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
+		private static final long serialVersionUID = 1L;
+
+		String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
 
         @Override
 		public int getColumnCount() {
