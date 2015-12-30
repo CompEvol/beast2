@@ -27,7 +27,8 @@ public class Beta extends ParametricDistribution {
     /**
      * make sure internal state is up to date *
      */
-    void refresh() {
+    @SuppressWarnings("deprecation")
+	void refresh() {
         double fAlpha;
         double fBeta;
         if (alphaInput.get() == null) {

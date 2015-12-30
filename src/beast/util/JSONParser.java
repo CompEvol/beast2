@@ -983,7 +983,7 @@ public class JSONParser {
 		return beastObject;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<JSONNameValuePair> inputInfo) throws JSONParserException {
 		Class<?> clazz = null;
 		try {
@@ -1015,8 +1015,8 @@ public class JSONParser {
 	    					// no need to parameterise list due to type erasure
 	    					args[i] = new ArrayList();
 	    				}
-	    				List<?> values = getListOfValues(param, inputInfo);
-	    				((List)args[i]).addAll(values);
+	    				List<Object> values = getListOfValues(param, inputInfo);
+	    				((List<Object>) args[i]).addAll(values);
 	    			} else {
 	    				args[i] = getValue(param, inputInfo);
 	    			}

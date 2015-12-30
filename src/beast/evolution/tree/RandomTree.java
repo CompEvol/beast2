@@ -488,17 +488,17 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         return MRCA;
     }
 
-    /**
-     * @param id the id to match
-     * @param nodes a list of nodes
-     * @return the node with the matching id;
-     */
-    private Node getNodeById(String id, List<Node> nodes) {
-        for (Node node : nodes) {
-            if (node.getID().equals(id)) return node;
-        }
-        return null;
-    }
+//    /**
+//     * @param id the id to match
+//     * @param nodes a list of nodes
+//     * @return the node with the matching id;
+//     */
+//    private Node getNodeById(String id, List<Node> nodes) {
+//        for (Node node : nodes) {
+//            if (node.getID().equals(id)) return node;
+//        }
+//        return null;
+//    }
 
     /**
      * @param nodes

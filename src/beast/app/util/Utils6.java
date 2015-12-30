@@ -16,7 +16,9 @@ import javax.swing.JComponent;
 public class Utils6 {
 
     public static class Canvas extends JComponent {
-        Image imageBuffer;
+		private static final long serialVersionUID = 1L;
+		
+		Image imageBuffer;
         public Canvas() { }
 
         public void paintComponent( Graphics g ) {

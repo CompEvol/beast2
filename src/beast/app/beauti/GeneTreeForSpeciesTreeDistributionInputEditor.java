@@ -43,13 +43,14 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	static final int OTHER = 3;
 	String [] sValues = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
 	Double [] fValues = new Double[]{2.0, 1.5, 0.5, -1.0};
-	JComboBox m_selectPluginBox;
+	JComboBox<String> m_selectPluginBox;
 	
 	public InputEditor createPloidyEditor() {
 		InputEditor editor = new InputEditor.Base(doc) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Class<?> type() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			
@@ -61,7 +62,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 				this.itemNr = itemNr;
 				addInputLabel();
 				
-	            m_selectPluginBox = new JComboBox(sValues);
+	            m_selectPluginBox = new JComboBox<>(sValues);
 	            setSelection();
 	            String sSelectString = input.get().toString();
 	            m_selectPluginBox.setSelectedItem(sSelectString);

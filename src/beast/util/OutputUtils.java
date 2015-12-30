@@ -53,7 +53,7 @@ public class OutputUtils {
         }
     }
 
-    public static String toString(List list) {
+    public static String toString(List<?> list) {
         String s = "";
         for (int i = 0; i < list.size(); i++) {
             if (i > 0) s += ", ";

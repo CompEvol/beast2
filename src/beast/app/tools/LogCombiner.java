@@ -147,6 +147,7 @@ public class LogCombiner extends LogAnalyser {
                 }
             } else {
                 if (nColumns != m_sLabels.length) {
+                    fin.close();
                     throw new Exception("ERROR: The number of columns in file " + sFile + " does not match that of the first file");
                 }
                 for (int i = 0; i < m_fTraces.length; i++) {
@@ -159,6 +160,7 @@ public class LogCombiner extends LogAnalyser {
                 }
             }
             k++;
+            fin.close();
         }
         if (!m_bIsTreeLog) {
             // reset sample column
@@ -198,6 +200,7 @@ public class LogCombiner extends LogAnalyser {
         if (m_sTrees == null) {
             m_sTrees = new ArrayList<>();
         }
+        fin.close();
         fin = new BufferedReader(new FileReader(sFile));
         nData = -nBurnIn - 1;
         // grab data from the log, ignoring burn in samples

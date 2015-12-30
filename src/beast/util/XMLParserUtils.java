@@ -3,8 +3,6 @@ package beast.util;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,7 +27,6 @@ import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Param;
-import beast.core.util.Log;
 
 /**
  *

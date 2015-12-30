@@ -67,7 +67,6 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
-import beast.util.JSONParser.JSONNameValuePair;
 
 
 /**
@@ -823,7 +822,7 @@ public class XMLParser {
 	}
 
     
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BEASTInterface useAnnotatedConstructor(Node node, String iD, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
 		Class<?> clazz = null;
 		try {
@@ -855,7 +854,7 @@ public class XMLParser {
 	    					// no need to parameterise list due to type erasure
 	    					args[i] = new ArrayList();
 	    				}
-	    				List<?> values = getListOfValues(param, inputInfo);
+	    				List<Object> values = getListOfValues(param, inputInfo);
 	    				((List)args[i]).addAll(values);
 	    			} else {
 	    				args[i] = getValue(param, types[i], inputInfo);

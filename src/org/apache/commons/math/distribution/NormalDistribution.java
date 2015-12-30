@@ -30,7 +30,7 @@ package org.apache.commons.math.distribution;
  *
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
  */
-public interface NormalDistribution extends ContinuousDistribution, HasDensity<Double> {
+public interface NormalDistribution extends ContinuousDistribution /*, HasDensity<Double>*/ {
     /**
      * Access the mean.
      *

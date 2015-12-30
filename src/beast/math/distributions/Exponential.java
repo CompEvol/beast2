@@ -25,7 +25,8 @@ public class Exponential extends ParametricDistribution {
     /**
      * make sure internal state is up to date *
      */
-    void refresh() {
+    @SuppressWarnings("deprecation")
+	void refresh() {
         double fLambda;
         if (lambdaInput.get() == null) {
             fLambda = 1;

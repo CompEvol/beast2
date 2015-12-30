@@ -106,7 +106,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		f.selectTab("Partitions");
 		JTableCellFixture cell = beautiFrame.table().cell(TableCell.row(0).column(7));
 		Component editor = cell.editor();
-		JComboBoxFixture comboBox = new JComboBoxFixture(robot(), (JComboBox) editor);
+		JComboBoxFixture comboBox = new JComboBoxFixture(robot(), (JComboBox<?>) editor);
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("tree");
@@ -130,7 +130,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("2b. and call the uncorrelated relaxed molecular clock \"clock\"");
 		cell = beautiFrame.table().cell(TableCell.row(0).column(6));
 		editor = cell.editor();
-		comboBox = new JComboBoxFixture(robot(), (JComboBox) editor);
+		comboBox = new JComboBoxFixture(robot(), (JComboBox<?>) editor);
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("clock");
@@ -295,6 +295,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
     
 
 
+	
 	@Test
 	public void MEPBSPTutorial() throws InterruptedException {
 		if (true) {return;}
@@ -382,6 +383,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		
 		}
 	}
+	
 
 }
 

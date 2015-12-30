@@ -32,7 +32,7 @@ public abstract class UnivariateRealIntegratorImpl
     /**
      * Serializable version identifier.
      */
-    private static final long serialVersionUID = 6248808456637441533L;
+    //private static final long serialVersionUID = 6248808456637441533L;
 
     /**
      * minimum number of iterations

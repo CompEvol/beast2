@@ -84,7 +84,8 @@ public interface Parameter<T> extends Function {
             }
         }
 
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public void initAndValidate() throws Exception {
             T[] sValues = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
 

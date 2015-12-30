@@ -45,10 +45,10 @@ abstract public class Map<T> extends CalculationNode {
         map = defaultInput.get();
         if (defaultInput.getType().equals(List.class)) {
             if (defaultInput.get().containsKey(name)) {
-                List list = (List) defaultInput.get().get(name);
+                List<Object> list = (List<Object>) defaultInput.get().get(name);
                 list.add(value);
             } else {
-                List list = new ArrayList();
+                List<Object> list = new ArrayList<>();
                 list.add(value);
                 defaultInput.get().put(name, (T) list);
             }

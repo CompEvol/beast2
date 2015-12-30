@@ -19,8 +19,9 @@ import javax.swing.text.PlainDocument;
 
 public class WholeNumberField extends JTextField
         implements FocusListener, DocumentListener {
+	private static final long serialVersionUID = 1L;
 
-    protected static char MINUS_CHAR = '-';
+	protected static char MINUS_CHAR = '-';
     protected EventListenerList changeListeners = new EventListenerList();
     protected long min;
     protected long max;
@@ -152,7 +153,9 @@ public class WholeNumberField extends JTextField
     };
 
     class WholeNumberFieldDocument extends PlainDocument {
-        public void insertString(int offs, String str, AttributeSet a)
+		private static final long serialVersionUID = 1L;
+
+		public void insertString(int offs, String str, AttributeSet a)
                 throws BadLocationException {
 
             if (str == null) return;

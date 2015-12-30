@@ -47,6 +47,7 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 
 
@@ -61,8 +62,6 @@ import beast.util.AddOnManager;
  * *
  */
 public class DocMaker {
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * output directory *
@@ -113,7 +112,7 @@ public class DocMaker {
         }
         for (String sPlugin : m_sPluginNames) {
             try {
-                Class _class = Class.forName(sPlugin);
+                Class<?> _class = Class.forName(sPlugin);
                 BEASTObject plugin = (BEASTObject) _class.newInstance();
                 String sDescription = getInheritableDescription(plugin.getClass());
                 System.err.println(sPlugin + " => " + sDescription);
@@ -158,6 +157,7 @@ public class DocMaker {
     void createCSS() throws Exception {
         PrintStream out = new PrintStream(m_sDir + "/doc.css");
         out.println(getCSS());
+        out.close();
     }
 
     String getCSS() {
@@ -267,6 +267,7 @@ public class DocMaker {
                     "		  <FRAME name='display' src='contents.html'>\n" +
                     "		</FRAMESET>\n" +
                     "		</HTML>");
+            out.close();
         }
 
         {
@@ -284,7 +285,8 @@ public class DocMaker {
 	            in.close();
 	            out.close();
         	} catch (Exception e) {
-				// TODO: handle exception
+				// ignore exception -- too bad we could not 
+        		Log.warning.println("WARNING: something went wrong copying beast.png image:" + e.getMessage());
 			}
         }
         PrintStream out = new PrintStream(m_sDir + "/contents.html");
@@ -318,6 +320,7 @@ public class DocMaker {
         }
         out.println("</body>\n");
         out.println("</html>\n");
+        out.close();
     } // createIndex
 
     /**
@@ -374,6 +377,7 @@ public class DocMaker {
         } catch (Exception e) {
             System.err.println("Page creation failed for " + sPlugin + ": " + e.getMessage());
         }
+        out.close();
     } // createPluginPage
 
 
@@ -470,6 +474,9 @@ public class DocMaker {
                     break;
                 case XOR:
                     buf.append("Either this, or " + input.getOther().getName() + " needs to be specified");
+                    break;
+                case FORBIDDEN:
+                    buf.append("Forbidden: must not be specified");
                     break;
             }
             buf.append("</td></tr>\n");

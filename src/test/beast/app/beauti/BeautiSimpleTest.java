@@ -92,7 +92,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		f.selectTab("Partitions");
 		JTableCellFixture cell = beautiFrame.table().cell(TableCell.row(0).column(7));
 		Component editor = cell.editor();
-		JComboBoxFixture comboBox = new JComboBoxFixture(robot(), (JComboBox) editor);
+		JComboBoxFixture comboBox = new JComboBoxFixture(robot(), (JComboBox<?>) editor);
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("tree");

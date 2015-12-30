@@ -98,7 +98,8 @@ public class LogAnalyser {
         this(sFile, BURN_IN_PERCENTAGE);
     }
 
-    protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+    @SuppressWarnings("unchecked")
+	protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr;
@@ -123,6 +124,7 @@ public class LogAnalyser {
         m_ranges = new List[nItems];
         int nBurnIn = nData * nBurnInPercentage / 100;
         m_fTraces = new Double[nItems][nData - nBurnIn];
+        fin.close();
         fin = new BufferedReader(new FileReader(sFile));
         nData = -nBurnIn - 1;
         logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
@@ -167,7 +169,8 @@ public class LogAnalyser {
                     m_types[i] = type.BOOL;
                 else
                     m_types[i] = type.NOMINAL;
-
+        
+        fin.close();
     } // readLogFile
 
     /**

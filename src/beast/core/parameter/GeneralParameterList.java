@@ -44,7 +44,7 @@ import beast.core.StateNode;
         + "parameters must have identical dimensions and bounds.")
 public abstract class GeneralParameterList<T> extends StateNode {
     
-    final public Input<List<Parameter.Base>> initialParamsInput = new Input<>(
+    final public Input<List<Parameter.Base<?>>> initialParamsInput = new Input<>(
             "initialParam",
             "Parameter whose value will initially be in parameter list.",
             new ArrayList<>());
@@ -79,7 +79,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
         dimension = dimensionInput.get();
         minorDimension = minorDimensionInput.get();
         
-        for (Parameter param : initialParamsInput.get()) {
+        for (Parameter<?> param : initialParamsInput.get()) {
             if (param.getDimension() != dimension)
                 throw new IllegalArgumentException("Parameter dimension does not equal"
                         + " dimension specified in enclosing ParameterList.");
@@ -189,7 +189,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
      * @param otherParam
      * @return New parameter.
      */
-    public QuietParameter createNewParam(Parameter otherParam) {
+    public QuietParameter createNewParam(Parameter<?> otherParam) {
         QuietParameter param = new QuietParameter(otherParam);
         allocateKey(param);
         return param;
@@ -214,7 +214,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
      * @param otherParam
      * @return New parameter.
      */
-    public QuietParameter addNewParam(Parameter otherParam) {
+    public QuietParameter addNewParam(Parameter<?> otherParam) {
         startEditing(null);
         QuietParameter param = new QuietParameter(otherParam);
         allocateKey(param);
@@ -240,7 +240,8 @@ public abstract class GeneralParameterList<T> extends StateNode {
     public StateNode copy() {
 
         try {
-            GeneralParameterList<T> copy = (GeneralParameterList<T>) this.clone();
+            @SuppressWarnings("unchecked")
+			GeneralParameterList<T> copy = (GeneralParameterList<T>) this.clone();
             copy.initAndValidate();
                     
             copy.pList.clear();
@@ -271,7 +272,8 @@ public abstract class GeneralParameterList<T> extends StateNode {
             throw new RuntimeException("Incompatible statenodes in assignTo "
                     + "call.");
         
-        GeneralParameterList otherParamList = (GeneralParameterList)other;
+        @SuppressWarnings("unchecked")
+		GeneralParameterList<T> otherParamList = (GeneralParameterList<T>)other;
         
         otherParamList.pList.clear();
         for (QuietParameter param : pList)
@@ -285,17 +287,18 @@ public abstract class GeneralParameterList<T> extends StateNode {
         otherParamList.nextUnallocatedKey = nextUnallocatedKey;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void assignFrom(StateNode other) {
         if (!(other instanceof GeneralParameterList))
             throw new RuntimeException("Incompatible statenodes in assignFrom "
                     + "call.");
         
-        GeneralParameterList<T> otherParamList = (GeneralParameterList<T>)other;
+		GeneralParameterList<T> otherParamList = (GeneralParameterList<T>)other;
         
         pList.clear();
         for (Object paramObj : otherParamList.pList)
-            pList.add((QuietParameter)paramObj);
+            pList.add((QuietParameter) paramObj);
         
         dimension = otherParamList.dimension;
         minorDimension = otherParamList.minorDimension;
@@ -521,7 +524,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
          * 
          * @param param 
          */
-        QuietParameter(Parameter param) {
+        QuietParameter(Parameter<?> param) {
             if (param.getDimension() != dimension)
                 throw new IllegalArgumentException("Cannot construct "
                         + "ParameterList parameter with a dimension not equal "
@@ -538,12 +541,14 @@ public abstract class GeneralParameterList<T> extends StateNode {
             return key;
         }
         
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public T getValue(int i) {
             return (T)values[i];
         }
 
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public T getValue() {
             return (T)values[0];
         }
@@ -580,7 +585,8 @@ public abstract class GeneralParameterList<T> extends StateNode {
             upperBound = upper;
         }
 
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public T[] getValues() {
             return (T[])values;
         }
@@ -601,7 +607,8 @@ public abstract class GeneralParameterList<T> extends StateNode {
         }
         
         
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public T getMatrixValue(int i, int j) {
             return (T)values[i*minorDimension+j];
         }

@@ -82,7 +82,7 @@ public class LogCombinerDialog {
     JTable filesTable = null;
     private FilesTableModel filesTableModel = null;
 
-    private final JComboBox fileTypeCombo = new JComboBox(new String[]{"Log Files", "Tree Files"});
+    private final JComboBox<String> fileTypeCombo = new JComboBox<>(new String[]{"Log Files", "Tree Files"});
     private final JCheckBox decimalCheck = new JCheckBox("Convert numbers from scientific to decimal notation");
     private final JCheckBox renumberOutput = new JCheckBox("Renumber ouput states");
     private final JCheckBox resampleCheck = new JCheckBox("Resample states at lower frequency: ");

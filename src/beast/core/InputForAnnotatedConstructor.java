@@ -65,7 +65,6 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Object value, BEASTInterface plugin) {
         if (value == null) {
@@ -129,7 +128,6 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 	}
 
 	
-	@SuppressWarnings("unchecked")
 	private void setValue(Object value) {
 		try {
 			setter.invoke(beastObject, value);

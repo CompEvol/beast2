@@ -92,6 +92,7 @@ public class SimulatedAlignment extends Alignment {
         if (m_outputFileName != null) {
             PrintStream pstream = new PrintStream(m_outputFileName);
             pstream.println(new XMLProducer().toRawXML(this));
+            pstream.close();
         }
         
         super.initAndValidate();

@@ -59,7 +59,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         treeInput.setRule(Validate.REQUIRED);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void initAndValidate() throws Exception {
     	ploidy = ploidyInput.get();
 //    	switch (m_ploidy.get()) {

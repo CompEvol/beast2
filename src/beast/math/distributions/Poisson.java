@@ -39,7 +39,8 @@ public class Poisson extends ParametricDistribution {
     /**
      * make sure internal state is up to date *
      */
-    void refresh() {
+    @SuppressWarnings("deprecation")
+	void refresh() {
         double m_fLambda;
         if (lambdaInput.get() == null) {
             m_fLambda = 1;

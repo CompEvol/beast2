@@ -56,7 +56,7 @@ public class BrentSolver extends UnivariateRealSolverImpl {
     /**
      * Serializable version identifier
      */
-    private static final long serialVersionUID = 7694577816772532779L;
+    //private static final long serialVersionUID = 7694577816772532779L;
 
     /**
      * Construct a solver for the given function.

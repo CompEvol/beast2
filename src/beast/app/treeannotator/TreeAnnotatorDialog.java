@@ -59,9 +59,9 @@ public class TreeAnnotatorDialog {
     private WholeNumberField burninText = new WholeNumberField(0, Integer.MAX_VALUE);
 	private RealNumberField limitText = new RealNumberField(0.0, 1.0);
 
-    private JComboBox summaryTreeCombo = new JComboBox(TreeAnnotator.Target.values());
+    private JComboBox<TreeAnnotator.Target> summaryTreeCombo = new JComboBox<>(TreeAnnotator.Target.values());
 
-    private JComboBox nodeHeightsCombo = new JComboBox(TreeAnnotator.HeightsSummary.values());
+    private JComboBox<TreeAnnotator.HeightsSummary> nodeHeightsCombo = new JComboBox<>(TreeAnnotator.HeightsSummary.values());
 
     private JCheckBox lowMemCheckbox = new JCheckBox();
     

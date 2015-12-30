@@ -115,7 +115,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 		            buf.append(((BEASTObject)metadata).getID());
 		            buf.append('=');
 		            if (metadata instanceof Parameter<?>) {
-		            	Parameter p = (Parameter) metadata;
+		            	Parameter<?> p = (Parameter<?>) metadata;
 		            	int dim = p.getMinorDimension1();
 		            	if (dim > 1) {
 			            	buf.append('{');

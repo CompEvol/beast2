@@ -38,13 +38,13 @@ public class BEASTInterfaceTest extends TestCase {
 		}
 
 		@Override
-		public Set getOutputs() {
+		public Set<BEASTInterface> getOutputs() {
 			return outputs;
 		}
 
 		@Override
 		public void initAndValidate() throws Exception {
-			// nothting to do;
+			// nothing to do;
 		}
 
 		@Override
@@ -69,7 +69,7 @@ public class BEASTInterfaceTest extends TestCase {
 
 		System.err.println("test initByName");
 		beasti.initByName("value", "hello world");
-		Input<String> input = (Input<String>) beasti.getInput("value");
+		Input<?> input = (Input<?>) beasti.getInput("value");
 		assertEquals("hello world", input.get());
 		
 		System.err.println("test listInputs");

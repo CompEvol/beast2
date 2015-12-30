@@ -58,7 +58,7 @@ public class AnnotatedRunnableTestClass extends Runnable {
 	Set<BEASTInterface> outputs = new HashSet<>();
 	
 	@Override
-	public Set getOutputs() {
+	public Set<BEASTInterface> getOutputs() {
 		return outputs;
 	}
 

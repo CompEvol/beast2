@@ -29,7 +29,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
 
     final public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
-    final public Input<List<Parameter>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
+    final public Input<List<Parameter<?>>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
 
     private RPNexpressionCalculator[] expressions;
     private List<String> names;
@@ -45,7 +45,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
         int pdim;
 
-        for (final Parameter p : parametersInput.get()) {
+        for (final Parameter<?> p : parametersInput.get()) {
 
             pdim = p.getDimension();
 
@@ -74,7 +74,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
                     final Object[] values = ((Object[]) variables.get(name));
                     if (values == null) {
                     	String ids = "";
-                        for (final Parameter p : parametersInput.get()) {
+                        for (final Parameter<?> p : parametersInput.get()) {
                     		ids += p.getID() +", ";
                     	}
                     	if (parametersInput.get().size() > 0) {
@@ -106,7 +106,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     }
 
     private void updateValues() {
-        for (Parameter p : parametersInput.get()) {
+        for (Parameter<?> p : parametersInput.get()) {
             for (int i = 0; i < p.getDimension(); i++) {
                 variables.put(p.getID(), p.getValues());
             }
@@ -164,7 +164,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
     public List<String> getArguments() {
         final List<String> arguments = new ArrayList<>();
-        for (final Parameter par : parametersInput.get()) {
+        for (final Parameter<?> par : parametersInput.get()) {
             arguments.add(par.getID());
         }
         return arguments;

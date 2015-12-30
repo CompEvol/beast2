@@ -129,7 +129,7 @@ public class FrequencySet<T> {
      */
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof FrequencySet) && sortedList.equals(((FrequencySet) obj).sortedList);
+        return (obj instanceof FrequencySet) && sortedList.equals(((FrequencySet<?>) obj).sortedList);
     }
 
     public Map<T, Integer> getFrequencyMap() {

@@ -65,7 +65,8 @@ public class MarkovChainDistribution extends Distribution {
      *
      * @return the log likelihood.
      */
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public double calculateLogP() throws Exception {
         logP = 0.0;
         // jeffreys Prior!

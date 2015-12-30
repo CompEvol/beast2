@@ -256,7 +256,7 @@ public class KernelDensityEstimator2D implements ContourMaker {
 
         KernelDensityEstimator2D kde = new KernelDensityEstimator2D(x, y, 4);
 
-//        System.out.println(new Vector(kde.getXGrid()));
+        System.out.println(kde.getXGrid());
 //        System.out.println(new Vector(kde.getYGrid()));
 //        System.out.println(new Matrix(kde.getKDE()));
         System.exit(-1);

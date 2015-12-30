@@ -52,7 +52,6 @@ import beast.util.AddOnManager;
  * @author  Walter Xie
  */
 public class AppStore {
-    private static final long serialVersionUID = 1L;
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
     private final String ALL = "-all-";
@@ -77,7 +76,7 @@ public class AppStore {
         packageComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
+                JComboBox<?> cb = (JComboBox<?>) e.getSource();
                 if (cb.getSelectedItem() != null) {
                     resetAppList(cb.getSelectedItem().toString());
                 }
@@ -108,7 +107,9 @@ public class AppStore {
         box.add(Box.createGlue());
 
         listApps = new JList<PackageApp>(model) {
-            //Subclass JList to workaround bug 4832765, which can cause the
+ 			private static final long serialVersionUID = 1L;
+
+			//Subclass JList to workaround bug 4832765, which can cause the
             //scroll pane to not let the user easily scroll up to the beginning
             //of the list.  An alternative would be to set the unitIncrement
             //of the JScrollBar to a fixed value. You wouldn't get the nice
@@ -138,8 +139,10 @@ public class AppStore {
         };
         listApps.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listApps.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                           boolean cellHasFocus) {
                 JLabel label = (JLabel) super
                         .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -366,7 +369,7 @@ public class AppStore {
 
             System.err.println(pb.command());
 
-            File log = new File("log");
+            //File log = new File("log");
             pb.redirectErrorStream(true);
             
             // Start the process and wait for it to finish.

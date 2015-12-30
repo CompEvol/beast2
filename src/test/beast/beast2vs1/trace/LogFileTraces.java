@@ -147,6 +147,7 @@ public class LogFileTraces {
                 }
 
             } catch (NumberFormatException nfe) {
+                reader.close();
                 throw new TraceException("State " + state + ":Expected real value in column " + reader.getLineNumber());
             }
 
@@ -157,11 +158,13 @@ public class LogFileTraces {
                     try {
                         valuesList.get(i).add(Double.parseDouble(value));
                     } catch (NumberFormatException nfe) {
+                        reader.close();
                         throw new TraceException("State " + state + ": Expected correct number type (Double) in column "
                                 + (i + 1) + " (Line " + reader.getLineNumber() + ")");
                     }
 
                 } else {
+                    reader.close();
                     throw new TraceException("State " + state + ": missing values at line " + reader.getLineNumber());
                 }
             }
@@ -170,6 +173,7 @@ public class LogFileTraces {
         }
 
         burnIn = (int) (0.1 * lastState);
+        reader.close();
     }
 
     /**

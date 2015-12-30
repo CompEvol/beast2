@@ -25,7 +25,7 @@ import org.apache.commons.math.MathException;
  * @see <a href="http://en.wikipedia.org/wiki/Beta_distribution">Beta_distribution</a>
  * @since 2.0
  */
-public interface BetaDistribution extends ContinuousDistribution, HasDensity<Double> {
+public interface BetaDistribution extends ContinuousDistribution /*, HasDensity<Double>*/ {
     /**
      * Modify the shape parameter, alpha.
      *

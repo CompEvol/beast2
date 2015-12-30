@@ -627,6 +627,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 fBestDist = ESS * merged.size() - ESS1 * cluster1.size() - ESS2 * cluster2.size();
             }
             break;
+		default:
+			break;
         }
         return fBestDist;
     } // getDistance0
@@ -763,6 +765,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 fBestDist = ESS * merged.size() - ESS1 * cluster1.size() - ESS2 * cluster2.size();
             }
             break;
+		default:
+			break;
         }
         return fBestDist;
     } // getDistance

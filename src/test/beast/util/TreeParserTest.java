@@ -99,6 +99,7 @@ public class TreeParserTest extends TestCase {
         try {
             boolean isLabeled = true;
             TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+            System.out.println(treeParser.getRoot().toNewick());
         } catch (RuntimeException e) {
             e.printStackTrace();
             exceptionRaised = true;

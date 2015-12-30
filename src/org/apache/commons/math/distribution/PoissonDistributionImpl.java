@@ -171,7 +171,8 @@ public class PoissonDistributionImpl extends AbstractIntegerDistribution
      * @param p the Poisson mean value
      * @throws IllegalArgumentException if p &le; 0
      */
-    private void setNormalAndMeanInternal(NormalDistribution z,
+    @SuppressWarnings("deprecation")
+	private void setNormalAndMeanInternal(NormalDistribution z,
                                           double p) {
         if (p <= 0) {
             throw MathRuntimeException.createIllegalArgumentException(

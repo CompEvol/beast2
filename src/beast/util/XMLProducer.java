@@ -912,7 +912,7 @@ public class XMLProducer extends XMLParser {
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
      * @throws Exception
      */
-    void inputToXML(Input input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
+    void inputToXML(Input<?> input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
     	//if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name
@@ -922,6 +922,7 @@ public class XMLProducer extends XMLParser {
             if (value instanceof Map) {
                 // distinguish between List, Map, BEASTInterface and primitive input types
             	if (isShort) {
+					@SuppressWarnings("unchecked")
 					Map<String,?> map = (Map<String,?>) value;
                 	// determine label width
                 	int whiteSpaceWidth = 0;

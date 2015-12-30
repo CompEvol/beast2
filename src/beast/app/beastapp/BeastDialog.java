@@ -34,17 +34,17 @@ public class BeastDialog {
 
     private final WholeNumberField seedText = new WholeNumberField((long) 1, Long.MAX_VALUE);
     //    private final JCheckBox overwriteCheckBox = new JCheckBox("Allow overwriting of log files");
-    private final JComboBox logginMode = new JComboBox(new String[]{"default: only write new log files",
+    private final JComboBox<String> logginMode = new JComboBox<>(new String[]{"default: only write new log files",
             "overwrite: overwrite log files",
             "resume: appends log to existing files (if any)"});
 
     private final JCheckBox beagleCheckBox = new JCheckBox("Use BEAGLE library if available:");
     private final JCheckBox beagleInfoCheckBox = new JCheckBox("Show list of available BEAGLE resources and Quit");
-    private final JComboBox beagleResourceCombo = new JComboBox(new Object[]{"CPU", "GPU"});
+    private final JComboBox<Object> beagleResourceCombo = new JComboBox<>(new Object[]{"CPU", "GPU"});
     private final JCheckBox beagleSSECheckBox = new JCheckBox("Use CPU's SSE extensions");
-    private final JComboBox beaglePrecisionCombo = new JComboBox(new Object[]{"Double", "Single"});
+    private final JComboBox<Object> beaglePrecisionCombo = new JComboBox<>(new Object[]{"Double", "Single"});
 
-    private final JComboBox threadsCombo = new JComboBox(new Object[]{"Automatic", 0, 1, 2, 3, 4, 5, 6, 7, 8});
+    private final JComboBox<Object> threadsCombo = new JComboBox<>(new Object[]{"Automatic", 0, 1, 2, 3, 4, 5, 6, 7, 8});
 
     private File inputFile = null;
 

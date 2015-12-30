@@ -314,7 +314,7 @@ public class BeastMCMC {
         JTextField m_fileEntry;
         JTextField m_seedEntry;
         JCheckBox m_bUseGPU;
-        JComboBox m_mode;
+        JComboBox<String> m_mode;
 
         public BeastStartDialog() {
             setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -452,19 +452,10 @@ public class BeastMCMC {
             return box;
         } // BeastStartDialog::createSeedInput
 
-        private Component createBeagleInput() {
-            Box box = Box.createHorizontalBox();
-            m_bUseGPU = new JCheckBox("Use GPU through Beagle (if available)");
-            box.add(m_bUseGPU);
-            box.add(Box.createHorizontalGlue());
-            return box;
-        } // BeastStartDialog::createSeedInput
-
-
         private Component createModeInput() {
             Box box = Box.createHorizontalBox();
             box.add(new JLabel("Mode of running: "));
-            m_mode = new JComboBox(new String[]{"default: only write new log files",
+            m_mode = new JComboBox<>(new String[]{"default: only write new log files",
                     "overwrite: overwrite log files",
                     "resume: appends log to existing files (if any)"});
             Dimension size = new Dimension(350, 20);

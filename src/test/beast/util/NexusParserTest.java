@@ -28,7 +28,7 @@ public class NexusParserTest extends TestCase {
                 }
             });
 
-            List<String> sFailedFiles = new ArrayList<String>();
+            List<String> sFailedFiles = new ArrayList<>();
             for (String sFileName : sExampleFiles) {
                 System.out.println("Processing " + sFileName);
                 NexusParser parser = new NexusParser();
@@ -75,7 +75,7 @@ public class NexusParserTest extends TestCase {
         NexusParser parser = new NexusParser();
         try {
 
-            Set<String> taxa = new TreeSet<String>();
+            Set<String> taxa = new TreeSet<>();
             taxa.add("ID0");
             taxa.add("ID1");
             taxa.add("ID2");
@@ -125,7 +125,7 @@ public class NexusParserTest extends TestCase {
         NexusParser parser = new NexusParser();
         try {
 
-            List<String> taxa = new ArrayList<String>();
+            List<String> taxa = new ArrayList<>();
             taxa.add("2");
             taxa.add("0");
             taxa.add("1");

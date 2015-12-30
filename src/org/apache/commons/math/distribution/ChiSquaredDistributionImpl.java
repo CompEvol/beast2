@@ -109,7 +109,8 @@ public class ChiSquaredDistributionImpl
      *
      * @param degreesOfFreedom the new degrees of freedom.
      */
-    private void setDegreesOfFreedomInternal(double degreesOfFreedom) {
+    @SuppressWarnings("deprecation")
+	private void setDegreesOfFreedomInternal(double degreesOfFreedom) {
         gamma.setAlpha(degreesOfFreedom / 2.0);
     }
 

@@ -33,7 +33,9 @@ package test.beast.beast2vs1.trace;
  */
 
 public class TraceException extends Exception {
-    public TraceException() {
+	private static final long serialVersionUID = 1L;
+
+	public TraceException() {
         super();
     }
 

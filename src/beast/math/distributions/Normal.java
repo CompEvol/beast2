@@ -29,7 +29,8 @@ public class Normal extends ParametricDistribution {
     /**
      * make sure internal state is up to date *
      */
-    void refresh() {
+    @SuppressWarnings("deprecation")
+	void refresh() {
         double fMean;
         double fSigma;
         if (meanInput.get() == null) {

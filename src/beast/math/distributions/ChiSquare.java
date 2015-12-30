@@ -26,7 +26,8 @@ public class ChiSquare extends ParametricDistribution {
     /**
      * make sure internal state is up to date *
      */
-    void refresh() {
+    @SuppressWarnings("deprecation")
+	void refresh() {
         int nDF;
         if (dfInput.get() == null) {
             nDF = 1;

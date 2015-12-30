@@ -10,9 +10,8 @@ public class Arguments {
     public static final String ARGUMENT_CHARACTER = "-";
 
     public static class ArgumentException extends Exception {
-        /**
-         *
-         */
+ 		private static final long serialVersionUID = 1L;
+
         public ArgumentException() {
             super();
         }

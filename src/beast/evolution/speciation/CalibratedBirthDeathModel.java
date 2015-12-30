@@ -206,7 +206,8 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
         }
 
         // tio[i] will contain all taxaSets contained in the i'th clade, in the form of thier index into orderedCalibrations
-        final List<Integer>[] tio = new List[orderedCalibrations.length];
+        @SuppressWarnings("unchecked")
+		final List<Integer>[] tio = new List[orderedCalibrations.length];
         for (int k = 0; k < orderedCalibrations.length; ++k) {
             tio[k] = new ArrayList<>();
         }
@@ -649,6 +650,8 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                     }
                     break;
                 }
+			default:
+				break;
             }
         } else {
             final double value = userPDF.getArrayValue();

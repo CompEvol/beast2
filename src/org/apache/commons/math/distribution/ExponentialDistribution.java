@@ -29,7 +29,7 @@ package org.apache.commons.math.distribution;
  *
  * @version $Revision: 920852 $ $Date: 2010-03-09 07:53:44 -0500 (Tue, 09 Mar 2010) $
  */
-public interface ExponentialDistribution extends ContinuousDistribution, HasDensity<Double> {
+public interface ExponentialDistribution extends ContinuousDistribution /*, HasDensity<Double>*/ {
     /**
      * Modify the mean.
      *

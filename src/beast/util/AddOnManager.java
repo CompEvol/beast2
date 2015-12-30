@@ -339,6 +339,7 @@ public class AddOnManager {
         doUnzip(sZipFile, sDir);
         // refresh classes
         loadExternalJars();
+        fos.close();
         return sDir;
     }
 
@@ -676,13 +677,14 @@ public class AddOnManager {
                                     String className = jarEntry.getName().replaceAll("/", "\\.");
                                     className = className.substring(0, className.lastIndexOf('.'));
                                     try {
-                                        Object o = Class.forName(className);
+                                        /*Object o =*/ Class.forName(className);
                                         loadedClass = className;
                                     } catch (Exception e) {
                                         // TODO: handle exception
                                     }
                                 }
                             }
+                            jarFile.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -870,7 +872,7 @@ public class AddOnManager {
                 addDirContent(filepath, filepath.getAbsolutePath().length());
             } else if (path.endsWith(".jar")) {
 
-                JarFile jar;
+                JarFile jar = null;
                 try {
                     jar = new JarFile(filepath);
                 } catch (IOException e) {
@@ -884,6 +886,11 @@ public class AddOnManager {
                         all_classes.add(entry.getName());
                     }
                 }
+                try {
+					jar.close();
+				} catch (IOException e) {
+                    Log.debug.println("WARNING: " + filepath + " could not be closed!");
+				}
             } else if (path.endsWith(".class")) {
                 all_classes.add(path);
             } else {

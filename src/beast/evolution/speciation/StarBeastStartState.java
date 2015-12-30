@@ -105,7 +105,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
     private double[] firstMeetings(final Tree gtree, final Map<String, Integer> tipName2Species, final int nSpecies) {
         final Node[] nodes = gtree.listNodesPostOrder(null, null);
-        final Set<Integer>[] tipsSpecies = new Set[nodes.length];
+        @SuppressWarnings("unchecked")
+		final Set<Integer>[] tipsSpecies = new Set[nodes.length];
         for(int k = 0; k < tipsSpecies.length; ++k) {
             tipsSpecies[k] = new HashSet<>();
         }
@@ -119,7 +120,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 tipsSpecies[n.getNr()].add(tipName2Species.get(n.getID()));
             } else {
                 assert n.getChildCount() == 2;
-                final Set<Integer>[] sps = new Set[2];
+                @SuppressWarnings("unchecked")
+				final Set<Integer>[] sps = new Set[2];
                 sps[0] = tipsSpecies[n.getChild(0).getNr()];
                 sps[1] = tipsSpecies[n.getChild(1).getNr()];
                 final Set<Integer> u = new HashSet<>(sps[0]);

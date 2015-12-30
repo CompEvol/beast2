@@ -40,9 +40,9 @@ public class TreeUtils {
                 return node2.getLeafNodeCount() - node1.getLeafNodeCount();
             }
 
-            public boolean equals(Node node1, Node node2) {
-                return node1.getLeafNodeCount() == node2.getLeafNodeCount();
-            }
+//            public boolean equals(Node node1, Node node2) {
+//                return node1.getLeafNodeCount() == node2.getLeafNodeCount();
+//            }
         };
     }
 

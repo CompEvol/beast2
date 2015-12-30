@@ -71,6 +71,7 @@ public class EBSPAnalyser {
         final int nBurnIn = nData * nBurnInPercentage / 100;
         logln(" skipping " + nBurnIn + " line\n\n");
         nData = -nBurnIn - 1;
+        fin.close();
         fin = new BufferedReader(new FileReader(sFile));
 
         // process log
@@ -251,7 +252,7 @@ public class EBSPAnalyser {
         private final OptionsPanel optionPanel;
 
         private final JTextField inputFileNameText = new JTextField("not selected", 16);
-        private final JComboBox typeCombo = new JComboBox(new String[]{"linear", "stepwise"});
+        private final JComboBox<String> typeCombo = new JComboBox<>(new String[]{"linear", "stepwise"});
 
         final WholeNumberField burninText = new WholeNumberField((long) 0, Long.MAX_VALUE);
         private final JTextField outputFileNameText = new JTextField("not selected", 16);

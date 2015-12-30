@@ -82,7 +82,8 @@ public class LogNormalDistributionModel extends ParametricDistribution {
             setMeanAndStdDev(fMean, fStdDev);
         }
 
-        void setMeanAndStdDev(double fMean, double fStdDev) {
+        @SuppressWarnings("deprecation")
+		void setMeanAndStdDev(double fMean, double fStdDev) {
             m_fMean = fMean;
             m_fStdDev = fStdDev;
             m_normal.setMean(fMean);
