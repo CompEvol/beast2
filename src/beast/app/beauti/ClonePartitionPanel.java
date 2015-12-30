@@ -2,8 +2,6 @@ package beast.app.beauti;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -61,12 +59,9 @@ public class ClonePartitionPanel extends JPanel {
         okButton.setName("ok");
         okButton.setToolTipText("Click to clone configuration from the above selected partition " +
                 "into all selected partitions on the left.");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
                 clonePartitions();
-            }
-        });
+            });
         add(okButton);
 
     } // init

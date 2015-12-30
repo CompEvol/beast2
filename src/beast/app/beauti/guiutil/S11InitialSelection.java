@@ -1,7 +1,5 @@
 package beast.app.beauti.guiutil;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -44,11 +42,9 @@ public class S11InitialSelection extends PlainDocument {
         model = comboBox.getModel();
         editor = (JTextComponent) comboBox.getEditor().getEditorComponent();
         editor.setDocument(this);
-        comboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        comboBox.addActionListener(e -> {
                 if (!selecting) highlightCompletedText(0);
-            }
-        });
+            });
         editor.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (comboBox.isDisplayable()) comboBox.setPopupVisible(true);

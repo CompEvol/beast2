@@ -21,8 +21,6 @@ package beast.app.beauti;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -74,10 +72,7 @@ public class JPackageRepositoryDialog extends JDialog {
         
         // ADD URL
         JButton addURLButton = new JButton("Add URL");
-        addURLButton.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        addURLButton.addActionListener(e -> {
                 String newURL = (String)JOptionPane.showInputDialog(frame,
                         "Enter package repository URL",
                         "Add repository URL",JOptionPane.PLAIN_MESSAGE, null, null, "http://");
@@ -110,36 +105,27 @@ public class JPackageRepositoryDialog extends JDialog {
                 } else {
                     JOptionPane.showMessageDialog(frame, "Repository already exists!");
                 }
-            }
-        });
+            });
         box.add(addURLButton);
         
         // DELETE URL
         JButton deleteURLButton = new JButton("Delete selected URL");
-        deleteURLButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        deleteURLButton.addActionListener(e -> {
                 if (repoTable.getSelectedRow()>0) {
                     if (JOptionPane.showConfirmDialog(frame, "Really delete this repository?") ==JOptionPane.YES_OPTION) {
                         repoTableModel.URLs.remove(repoTable.getSelectedRow());
                         repoTableModel.fireTableDataChanged();
                     }
                 }
-            }
-        });
+            });
         box.add(deleteURLButton);
         
         // DONE
         JButton OKButton = new JButton("Done");
-        OKButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        OKButton.addActionListener(e -> {
                 AddOnManager.savePackageURLs(repoTableModel.URLs);
                 setVisible(false);
-            }
-        });
+            });
         box.add(OKButton);
         getContentPane().add(box, BorderLayout.PAGE_END);
 

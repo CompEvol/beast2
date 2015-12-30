@@ -11,7 +11,6 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -716,47 +715,35 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         autoSetClockRate = new JCheckBoxMenuItem(
                 "Automatic set clock rate", this.doc.bAutoSetClockRate);
-        autoSetClockRate.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent ae) {
+        autoSetClockRate.addActionListener(ae -> {
                 doc.bAutoSetClockRate = autoSetClockRate.getState();
                 refreshPanel();
-            }
-        });
+            });
         modeMenu.add(autoSetClockRate);
 
         allowLinking = new JCheckBoxMenuItem(
                 "Allow parameter linking", this.doc.bAllowLinking);
-        allowLinking.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent ae) {
+        allowLinking.addActionListener(ae -> {
                 doc.bAllowLinking = allowLinking.getState();
                 doc.determineLinks();
                 refreshPanel();
-            }
-        });
+            });
         modeMenu.add(allowLinking);
 
         autoUpdateOperatorWeights = new JCheckBoxMenuItem(
                 "Automatic change operator weights for *BEAST analyses", this.doc.bAutoUpdateOperatorWeights);
-        autoUpdateOperatorWeights.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent ae) {
+        autoUpdateOperatorWeights.addActionListener(ae -> {
                 doc.bAutoUpdateOperatorWeights = autoUpdateOperatorWeights.getState();
                 refreshPanel();
-            }
-        });
+            });
         modeMenu.add(autoUpdateOperatorWeights);
 
         autoUpdateFixMeanSubstRate = new JCheckBoxMenuItem(
                 "Automatic set fix mean substitution rate flag", this.doc.bAutoUpdateFixMeanSubstRate);
-        autoUpdateFixMeanSubstRate.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent ae) {
+        autoUpdateFixMeanSubstRate.addActionListener(ae -> {
                 doc.bAutoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
                 refreshPanel();
-            }
-        });
+            });
         modeMenu.add(autoUpdateFixMeanSubstRate);
 
         // final JCheckBoxMenuItem muteSound = new
@@ -885,12 +872,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
             final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(
                     iPanel);
-            viewPanelAction.addActionListener(new ActionListener() {
-                @Override
-				public void actionPerformed(ActionEvent ae) {
+            viewPanelAction.addActionListener(ae -> {
                     viewPanelAction.doAction();
-                }
-            });
+                });
             viewMenu.add(viewPanelAction);
         }
         viewMenu.addSeparator();

@@ -2,8 +2,6 @@ package beast.app.beauti;
 
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,28 +58,24 @@ public class ClockModelListInputEditor extends ListInputEditor {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
-    	fixMeanRatesCheckBox.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+    	fixMeanRatesCheckBox.addActionListener(e -> {
 				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
 				boolean averageRates = averageRatesBox.isSelected();
-				List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
+				List<Operator> operators2 = ((MCMC) doc.mcmc.get()).operatorsInput.get();
 				if (averageRates) {
 					// connect DeltaExchangeOperator
-					if (!operators.contains(operator)) {
-						operators.add(operator);
+					if (!operators2.contains(operator)) {
+						operators2.add(operator);
 					}
 					// set up relative weights
 					setUpOperator();
 				} else {
-					operators.remove(operator);
+					operators2.remove(operator);
 					fixMeanRatesValidateLabel.setVisible(false);
 					repaint();
 				}
-			}
+			});
 
-		});
     	operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanRatesOperator");
     	if (operator == null) {
     		operator = new DeltaExchangeOperator();

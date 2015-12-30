@@ -2,7 +2,6 @@ package beast.app.beauti;
 
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -58,13 +57,11 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
             alignment = freqs.dataInput.get();
             freqsParameter = (RealParameter) getCandidate(freqs.frequenciesInput, freqs);
         }
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                @SuppressWarnings("unchecked")
-				JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
+        comboBox.addActionListener(e -> {
+                //@SuppressWarnings("unchecked")
+				//JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
                 int iSelected = comboBox.getSelectedIndex();
-                Frequencies freqs = (Frequencies) m_input.get();
+                //Frequencies freqs = (Frequencies) m_input.get();
                 try {
                     switch (iSelected) {
                         case 0:
@@ -86,8 +83,7 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
                     e2.printStackTrace();
                 }
                 //System.err.println(freqs.frequencies.get() + " " + freqs.m_data.get() + " " + freqs.m_bEstimate.get());
-            }
-        });
+            });
         box.add(comboBox);
     }
 

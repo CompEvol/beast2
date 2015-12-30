@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -259,30 +257,22 @@ public class AlignmentViewer extends JPanel {
 
         Box buttonBox = Box.createHorizontalBox();
         JCheckBox useDotsCheckBox = new JCheckBox("Use dots", true);
-        useDotsCheckBox.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        useDotsCheckBox.addActionListener(e -> {
                 JCheckBox _useDots = (JCheckBox) e.getSource();
                 useDots = _useDots.isSelected();
                 updateTableData();
                 repaint();
-            }
-        });
+            });
         buttonBox.add(useDotsCheckBox);
 
         JCheckBox useColorCheckBox = new JCheckBox("Use Color");
         useColorCheckBox.setName("UseColor");
-        useColorCheckBox.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        useColorCheckBox.addActionListener(e -> {
                 JCheckBox hasColor = (JCheckBox) e.getSource();
                 useColor = hasColor.isSelected();
                 updateTableData();
                 repaint();
-            }
-        });
+            });
         buttonBox.add(useColorCheckBox);
         dlg.add(buttonBox, BorderLayout.SOUTH);
 

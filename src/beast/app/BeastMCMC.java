@@ -28,8 +28,6 @@ package beast.app;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -412,9 +410,7 @@ public class BeastMCMC {
             //box.add(Box.createHorizontalGlue());
 
             JButton button = new JButton("Choose file");
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
+            button.addActionListener(e -> {
                     JFileChooser fileChooser = new JFileChooser(Beauti.g_sDir);
                     File file = new File(m_fileEntry.getText());
                     if (file.exists())
@@ -429,8 +425,7 @@ public class BeastMCMC {
                         }
                         m_fileEntry.setText(sFileName);
                     }
-                }
-            });
+                });
             box.add(button);
 
             return box;
@@ -474,19 +469,15 @@ public class BeastMCMC {
             Box cancelOkBox = Box.createHorizontalBox();
             cancelOkBox.setBorder(new EtchedBorder());
             JButton okButton = new JButton("Run");
-            okButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
+            okButton.addActionListener(e -> {
                     m_bOK = true;
                     dispose();
-                }
-            });
+                });
             JButton cancelButton = new JButton("Quit");
-            cancelButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
+            cancelButton.addActionListener(e -> {
                     dispose();
                     System.exit(0);
-                }
-            });
+                });
             cancelOkBox.add(Box.createHorizontalGlue());
             cancelOkBox.add(cancelButton);
             cancelOkBox.add(Box.createHorizontalStrut(20));

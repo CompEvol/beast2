@@ -13,8 +13,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -202,10 +200,7 @@ public class JPackageDialog extends JPanel {
         box.add(allDepCheckBox);
         box.add(Box.createGlue());
         JButton installButton = new JButton("Install/Upgrade");
-        installButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        installButton.addActionListener(e -> {
             	// first get rid of existing packages
             	StringBuilder removedPackageNames = new StringBuilder();
             	doUninstall(removedPackageNames);
@@ -249,15 +244,11 @@ public class JPackageDialog extends JPanel {
                             + "interface will\n not appear until a "
                             + "new document is created or BEAUti is "
                             + "restarted.");
-            }
-        });
+            });
         box.add(installButton);
 
         JButton uninstallButton = new JButton("Uninstall");
-        uninstallButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        uninstallButton.addActionListener(e -> {
             	StringBuilder removedPackageNames = new StringBuilder();
             	boolean toDeleteFileExists = doUninstall(removedPackageNames);
                 resetPackages();
@@ -274,49 +265,38 @@ public class JPackageDialog extends JPanel {
                             + "interface will\n not appear until a "
                             + "new document is created or BEAUti is "
                             + "restarted.");
-            }
-        });
+            });
         box.add(uninstallButton);
         
         JButton packageRepoButton = new JButton("Package repositories");
-        packageRepoButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        packageRepoButton.addActionListener(e -> {
                 JPackageRepositoryDialog dlg = new JPackageRepositoryDialog(frame);
                 dlg.setVisible(true);
                 resetPackages();
-            }
-        });
+            });
         box.add(packageRepoButton);
 
         JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        closeButton.addActionListener(e -> {
             	if (dlg != null) {
             		dlg.setVisible(false);
             	} else {
             		setVisible(false);
             	}
-            }
-        });
+            });
         box.add(Box.createGlue());
         box.add(closeButton);
         box.add(Box.createGlue());
 
         JButton button = new JButton("?");
         button.setToolTipText(getPackageUserDir() + " " + getPackageSystemDir());
-        button.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        button.addActionListener(e -> {
                 JOptionPane.showMessageDialog(scrollPane, "<html>By default, packages are installed in <br><br><em>" + getPackageUserDir() +
                         "</em><br><br>and are available only to you.<br>" +
                         "<br>Packages can also be moved manually to <br><br><em>" + getPackageSystemDir() +
                         "</em><br><br>which makes them available to all users<br>"
                         + "on your system.</html>");
-            }
-        });
+            });
         box.add(button);
         return box;
     }

@@ -2,8 +2,6 @@ package beast.app.draw;
 
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -125,9 +123,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 		            		(isLinked ? "link.png" : "unlink.png")));
 		            linkbutton.setBorder(BorderFactory.createEmptyBorder());
 		            linkbutton.setToolTipText("link/unlink this parameter with another compatible parameter");
-		            linkbutton.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
+		            linkbutton.addActionListener(e -> {
 							if (doc.isLinked(m_input)) {
 								// unlink
 								try {
@@ -154,8 +150,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 								}
 							}
 							refreshPanel();
-						}
-					});
+						});
 		            paramBox.add(linkbutton);
 				}
             }            
@@ -178,19 +173,17 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             m_isEstimatedBox.setEnabled(!bIsClockRate || !getDoc().bAutoSetClockRate);
 
 
-            m_isEstimatedBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
+            m_isEstimatedBox.addActionListener(e -> {
                     try {
-                        Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
-                        parameter.isEstimatedInput.setValue(m_isEstimatedBox.isSelected(), parameter);
+                        Parameter.Base<?> parameter2 = (Parameter.Base<?>) m_input.get();
+                        parameter2.isEstimatedInput.setValue(m_isEstimatedBox.isSelected(), parameter2);
                         if (isParametricDistributionParameter) {
-                        	String sID = parameter.getID();
+                        	String sID = parameter2.getID();
                         	
 
                         	if (sID.startsWith("RealParameter")) {
                             	ParametricDistribution parent = null; 
-                	            for (Object plugin2 : parameter.getOutputs()) {
+                	            for (Object plugin2 : parameter2.getOutputs()) {
                 	                if (plugin2 instanceof ParametricDistribution) {
                                 		parent = (ParametricDistribution) plugin2; 
                 	                    break;
@@ -205,9 +198,9 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                 	            }
                         		sID = "parameter.hyper" + parent.getClass().getSimpleName() + "-" + 
                         				m_input.getName() + "-" + grandparent.getID();
-                        		doc.pluginmap.remove(parameter.getID());
-                        		parameter.setID(sID);
-                        		doc.addPlugin(parameter);
+                        		doc.pluginmap.remove(parameter2.getID());
+                        		parameter2.setID(sID);
+                        		doc.addPlugin(parameter2);
                         	}
                         	
                         	
@@ -219,8 +212,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                     } catch (Exception ex) {
                         System.err.println("ParameterInputEditor " + ex.getMessage());
                     }
-                }
-            });
+                });
             paramBox.add(m_isEstimatedBox);
 
             // only show the estimate flag if there is an operator that works on this parameter

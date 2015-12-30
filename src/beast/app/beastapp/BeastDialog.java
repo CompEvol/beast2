@@ -2,8 +2,6 @@ package beast.app.beastapp;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -66,8 +64,7 @@ public class BeastDialog {
         final JButton inputFileButton = new JButton("Choose File...");
         final JTextField inputFileNameText = new JTextField("not selected", 16);
 
-        inputFileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        inputFileButton.addActionListener(ae -> {
                 File file = beast.app.util.Utils.getLoadFile("Load xml file", inputFile, "Beast xml files", "xml");
                 if (file != null) {
                     inputFile = file;
@@ -115,8 +112,7 @@ public class BeastDialog {
 //                    inputFileNameText.setText(inputFile.getName());
 //
 //                }
-            }
-        });
+            });
         inputFileNameText.setEditable(false);
 
         JPanel panel1 = new JPanel(new BorderLayout(0, 0));

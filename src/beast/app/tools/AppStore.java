@@ -6,8 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -73,15 +71,12 @@ public class AppStore {
         JLabel label = new JLabel("Filter: ");
         packageComboBox = new JComboBox<>(new String[]{ALL});
         packageComboBox.setToolTipText("Show application of the installed package(s)");
-        packageComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        packageComboBox.addActionListener(e -> {
                 JComboBox<?> cb = (JComboBox<?>) e.getSource();
                 if (cb.getSelectedItem() != null) {
                     resetAppList(cb.getSelectedItem().toString());
                 }
-            }
-        });
+            });
         label.setLabelFor(packageComboBox);
         top.add(label);
         top.add(packageComboBox);
@@ -222,9 +217,7 @@ public class AppStore {
         Box box = Box.createHorizontalBox();
         box.add(Box.createGlue());
 
-        launchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        launchButton.addActionListener(e -> {
                 PackageApp packageApp = listApps.getSelectedValue();
                 if (packageApp != null) {
                     try {
@@ -234,18 +227,14 @@ public class AppStore {
                         JOptionPane.showMessageDialog(null, "Launch failed because: " + ex.getMessage());
                     }
                 }
-            }
-        });
+            });
         box.add(launchButton);
 
         JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        closeButton.addActionListener(e -> {
 //				setVisible(false);
                 mainDialog.dispose();
-            }
-        });
+            });
         box.add(Box.createGlue());
         box.add(closeButton);
         box.add(Box.createGlue());

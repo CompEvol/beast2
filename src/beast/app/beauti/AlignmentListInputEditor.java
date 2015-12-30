@@ -910,11 +910,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		
 		col = table.getColumnModel().getColumn(USE_AMBIGUITIES_COLUMN);
 		JCheckBox checkBox = new JCheckBox();
-		checkBox.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JCheckBox checkBox = (JCheckBox) e.getSource();
+		checkBox.addActionListener(e -> {
 				if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
 					System.err.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 				}
@@ -932,8 +928,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 					// TODO: handle exception
 				}
 		
-			}
-		});
+			});
 		col.setCellEditor(new DefaultCellEditor(checkBox));
 		col.setCellRenderer(new MyCheckBoxRenderer());
 		col.setPreferredWidth(20);

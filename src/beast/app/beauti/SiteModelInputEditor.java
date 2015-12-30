@@ -1,8 +1,6 @@
 package beast.app.beauti;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,16 +61,13 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
 
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
-    	fixMeanRatesCheckBox.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+    	fixMeanRatesCheckBox.addActionListener(e -> {
 				JCheckBox averageRatesBox = (JCheckBox) e.getSource();
 				doFixMeanRates(averageRatesBox.isSelected());
 				if (averageRatesBox.isSelected())
 					// set up relative weights
 					setUpOperator();
-			}
-		});
+			});
     	operator = (DeltaExchangeOperator) doc.pluginmap.get("FixMeanMutationRatesOperator");
     	if (operator == null) {
     		operator = new DeltaExchangeOperator();

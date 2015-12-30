@@ -120,12 +120,9 @@ public class PriorListInputEditor extends ListInputEditor {
 	        addButton = new SmallButton("+", true);
 	        addButton.setName("addItem");
 	        addButton.setToolTipText("Add item to the list");
-	        addButton.addActionListener(new ActionListener() {
-	            @Override
-				public void actionPerformed(ActionEvent e) {
+	        addButton.addActionListener(e -> {
 	                addItem();
-	            }
-	        });
+	            });
 	        buttonBox.add(addButton);
             buttonBox.add(Box.createHorizontalGlue());
         }

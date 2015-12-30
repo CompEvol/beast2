@@ -1,8 +1,5 @@
 package beast.app.beauti;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -67,10 +64,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	            String sSelectString = input.get().toString();
 	            m_selectPluginBox.setSelectedItem(sSelectString);
 
-	            m_selectPluginBox.addActionListener(new ActionListener() {
-	                // implements ActionListener
-	                @Override
-					public void actionPerformed(ActionEvent e) {
+	            m_selectPluginBox.addActionListener(e -> {
 	                    int i = m_selectPluginBox.getSelectedIndex();
 	                    if (i == OTHER) {
 	                    	setSelection();
@@ -82,8 +76,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	                    } catch (Exception e1) {
 	                        e1.printStackTrace();
 	                    }
-	                }
-	            });
+	                });
 	            m_selectPluginBox.setToolTipText(input.getHTMLTipText());
 	            add(m_selectPluginBox);
 	            add(Box.createGlue());

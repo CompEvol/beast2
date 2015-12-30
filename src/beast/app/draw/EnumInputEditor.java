@@ -1,7 +1,5 @@
 package beast.app.draw;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +51,7 @@ public class EnumInputEditor extends InputEditor.Base {
             String sSelectString = input.get().toString();
             m_selectPluginBox.setSelectedItem(sSelectString);
 
-            m_selectPluginBox.addActionListener(new ActionListener() {
-                // implements ActionListener
-                public void actionPerformed(ActionEvent e) {
+            m_selectPluginBox.addActionListener(e -> {
                     String sSelected = (String) m_selectPluginBox.getSelectedItem();
                     try {
                     	setValue(sSelected);
@@ -63,8 +59,7 @@ public class EnumInputEditor extends InputEditor.Base {
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                }
-            });
+                });
             m_selectPluginBox.setToolTipText(input.getHTMLTipText());
             add(m_selectPluginBox);
             add(Box.createGlue());

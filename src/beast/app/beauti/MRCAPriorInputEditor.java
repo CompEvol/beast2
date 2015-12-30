@@ -50,26 +50,23 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         taxonButton.setMinimumSize(Base.PREFERRED_SIZE);
         taxonButton.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(taxonButton);
-        taxonButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        taxonButton.addActionListener(e -> {
                 List<?> list = (List<?>) m_input.get();
-                MRCAPrior prior = (MRCAPrior) list.get(itemNr);
+                MRCAPrior prior2 = (MRCAPrior) list.get(itemNr);
                 try {
-                    TaxonSet taxonset = prior.taxonsetInput.get();
-                    Set<Taxon> candidates = getTaxonCandidates(prior);
+                    TaxonSet taxonset = prior2.taxonsetInput.get();
+                    Set<Taxon> candidates = getTaxonCandidates(prior2);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
-                        prior.setID(dlg.taxonSet.getID());
-                        prior.taxonsetInput.setValue(dlg.taxonSet, prior);
+                        prior2.setID(dlg.taxonSet.getID());
+                        prior2.taxonsetInput.setValue(dlg.taxonSet, prior2);
                     }
                 } catch (Exception e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
                 refreshPanel();
-            }
-        });
+            });
 
 
         if (prior.distInput.getType() == null) {

@@ -2,7 +2,6 @@ package beast.app.beauti;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.Box;
@@ -100,17 +99,15 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
             }
         }
 
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        comboBox.addActionListener(e -> {
                 m_e = e;
                 SwingUtilities.invokeLater(new Runnable() {
-                    @Override
+					@Override
                     public void run() {
-                        @SuppressWarnings("unchecked")
+						@SuppressWarnings("unchecked")
 						JComboBox<BeautiSubTemplate> currentComboBox = (JComboBox<BeautiSubTemplate>) m_e.getSource();
                         @SuppressWarnings("unchecked")
-                        List<BEASTInterface> list = (List<BEASTInterface>) m_input.get();
+						List<BEASTInterface> list = (List<BEASTInterface>) m_input.get();
                         BeautiSubTemplate template = (BeautiSubTemplate) currentComboBox.getSelectedItem();
                         PartitionContext partitionContext = doc.getContextFor(list.get(itemNr));
                         try {
@@ -122,8 +119,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
                         refreshPanel();
                     }
                 });
-            }
-        });
+            });
         itemBox.add(comboBox);
         itemBox.add(Box.createGlue());
 

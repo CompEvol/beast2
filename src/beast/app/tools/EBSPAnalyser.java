@@ -2,8 +2,6 @@ package beast.app.tools;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -274,8 +272,7 @@ public class EBSPAnalyser {
             panel.setOpaque(false);
 
             JButton button = new JButton("Choose Input File...");
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
+            button.addActionListener(ae -> {
                     File file = Utils.getLoadFile("Select input file...");
                     if (file == null) {
                         // the dialog was cancelled...
@@ -285,13 +282,11 @@ public class EBSPAnalyser {
                     inputFile = file;
                     inputFileNameText.setText(inputFile.getName());
 
-                }
-            });
+                });
             inputFileNameText.setEditable(false);
 
             JButton button2 = new JButton("Choose Output File...");
-            button2.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
+            button2.addActionListener(ae -> {
                     File file = Utils.getSaveFile("Select output file...");
                     if (file == null) {
                         // the dialog was cancelled...
@@ -301,8 +296,7 @@ public class EBSPAnalyser {
                     outputFile = file;
                     outputFileNameText.setText(outputFile.getName());
 
-                }
-            });
+                });
             outputFileNameText.setEditable(false);
 
             JPanel panel1 = new JPanel(new BorderLayout(0, 0));

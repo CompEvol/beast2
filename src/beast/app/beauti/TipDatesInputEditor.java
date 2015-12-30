@@ -3,7 +3,6 @@ package beast.app.beauti;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -79,9 +78,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             Box box = Box.createVerticalBox();
 
             JCheckBox useTipDates = new JCheckBox("Use tip dates", traitSet != null);
-            useTipDates.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
+            useTipDates.addActionListener(e -> {
                     JCheckBox checkBox = (JCheckBox) e.getSource();
                     try {
                         if (checkBox.isSelected()) {
@@ -102,8 +99,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                         ex.printStackTrace();
                     }
 
-                }
-            });
+                });
             Box box2 = Box.createHorizontalBox();
             box2.add(useTipDates);
             box2.add(Box.createGlue());
@@ -139,12 +135,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
         m_iMode = Math.min(m_iMode, 2);
         comboBox.setSelectedIndex(m_iMode);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        comboBox.addActionListener(e -> {
                 selectMode(e);
-            }
-        });
+            });
         samplingBox.add(comboBox);
 
         taxonsets = new ArrayList<>();
@@ -172,12 +165,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 	            comboBox2.setSelectedIndex(i);
 	        }
 	
-	        comboBox2.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+	        comboBox2.addActionListener(e -> {
 	                selectTaxonSet(e);
-	            }
-	        });
+	            });
         }
         samplingBox.add(comboBox2);
 
@@ -545,9 +535,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         buttonBox.add(label);
         unitsComboBox = new JComboBox<>(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
-        unitsComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        unitsComboBox.addActionListener(e -> {
                 String sSelected = unitsComboBox.getSelectedItem().toString();
                 try {
                     traitSet.unitsInput.setValue(sSelected, traitSet);
@@ -555,8 +543,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            }
-        });
+            });
         unitsComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
         buttonBox.add(unitsComboBox);
 
@@ -566,9 +553,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         } else {
             relativeToComboBox.setSelectedIndex(0);
         }
-        relativeToComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        relativeToComboBox.addActionListener(e -> {
                 String sSelected = TraitSet.DATE_BACKWARD_TRAIT;
                 if (relativeToComboBox.getSelectedIndex() == 0) {
                     sSelected = TraitSet.DATE_FORWARD_TRAIT;
@@ -580,17 +565,14 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     ex.printStackTrace();
                 }
                 convertTraitToTableData();
-            }
-        });
+            });
         relativeToComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 20));
         buttonBox.add(relativeToComboBox);
         buttonBox.add(Box.createGlue());
 
         JButton guessButton = new JButton("Guess");
         guessButton.setName("Guess");
-        guessButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        guessButton.addActionListener(e -> {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
                 dlg.allowAddingValues();
                 String sTrait = "";
@@ -622,23 +604,19 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     // TODO: handle exception
                 }
                 refreshPanel();
-            }
-        });
+            });
         buttonBox.add(guessButton);
 
 
         JButton clearButton = new JButton("Clear");
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        clearButton.addActionListener(e -> {
                 try {
                     traitSet.traitsInput.setValue("", traitSet);
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }
                 refreshPanel();
-            }
-        });
+            });
         buttonBox.add(clearButton);
 
         return buttonBox;

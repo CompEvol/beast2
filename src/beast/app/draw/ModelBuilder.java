@@ -1737,18 +1737,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         isFilledMenu = new JMenuItem("Don't fill object");
                     }
                 }
-                isFilledMenu.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae) {
+                isFilledMenu.addActionListener(ae -> {
                         m_doc.toggleFilled(m_Selection.getSingleSelection());
                         g_panel.repaint();
-                    }
-                });
+                    });
                 isFilledMenu.setEnabled(m_Selection.isSingleSelection());
                 popupMenu.add(isFilledMenu);
 
                 JMenuItem propertiesItem = new JMenuItem("Properties");
-                propertiesItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae) {
+                propertiesItem.addActionListener(ae -> {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         if (shape instanceof BEASTObjectShape) {
                             BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
@@ -1787,14 +1784,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             }
                             repaint();
                         }
-                    }
-                });
+                    });
                 propertiesItem.setEnabled(m_Selection.isSingleSelection());
                 popupMenu.add(propertiesItem);
 
                 JMenuItem saveAsItem = new JMenuItem("Save as");
-                saveAsItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae) {
+                saveAsItem.addActionListener(ae -> {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
                         JFileChooser fc = new JFileChooser(m_sDir);
@@ -1829,8 +1824,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             m_sFileName = sFileName;
                         }
                         repaint();
-                    }
-                });
+                    });
                 saveAsItem.setEnabled(m_Selection.isSingleSelection());
                 popupMenu.add(saveAsItem);
 
@@ -2026,89 +2020,72 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         menuBar.add(viewMenu);
         final JCheckBoxMenuItem viewOperators = new JCheckBoxMenuItem(
                 "Show Operators", m_bViewOperators);
-        viewOperators.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        viewOperators.addActionListener(ae -> {
                 m_bViewOperators = viewOperators.getState();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(viewOperators);
         final JCheckBoxMenuItem viewLoggers = new JCheckBoxMenuItem(
                 "Show Loggers", m_bViewLoggers);
-        viewLoggers.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        viewLoggers.addActionListener(ae -> {
                 m_bViewLoggers = viewLoggers.getState();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(viewLoggers);
         final JCheckBoxMenuItem viewSequences = new JCheckBoxMenuItem(
                 "Show Sequences", m_bViewSequences);
-        viewSequences.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        viewSequences.addActionListener(ae -> {
                 m_bViewSequences = viewSequences.getState();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(viewSequences);
         final JCheckBoxMenuItem viewState = new JCheckBoxMenuItem("Show State",
                 m_bViewState);
-        viewState.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        viewState.addActionListener(ae -> {
                 m_bViewState = viewState.getState();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(viewState);
         m_viewRelax = new JCheckBoxMenuItem("Relax", m_bRelax);
-        m_viewRelax.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        m_viewRelax.addActionListener(ae -> {
                 m_bRelax = m_viewRelax.getState();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(m_viewRelax);
 
         JMenuItem layoutMenu = new JMenuItem("Layout Visible Items");
         layoutMenu.setMnemonic('L');
-        layoutMenu.addActionListener(new ActionListener() {
-            // implement ActionListener
-            public void actionPerformed(ActionEvent e) {
+        layoutMenu.addActionListener(e -> {
                 g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 m_doc.layout();
                 m_doc.adjustArrows();
                 repaint();
                 g_panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
+            });
         viewMenu.add(layoutMenu);
         viewMenu.addSeparator();
 
         final JCheckBoxMenuItem viewAllInputs = new JCheckBoxMenuItem("Show All Inputs",
                 m_doc.m_bShowALlInputs);
-        viewAllInputs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        viewAllInputs.addActionListener(ae -> {
             	m_doc.m_bShowALlInputs = viewAllInputs.getState();
             	m_doc.reinit();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(viewAllInputs);
 
         final JCheckBoxMenuItem sanitseIDs = new JCheckBoxMenuItem("Sanitise IDs",
                 m_doc.m_bSanitiseIDs);
-        sanitseIDs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+        sanitseIDs.addActionListener(ae -> {
             	m_doc.m_bSanitiseIDs = sanitseIDs.getState();
                 setDrawingFlag();
                 g_panel.repaint();
-            }
-        });
+            });
         viewMenu.add(sanitseIDs);
         
         

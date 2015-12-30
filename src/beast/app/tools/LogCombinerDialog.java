@@ -154,11 +154,9 @@ public class LogCombinerDialog {
 
         resampleText.setEnabled(false);
         resampleText.setColumns(12);
-        resampleCheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        resampleCheck.addActionListener(e -> {
                 resampleText.setEnabled(resampleCheck.isSelected());
-            }
-        });
+            });
 
         ActionListener buttonListener = new ActionListener() {
             public void actionPerformed(ActionEvent ae) {

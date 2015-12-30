@@ -25,8 +25,6 @@
 
 package beast.app.draw;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,31 +86,22 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
         buttonBox.setAlignmentX(LEFT_ALIGNMENT);
         m_forwardButton = new JButton(">");
         m_forwardButton.setToolTipText("Browse forward");
-        m_forwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        m_forwardButton.addActionListener(e -> {
                 browseForward();
-            }
-        });
+            });
 
         m_backwardButton = new JButton("<");
         m_backwardButton.setToolTipText("Browse backward");
-        m_backwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        m_backwardButton.addActionListener(e -> {
                 browseBackward();
-            }
-        });
+            });
 
 
         JButton closeButton = new JButton("x");
         closeButton.setToolTipText("Close Help");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        closeButton.addActionListener(e -> {
                 dispose();
-            }
-        });
+            });
 //		m_backwardButton.setMnemonic(KeyEvent.VK_RIGHT);
 //		m_forwardButton.setMnemonic(KeyEvent.VK_LEFT);
 

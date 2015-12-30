@@ -28,8 +28,6 @@ package beast.app.treeannotator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FileDialog;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -95,8 +93,7 @@ public class TreeAnnotatorDialog {
         final JButton targetFileButton = new JButton("Choose File...");
 		final JTextField targetFileNameText = new JTextField("not selected", 16);
 
-		targetFileButton.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		targetFileButton.addActionListener(ae -> {
 				FileDialog dialog = new FileDialog(frame,
 						"Select target file...",
 						FileDialog.LOAD);
@@ -110,7 +107,7 @@ public class TreeAnnotatorDialog {
 				targetFile = new File(dialog.getDirectory(), dialog.getFile());
 				targetFileNameText.setText(targetFile.getName());
 
-			}});
+			});
 		targetFileNameText.setEditable(false);
 
 		JPanel panel1 = new JPanel(new BorderLayout(0,0));
@@ -121,8 +118,7 @@ public class TreeAnnotatorDialog {
 		JButton inputFileButton = new JButton("Choose File...");
 		final JTextField inputFileNameText = new JTextField("not selected", 16);
 
-		inputFileButton.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		inputFileButton.addActionListener(ae -> {
 				FileDialog dialog = new FileDialog(frame,
 						"Select input tree file...",
 						FileDialog.LOAD);
@@ -136,7 +132,7 @@ public class TreeAnnotatorDialog {
 				inputFile = new File(dialog.getDirectory(), dialog.getFile());
 				inputFileNameText.setText(inputFile.getName());
 
-			}});
+			});
 		inputFileNameText.setEditable(false);
 
         label1.setEnabled(false);
@@ -171,8 +167,7 @@ public class TreeAnnotatorDialog {
 		JButton outputFileButton = new JButton("Choose File...");
 		final JTextField outputFileNameText = new JTextField("not selected", 16);
 
-		outputFileButton.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		outputFileButton.addActionListener(ae -> {
 				FileDialog dialog = new FileDialog(frame,
 						"Select output file...",
 						FileDialog.SAVE);
@@ -186,7 +181,7 @@ public class TreeAnnotatorDialog {
 				outputFile = new File(dialog.getDirectory(), dialog.getFile());
 				outputFileNameText.setText(outputFile.getName());
 
-			}});
+			});
 		outputFileNameText.setEditable(false);
 
 		JPanel panel3 = new JPanel(new BorderLayout(0,0));

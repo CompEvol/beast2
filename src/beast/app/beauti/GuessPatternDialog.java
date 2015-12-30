@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -110,33 +108,21 @@ public class GuessPatternDialog extends JDialog {
         group.add(bUseRegexp);
         group.add(bReadFromFile);
         group.setSelected(bUseEverything.getModel(), true);
-        bUseEverything.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        bUseEverything.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
         bUseEverything.setName(bUseEverything.getText());
-        bSplitOnChar.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        bSplitOnChar.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
         bSplitOnChar.setName(bSplitOnChar.getText());
-        bUseRegexp.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        bUseRegexp.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
         bUseRegexp.setName(bUseRegexp.getText());
-        bReadFromFile.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        bReadFromFile.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
         bReadFromFile.setName(bReadFromFile.getText());
 
         createDelimiterBox(bUseEverything);
@@ -190,17 +176,14 @@ public class GuessPatternDialog extends JDialog {
         guessPanel.add(bReadFromFile, gbc_rdbtnReadFromFile);
 
         btnBrowse = new JButton("Browse");
-        btnBrowse.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        btnBrowse.addActionListener(e -> {
                 File file = Utils.getLoadFile("Load trait from file", new File(Beauti.g_sDir), "Select trait file", "dat","txt");
                 if (file != null) {
                     txtFile.setText(file.getPath());
                     bReadFromFile.setSelected(true);
                     updateFields();
                 }
-            }
-        });
+            });
 
         txtFile = new JTextField();
         txtFile.setText("File");
@@ -220,12 +203,9 @@ public class GuessPatternDialog extends JDialog {
 
         JButton btnHelp = new JButton("?");
         btnHelp.setToolTipText("Show format of trait file");
-        btnHelp.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        btnHelp.addActionListener(e -> {
                 JOptionPane.showMessageDialog(m_parent, EXAMPLE_FORMAT);
-            }
-        });
+            });
         GridBagConstraints gbc_btnHelp = new GridBagConstraints();
         gbc_btnHelp.insets = new Insets(0, 0, 5, 5);
         gbc_btnHelp.gridx = 4;
@@ -235,12 +215,9 @@ public class GuessPatternDialog extends JDialog {
 
         chckbxAddFixedValue = new JCheckBox("Add fixed value");
         chckbxAddFixedValue.setName("Add fixed value");
-        chckbxAddFixedValue.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        chckbxAddFixedValue.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
 
         separator_5 = new JSeparator();
         separator_5.setPreferredSize(new Dimension(5,1));
@@ -270,12 +247,9 @@ public class GuessPatternDialog extends JDialog {
 
         chckbxUnlessLessThan = new JCheckBox("Unless less than...");
         chckbxUnlessLessThan.setName("Unless less than");
-        chckbxUnlessLessThan.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        chckbxUnlessLessThan.addActionListener(e -> {
                 updateFields();
-            }
-        });
+            });
         GridBagConstraints gbc_chckbxUnlessLargerThan = new GridBagConstraints();
         gbc_chckbxUnlessLargerThan.anchor = GridBagConstraints.WEST;
         gbc_chckbxUnlessLargerThan.insets = new Insets(0, 0, 5, 5);
@@ -394,16 +368,13 @@ public class GuessPatternDialog extends JDialog {
         gbc2.gridx = 1;
         gbc2.gridy = 1;
         guessPanel.add(combo, gbc2);
-        combo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        combo.addActionListener(e -> {
                 @SuppressWarnings("unchecked")
 				JComboBox<String> combo = (JComboBox<String>) e.getSource();
                 m_location = combo.getSelectedIndex();
                 bUseEverything.setSelected(true);
                 updateFields();
-            }
-        });
+            });
     }
 
     private void createSplitBox(JRadioButton b) {
@@ -464,16 +435,13 @@ public class GuessPatternDialog extends JDialog {
         gbc_combo_1.gridx = 4;
         gbc_combo_1.gridy = 4;
         guessPanel.add(combo_1, gbc_combo_1);
-        combo_1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        combo_1.addActionListener(e -> {
                 @SuppressWarnings("unchecked")
 				JComboBox<String> combo = (JComboBox<String>) e.getSource();
                 m_splitlocation = combo.getSelectedIndex();
                 bSplitOnChar.setSelected(true);
                 updateFields();
-            }
-        });
+            });
 
         separator_3 = new JSeparator();
         separator_3.setPreferredSize(new Dimension(5,1));

@@ -3,8 +3,6 @@ package beast.app.beauti;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -232,10 +230,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         JButton fillDownButton = new JButton("Fill down");
         fillDownButton.setName("Fill down");
         fillDownButton.setToolTipText("replaces all taxons in selection with the one that is selected at the top");
-        fillDownButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        fillDownButton.addActionListener(e -> {
                 int[] rows = m_table.getSelectedRows();
                 if (rows.length < 2) {
                     return;
@@ -245,17 +240,13 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                     m_model.setValueAt(sTaxon, rows[i], 1);
                 }
                 modelToTaxonset();
-            }
-        });
+            });
 
         JButton guessButton = new JButton("Guess");
         guessButton.setName("Guess");
-        guessButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        guessButton.addActionListener(e -> {
                 guess();
-            }
-        });
+            });
 
         buttonBox.add(Box.createHorizontalGlue());
         buttonBox.add(fillDownButton);

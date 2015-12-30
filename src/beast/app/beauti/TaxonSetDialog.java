@@ -3,8 +3,6 @@ package beast.app.beauti;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -232,9 +230,7 @@ public class TaxonSetDialog extends JDialog {
         buttonBox.add(Box.createGlue());
         JButton selectButton = new JButton(">>");
         selectButton.setName(">>");
-        selectButton.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        selectButton.addActionListener(e -> {
                 int[] nSelected = listOfTaxonCandidates.getSelectedIndices();
                 for (int i : nSelected) {
                     listModel2.addElement(listModel1.get(i));
@@ -242,14 +238,11 @@ public class TaxonSetDialog extends JDialog {
                 for (int i = 0; i < listModel2.size(); i++) {
                     listModel1.removeElement(listModel2.get(i));
                 }
-            }
-        });
+            });
         buttonBox.add(selectButton);
         JButton deselectButton = new JButton("<<");
         deselectButton.setName("<<");
-        deselectButton.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        deselectButton.addActionListener(e -> {
                 int[] nSelected = listOfTaxonSet.getSelectedIndices();
                 for (int i : nSelected) {
                     listModel1.addElement(listModel2.get(i));
@@ -257,8 +250,7 @@ public class TaxonSetDialog extends JDialog {
                 for (int i = 0; i < listModel1.size(); i++) {
                     listModel2.removeElement(listModel1.get(i));
                 }
-            }
-        });
+            });
         buttonBox.add(deselectButton);
         buttonBox.add(Box.createGlue());
         box.add(buttonBox);
@@ -279,9 +271,7 @@ public class TaxonSetDialog extends JDialog {
         cancelOkBox.setBorder(new EtchedBorder());
         JButton okButton = new JButton("Ok");
         okButton.setName("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
                 taxonSet.setID(sID);
                 List<Taxon> taxa = taxonSet.taxonsetInput.get();
                 while (taxa.size() > 0) {
@@ -292,16 +282,12 @@ public class TaxonSetDialog extends JDialog {
                 }
                 isOK = true;
                 dispose();
-            }
-        });
+            });
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setName("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-			public void actionPerformed(ActionEvent e) {
+        cancelButton.addActionListener(e -> {
                 dispose();
-            }
-        });
+            });
         cancelOkBox.add(Box.createHorizontalGlue());
         cancelOkBox.add(okButton);
         cancelOkBox.add(Box.createHorizontalGlue());

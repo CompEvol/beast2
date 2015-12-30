@@ -1,8 +1,5 @@
 package beast.app.draw;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
@@ -41,9 +38,7 @@ public class BooleanInputEditor extends InputEditor.Base {
             m_entry.setSelected((Boolean) input.get());
         }
         m_entry.setToolTipText(input.getHTMLTipText());
-        m_entry.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        m_entry.addActionListener(e -> {
                 try {
                 	setValue(m_entry.isSelected());
                     validateInput();
@@ -51,8 +46,7 @@ public class BooleanInputEditor extends InputEditor.Base {
                 } catch (Exception ex) {
                     System.err.println("BooleanInputEditor " + ex.getMessage());
                 }
-            }
-        });
+            });
         add(m_entry);
         add(Box.createHorizontalGlue());
     } // c'tor
