@@ -197,7 +197,7 @@ public class BEASTObjectDialog extends JDialog {
                     "and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
                     "for example\n" +
                     "");
-            System.exit(0);
+            System.exit(1);
         }
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         if (dlg.showDialog()) {

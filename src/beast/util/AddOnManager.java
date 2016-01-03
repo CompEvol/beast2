@@ -1202,7 +1202,7 @@ public class AddOnManager {
                             Log.info.println("Package " + name + " is installed in " + dir + ".");
                         } else {
                             Log.info.println("Installation aborted: " + name + " is already installed.");
-                            System.exit(0);
+                            System.exit(1);
                         }
                     }
                 }
@@ -1223,7 +1223,7 @@ public class AddOnManager {
                             Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
                         } else {
                             Log.info.println("Un-installation aborted: " + name + " is not installed yet.");
-                            System.exit(0);
+                            System.exit(1);
                         }
                     }
                 }

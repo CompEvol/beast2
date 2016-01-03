@@ -223,7 +223,7 @@ public class BeastMCMC {
             File inputFile = dialog.getInputFile();
             if (!beagleShowInfo && inputFile == null) {
                 System.err.println("No input file specified");
-                System.exit(0);
+                System.exit(1);
             }
             MCMCargs.add(inputFile.getAbsolutePath());
 

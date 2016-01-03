@@ -304,7 +304,7 @@ public class Alignment extends Map<String> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
+            System.exit(1);
         }
         sanityCheckCalcPatternsSetUpAscertainment(log);
     }
@@ -386,7 +386,7 @@ public class Alignment extends Map<String> {
             return data.getDataType().state2string(nStates);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
+            System.exit(1);
         }
         return null;
     }

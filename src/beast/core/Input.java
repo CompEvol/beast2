@@ -245,7 +245,7 @@ public class Input<T> {
                 name.toLowerCase().equals("name")) {
         	Log.err.println("Found an input with invalid name: " + name);
         	Log.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
-            System.exit(0);
+            System.exit(1);
         }
     }
 
@@ -552,7 +552,7 @@ public class Input<T> {
                                         "or if it is a list, the list was not initilised???");
                                 Log.err.println("class is " + plugin.getClass());
                                 e.printStackTrace(System.err);
-                                System.exit(0);
+                                System.exit(1);
                             }
                         }
                         break;

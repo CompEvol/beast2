@@ -1402,7 +1402,7 @@ public class TreeAnnotator {
         }
         if (burnin >= 100) {
         	Log.err.println("burnin is a percentage and should be less than 100.");
-        	System.exit(0);
+        	System.exit(1);
         }
 
         double posteriorLimit = 0.0;
@@ -1415,7 +1415,7 @@ public class TreeAnnotator {
             hpd2D = arguments.getRealOption("hpd2D");
             if (hpd2D <= 0 || hpd2D >=1) {
             	Log.err.println("hpd2D is a fraction and should be in between 0.0 and 1.0.");
-            	System.exit(0);            	
+            	System.exit(1);            	
             }
             processBivariateAttributes = true;
         }

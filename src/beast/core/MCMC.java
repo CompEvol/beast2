@@ -508,7 +508,7 @@ public class MCMC extends Runnable {
                         	Log.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
                             state.storeToFile(sampleNr);
                             operatorSchedule.storeToFile();
-                            System.exit(0);
+                            System.exit(1);
                         }
                         oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
@@ -517,7 +517,7 @@ public class MCMC extends Runnable {
                         // halt due to incorrect posterior during intial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();
-                        System.exit(0);
+                        System.exit(1);
                     }
                 }
             } else {

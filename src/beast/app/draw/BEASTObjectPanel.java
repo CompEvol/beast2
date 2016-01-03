@@ -464,7 +464,7 @@ public class BEASTObjectPanel extends JPanel {
                     "and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
                     "for example\n" +
                     "");
-            System.exit(0);
+            System.exit(1);
         }
         pluginPanel.setVisible(true);
         if (pluginPanel.m_bOK) {

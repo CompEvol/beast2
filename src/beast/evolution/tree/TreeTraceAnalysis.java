@@ -281,7 +281,7 @@ public class TreeTraceAnalysis {
             inputFile = new File(args[0]);
         } else {
             System.out.println("Error: Expected nexus file, but not file name was provided.");
-            System.exit(0);
+            System.exit(1);
         }
 
         if (args.length > 1) {
@@ -290,7 +290,7 @@ public class TreeTraceAnalysis {
                 out = new PrintStream(new FileOutputStream(args[1]));
             } catch (FileNotFoundException e) {
                 System.out.println("Error: Unable to create output file.");
-                System.exit(0);
+                System.exit(1);
             }
         }
 
@@ -299,7 +299,7 @@ public class TreeTraceAnalysis {
             trees = TreeTraceAnalysis.Utils.getTrees(inputFile);
         } catch (Exception e) {
             System.out.println("Error occurred while parsing input file.");
-            System.exit(0);
+            System.exit(1);
         }
         TreeTraceAnalysis analysis = new TreeTraceAnalysis(trees); // default 0.1, 0.95
         analysis.analyze();
