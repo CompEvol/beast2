@@ -5,6 +5,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
+import beast.core.util.Log;
 import beast.util.Randomizer;
 
 
@@ -15,7 +16,7 @@ public class IntUniformOperator extends Operator {
 
 
     public void initAndValidate() {
-        System.err.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
+    	Log.warning.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
     }
 
     /**

@@ -513,7 +513,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 mainTemplate = new File(sDir + fileSep + "templates" + fileSep + sFileName);
             }
         }
-        System.err.println("Loading template " + mainTemplate.getAbsolutePath());
+        Log.warning.println("Loading template " + mainTemplate.getAbsolutePath());
         String sTemplateXML = load(mainTemplate.getAbsolutePath());
 
         // find merge points
@@ -538,7 +538,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // and once from .beast2-addon area
         Set<String> loadedTemplates = new HashSet<>();
         for (String sDir : sDirs) {
-            System.out.println("Investigating " + sDir);
+            Log.info.println("Investigating " + sDir);
             File templates = new File(sDir + fileSep + "templates");
             File[] files = templates.listFiles();
             if (files != null) {
@@ -546,7 +546,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
                             && template.getName().toLowerCase().endsWith(".xml")) {
                         if (!loadedTemplates.contains(template.getName())) {
-                            System.err.println("Processing " + template.getAbsolutePath());
+                        	Log.warning.println("Processing " + template.getAbsolutePath());
                             loadedTemplates.add(template.getName());
                             String sXML2 = load(template.getAbsolutePath());
                             if (!sXML2.contains("<mergepoint ")) {
@@ -566,7 +566,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                         String sMergePoint = mergeElement.getAttributes().getNamedItem("point")
                                                 .getNodeValue();
                                         if (!sMergePoints.containsKey(sMergePoint)) {
-                                            System.err.println("Cannot find merge point named " + sMergePoint
+                                        	Log.warning.println("Cannot find merge point named " + sMergePoint
                                                     + " from " + template.getName()
                                                     + " in template. MergeWith ignored.");
                                         } else {
@@ -583,12 +583,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                     }
                                 } catch (Exception e) {
                                     if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
-                                        System.err.println(e.getMessage());
+                                    	Log.warning.println(e.getMessage());
                                     }
                                 }
                             }
                         } else {
-                            System.err.println("Skipping " + template.getAbsolutePath() + " since "
+                        	Log.warning.println("Skipping " + template.getAbsolutePath() + " since "
                                     + template.getName() + " is already processed");
                         }
 
@@ -926,7 +926,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 beautiConfig = (BeautiConfig) plugin;
                 beautiConfig.setDoc(this);
             } else {
-                System.err.println("template item " + plugin.getID() + " is ignored");
+            	Log.warning.println("template item " + plugin.getID() + " is ignored");
             }
             BEASTObjectPanel.addPluginToMap(plugin, this);
         }
@@ -993,7 +993,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
                 if (tree != null && tree != ((GenericTreeLikelihood) d).treeInput.get()) {
                     clockModel = clockModels.get(k);
-                    System.err.println("WARNING: unlinking clock model for " + d.getID());
+                    Log.warning.println("WARNING: unlinking clock model for " + d.getID());
                     ((GenericTreeLikelihood) d).branchRateModelInput.setValue(clockModel, d);
                 }
             } catch (Exception e) {
@@ -1178,12 +1178,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             collectClockModels();
             // collectTreePriors();
 
-            System.err.println("PARTITIONS:\n");
-            System.err.println(Arrays.toString(nCurrentPartitions));
+            Log.warning.println("PARTITIONS:\n");
+            Log.warning.println(Arrays.toString(nCurrentPartitions));
 
             determineLinks();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            Log.err.println(e.getMessage());
         }
         
         if (bAutoUpdateOperatorWeights) {
@@ -1200,15 +1200,15 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         
                 
-        System.err.print("InPosterior=");
+        Log.warning.print("InPosterior=");
         for (BEASTInterface o : posteriorPredecessors) {
         	pluginmap.put(o.getID(), o);
-        	System.err.print(o.getID() + " ");
+        	Log.warning.print(o.getID() + " ");
         	//if (!pluginmap.containsKey(o)) {
         	//	System.err.println("MISSING: " + o.getID());
         	//}
         }
-        System.err.println();
+        Log.warning.println();
     }
 
     public static String translatePartitionNames(String sStr, PartitionContext partition) {
@@ -1374,7 +1374,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         } catch (Exception e) {
             // ignore
-            System.err.println(e.getClass().getName() + " " + e.getMessage());
+        	Log.warning.println(e.getClass().getName() + " " + e.getMessage());
         }
 
         // }});
@@ -1641,8 +1641,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             }
         }
-        System.err.println("PARTITIONS0:\n");
-        System.err.println(Arrays.toString(nCurrentPartitions));
+        Log.warning.println("PARTITIONS0:\n");
+        Log.warning.println(Arrays.toString(nCurrentPartitions));
     }
 
     int getPartitionNr(String partition, int partitionID) {
@@ -1741,7 +1741,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     private void warning(String s) {
         if (Boolean.valueOf(System.getProperty("beast.debug"))) {
-            System.err.print(s);
+        	Log.warning.print(s);
         }
     }
 
@@ -1822,7 +1822,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // itself
         Set<BEASTInterface> ancestors = new HashSet<>();
         collectAncestors(plugin, ancestors, taboo);
-		System.out.print(Arrays.toString(ancestors.toArray()));
+		Log.info.print(Arrays.toString(ancestors.toArray()));
         for (BEASTInterface plugin2 : predecessors) {
             if (plugin2 instanceof StateNode) {
                 Set<BEASTInterface> ancestors2 = new HashSet<>();
@@ -1839,16 +1839,16 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         }
 
-//		System.out.print(Arrays.toString(predecessors.toArray()));
+//		Log.info.print(Arrays.toString(predecessors.toArray()));
 //		for (Plugin p : ancestors) {
-//			System.out.print("(");
+//			Log.info.print("(");
 //			for (Plugin p2 : p.listActivePlugins()) {
 //				if (ancestors.contains(p2)) {
-//					System.out.print(p2.getID()+ " ");
+//					Log.info.print(p2.getID()+ " ");
 //				}
 //			}
-//			System.out.print(") ");
-//			System.out.println(p.getID());
+//			Log.info.print(") ");
+//			Log.info.println(p.getID());
 //		}
 
         // now the ancestors contain all plugins to be copied
@@ -1867,7 +1867,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	                copySet.put(id, copy);
 	            }
             }
-			System.err.println("Copy: " + id + " -> " + copyID);
+            Log.warning.println("Copy: " + id + " -> " + copyID);
         }
 
         // set all inputs of copied plugins + outputs to taboo
@@ -1875,7 +1875,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             String id = plugin2.getID();
             BEASTInterface copy = copySet.get(id);
             if (copy != null) {
-            System.err.println("Processing: " + id + " -> " + copy.getID());
+            	Log.warning.println("Processing: " + id + " -> " + copy.getID());
             // set inputs
             for (Input<?> input : plugin2.listInputs()) {
                 if (input.get() != null) {
@@ -1952,7 +1952,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
 
             copySet.put(id, copy);
-    		//System.err.println(base.operatorsAsString());
+    		//Log.warning.println(base.operatorsAsString());
             }
         }
 
@@ -1989,7 +1989,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             } catch (Exception e) {
                 // ignore
-                System.err.print(e.getMessage());
+            	Log.warning.print(e.getMessage());
             }
             if (doc != null) {
                 doc.addPlugin(copy);
@@ -2079,7 +2079,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public void renamePartition(int partitionID, String oldName, String newName) throws Exception {
-        System.err.println("renamePartition: " + partitionID + " " + oldName + " " + newName);
+    	Log.warning.println("renamePartition: " + partitionID + " " + oldName + " " + newName);
         // sanity check: make sure newName is not already in use by another partition
         String newsuffix = null;
         switch (partitionID) {

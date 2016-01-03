@@ -1,5 +1,6 @@
 package beast.app.beastapp;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -154,12 +155,12 @@ public class BeastMain {
                 // This call never returns as another RuntimeException exception is raised by
                 // the error log handler???
                 infoLogger.warning("Error running file: " + fileName);
-                System.err.println("Fatal exception: " + rex.getMessage());
+                Log.err.println("Fatal exception: " + rex.getMessage());
                 rex.printStackTrace(System.err);
             }
             */
         } catch (XMLParserException e) {
-            System.out.println(e.getMessage());
+           Log.info.println(e.getMessage());
             //e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -205,22 +206,22 @@ public class BeastMain {
         final int n = pageWidth - line.length();
         final int n1 = n / 2;
         for (int i = 0; i < n1; i++) {
-            System.out.print(" ");
+            Log.info.print(" ");
         }
-        System.out.println(line);
+        Log.info.println(line);
     }
 
     public static void printTitle() {
 
         int pageWidth = 72;
 
-        System.out.println();
+        Log.info.println();
         centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), pageWidth);
         centreLine("Bayesian Evolutionary Analysis Sampling Trees", pageWidth);
         for (final String creditLine : version.getCredits()) {
             centreLine(creditLine, pageWidth);
         }
-        System.out.println();
+        Log.info.println();
     }
 
     public static void printUsage(final Arguments arguments) {
@@ -277,9 +278,9 @@ public class BeastMain {
         try {
             arguments.parseArguments(args);
         } catch (Arguments.ArgumentException ae) {
-            System.out.println();
-            System.out.println(ae.getMessage());
-            System.out.println();
+        	Log.info.println();
+        	Log.info.println(ae.getMessage());
+        	Log.info.println();
             printUsage(arguments);
             System.exit(1);
         }
@@ -374,7 +375,7 @@ public class BeastMain {
             threadCount = arguments.getIntegerOption("threads");
             if (threadCount < 0) {
                 printTitle();
-                System.err.println("The number of threads should be >= 0");
+                Log.err.println("The number of threads should be >= 0");
                 System.exit(1);
             }
         }
@@ -383,7 +384,7 @@ public class BeastMain {
             seed = arguments.getLongOption("seed");
             if (seed <= 0) {
                 printTitle();
-                System.err.println("The random number seed should be > 0");
+                Log.err.println("The random number seed should be > 0");
                 System.exit(1);
             }
         }
@@ -473,7 +474,7 @@ public class BeastMain {
 
             inputFile = dialog.getInputFile();
             if (!beagleShowInfo && inputFile == null) {
-                System.err.println("No input file specified");
+            	Log.err.println("No input file specified");
                 System.exit(1);
             }
 
@@ -497,8 +498,8 @@ public class BeastMain {
             final String[] args2 = arguments.getLeftoverArguments();
 
             if (args2.length > 1) {
-                System.err.println("Unknown option: " + args2[1]);
-                System.err.println();
+            	Log.err.println("Unknown option: " + args2[1]);
+            	Log.err.println();
                 printUsage(arguments);
                 System.exit(1);
             }
@@ -564,7 +565,7 @@ public class BeastMain {
 
         if (stateFileName!= null && stateFileName.trim().length() > 0) {
             System.setProperty("state.file.name", stateFileName.trim());
-            System.out.println("Writing state to file " + stateFileName);
+            Log.info.println("Writing state to file " + stateFileName);
         }
 
 //        if (allowOverwrite) {
@@ -586,8 +587,8 @@ public class BeastMain {
         MCMCargs.add(seed + "");
         Randomizer.setSeed(seed);
 
-        System.out.println("Random number seed: " + seed);
-        System.out.println();
+        Log.info.println("Random number seed: " + seed);
+        Log.info.println();
 
         // Construct the beast object
         final BeastMCMC beastMCMC = new BeastMCMC();

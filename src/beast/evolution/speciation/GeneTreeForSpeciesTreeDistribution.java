@@ -12,6 +12,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
@@ -209,7 +210,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         // sanity check
         for (int i = 0; i <= k; i++) {
             if (fTimes[i] > fTimes[i + 1]) {
-                System.err.println("invalid times");
+            	Log.warning.println("invalid times");
                 calculateLogP();
             }
         }

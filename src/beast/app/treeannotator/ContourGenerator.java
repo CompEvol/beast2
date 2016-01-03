@@ -3,6 +3,8 @@ package beast.app.treeannotator;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.util.Log;
+
 
 /**
 *  <p> An object used to generate a list of contour lines
@@ -296,7 +298,7 @@ public class ContourGenerator {
 		for (int i=0; i < nc; i++) {
 			cAttr[i] = new ContourAttrib( zMin + (i+1)*delta );
 			if (DEBUG)
-				System.out.println("level[" + i + "] = " + (zMin + (i+1)*delta));
+				Log.info.println("level[" + i + "] = " + (zMin + (i+1)*delta));
 		}
 
 	}
@@ -777,11 +779,11 @@ public class ContourGenerator {
 		}
 
 		if (DEBUG) {
-			System.out.println("i, j = " + gi + "," + gj);
-			System.out.println("cont = " + (float)cont + ",  fij = " + (float)fij +
+			Log.info.println("i, j = " + gi + "," + gj);
+			Log.info.println("cont = " + (float)cont + ",  fij = " + (float)fij +
 									",  func = " + (float)func + ",  xyf = " + (float)xyf);
-			System.out.println("xVal = " + (float)xVal + ",  yVal = " + (float)yVal);
-			System.out.println("wxx = " + (float)wxx + ",  wyy = " + (float)wyy);
+			Log.info.println("xVal = " + (float)xVal + ",  yVal = " + (float)yVal);
+			Log.info.println("wxx = " + (float)wxx + ",  wyy = " + (float)wyy);
 		}
 
 		//	Figure out what to do with this point.

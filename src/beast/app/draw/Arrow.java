@@ -36,6 +36,8 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
+import beast.core.util.Log;
+
 public class Arrow extends Shape {
     String m_sHeadID;
     String m_sTailID;
@@ -65,7 +67,7 @@ public class Arrow extends Shape {
 	        m_tailShape = tailShape;
 	        InputShape input = headShape.getInputShape(sInputName);
 	        if (input == null) {
-	        	System.err.println("Arrow from " + tailShape.m_plugin.getID() + " to " + headShape.m_plugin.getID() + "." + sInputName + " skipped");	        	
+	        	Log.warning.println("Arrow from " + tailShape.m_plugin.getID() + " to " + headShape.m_plugin.getID() + "." + sInputName + " skipped");	        	
 	        }
 	        m_sHeadID = input.getID();
 	        m_headShape = input;

@@ -39,6 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import beast.core.util.Log;
+
 
 
 
@@ -384,7 +386,7 @@ public class State extends BEASTObject {
      * restore a state from file for resuming an MCMC chain *
      */
     public void restoreFromFile() throws Exception {
-        System.out.println("Restoring from file");
+        Log.info.println("Restoring from file");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc = factory.newDocumentBuilder().parse(new File(stateFileName));
         doc.normalize();
@@ -403,7 +405,7 @@ public class State extends BEASTObject {
                         !stateNode[iStateNode].getID().equals(sID)) {
                     iStateNode++;
                     if (iStateNode >= stateNode.length) {
-                    	System.err.println("Cannot resotre statenode sID");
+                    	Log.warning.println("Cannot restore statenode sID");
                     	break;
                     }
                 }
@@ -507,7 +509,7 @@ public class State extends BEASTObject {
                     }
                 }
             } else {
-                System.out.println("\nWARNING: StateNode (" + stateNode[i].getID() + ") found that has no effect on posterior!\n");
+                Log.warning.println("\nWARNING: StateNode (" + stateNode[i].getID() + ") found that has no effect on posterior!\n");
             }
         }
     } // setPosterior
@@ -533,7 +535,7 @@ public class State extends BEASTObject {
 
 //    	System.err.print(Arrays.toString(changeStateNodes) + ":");
 //    	for (CalculationNode node : calcNodes) {
-//    		System.err.print(node.m_sID + " ");
+//    		Log.warning.print(node.m_sID + " ");
 //    	}
 //    	System.err.println();
 

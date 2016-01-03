@@ -15,6 +15,7 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.math.distributions.Prior;
 
 public class PriorInputEditor extends InputEditor.Base {
@@ -50,7 +51,7 @@ public class PriorInputEditor extends InputEditor.Base {
         comboBox.setName(sText+".distr");
 
         String sID = prior.distInput.get().getID();
-        System.err.println("id=" + sID);
+        //Log.warning.println("id=" + sID);
         sID = sID.substring(0, sID.indexOf('.'));
         for (BeautiSubTemplate template : sAvailablePlugins) {
             if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {

@@ -49,7 +49,7 @@ public class BeastLauncher {
 			e.printStackTrace();
 		}
 
-		System.err.println("jardir = " + launcherJar);
+		Log.warning.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
 		boolean foundOne = false;
 		while ((!foundOne) && (jarDir0 != null)) { // && jarDir0.exists() &&
@@ -74,7 +74,7 @@ public class BeastLauncher {
 	}
 
 	private static boolean checkForBEAST(File jarDir, Object clu) throws IOException {
-		System.err.println("Checking out " + jarDir.getAbsolutePath());
+		Log.warning.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
 		if (jarDir.exists()) {
 			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
@@ -87,7 +87,7 @@ public class BeastLauncher {
 					Method method = sysclass.getDeclaredMethod("addURL", parameters);
 					method.setAccessible(true);
 					method.invoke(sysLoader, new Object[] { url });
-					System.err.println("Loaded URL " + url);
+					Log.warning.println("Loaded URL " + url);
 					foundOne = true;
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -131,7 +131,7 @@ public class BeastLauncher {
 					} else {
 						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<br>", "\n");
 						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<[^<]*>", "");
-						System.err.println(JAVA_VERSION_MSG);
+						Log.warning.println(JAVA_VERSION_MSG);
 					}
 					return true;
 				}

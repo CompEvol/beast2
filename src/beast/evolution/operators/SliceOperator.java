@@ -9,6 +9,7 @@ import beast.core.Input.Validate;
 import beast.core.Operator;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Evaluator;
+import beast.core.util.Log;
 import beast.util.Randomizer;
 
 
@@ -143,10 +144,10 @@ public class SliceOperator extends Operator {
             else
                 L = x1;
         }
-        System.err.println("Warning!  Is size of the interval really ZERO?");
+        Log.warning.println("Warning!  Is size of the interval really ZERO?");
         //	double logy_x0 = evaluate(E,X,x0);
-        System.err.println("    L0 = " + L0 + "   x0 = " + x0 + "   R0 = " + R0 + "   gx0 = " + gx0);
-        System.err.println("    L  = " + L + "   x1 = " + x1 + "   R  = " + R0 + "   gx1 = " + evaluate(E));
+        Log.warning.println("    L0 = " + L0 + "   x0 = " + x0 + "   R0 = " + R0 + "   gx0 = " + gx0);
+        Log.warning.println("    L  = " + L + "   x1 = " + x1 + "   R  = " + R0 + "   gx1 = " + evaluate(E));
 
         return x0;
     }

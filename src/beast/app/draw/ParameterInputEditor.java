@@ -21,6 +21,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.parameter.Parameter;
+import beast.core.util.Log;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.math.distributions.ParametricDistribution;
 
@@ -205,12 +206,12 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                         	
                         	
                         	PartitionContext context = new PartitionContext(sID.substring("parameter.".length()));
-                        	System.err.println(context + " " + sID);
+                        	Log.warning.println(context + " " + sID);
                         	doc.beautiConfig.hyperPriorTemplate.createSubNet(context, true);
                         }
                         refreshPanel();
                     } catch (Exception ex) {
-                        System.err.println("ParameterInputEditor " + ex.getMessage());
+                        Log.err.println("ParameterInputEditor " + ex.getMessage());
                     }
                 });
             paramBox.add(m_isEstimatedBox);

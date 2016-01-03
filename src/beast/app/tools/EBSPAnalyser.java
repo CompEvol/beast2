@@ -24,6 +24,7 @@ import javax.swing.border.EmptyBorder;
 import beast.app.BEASTVersion;
 import beast.app.util.Utils;
 import beast.app.util.WholeNumberField;
+import beast.core.util.Log;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction.Type;
 import beast.math.statistic.DiscreteStatistics;
@@ -205,7 +206,7 @@ public class EBSPAnalyser {
             throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
         }
         if (m_sFileOut == null) {
-            System.err.println("No output file specified");
+        	Log.warning.println("No output file specified");
         }
 
     }
@@ -222,11 +223,11 @@ public class EBSPAnalyser {
     }
 
     protected void log(String s) {
-        System.err.print(s);
+    	Log.warning.print(s);
     }
 
     protected void logln(String s) {
-        System.err.println(s);
+    	Log.warning.println(s);
     }
 
     private void printTitle(String aboutString) {
@@ -416,7 +417,7 @@ public class EBSPAnalyser {
                     analyser.run();
 
                 } catch (Exception ex) {
-                    System.err.println("Exception: " + ex.getMessage());
+                    Log.err.println("Exception: " + ex.getMessage());
                     ex.printStackTrace();
                 }
                 System.out.println("Finished - Quit program to exit.");

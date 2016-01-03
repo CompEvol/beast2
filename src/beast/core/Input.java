@@ -137,7 +137,7 @@ public class Input<T> {
     public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
         this(sName, sTipText, startValue);
         if (rule != Validate.XOR) {
-            System.err.println("Programmer error: input rule should be XOR for this Input constructor");
+            Log.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
         this.rule = rule;
         this.other = other;
@@ -163,7 +163,7 @@ public class Input<T> {
     public Input(String sName, String sTipText, T startValue, Validate rule) {
         this(sName, sTipText, startValue);
         /*if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
+            Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
         }*/
         this.rule = rule;
@@ -183,7 +183,7 @@ public class Input<T> {
     public Input(String sName, String sTipText, Validate rule) {
         this(sName, sTipText);
         if (rule != Validate.REQUIRED) {
-            System.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
+            Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
         }
         this.rule = rule;
@@ -203,7 +203,7 @@ public class Input<T> {
     public Input(String sName, String sTipText, Validate rule, Input<?> other) {
         this(sName, sTipText);
         if (rule != Validate.XOR) {
-            System.err.println("Programmer error: input rule should be XOR for this Input constructor");
+            Log.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
         this.rule = rule;
         this.other = other;
@@ -243,8 +243,8 @@ public class Input<T> {
                 name.toLowerCase().equals("idref") ||
                 name.toLowerCase().equals("spec") ||
                 name.toLowerCase().equals("name")) {
-            System.err.println("Found an input with invalid name: " + name);
-            System.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
+        	Log.err.println("Found an input with invalid name: " + name);
+        	Log.err.println("'id', 'idref', 'spec' and 'name' are reserved and cannot be used");
             System.exit(0);
         }
     }
@@ -479,7 +479,7 @@ public class Input<T> {
         } catch (java.lang.NoSuchMethodException e) {
             return true;
         } catch (java.lang.reflect.InvocationTargetException e) {
-            System.err.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
+        	Log.warning.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
 
             if (e.getCause() != null) {
                 throw new RuntimeException(e.getCause().getMessage());
@@ -532,7 +532,7 @@ public class Input<T> {
                             	Object o = genericTypes[0];
                             	if (o instanceof ParameterizedType) {
                                     Type rawType = ((ParameterizedType) genericTypes[0]).getRawType();
-                                    System.err.println(rawType.getTypeName());
+                                    // Log.warning.println(rawType.getTypeName());
                             		if (rawType.getTypeName().equals("java.util.List")) {
                             			// if we got here, value==null
                             			throw new Exception("Programming error: Input<List> not initialised");
@@ -547,10 +547,10 @@ public class Input<T> {
                                     id = (String) method.invoke(plugin);
                                 }
                                 // assemble error message
-                                System.err.println(plugin.getClass().getName() + " " + id + " failed. " +
+                                Log.err.println(plugin.getClass().getName() + " " + id + " failed. " +
                                         "Possibly template or abstract Plugin used " +
                                         "or if it is a list, the list was not initilised???");
-                                System.err.println("class is " + plugin.getClass());
+                                Log.err.println("class is " + plugin.getClass());
                                 e.printStackTrace(System.err);
                                 System.exit(0);
                             }

@@ -130,7 +130,7 @@ public class CompoundDistribution extends Distribution {
                     logP += distr.getCurrentLogP();
                 }
             } catch (Exception e) {
-                System.err.println("Something went wrong in a calculation of " + distr.getID());
+                Log.err.println("Something went wrong in a calculation of " + distr.getID());
                 e.printStackTrace();
                 System.exit(0);
             }
@@ -166,7 +166,7 @@ public class CompoundDistribution extends Distribution {
             return logP;
         } catch (RejectedExecutionException e) {
             useThreads = false;
-            System.err.println("Stop using threads: " + e.getMessage());
+            Log.err.println("Stop using threads: " + e.getMessage());
             return calculateLogP();
         }
     }

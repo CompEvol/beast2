@@ -1,5 +1,6 @@
 package beast.evolution.substitutionmodel;
 
+import beast.core.util.Log;
 import beast.math.MachineAccuracy;
 
 /**
@@ -176,7 +177,7 @@ public class DefaultEigenSystem implements EigenSystem {
                 }
                 if (itn == 0) {
                     /* eigenvalues have not converged */
-                    System.out.println("Eigenvalues not converged");
+                    Log.warning.println("Eigenvalues not converged");
                     throw new ArithmeticException();
                 }
                 y = h[na - 1][na - 1];
@@ -576,7 +577,7 @@ public class DefaultEigenSystem implements EigenSystem {
             }
             if (maxb == 0.0) {
                 /* Singular matrix */
-                System.out.println("Singular matrix encountered");
+                Log.err.println("Singular matrix encountered");
                 throw new IllegalArgumentException("Singular matrix");
             }
             wk[i] = 1.0 / maxb;

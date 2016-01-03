@@ -33,6 +33,7 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 
@@ -107,7 +108,7 @@ public class SiteModel extends SiteModelInterface.Base {
             categoryCount = gammaCategoryCount.get();
             if (categoryCount < 1) {
             	if (categoryCount < 0) {
-            		System.out.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
+            		Log.warning.println("SiteModel: Invalid category count (" + categoryCount + ") Setting category count to 1");
             	}
                 categoryCount = 1;
             }
@@ -271,7 +272,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.err.println("Something went wrong with the gamma distribution calculation");
+                    Log.err.println("Something went wrong with the gamma distribution calculation");
                     System.exit(-1);
                 }
                 mean += categoryRates[i + cat];

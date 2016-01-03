@@ -186,12 +186,12 @@ public class TraitSet extends BEASTObject {
                                 // see also comments in TipDatesInputEditor
                                 long date = Date.parse(sStr);
                                 year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
-                                System.err.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");
+                                Log.warning.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");
                             } else {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
                                 LocalDate date = LocalDate.parse(sStr, formatter);
 
-                                System.err.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + sStr +
+                                Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + sStr +
                                         "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
 
                                 year = date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
@@ -206,7 +206,7 @@ public class TraitSet extends BEASTObject {
                                     return year;
                             }
                         } catch (DateTimeParseException e2) {
-                            System.err.println("Failed to parse date '" + sStr + "' using format '" + dateTimeFormatInput.get() + "'");
+                            Log.err.println("Failed to parse date '" + sStr + "' using format '" + dateTimeFormatInput.get() + "'");
                             System.exit(1);
                         }
                     }

@@ -27,6 +27,8 @@ package beast.app.draw;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.core.util.Log;
+
 public class Selection {
     public List<TrackPoint> m_tracker = null;
     List<Integer> m_Selection;
@@ -106,9 +108,9 @@ public class Selection {
             }
         }
         for (int i = 0; i < m_Selection.size(); i++) {
-            System.err.print((Integer) m_Selection.get(i) + " ");
+        	Log.warning.print((Integer) m_Selection.get(i) + " ");
         }
-        System.err.println();
+        Log.warning.println();
     } // toggleSelection
 
     public void clear() {

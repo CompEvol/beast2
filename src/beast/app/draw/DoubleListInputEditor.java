@@ -22,6 +22,7 @@ import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 
 
 public class DoubleListInputEditor extends ListInputEditor {
@@ -300,7 +301,7 @@ public class DoubleListInputEditor extends ListInputEditor {
                 }
                 notifyValidationListeners(ValidationStatus.IS_VALID);
             } catch (Exception e) {
-                System.err.println("Validation message: " + e.getMessage());
+            	Log.warning.println("Validation message: " + e.getMessage());
                 if (m_validateLabel != null) {
                     m_validateLabel.setToolTipText(e.getMessage());
                     m_validateLabel.m_circleColor = Color.red;

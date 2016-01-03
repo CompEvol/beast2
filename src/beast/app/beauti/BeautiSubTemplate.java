@@ -336,9 +336,9 @@ public class BeautiSubTemplate extends BEASTObject {
             for (BEASTInterface plugin : plugins) {
                 doc.addPlugin(plugin);
                 try {
-                	System.err.println("Adding " + plugin.getClass().getName() + " " + plugin);
+                	Log.warning.println("Adding " + plugin.getClass().getName() + " " + plugin);
                 } catch (Exception e) {
-                	System.err.println("Adding " + plugin.getClass().getName());
+                	Log.err.println("Adding " + plugin.getClass().getName());
 				}
             }
 

@@ -354,7 +354,6 @@ public interface BEASTInterface {
     	if (inputs.containsKey(name)) {
     		return inputs.get(name);
     	}
-    	System.err.println("X");
 
         String inputNames = " "; // <- space here to prevent error in .substring below
         for (final Input<?> input : listInputs()) {

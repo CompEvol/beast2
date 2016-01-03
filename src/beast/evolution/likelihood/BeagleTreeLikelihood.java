@@ -35,6 +35,7 @@ import beagle.BeagleInfo;
 import beagle.InstanceDetails;
 import beagle.ResourceDetails;
 import beast.core.Description;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
@@ -265,20 +266,20 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     }
                 }
                 sb.append("    with instance flags: ").append(instanceDetails.toString());
-                System.out.println(sb.toString());
+                Log.info.println(sb.toString());
             } else {
-                System.err.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
+                Log.warning.println("  Error retrieving BEAGLE resource for instance: " + instanceDetails.toString());
                 beagle = null;
                 return false;
             }
         } else {
-            System.err.println("  No external BEAGLE resources available, or resource list/requirements not met, using Java implementation");
+        	Log.warning.println("  No external BEAGLE resources available, or resource list/requirements not met, using Java implementation");
             beagle = null;
             return false;
         }
-        System.err.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-        System.err.println("  " + (m_bUseTipLikelihoods ? "Using" : "Ignoring") + " character uncertainty in tree likelihood.");
-        System.err.println("  With " + patternCount + " unique site patterns.");
+        Log.warning.println("  " + (m_bUseAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
+        Log.warning.println("  " + (m_bUseTipLikelihoods ? "Using" : "Ignoring") + " character uncertainty in tree likelihood.");
+        Log.warning.println("  With " + patternCount + " unique site patterns.");
 
         
         Node [] nodes = treeInput.get().getNodesAsArray();
@@ -306,9 +307,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 (resourceDetails.getFlags() & BeagleFlag.SCALING_AUTO.getMask()) == 0) {
             // If auto scaling in BEAGLE is not supported then do it here
             this.rescalingScheme = PartialsRescalingScheme.DYNAMIC;
-            System.err.println("  Auto rescaling not supported in BEAGLE, using : " + this.rescalingScheme.getText());
+            Log.warning.println("  Auto rescaling not supported in BEAGLE, using : " + this.rescalingScheme.getText());
         } else {
-            System.err.println("  Using rescaling scheme : " + this.rescalingScheme.getText());
+        	Log.warning.println("  Using rescaling scheme : " + this.rescalingScheme.getText());
         }
 
         if (this.rescalingScheme == PartialsRescalingScheme.DYNAMIC) {
@@ -346,7 +347,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     int n = Integer.parseInt(part.trim());
                     order.add(n);
                 } catch (NumberFormatException nfe) {
-                    System.err.println("Invalid entry '" + part + "' in " + propertyName);
+                	Log.warning.println("Invalid entry '" + part + "' in " + propertyName);
                 }
             }
         }
@@ -365,7 +366,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     String s = part.trim();
                     order.add(s);
                 } catch (NumberFormatException nfe) {
-                    System.err.println("Invalid getEigenDecompositionentry '" + part + "' in " + propertyName);
+                	Log.warning.println("Invalid getEigenDecompositionentry '" + part + "' in " + propertyName);
                 }
             }
         }

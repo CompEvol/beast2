@@ -513,7 +513,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             int result = JOptionPane.showConfirmDialog(null,
                     "Do you want to save the Beast specification?",
                     "Save before closing?", JOptionPane.YES_NO_CANCEL_OPTION);
-            System.err.println("result=" + result);
+            Log.err.println("result=" + result);
             if (result == JOptionPane.CANCEL_OPTION) {
                 return false;
             }
@@ -973,7 +973,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                             	}
                             }
                         } catch (Exception e) {
-                            System.err.println(e.getMessage());
+                        	Log.warning.println(e.getMessage());
                         }
                     }
                 }
@@ -1153,7 +1153,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     if (url != null) {
                         icon = new ImageIcon(url);
                     } else {
-                        System.err.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
+                    	Log.warning.println("Unable to find image: " + ModelBuilder.ICONPATH + "beauti.png");
                     }
                     jam.framework.Application application = new jam.framework.MultiDocApplication(null, "BEAUti", "about", icon) {
 

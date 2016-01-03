@@ -28,6 +28,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import beast.app.util.Utils;
+import beast.core.util.Log;
 
 
 public class GuessPatternDialog extends JDialog {
@@ -571,7 +572,7 @@ public class GuessPatternDialog extends JDialog {
         }
 
         if (optionPane.getValue() != null && optionPane.getValue().equals("OK")) {
-            System.err.println("Pattern = " + pattern);
+        	Log.warning.println("Pattern = " + pattern);
             return Status.pattern;
         } else {
             return Status.canceled;

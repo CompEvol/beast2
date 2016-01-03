@@ -22,6 +22,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
+import beast.core.util.Log;
 import beast.util.XMLProducer;
 
 /**
@@ -408,7 +409,7 @@ public class BEASTObjectPanel extends JPanel {
             }
         } catch (Exception e) {
             // ignore
-            System.err.println(e.getClass().getName() + " " + e.getMessage());
+            Log.warning.println(e.getClass().getName() + " " + e.getMessage());
         }
     } // addPluginToMap
 

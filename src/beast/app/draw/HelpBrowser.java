@@ -37,6 +37,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import beast.app.DocMaker;
+import beast.core.util.Log;
 
 
 
@@ -150,7 +151,7 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
             }
         } catch (Exception e) {
             // ignore
-            System.err.println(e.getMessage());
+            Log.err.println(e.getMessage());
         }
     } // hyperlinkUpdate
 
@@ -165,7 +166,7 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
             m_editorPane.setText(sHTML);
         } catch (Exception e) {
             // ignore
-            System.err.println("HelpBrowser: Something is wrong: " + e.getClass().getName() + " " + e.getMessage());
+            Log.err.println("HelpBrowser: Something is wrong: " + e.getClass().getName() + " " + e.getMessage());
         }
         m_backwardButton.setEnabled(m_iCurrentPlugin > 0);
         m_forwardButton.setEnabled(m_iCurrentPlugin < m_sPlugins.size() - 1);

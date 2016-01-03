@@ -20,6 +20,7 @@ import beast.app.draw.InputEditor.ExpandOption;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 
 
@@ -79,7 +80,7 @@ public class InputEditorFactory {
 	                // ingore input editors that are inner classes
 	            } catch (Exception e) {
 	                // print message
-	                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	                Log.err.println(e.getClass().getName() + ": " + e.getMessage());
 	            }
         	}
         }
@@ -113,7 +114,7 @@ public class InputEditorFactory {
                 }
             } catch (Exception e) {
                 // ignore
-                System.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
+                Log.err.println(e.getClass().getName() + ": " + e.getMessage() + "\n" +
                         "input " + input.getName() + " could not be added.");
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Could not add entry for " + input.getName());
@@ -150,7 +151,7 @@ public class InputEditorFactory {
         } else {
         	if (input.get() != null && !input.get().getClass().equals(inputClass)
         			&& !(input.get() instanceof ArrayList)) {
-        		System.err.println(input.get().getClass() + " != " + inputClass);
+        		Log.err.println(input.get().getClass() + " != " + inputClass);
         		inputClass = input.get().getClass();
         	}
         }

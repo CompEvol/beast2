@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.util.Log;
 
 
 /**
@@ -96,7 +97,7 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
     @Override
     public int scale(double fScale) {
         // nothing to do
-        System.err.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
+        Log.warning.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
         return 0;
     }
 

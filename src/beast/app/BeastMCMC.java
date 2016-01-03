@@ -59,6 +59,7 @@ import beast.app.draw.ExtensionFileFilter;
 import beast.app.util.Version;
 import beast.core.Logger;
 import beast.core.Runnable;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 import beast.util.JSONParser;
 import beast.util.Randomizer;
@@ -234,9 +235,9 @@ public class BeastMCMC {
             return;
         }
 
-        System.err.println("File: " + beastFile.getName() + " seed: " + m_nSeed + " threads: " + m_nThreads);
+        Log.warning.println("File: " + beastFile.getName() + " seed: " + m_nSeed + " threads: " + m_nThreads);
         if (resume) {
-            System.out.println("Resuming from file");
+            Log.info.println("Resuming from file");
         }
 
         AddOnManager.loadExternalJars();

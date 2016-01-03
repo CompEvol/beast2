@@ -333,7 +333,7 @@ public class XMLParser {
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 final Node child = children.item(i);
-                System.err.println(child.getNodeName());
+                Log.warning.println(child.getNodeName());
                 if (!child.getNodeName().equals(MAP_ELEMENT)) {
                     beastObjects.add(createObject(child, BEAST_INTERFACE_CLASS));
                 }
@@ -559,7 +559,7 @@ public class XMLParser {
 	                        isDone = true;
 	                    }
 	                } catch (ClassNotFoundException e) {
-	                    //System.err.println("Not found " + e.getMessage());
+	                    // Log.warning.println("Not found " + e.getMessage());
 	                    // TODO: handle exception
 	                }
 	            }
@@ -667,9 +667,9 @@ public class XMLParser {
             specClass = sSpec;
         }
     	
-    	if (specClass.indexOf("BEASTInterface") > 0) {
-    		System.out.println(specClass);
-    	}
+    	//if (specClass.indexOf("BEASTInterface") > 0) {
+    	//	Log.info.println(specClass);
+    	//}
         
 		String clazzName = null;
 		// determine clazzName from sSpecName, taking name spaces in account

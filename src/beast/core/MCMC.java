@@ -267,7 +267,7 @@ public class MCMC extends Runnable {
         // sanity check: all state nodes should be operated on
         for (final StateNode stateNode : stateNodes) {
             if (!operatorStateNodes.contains(stateNode)) {
-                System.out.println("Warning: state contains a node " + stateNode.getID() + " for which there is no operator.");
+                Log.warning.println("Warning: state contains a node " + stateNode.getID() + " for which there is no operator.");
             }
         }
     } // init
@@ -333,7 +333,7 @@ public class MCMC extends Runnable {
 //        System.err.println("Start state:");
 //        System.err.println(state.toString());
 
-        System.err.println("Start likelihood: " + oldLogLikelihood + " " + (nInitialisationAttempts > 1 ? "after " + nInitialisationAttempts + " initialisation attempts" : ""));
+        Log.info.println("Start likelihood: " + oldLogLikelihood + " " + (nInitialisationAttempts > 1 ? "after " + nInitialisationAttempts + " initialisation attempts" : ""));
         if (Double.isInfinite(oldLogLikelihood) || Double.isNaN(oldLogLikelihood)) {
             reportLogLikelihoods(posterior, "");
             throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
@@ -376,15 +376,15 @@ public class MCMC extends Runnable {
 
         doLoop();
 
-        System.out.println();
+        Log.info.println();
         operatorSchedule.showOperatorRates(System.out);
 
-        System.out.println();
+        Log.info.println();
         final long endTime = System.currentTimeMillis();
-        System.out.println("Total calculation time: " + (endTime - startTime) / 1000.0 + " seconds");
+        Log.info.println("Total calculation time: " + (endTime - startTime) / 1000.0 + " seconds");
         close();
 
-        System.err.println("End likelihood: " + oldLogLikelihood);
+        Log.warning.println("End likelihood: " + oldLogLikelihood);
 //        System.err.println(state);
         state.storeToFile(chainLength);
         operatorSchedule.storeToFile();
@@ -493,7 +493,7 @@ public class MCMC extends Runnable {
                 final double fLogLikelihood = isStochastic ? state.robustlyCalcNonStochasticPosterior(posterior) : state.robustlyCalcPosterior(posterior);
                 if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
-                    System.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + fLogLikelihood
+                    Log.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + fLogLikelihood
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
@@ -505,7 +505,7 @@ public class MCMC extends Runnable {
                         corrections++;
                         if (corrections > 100) {
                             // after 100 repairs, there must be something seriously wrong with the implementation
-                            System.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
+                        	Log.err.println("Too many corrections. There is something seriously wrong that cannot be corrected");
                             state.storeToFile(sampleNr);
                             operatorSchedule.storeToFile();
                             System.exit(0);
@@ -536,7 +536,7 @@ public class MCMC extends Runnable {
             }
         }
         if (corrections > 0) {
-            System.err.println("\n\nNB: " + corrections + " posterior calculation corrections were required. This analysis may not be valid!\n\n");
+        	Log.err.println("\n\nNB: " + corrections + " posterior calculation corrections were required. This analysis may not be valid!\n\n");
         }
     }
 
@@ -547,7 +547,7 @@ public class MCMC extends Runnable {
     protected void reportLogLikelihoods(final Distribution distr, final String tabString) {
         final double full =  distr.logP, last = distr.storedLogP;
         final String changed = full == last ? "" : "  **";
-        System.err.println(tabString + "P(" + distr.getID() + ") = " + full + " (was " + last + ")" + changed);
+        Log.err.println(tabString + "P(" + distr.getID() + ") = " + full + " (was " + last + ")" + changed);
         if (distr instanceof CompoundDistribution) {
             for (final Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
                 reportLogLikelihoods(distr2, tabString + "\t");

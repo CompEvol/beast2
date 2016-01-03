@@ -15,6 +15,7 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.math.distributions.MRCAPrior;
@@ -134,7 +135,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         deleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.err.println("Trying to delete a calibration");
+				Log.warning.println("Trying to delete a calibration");
 				List<?> list = (List<?>) m_input.get();
 				MRCAPrior prior = (MRCAPrior) list.get(itemNr);
 				doc.disconnect(prior, "prior", "distribution");
@@ -174,7 +175,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 m_prior.isMonophyleticInput.setValue(((JCheckBox) e.getSource()).isSelected(), m_prior);
                 refreshPanel();
             } catch (Exception ex) {
-                System.err.println("PriorListInputEditor " + ex.getMessage());
+            	Log.warning.println("PriorListInputEditor " + ex.getMessage());
             }
         }
     }

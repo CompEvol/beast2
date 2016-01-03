@@ -12,6 +12,7 @@ import beast.core.Operator;
 import beast.core.StateNode;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.util.Randomizer;
 
 
@@ -40,10 +41,10 @@ public class UpDownOperator extends Operator {
         scaleFactor = scaleFactorInput.get();
         // sanity checks
         if (upInput.get().size() + downInput.get().size() == 0) {
-            System.err.println("WARNING: At least one up or down item must be specified");
+        	Log.warning.println("WARNING: At least one up or down item must be specified");
         }
         if (upInput.get().size() == 0 || downInput.get().size() == 0) {
-            System.err.println("WARNING: no " + (upInput.get().size() == 0 ? "up" : "down") + " item specified in UpDownOperator");
+        	Log.warning.println("WARNING: no " + (upInput.get().size() == 0 ? "up" : "down") + " item specified in UpDownOperator");
         }
         upper = scaleUpperLimit.get();
         lower = scaleLowerLimit.get();

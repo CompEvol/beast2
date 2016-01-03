@@ -45,6 +45,7 @@ import beast.core.MCMC;
 import beast.core.State;
 import beast.core.StateNode;
 import beast.core.util.CompoundDistribution;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Taxon;
@@ -306,7 +307,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
-				System.err.println(ex.getMessage());
+				Log.warning.println(ex.getMessage());
 				// unlink if we could not link
 				tableData[iRow][nColumn] = old;
 				try {
@@ -326,7 +327,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
-				System.err.println(ex.getMessage());
+				Log.err.println(ex.getMessage());
 				ex.printStackTrace();
 			}
 		}
@@ -339,10 +340,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	/** set partition of type nColumn to partition model nr iRow **/
 	void updateModel(int nColumn, int iRow) throws Exception {
-		System.err.println("updateModel: " + iRow + " " + nColumn + " " + table.getSelectedRow() + " "
+		Log.warning.println("updateModel: " + iRow + " " + nColumn + " " + table.getSelectedRow() + " "
 				+ table.getSelectedColumn());
 		for (int i = 0; i < nPartitions; i++) {
-			System.err.println(i + " " + tableData[i][0] + " " + tableData[i][SITEMODEL_COLUMN] + " "
+			Log.warning.println(i + " " + tableData[i][0] + " " + tableData[i][SITEMODEL_COLUMN] + " "
 					+ tableData[i][CLOCKMODEL_COLUMN] + " " + tableData[i][TREE_COLUMN]);
 		}
 
@@ -514,7 +515,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					likelihoods[iRow].dataInput.get().getID(), likelihoods[iRow].dataInput.get().getTaxaNames());
 
 			needsRePartition = (this.likelihoods[iRow].treeInput.get() != tree);
-System.err.println("needsRePartition = " + needsRePartition);			
+			Log.warning.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
 				TreeInterface oldTree = this.likelihoods[iRow].treeInput.get();
 				List<TreeInterface> tModels = new ArrayList<>();
@@ -757,7 +758,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 			@Override
 			public boolean stopCellEditing() {
-				System.err.println("stopCellEditing()");
+				//Log.warning.println("stopCellEditing()");
 				table.removeEditor();
 				String sText = m_textField.getText();
 				try {
@@ -771,7 +772,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 
 			@Override
 			public boolean isCellEditable(EventObject anEvent) {
-				System.err.println("isCellEditable()");
+				//Log.warning.println("isCellEditable()");
 				return table.getSelectedColumn() == 0;
 			}
 
@@ -912,7 +913,7 @@ System.err.println("needsRePartition = " + needsRePartition);
 		JCheckBox checkBox = new JCheckBox();
 		checkBox.addActionListener(e -> {
 				if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
-					System.err.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+					Log.warning.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 				}
 				try {
 					int row = table.getSelectedRow();
@@ -936,8 +937,8 @@ System.err.println("needsRePartition = " + needsRePartition);
 	}
 
 	void processPartitionName() {
-		System.err.println("processPartitionName");
-		System.err.println(table.getSelectedColumn() + " " + table.getSelectedRow());
+		Log.warning.println("processPartitionName");
+		Log.warning.println(table.getSelectedColumn() + " " + table.getSelectedRow());
 		String oldName = tableData[table.getSelectedRow()][table.getSelectedColumn()].toString();
 		String newName = nameEditor.getText();
 		if (!oldName.equals(newName) && newName.indexOf(".") >= 0) {
@@ -973,9 +974,9 @@ System.err.println("needsRePartition = " + needsRePartition);
 			}
 		}
 		// debugging code:
-		for (int i = 0; i < nPartitions; i++) {
-			System.err.println(i + " " + tableData[i][0]);
-		}
+		//for (int i = 0; i < nPartitions; i++) {
+		//	Log.warning.println(i + " " + tableData[i][0]);
+		//}
 	}
 
 	class ComboActionListener implements ActionListener {
@@ -990,16 +991,16 @@ System.err.println("needsRePartition = " + needsRePartition);
 //			 SwingUtilities.invokeLater(new Runnable() {
 //			 @Override
 //			 public void run() {
-			System.err.println("actionPerformed ");
-			System.err.println(table.getSelectedRow() + " " + table.getSelectedColumn());
+			Log.warning.println("actionPerformed ");
+			Log.warning.println(table.getSelectedRow() + " " + table.getSelectedColumn());
 			if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
-				System.err.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
+				Log.warning.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 			}
 			for (int i = 0; i < nPartitions; i++) {
 				try {
 					updateModel(m_nColumn, i);
 				} catch (Exception ex) {
-					System.err.println(ex.getMessage());
+					Log.warning.println(ex.getMessage());
 				}
 			}
 //		    }});

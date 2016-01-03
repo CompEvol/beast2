@@ -12,6 +12,14 @@ import java.util.Arrays;
  * info, 
  * debug, 
  * trace
+ * 
+ * To log a message, refer to one of the streams, e.g.
+ * Log.info.println("Hello world!");
+ * 
+ * or pass message directly through method
+ * Log.info("Hello world!");
+ * 
+ * The former gives better control of newlines, while the latter always adds a newline to the string.
  **/ 
 public class Log {
 	static PrintStream nullStream = new PrintStream(new OutputStream() {
@@ -36,10 +44,15 @@ public class Log {
     }
 	
 	static public PrintStream err;
+	static public void err(String msg) {err.println(msg);}
 	static public PrintStream warning;
+	static public void warning(String msg) {warning.println(msg);}
 	static public PrintStream info;
+	static public void info(String msg) {info.println(msg);}
 	static public PrintStream debug;
+	static public void debug(String msg) {debug.println(msg);}
 	static public PrintStream trace;
+	static public void trace(String msg) {trace.println(msg);}
 
 	static private PrintStream errIfOpen;
 	static private PrintStream warningIfOpen;

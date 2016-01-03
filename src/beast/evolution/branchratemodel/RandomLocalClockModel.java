@@ -5,6 +5,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -40,7 +41,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         BooleanParameter indicators = indicatorParamInput.get();
 
         if (indicators.getDimension() != m_tree.getNodeCount() - 1) {
-            System.out.println("RandomLocalClockModel::Setting dimension of indicators to " + (m_tree.getNodeCount() - 1));
+            Log.warning.println("RandomLocalClockModel::Setting dimension of indicators to " + (m_tree.getNodeCount() - 1));
             indicators.setDimension(m_tree.getNodeCount() - 1);
         }
 
@@ -54,7 +55,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
             rates.setUpper(Double.MAX_VALUE);
         }
         if (rates.getDimension() != m_tree.getNodeCount() - 1) {
-            System.out.println("RandomLocalClockModel::Setting dimension of rates to " + (m_tree.getNodeCount() - 1));
+        	Log.warning.println("RandomLocalClockModel::Setting dimension of rates to " + (m_tree.getNodeCount() - 1));
             rates.setDimension(m_tree.getNodeCount() - 1);
         }
 

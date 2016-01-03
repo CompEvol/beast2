@@ -35,6 +35,7 @@ import javax.swing.table.TableCellRenderer;
 import beast.app.draw.InputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
@@ -150,7 +151,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             public boolean stopCellEditing() {
                 m_table.removeEditor();
                 String sText = m_textField.getText();
-                System.err.println(sText);
+                //Log.warning.println(sText);
                 m_model.setValueAt(sText, m_iRow, m_iCol);
 
                 // try {

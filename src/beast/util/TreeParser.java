@@ -44,6 +44,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -213,14 +214,14 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
                 DecimalFormat format = new DecimalFormat("#.##");
 
-                System.out.println("WARNING: Adjust tip heights attribute set to 'true' in " + getClass().getSimpleName());
-                System.out.println("         has resulted in significant (>" + format.format(SCALE_FACTOR_THRESHOLD*100.0) + "%) change in tree length.");
-                System.out.println("         Use "+adjustTipHeightsInput.getName()+"='false' to override this default.");
-                System.out.printf( "  original max tip age = %8.3f\n", maxTipHeight);
-                System.out.printf( "       new max tip age = %8.3f\n", 0.0);
-                System.out.printf( "  original tree length = %8.3f\n", treeLength);
-                System.out.printf( "       new tree length = %8.3f\n", treeLength+extraTreeLength);
-                System.out.printf( "       TL scale factor = %8.3f\n", scaleFactor);
+                Log.info.println("WARNING: Adjust tip heights attribute set to 'true' in " + getClass().getSimpleName());
+                Log.info.println("         has resulted in significant (>" + format.format(SCALE_FACTOR_THRESHOLD*100.0) + "%) change in tree length.");
+                Log.info.println("         Use "+adjustTipHeightsInput.getName()+"='false' to override this default.");
+                Log.info.printf( "  original max tip age = %8.3f\n", maxTipHeight);
+                Log.info.printf( "       new max tip age = %8.3f\n", 0.0);
+                Log.info.printf( "  original tree length = %8.3f\n", treeLength);
+                Log.info.printf( "       new tree length = %8.3f\n", treeLength+extraTreeLength);
+                Log.info.printf( "       TL scale factor = %8.3f\n", scaleFactor);
             }
         }
 

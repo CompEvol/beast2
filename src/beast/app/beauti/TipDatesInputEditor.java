@@ -26,6 +26,7 @@ import javax.swing.table.TableCellRenderer;
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.operators.TipDatesRandomWalker;
@@ -195,9 +196,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             String treeID = tree.getID();
             String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
             TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
-            System.err.println("treeID = " + treeID);
-            System.err.println("operatorID = " + operatorID);
-            System.err.println("operator = " + operator);
+            Log.warning.println("treeID = " + treeID);
+            Log.warning.println("operatorID = " + operatorID);
+            Log.warning.println("operator = " + operator);
             operator.m_taxonsetInput.setValue(taxonset, operator);
 
 //            for (Plugin plugin : traitSet.outputs) {
@@ -420,7 +421,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 tableData[taxonIndex][1] = normalize(sStrs[1]);
                 tableData[taxonIndex][0] = sTaxonID;
             } else {
-                System.err.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
+            	Log.warning.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
             }
         }
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
@@ -560,7 +561,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 }
                 try {
                     traitSet.traitNameInput.setValue(sSelected, traitSet);
-                    System.err.println("Relative position is now: " + traitSet.traitNameInput.get());
+                    Log.warning.println("Relative position is now: " + traitSet.traitNameInput.get());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

@@ -183,7 +183,7 @@ public class NexusParser {
 
     private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
 
-        System.out.println("translation map size = " + translationMap.size());
+        Log.info.println("translation map size = " + translationMap.size());
 
         final String[] taxa = new String[translationMap.size()];
 
@@ -234,9 +234,9 @@ public class NexusParser {
             final String[] translation = taxaTranslation.split("[\t ]+");
             if (translation.length == 2) {
                 translationMap.put(translation[0], translation[1]);
-//                System.out.println(translation[0] + " -> " + translation[1]);
+//                Log.info.println(translation[0] + " -> " + translation[1]);
             } else {
-                System.err.println("Ignoring translation:" + Arrays.toString(translation));
+                Log.warning.println("Ignoring translation:" + Arrays.toString(translation));
             }
         }
         return translationMap;
@@ -381,7 +381,7 @@ public class NexusParser {
                     sSymbols = getAttValue("symbols", sStr).replaceAll("\\s", "");
                 }
                 if (sDataType == null) {
-                    System.out.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
+                    Log.warning.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
                     alignment.dataTypeInput.setValue("integer", alignment);
                     if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
                         nTotalCount = sSymbols.length();
@@ -497,7 +497,7 @@ public class NexusParser {
 //                                end = stateStr.indexOf("'", end+2);
 //                            } while (stateStr.charAt(end+1) == '\'' || end == -1);
 //                            if (end == -1) {
-//                                System.out.println("Incorrect description in charstatelabels. Single quote found in line ");
+//                                Log.info.println("Incorrect description in charstatelabels. Single quote found in line ");
 //                            }
 //                            end++;
 //                            states.add(stateStr.substring(begin, end));
@@ -587,7 +587,7 @@ public class NexusParser {
 //				sTaxon += sStrs[k];
 //			}
 //			sTaxon = sTaxon.replaceAll("'", "");
-//			System.err.println(sTaxon);
+//			Log.warning.println(sTaxon);
 //			String sData = sStrs[sStrs.length - 1];
 
             if (seqMap.containsKey(sTaxon)) {

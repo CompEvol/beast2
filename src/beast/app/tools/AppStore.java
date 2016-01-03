@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import beast.app.util.Utils;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 
 
@@ -366,13 +367,13 @@ public class AppStore {
             int c;
             BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
             while ((c = input.read()) != -1) {
-                System.out.print((char)c);
+                Log.info.print((char)c);
             }
             input.close();
             final int exitStatus = process.waitFor();
 
             if (exitStatus != 0) {
-                System.err.println(Utils.toString(process.getErrorStream()));
+                Log.err.println(Utils.toString(process.getErrorStream()));
             } else {
 //                System.out.println(Utils.toString(process.getInputStream()));
             }

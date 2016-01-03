@@ -503,12 +503,12 @@ public class LogAnalyser {
 
     protected void log(String s) {
         if (!quiet)
-            System.err.print(s);
+            Log.warning.print(s);
     }
 
     protected void logln(String s) {
         if (!quiet)
-            System.err.println(s);
+        	Log.warning.println(s);
     }
 
     static void printUsageAndExit() {

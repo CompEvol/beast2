@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import beast.core.util.Log;
 import beast.evolution.tree.Node;
 
 public class TreeSetParser {
@@ -159,7 +160,7 @@ public class TreeSetParser {
 					tree.sort();
 					tree.labelInternalNodes(m_nNrOfLabels);
 					trees.add(tree);
-					if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
+					if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {Log.warning.print(trees.size() + " ");}}
 //					sNewickTrees.add(sStr);
 				}
 			}
@@ -241,7 +242,7 @@ public class TreeSetParser {
                                             tree.sort();
                                             tree.labelInternalNodes(m_nNrOfLabels);
                                             trees.add(tree);
-                                            //if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {System.err.print(trees.size() + " ");}}
+                                            //if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {Log.warning.print(trees.size() + " ");}}
                                     } else {
                                             nBurnIn--;
                                     }
@@ -269,7 +270,7 @@ public class TreeSetParser {
 			offsetHeight(trees.get(i), heights[i]);
 		}
 
-		System.err.println();
+		Log.warning.println();
 		//System.err.println("Geo: " +m_fMinLong + "x" + m_fMinLat + " " + m_fMaxLong + "x" + m_fMaxLat);
 		return trees.toArray(new Node[1]);
 	} // parseFile
@@ -280,7 +281,7 @@ public class TreeSetParser {
 		String s = fin.readLine();
 		fileRead += s.length();
 		if (fileRead > fileMarked - 10) {
-			System.err.print("*");
+			Log.warning.print("*");
 			fileMarked += fileStep;
 			k++;
 		}

@@ -28,6 +28,7 @@ package beast.core.parameter;
 import java.io.PrintStream;
 
 import beast.core.Description;
+import beast.core.util.Log;
 
 
 /**
@@ -103,7 +104,7 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
     @Override
     public int scale(double fScale) {
         // nothing to do
-        System.err.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
+        Log.warning.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
         return 0;
     }
 

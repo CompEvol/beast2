@@ -6,6 +6,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
 
@@ -50,7 +51,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         double height = leafs.get(0).getHeight();
         for (Node leaf : leafs) {
             if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-                System.err.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+            	Log.warning.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
                 break;
             }
         }

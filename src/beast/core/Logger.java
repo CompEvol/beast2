@@ -357,13 +357,13 @@ public class Logger extends BEASTObject {
                             //System.exit(0);
                         }
                         // Check with user what to do next
-                        System.out.println("Trying to write file " + fileName + " but the file already exists (perhaps use the -overwrite flag?).");
-                        System.out.println("Overwrite (Y/N)?:");
-                        System.out.flush();
+                        Log.info.println("Trying to write file " + fileName + " but the file already exists (perhaps use the -overwrite flag?).");
+                        Log.info.println("Overwrite (Y/N)?:");
+                        Log.info.flush();
                         final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
                         final String sMsg = stdin.readLine();
                         if (!sMsg.toLowerCase().equals("y")) {
-                            System.out.println("Exiting now.");
+                        	Log.info.println("Exiting now.");
                             System.exit(0);
                         }
                     }

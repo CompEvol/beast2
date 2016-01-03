@@ -22,8 +22,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +30,7 @@ import org.w3c.dom.Node;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
+import beast.core.util.Log;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -260,7 +259,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
             return copy;
         
         } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(GeneralParameterList.class.getName()).log(Level.SEVERE, null, ex);
+            Log.err(ex.getMessage());
         }
         
         return null;

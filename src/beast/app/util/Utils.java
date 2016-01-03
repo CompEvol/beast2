@@ -25,6 +25,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
+import beast.core.util.Log;
 
 /**
  * @author Andrew Rambaut
@@ -123,7 +124,7 @@ public class Utils {
 
 
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+            	Log.warning.println(e.getMessage());
                 try {
                     UIManager.setLookAndFeel(laf);
                 } catch (UnsupportedLookAndFeelException e1) {
@@ -314,7 +315,7 @@ public class Utils {
 	        ImageIcon icon = new ImageIcon(url);
 	        return icon;
 	    } catch (Exception e) {
-	        System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+	    	Log.warning.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
 	        return null;
 	    }
 	

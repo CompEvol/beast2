@@ -10,6 +10,7 @@ import beast.core.Input;
 import beast.core.Operator;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.util.TreeParser;
 
@@ -343,7 +344,7 @@ public class Tree extends StateNode implements TreeInterface {
 
         // sanity check
         if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) {
-            System.err.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
+            Log.warning.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
         }
         return m_sTaxaNames;
     }

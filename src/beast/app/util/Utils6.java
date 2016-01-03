@@ -12,6 +12,8 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
+import beast.core.util.Log;
+
 /** Utils that work with Java6 **/
 public class Utils6 {
 
@@ -84,13 +86,13 @@ public class Utils6 {
 	    try {
 	        URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
 	        if (url == null) {
-	            System.err.println("Cannot find icon " + sIconLocation);
+	        	Log.warning.println("Cannot find icon " + sIconLocation);
 	            return null;
 	        }
 	        ImageIcon icon = new ImageIcon(url);
 	        return icon;
 	    } catch (Exception e) {
-	        System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+	    	Log.warning.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
 	        return null;
 	    }
 	}

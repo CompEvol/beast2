@@ -6,6 +6,7 @@ import javax.swing.JCheckBox;
 import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 
 
 
@@ -44,7 +45,7 @@ public class BooleanInputEditor extends InputEditor.Base {
                     validateInput();
                     //m_input.setValue(m_entry.isSelected(), m_plugin);
                 } catch (Exception ex) {
-                    System.err.println("BooleanInputEditor " + ex.getMessage());
+                    Log.err.println("BooleanInputEditor " + ex.getMessage());
                 }
             });
         add(m_entry);

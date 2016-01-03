@@ -49,6 +49,7 @@ import org.w3c.dom.NodeList;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Runnable;
+import beast.core.util.Log;
 import beast.util.AddOnManager;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -1083,7 +1084,7 @@ public class Document {
                     addPlugin();
                     return;
             }
-            System.err.println("Error 101: action type not set properly");
+            Log.err.println("Error 101: action type not set properly");
         }
 
         @Override
@@ -1096,7 +1097,7 @@ public class Document {
                     removePlugin();
                     return;
             }
-            System.err.println("Error 102: action type not set properly");
+            Log.err.println("Error 102: action type not set properly");
         }
 
         void removePlugin() {
@@ -1135,7 +1136,7 @@ public class Document {
                     addArrow();
                     return;
             }
-            System.err.println("Error 103: action type not set properly");
+            Log.err.println("Error 103: action type not set properly");
         }
 
         @Override
@@ -1148,7 +1149,7 @@ public class Document {
                     removeArrow();
                     return;
             }
-            System.err.println("Error 104: action type not set properly");
+            Log.err.println("Error 104: action type not set properly");
         }
 
         void removeArrow() {
@@ -1232,7 +1233,7 @@ public class Document {
                     }
                     break;
                 default:
-                    System.err.println("Error 105: unrecognized action type");
+                    Log.err.println("Error 105: unrecognized action type");
             }
         }
 
@@ -1652,11 +1653,11 @@ public class Document {
 
         layoutAdjustY(inputMap);
         // relax a bit
-        System.err.print("Relax...");
+        Log.warning.print("Relax...");
         for (int i = 0; i < 250; i++) {
             relax(false);
         }
-        System.err.println("Done");
+        Log.warning.println("Done");
         layoutAdjustY(inputMap);
 
         adjustInputs();

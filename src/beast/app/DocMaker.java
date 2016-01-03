@@ -115,7 +115,7 @@ public class DocMaker {
                 Class<?> _class = Class.forName(sPlugin);
                 BEASTObject plugin = (BEASTObject) _class.newInstance();
                 String sDescription = getInheritableDescription(plugin.getClass());
-                System.err.println(sPlugin + " => " + sDescription);
+                Log.warning.println(sPlugin + " => " + sDescription);
                 m_descriptions.put(sPlugin, sDescription);
                 String[] sImplementations = getImplementations(plugin);
                 m_isa.put(sPlugin, sImplementations);
@@ -126,7 +126,7 @@ public class DocMaker {
                     m_sLoggables.add(sPlugin);
                 }
             } catch (Exception e) {
-                System.err.println(sPlugin + " not documented :" + e.getMessage());
+                Log.err.println(sPlugin + " not documented :" + e.getMessage());
             }
         }
     } // c'tor
@@ -141,9 +141,9 @@ public class DocMaker {
         for (String sPlugin : m_sPluginNames) {
             try {
                 BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
-                System.out.println(sPlugin + ":@description:" + plugin.getDescription());
+                Log.info.println(sPlugin + ":@description:" + plugin.getDescription());
                 for (Input<?> input : plugin.listInputs()) {
-                    System.out.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
+                    Log.info.println(sPlugin + ":" + input.getName() + ":" + input.getTipText());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -311,7 +311,7 @@ public class DocMaker {
                 sName = "." + sName;
                 i = sPlugin.indexOf('.', i) + 1;
             }
-            System.err.println(sName + " <= " + sPlugin);
+            Log.warning.println(sName + " <= " + sPlugin);
             if (sPrevPackage == null || !sPackage.equals(sPrevPackage)) {
                 out.println("<span style='color:grey'>" + sPackage + "</span><br/>");
             }
@@ -375,7 +375,7 @@ public class DocMaker {
         try {
             out.print(getHTML(sPlugin, true));
         } catch (Exception e) {
-            System.err.println("Page creation failed for " + sPlugin + ": " + e.getMessage());
+        	Log.warning.println("Page creation failed for " + sPlugin + ": " + e.getMessage());
         }
         out.close();
     } // createPluginPage

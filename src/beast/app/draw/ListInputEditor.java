@@ -25,6 +25,7 @@ import javax.swing.event.DocumentListener;
 import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.util.Log;
 
 public class ListInputEditor extends InputEditor.Base {
 
@@ -347,7 +348,7 @@ public class ListInputEditor extends InputEditor.Base {
                 	setValue(plugin);
                     //m_input.setValue(plugin, m_plugin);
                 } catch (Exception ex) {
-                    System.err.println(ex.getClass().getName() + " " + ex.getMessage());
+                    Log.err.println(ex.getClass().getName() + " " + ex.getMessage());
                 }
                 addSingleItem(plugin);
                 getDoc().addPlugin(plugin);

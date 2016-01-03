@@ -17,6 +17,7 @@ import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.operators.DeltaExchangeOperator;
@@ -104,7 +105,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
     @Override
     public void validateInput() {
     	super.validateInput();
-    	System.err.println("validateInput()");
+    	Log.warning.println("validateInput()");
     }
     
     /** set up relative weights and parameter input **/

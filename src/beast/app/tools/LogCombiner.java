@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.table.TableCellEditor;
 
 import beast.app.BEASTVersion;
+import beast.core.util.Log;
 import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
 
@@ -57,7 +58,7 @@ public class LogCombiner extends LogAnalyser {
                     if (args[i].equals("")) {
                         i += 1;
                     } else if (args[i].equals("-help") || args[i].equals("-h") || args[i].equals("--help")) {
-                        System.out.println(getUsage());
+                        Log.info.println(getUsage());
                         System.exit(0);
                     } else if (args[i].equals("-o")) {
                         m_sFileOut = args[i + 1];
@@ -66,7 +67,7 @@ public class LogCombiner extends LogAnalyser {
                     } else if (args[i].equals("-b") || args[i].equals("-burnin") || args[i].equals("--burnin")) {
                         m_nBurninPercentage = Integer.parseInt(args[i + 1]);
                         if (m_nBurninPercentage < 0 || m_nBurninPercentage > 100) {
-                            System.err.println("Error: Burn-in percentage must be between 0 and 100.");
+                        	Log.err.println("Error: Burn-in percentage must be between 0 and 100.");
                             System.exit(1);
                         }
                         i += 2;
@@ -466,7 +467,7 @@ public class LogCombiner extends LogAnalyser {
                 combiner.m_sFileOut = dialog.getOutputFileName();
 
                 if (combiner.m_sFileOut == null) {
-                    System.err.println("No output file specified");
+                	Log.warning.println("No output file specified");
                 }
 
                 try {
@@ -474,7 +475,7 @@ public class LogCombiner extends LogAnalyser {
                     combiner.printCombinedLogs();
 
                 } catch (Exception ex) {
-                    System.err.println("Exception: " + ex.getMessage());
+                	Log.warning.println("Exception: " + ex.getMessage());
                     ex.printStackTrace();
                 }
                 System.out.println("Finished - Quit program to exit.");

@@ -12,6 +12,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
+import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -147,7 +148,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
                                 calcCalibrations = false;
                             } else {
                                 if (_MRCAPrior.isMonophyleticInput.get()) {
-                                    System.err.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
+                                    Log.warning.println("WARNING: MRCAPriors must have a distribution when monophyletic for Calibrated Yule prior");
                                 }
                             }
                         }
@@ -287,7 +288,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
         final double height = leafs.get(0).getHeight();
         for (final Node leaf : leafs) {
         	if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-        		System.err.println("WARNING: Calibrated Birth-Death Model does not handle dated tips correctly. " +
+        		Log.warning.println("WARNING: Calibrated Birth-Death Model does not handle dated tips correctly. " +
                         "Consider using a coalescent prior instead.");
         		break;
         	}

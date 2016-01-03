@@ -27,6 +27,7 @@ import beast.core.Logger;
 import beast.core.State;
 import beast.core.StateNode;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Tree;
@@ -197,7 +198,7 @@ public class PriorListInputEditor extends ListInputEditor {
                 m_prior.isMonophyleticInput.setValue(((JCheckBox) e.getSource()).isSelected(), m_prior);
                 refreshPanel();
             } catch (Exception ex) {
-                System.err.println("PriorListInputEditor " + ex.getMessage());
+                Log.err.println("PriorListInputEditor " + ex.getMessage());
             }
         }
     }

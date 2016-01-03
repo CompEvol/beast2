@@ -12,6 +12,7 @@ import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.util.Log;
 
 
 
@@ -226,7 +227,7 @@ public class BeautiPanelConfig extends BEASTObject {
             }
             // sanity check
             if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && plugins.size() > 1) {
-                System.err.println("WARNING: multiple plugins match, but hasPartitions=none");
+            	Log.warning.println("WARNING: multiple plugins match, but hasPartitions=none");
                 // this makes sure that all mathing plugins are available in one go
                 bIsList = true;
                 // this suppresses syncing
@@ -256,7 +257,7 @@ public class BeautiPanelConfig extends BEASTObject {
 
             return _input;
         } catch (Exception e) {
-            System.err.println("Warning: could not find objects in path " + Arrays.toString(sPathComponents));
+            Log.err.println("Warning: could not find objects in path " + Arrays.toString(sPathComponents));
         }
         return null;
     } // resolveInputs
@@ -264,7 +265,7 @@ public class BeautiPanelConfig extends BEASTObject {
     private void checkForDups(List<Object> list) {
         for (int i = 0; i < list.size(); i++) {
             if (list.lastIndexOf(list.get(i)) != i) {
-                System.err.println("We have a dup: " + list.get(i));
+            	Log.warning.println("We have a dup: " + list.get(i));
                 list.remove(i);
                 i--;
             }

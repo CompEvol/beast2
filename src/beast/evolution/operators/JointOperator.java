@@ -18,13 +18,12 @@ package beast.evolution.operators;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.core.StateNode;
+import beast.core.util.Log;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -60,7 +59,7 @@ public class JointOperator extends Operator {
                 if (!op.listStateNodes().isEmpty())
                     op.listStateNodes().get(0).getState().checkCalculationNodesDirtiness();
             } catch (Exception ex) {
-                Logger.getLogger(JointOperator.class.getName()).log(Level.SEVERE, null, ex);
+                Log.err(ex.getMessage());
             }
         }
         

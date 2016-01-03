@@ -7,6 +7,7 @@ import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.core.util.Log;
 
 
 @Description("Exponential distribution.  f(x;\\lambda) = 1/\\lambda e^{-x/\\lambda}, if x >= 0 " +
@@ -33,7 +34,7 @@ public class Exponential extends ParametricDistribution {
         } else {
             fLambda = lambdaInput.get().getValue();
             if (fLambda < 0) {
-                System.err.println("Exponential::Lambda should be positive not " + fLambda + ". Assigning default value.");
+                Log.err.println("Exponential::Lambda should be positive not " + fLambda + ". Assigning default value.");
                 fLambda = 1;
             }
         }

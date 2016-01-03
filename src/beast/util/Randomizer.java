@@ -49,6 +49,8 @@
 
 package beast.util;
 
+import beast.core.util.Log;
+
 /**
  * Handy utility functions which have some Mathematical relevance.
  *
@@ -114,7 +116,7 @@ public class Randomizer {
 
         }
         for (int i = 0; i < pdf.length; i++) {
-            System.out.println(i + "\t" + pdf[i]);
+            Log.err.println(i + "\t" + pdf[i]);
         }
         throw new Error("randomChoiceUnnormalized falls through -- negative components in input distribution?");
     }

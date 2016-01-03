@@ -247,7 +247,7 @@ public class JSONParser {
 	// for (int i = 0; i < children.getLength(); i++) {
 	// if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
 	// Node child = children.item(i);
-	// System.err.println(child.getNodeName());
+	// Log.warning.println(child.getNodeName());
 	// if (!child.getNodeName().equals(MAP_ELEMENT)) {
 	// plugins.add(createObject(child, PLUGIN_CLASS, null));
 	// }
@@ -1282,9 +1282,9 @@ public class JSONParser {
 					if (type == null) {
 						throw new RuntimeException("Programmer error: inputs should have their type set");
 					}
-					if (type.isAssignableFrom(List.class)) {
-						System.err.println("XX");
-					}
+					//if (type.isAssignableFrom(List.class)) {
+					//	System.err.println("XX");
+					//}
 					className = type.getName();
 				}
 			}

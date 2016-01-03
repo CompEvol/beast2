@@ -234,12 +234,12 @@ public class FilteredAlignment extends Alignment {
         		}
         		// if this is a constant site, and it is not an ambiguous site
         		if (isContant) {
-                    System.err.print(" <" + data[i][0] + "> ");
+        			Log.warning.print(" <" + data[i][0] + "> ");
                    	removedSites += weights[i]; 
             		weights[i] = 0;
         		}
         	}
-            System.err.println(" removed " + removedSites + " sites ");
+        	Log.warning.println(" removed " + removedSites + " sites ");
         }
         
         // addjust weight of constant sites, if specified
