@@ -44,7 +44,7 @@ import beast.core.StateNode;
         + "parameters must have identical dimensions and bounds.")
 public abstract class GeneralParameterList<T> extends StateNode {
     
-    final public Input<List<Parameter.Base<?>>> initialParamsInput = new Input<>(
+    final public Input<List<Parameter.Base<T>>> initialParamsInput = new Input<>(
             "initialParam",
             "Parameter whose value will initially be in parameter list.",
             new ArrayList<>());

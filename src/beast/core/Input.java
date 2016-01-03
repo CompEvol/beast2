@@ -516,7 +516,12 @@ public class Input<T> {
                         // to determine the type (that I know of...)
                         if (value != null && value instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-                            theClass = (Class<?>) genericTypes2[0];
+                            try {
+                            	theClass = (Class<?>) genericTypes2[0];
+                            } catch (ClassCastException e) {
+                            	// can get here with parameterised types, e.g Input<List<Parameter.Base<T>>>
+                            	theClass = (Class<?>) ((ParameterizedType)genericTypes2[0]).getRawType();
+                            }
                             // getting type of map is not possible?!?
                             //} else if (value != null && value instanceof Map<?,?>) {
                             //    Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
