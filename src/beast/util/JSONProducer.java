@@ -352,7 +352,7 @@ public class JSONProducer {
             			}
             		}
             		
-                    if (isShort && isDone.contains((BEASTInterface) value)) {
+                    if (isShort && isDone.contains(value)) {
                         buf.append(" " + input.getName() + ": \"@" + ((BEASTInterface) value).getID() + "\"");
                         if (!isInputsDone.containsKey(beastObject)) {
                         	isInputsDone.put(beastObject, new HashSet<>());

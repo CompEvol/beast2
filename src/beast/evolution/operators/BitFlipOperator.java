@@ -45,7 +45,8 @@ public class BitFlipOperator extends Operator {
 
     private boolean usesPriorOnSum = true;
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
         final Boolean b = uniformInput.get();
         if (b != null) {
             usesPriorOnSum = b;

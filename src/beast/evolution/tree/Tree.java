@@ -233,7 +233,8 @@ public class Tree extends StateNode implements TreeInterface {
      *
      * @return the number of nodes in the beast.tree
      */
-    public int getNodeCount() {
+    @Override
+	public int getNodeCount() {
         if (nodeCount < 0) {
             nodeCount = this.root.getNodeCount();
         }
@@ -242,14 +243,16 @@ public class Tree extends StateNode implements TreeInterface {
         return nodeCount;
     }
 
-    public int getInternalNodeCount() {
+    @Override
+	public int getInternalNodeCount() {
         if (internalNodeCount < 0) {
             internalNodeCount = root.getInternalNodeCount();
         }
         return internalNodeCount;
     }
 
-    public int getLeafNodeCount() {
+    @Override
+	public int getLeafNodeCount() {
         //TODO will this caching work if trees can have random numbers of tips during MCMC
         if (leafNodeCount < 0) {
             leafNodeCount = root.getLeafNodeCount();
@@ -260,7 +263,8 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * @return a list of external (leaf) nodes contained in this tree
      */
-    public List<Node> getExternalNodes() {
+    @Override
+	public List<Node> getExternalNodes() {
         final ArrayList<Node> externalNodes = new ArrayList<>();
         for (int i = 0; i < getNodeCount(); i++) {
             final Node node = getNode(i);
@@ -272,7 +276,8 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * @return a list of internal (ancestral) nodes contained in this tree, including the root node
      */
-    public List<Node> getInternalNodes() {
+    @Override
+	public List<Node> getInternalNodes() {
         final ArrayList<Node> internalNodes = new ArrayList<>();
         for (int i = 0; i < getNodeCount(); i++) {
             final Node node = getNode(i);
@@ -281,7 +286,8 @@ public class Tree extends StateNode implements TreeInterface {
         return internalNodes;
     }
 
-    public Node getRoot() {
+    @Override
+	public Node getRoot() {
         return root;
     }
 
@@ -311,7 +317,8 @@ public class Tree extends StateNode implements TreeInterface {
         this.root = root;
     }
 
-    public Node getNode(final int iNodeNr) {
+    @Override
+	public Node getNode(final int iNodeNr) {
         return m_nodes[iNodeNr];
         //return getNode(iNodeNr, root);
     }
@@ -372,7 +379,8 @@ public class Tree extends StateNode implements TreeInterface {
      * @param fT       the double array to be filled with meta data
      * @param sPattern the name of the meta data
      */
-    public void getMetaData(final Node node, final Double[] fT, final String sPattern) {
+    @Override
+	public void getMetaData(final Node node, final Double[] fT, final String sPattern) {
         fT[Math.abs(node.getNr())] = (Double) node.getMetaData(sPattern);
         if (!node.isLeaf()) {
             getMetaData(node.getLeft(), fT, sPattern);
@@ -406,7 +414,8 @@ public class Tree extends StateNode implements TreeInterface {
      * This only has an effect when setMetadata() in a subclass
      * of Node know how to process such value.
      */
-    public void setMetaData(final Node node, final Double[] fT, final String sPattern) {
+    @Override
+	public void setMetaData(final Node node, final Double[] fT, final String sPattern) {
         node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
             setMetaData(node.getLeft(), fT, sPattern);
@@ -458,7 +467,8 @@ public class Tree extends StateNode implements TreeInterface {
 //    }
 
     protected Node[] postCache = null;
-    public Node[] listNodesPostOrder(Node node, Node[] nodes) {
+    @Override
+	public Node[] listNodesPostOrder(Node node, Node[] nodes) {
         if( node != null ) {
             return TreeInterface.super.listNodesPostOrder(node, nodes);
         }
@@ -472,7 +482,8 @@ public class Tree extends StateNode implements TreeInterface {
      * @return list of nodes in array format.
      *         *
      */
-    public Node[] getNodesAsArray() {
+    @Override
+	public Node[] getNodesAsArray() {
         return m_nodes;
     }
 
@@ -580,7 +591,8 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
 
-    public String toString() {
+    @Override
+	public String toString() {
         return root.toString();
     }
 
@@ -673,7 +685,8 @@ public class Tree extends StateNode implements TreeInterface {
         }
     }
 
-    public void init(PrintStream out) throws Exception {
+    @Override
+	public void init(PrintStream out) throws Exception {
         Node node = getRoot();
         out.println("#NEXUS\n");
         out.println("Begin taxa;");
@@ -689,7 +702,8 @@ public class Tree extends StateNode implements TreeInterface {
         out.print(";");
     }
 
-    public void log(int nSample, PrintStream out) {
+    @Override
+	public void log(int nSample, PrintStream out) {
         Tree tree = (Tree) getCurrent();
         out.print("tree STATE_" + nSample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree
@@ -703,7 +717,8 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * @see beast.core.Loggable *
      */
-    public void close(PrintStream out) {
+    @Override
+	public void close(PrintStream out) {
         out.print("End;");
     }
 
@@ -732,15 +747,18 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * Valuable implementation *
      */
-    public int getDimension() {
+    @Override
+	public int getDimension() {
         return getNodeCount();
     }
 
-    public double getArrayValue() {
+    @Override
+	public double getArrayValue() {
         return root.height;
     }
 
-    public double getArrayValue(int iValue) {
+    @Override
+	public double getArrayValue(int iValue) {
         return m_nodes[iValue].height;
     }
 

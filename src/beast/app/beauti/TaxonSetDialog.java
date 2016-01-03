@@ -114,7 +114,7 @@ public class TaxonSetDialog extends JDialog {
                 taxa.remove(0);
             }
             for (int i = 0; i < listModel2.size(); i++) {
-                taxa.add((Taxon) listModel2.get(i));
+                taxa.add(listModel2.get(i));
             }
             isOK = true;
             dispose();
@@ -278,7 +278,7 @@ public class TaxonSetDialog extends JDialog {
                     taxa.remove(0);
                 }
                 for (int i = 0; i < listModel2.size(); i++) {
-                    taxa.add((Taxon) listModel2.get(i));
+                    taxa.add(listModel2.get(i));
                 }
                 isOK = true;
                 dispose();

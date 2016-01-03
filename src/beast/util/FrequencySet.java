@@ -182,7 +182,8 @@ public class FrequencySet<T> {
     private double credSetProbability = 0;
 
     private Comparator<T> frequencyComparator = new Comparator<T>() {
-        public int compare(T obj1, T obj2) {
+        @Override
+		public int compare(T obj1, T obj2) {
             return frequencyMap.get(obj2) - frequencyMap.get(obj1);
         }
     };

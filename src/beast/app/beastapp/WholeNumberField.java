@@ -49,10 +49,12 @@ public class WholeNumberField extends JTextField
         this.addFocusListener(this);
     }
 
-    public void focusGained(FocusEvent evt) {
+    @Override
+	public void focusGained(FocusEvent evt) {
     }
 
-    public void focusLost(FocusEvent evt) {
+    @Override
+	public void focusLost(FocusEvent evt) {
         if (range_check && !range_checked) {
             range_checked = true;
             try {
@@ -128,23 +130,27 @@ public class WholeNumberField extends JTextField
             return value;
     }
 
-    protected Document createDefaultModel() {
+    @Override
+	protected Document createDefaultModel() {
         Document doc = new WholeNumberFieldDocument();
         doc.addDocumentListener(this);
         return doc;
     }
 
-    public void insertUpdate(DocumentEvent e) {
+    @Override
+	public void insertUpdate(DocumentEvent e) {
         range_checked = false;
         fireChanged();
     }
 
-    public void removeUpdate(DocumentEvent e) {
+    @Override
+	public void removeUpdate(DocumentEvent e) {
         range_checked = false;
         fireChanged();
     }
 
-    public void changedUpdate(DocumentEvent e) {
+    @Override
+	public void changedUpdate(DocumentEvent e) {
         range_checked = false;
         fireChanged();
     }
@@ -156,6 +162,7 @@ public class WholeNumberField extends JTextField
     class WholeNumberFieldDocument extends PlainDocument {
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void insertString(int offs, String str, AttributeSet a)
                 throws BadLocationException {
 

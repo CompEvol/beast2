@@ -107,6 +107,7 @@ public class ContourPath implements Cloneable, java.io.Serializable {
 	*
 	*  @return  Returns a clone of this object.
 	**/
+	@Override
 	public Object clone() {
 		ContourPath newObject = null;
 

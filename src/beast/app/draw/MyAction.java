@@ -62,6 +62,7 @@ public abstract class MyAction extends AbstractAction {
       * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
       * )
       */
-    abstract public void actionPerformed(ActionEvent ae);
+    @Override
+	abstract public void actionPerformed(ActionEvent ae);
 
 } // class MyAction

@@ -51,18 +51,18 @@ public class Selection {
     }
 
     public int getSingleSelection() {
-        return ((Integer) m_Selection.get(0)).intValue();
+        return m_Selection.get(0).intValue();
     }
 
     Shape getSingleSelectionShape() {
-        return (Shape) m_doc.m_objects.get(getSingleSelection());
+        return m_doc.m_objects.get(getSingleSelection());
     }
 
     void setSingleSelection(int nSelection) {
         m_Selection.removeAll(m_Selection);
         m_Selection.add(new Integer(nSelection));
         if (nSelection >= 0) {
-            m_tracker = ((Shape) m_doc.m_objects.get(nSelection)).getTracker();
+            m_tracker = m_doc.m_objects.get(nSelection).getTracker();
         }
     }
 
@@ -73,7 +73,7 @@ public class Selection {
 //    }
     boolean contains(int iSelection) {
         for (int i = 0; i < m_Selection.size(); i++) {
-            if (iSelection == ((Integer) m_Selection.get(i)).intValue()) {
+            if (iSelection == m_Selection.get(i).intValue()) {
                 return true;
             }
         }
@@ -85,7 +85,7 @@ public class Selection {
             return;
         }
         m_Selection.add(new Integer(iSelection));
-        List<TrackPoint> tracker = ((Shape) m_doc.m_objects.get(iSelection)).getTracker();
+        List<TrackPoint> tracker = m_doc.m_objects.get(iSelection).getTracker();
         if (m_tracker == null) {
             m_tracker = new ArrayList<>();
         }
@@ -98,17 +98,17 @@ public class Selection {
         } else {
             m_tracker.removeAll(m_tracker);
             for (int i = 0; i < m_Selection.size(); i++) {
-                if (iSelection == ((Integer) m_Selection.get(i)).intValue()) {
+                if (iSelection == m_Selection.get(i).intValue()) {
                     m_Selection.remove(i);
                     i--;
                 } else {
-                    List<TrackPoint> tracker = ((Shape) m_doc.m_objects.get(((Integer) m_Selection.get(i)).intValue())).getTracker();
+                    List<TrackPoint> tracker = m_doc.m_objects.get(m_Selection.get(i).intValue()).getTracker();
                     m_tracker.addAll(tracker);
                 }
             }
         }
         for (int i = 0; i < m_Selection.size(); i++) {
-        	Log.warning.print((Integer) m_Selection.get(i) + " ");
+        	Log.warning.print(m_Selection.get(i) + " ");
         }
         Log.warning.println();
     } // toggleSelection
@@ -120,14 +120,14 @@ public class Selection {
 
     boolean intersects(int nX, int nY) {
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iShape = ((Integer) m_Selection.get(i)).intValue();
-            if (((Shape) m_doc.m_objects.get(iShape)).intersects(nX, nY)) {
+            int iShape = m_Selection.get(i).intValue();
+            if (m_doc.m_objects.get(iShape).intersects(nX, nY)) {
                 return true;
             }
         }
         if (m_tracker != null) {
             for (int i = 0; i < m_tracker.size(); i++) {
-                TrackPoint p = (TrackPoint) m_tracker.get(i);
+                TrackPoint p = m_tracker.get(i);
                 if (nX > p.m_nX - 5 && nX < p.m_nX + 5 && nY > p.m_nY - 5 && nY < p.m_nY + 5) {
                     return true;
                 }
@@ -138,13 +138,13 @@ public class Selection {
 
     void offset(int dX, int dY) {
         for (int i = 0; i < m_tracker.size(); i++) {
-            TrackPoint p = (TrackPoint) m_tracker.get(i);
+            TrackPoint p = m_tracker.get(i);
             p.m_nX += dX;
             p.m_nY += dY;
         }
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iShape = ((Integer) m_Selection.get(i)).intValue();
-            Shape shape = (Shape) m_doc.m_objects.get(iShape);
+            int iShape = m_Selection.get(i).intValue();
+            Shape shape = m_doc.m_objects.get(iShape);
             shape.offset(dX, dY);
         }
     }
@@ -155,8 +155,8 @@ public class Selection {
         }
         m_tracker.removeAll(m_tracker);
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iSelection = ((Integer) m_Selection.get(i)).intValue();
-            List<TrackPoint> tracker = ((Shape) m_doc.m_objects.get(iSelection)).getTracker();
+            int iSelection = m_Selection.get(i).intValue();
+            List<TrackPoint> tracker = m_doc.m_objects.get(iSelection).getTracker();
             m_tracker.addAll(tracker);
         }
     }

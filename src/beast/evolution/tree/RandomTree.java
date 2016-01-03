@@ -69,7 +69,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         Double upper = Double.POSITIVE_INFINITY;
         Double lower = Double.NEGATIVE_INFINITY;
 
-        public String toString() {
+        @Override
+		public String toString() {
             return "[" + lower + "," + upper + "]";
         }
     }
@@ -389,7 +390,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	}
 
 	//@Override
-    public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
+    @Override
+	public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         stateNodes.add(m_initial.get());
     }
 

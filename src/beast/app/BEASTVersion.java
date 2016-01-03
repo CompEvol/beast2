@@ -29,19 +29,23 @@ public class BEASTVersion extends Version {
     
     private static final String BEAST2_SOURCE = "http://github.com/CompEvol/beast2";
 
-    public String getVersion() {
+    @Override
+	public String getVersion() {
         return VERSION;
     }
 
-    public String getVersionString() {
+    @Override
+	public String getVersionString() {
         return "v" + VERSION + (IS_PRERELEASE ? " Prerelease" : "");
     }
 
-    public String getDateString() {
+    @Override
+	public String getDateString() {
         return DATE_STRING;
     }
 
-    public String[] getCredits() {
+    @Override
+	public String[] getCredits() {
         return new String[]{
                 "Designed and developed by",
                 "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut & Marc A. Suchard",
@@ -76,7 +80,8 @@ public class BEASTVersion extends Version {
                 "Roald Forsberg, Beth Shapiro and Korbinian Strimmer"};
     }
 
-    public String getHTMLCredits() {
+    @Override
+	public String getHTMLCredits() {
         return
                 "<p>Designed and developed by<br>" +
                         "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard</p>" +

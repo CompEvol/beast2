@@ -157,7 +157,8 @@ public class Sequence extends BEASTObject {
         return null;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return getTaxon() + ":" + getData();
     }
 

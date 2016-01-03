@@ -53,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -120,14 +121,15 @@ public class LogCombinerDialog {
         //TableEditorStopper.ensureEditingStopWhenTableLosesFocus(filesTable);
 
         filesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent evt) {
+            @Override
+			public void valueChanged(ListSelectionEvent evt) {
                 filesTableSelectionChanged();
             }
         });
 
         JScrollPane scrollPane1 = new JScrollPane(filesTable,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         //scrollPane1.setMaximumSize(new Dimension(10000, 10));
         scrollPane1.setPreferredSize(new Dimension(500, 285));
 
@@ -147,7 +149,8 @@ public class LogCombinerDialog {
         Color focusColor = UIManager.getColor("Focus.color");
         Border focusBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, focusColor);
         new FileDrop(null, scrollPane1, focusBorder, new FileDrop.Listener() {
-            public void filesDropped(java.io.File[] files) {
+            @Override
+			public void filesDropped(java.io.File[] files) {
                 addFiles(files);
             }   // end filesDropped
         }); // end FileDrop.Listener
@@ -159,7 +162,8 @@ public class LogCombinerDialog {
             });
 
         ActionListener buttonListener = new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 File file = Utils.getSaveFile("Select output file...", new File(Beauti.g_sDir), "Beast log and tree files", "log", "trees");
                 if (file == null) {
                     // the dialog was cancelled...
@@ -309,7 +313,8 @@ public class LogCombinerDialog {
          */
         private static final long serialVersionUID = 7602227478402204088L;
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             File[] files = Utils.getLoadFiles("Select log file", new File(Beauti.g_sDir), "Trace or tree log files", "log", "trees");
             if (files != null) {
                 addFiles(files);
@@ -324,7 +329,8 @@ public class LogCombinerDialog {
          */
         private static final long serialVersionUID = 5934278375005327047L;
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             int row = filesTable.getSelectedRow();
             if (row != -1) {
                 files.remove(row);
@@ -350,15 +356,18 @@ public class LogCombinerDialog {
         public FilesTableModel() {
         }
 
-        public int getColumnCount() {
+        @Override
+		public int getColumnCount() {
             return columns.length;
         }
 
-        public int getRowCount() {
+        @Override
+		public int getRowCount() {
             return files.size();
         }
 
-        public Object getValueAt(int rowIndex, int columnIndex) {
+        @Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
             FileInfo fileInfo = files.get(rowIndex);
             if (columnIndex == 0) {
                 return fileInfo.file.getName();
@@ -367,7 +376,8 @@ public class LogCombinerDialog {
             }
         }
 
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
+        @Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
             return (columnIndex == 1);
         }
 
@@ -379,7 +389,8 @@ public class LogCombinerDialog {
          * @param rowIndex    row of cell
          * @param columnIndex column of cell
          */
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        @Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             FileInfo fileInfo = files.get(rowIndex);
             if (columnIndex == 1) {
                 int newBurnin = (int)aValue;
@@ -392,11 +403,13 @@ public class LogCombinerDialog {
             }
         }
 
-        public String getColumnName(int columnIndex) {
+        @Override
+		public String getColumnName(int columnIndex) {
             return columns[columnIndex];
         }
 
-        public Class<?> getColumnClass(int columnIndex) {
+        @Override
+		public Class<?> getColumnClass(int columnIndex) {
             return getValueAt(0, columnIndex).getClass();
         }
     }

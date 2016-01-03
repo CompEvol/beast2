@@ -15,7 +15,8 @@ public class ErrorLogHandler extends StreamHandler {
     }
 
 
-    public void publish(LogRecord record) {
+    @Override
+	public void publish(LogRecord record) {
         super.publish(record);
         flush();
 
@@ -32,7 +33,8 @@ public class ErrorLogHandler extends StreamHandler {
         }
     }
 
-    public void close() {
+    @Override
+	public void close() {
         flush();
     }
 
@@ -56,7 +58,8 @@ public class ErrorLogHandler extends StreamHandler {
          * @param record the log record to be formatted.
          * @return a formatted log record
          */
-        public synchronized String format(LogRecord record) {
+        @Override
+		public synchronized String format(LogRecord record) {
             StringBuffer sb = new StringBuffer();
             String message = formatMessage(record);
             sb.append(message);

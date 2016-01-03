@@ -122,7 +122,8 @@ public class CompoundDistribution extends Distribution {
             distr = core;
         }
 
-        public void run() {
+        @Override
+		public void run() {
             try {
                 if (distr.isDirtyCalculation()) {
                     logP += distr.calculateLogP();

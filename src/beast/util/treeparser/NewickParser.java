@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.NoViableAltException;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.RuntimeMetaData;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
@@ -98,7 +99,7 @@ public class NewickParser extends Parser {
 		public NodeContext node() {
 			return getRuleContext(NodeContext.class,0);
 		}
-		public TerminalNode EOF() { return getToken(NewickParser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(Recognizer.EOF, 0); }
 		public TreeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -269,7 +270,7 @@ public class NewickParser extends Parser {
 				setState(45);
 				match(T__4);
 				setState(46);
-				((PostContext)_localctx).length = number();
+				_localctx.length = number();
 				}
 			}
 
@@ -422,7 +423,7 @@ public class NewickParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(64);
-			((AttribContext)_localctx).attribKey = match(STRING);
+			_localctx.attribKey = match(STRING);
 			setState(65);
 			match(T__7);
 			setState(66);

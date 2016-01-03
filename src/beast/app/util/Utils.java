@@ -307,7 +307,7 @@ public class Utils {
      */
 	public static ImageIcon getIcon(String sIconLocation) {
 	    try {
-	        URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+	        URL url = ClassLoader.getSystemResource(sIconLocation);
 	        if (url == null) {
 //	            System.err.println("Cannot find icon " + sIconLocation);
 	            return null;

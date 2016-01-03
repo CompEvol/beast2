@@ -159,7 +159,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the number of successes.
      */
-    public int getNumberOfSuccesses() {
+    @Override
+	public int getNumberOfSuccesses() {
         return numberOfSuccesses;
     }
 
@@ -168,7 +169,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the population size.
      */
-    public int getPopulationSize() {
+    @Override
+	public int getPopulationSize() {
         return populationSize;
     }
 
@@ -177,7 +179,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the sample size.
      */
-    public int getSampleSize() {
+    @Override
+	public int getSampleSize() {
         return sampleSize;
     }
 
@@ -199,7 +202,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      * @param x the value at which the PMF is evaluated.
      * @return PMF for this distribution.
      */
-    public double probability(int x) {
+    @Override
+	public double probability(int x) {
         double ret;
 
         int[] domain = getDomain(populationSize, numberOfSuccesses, sampleSize);
@@ -244,7 +248,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if <code>num</code> is negative.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setNumberOfSuccesses(int num) {
         setNumberOfSuccessesInternal(num);
     }
@@ -270,7 +275,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if <code>size</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setPopulationSize(int size) {
         setPopulationSizeInternal(size);
     }
@@ -296,7 +302,8 @@ public class HypergeometricDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if <code>size</code> is negative.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setSampleSize(int size) {
         setSampleSizeInternal(size);
     }

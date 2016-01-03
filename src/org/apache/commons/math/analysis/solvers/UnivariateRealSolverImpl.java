@@ -122,7 +122,8 @@ public abstract class UnivariateRealSolverImpl
     /**
      * {@inheritDoc}
      */
-    public double getResult() {
+    @Override
+	public double getResult() {
         checkResultComputed();
         return result;
     }
@@ -130,7 +131,8 @@ public abstract class UnivariateRealSolverImpl
     /**
      * {@inheritDoc}
      */
-    public double getFunctionValue() {
+    @Override
+	public double getFunctionValue() {
         checkResultComputed();
         return functionValue;
     }
@@ -138,21 +140,24 @@ public abstract class UnivariateRealSolverImpl
     /**
      * {@inheritDoc}
      */
-    public void setFunctionValueAccuracy(final double accuracy) {
+    @Override
+	public void setFunctionValueAccuracy(final double accuracy) {
         functionValueAccuracy = accuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public double getFunctionValueAccuracy() {
+    @Override
+	public double getFunctionValueAccuracy() {
         return functionValueAccuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void resetFunctionValueAccuracy() {
+    @Override
+	public void resetFunctionValueAccuracy() {
         functionValueAccuracy = defaultFunctionValueAccuracy;
     }
 

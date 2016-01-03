@@ -100,7 +100,8 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         double ret;
 
         if (x <= 0.0) {
@@ -144,7 +145,8 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      * @throws IllegalArgumentException if <code>alpha</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setAlpha(double alpha) {
         setAlphaInternal(alpha);
     }
@@ -169,7 +171,8 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      *
      * @return alpha.
      */
-    public double getAlpha() {
+    @Override
+	public double getAlpha() {
         return alpha;
     }
 
@@ -180,7 +183,8 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      * @throws IllegalArgumentException if <code>newBeta</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setBeta(double newBeta) {
         setBetaInternal(newBeta);
     }
@@ -205,7 +209,8 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      *
      * @return beta.
      */
-    public double getBeta() {
+    @Override
+	public double getBeta() {
         return beta;
     }
 
@@ -228,7 +233,9 @@ public class GammaDistributionImpl extends AbstractContinuousDistribution
      * @return The pdf at point x.
      * @deprecated
      */
-    public double density(Double x) {
+    @Deprecated
+	@Override
+	public double density(Double x) {
         return density(x.doubleValue());
     }
 

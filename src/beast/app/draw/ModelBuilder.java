@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -283,7 +284,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             if (!m_sFileName.equals("")) {
                 if (!validateModel()) {
                     return;
@@ -348,7 +350,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Print", "Print Graph", "print", KeyEvent.VK_P);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setPrintable(g_panel);
             if (printJob.printDialog())
@@ -377,13 +380,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Save As", "Save Graph As", "saveas", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             saveAs();
         } // actionPerformed
     } // class ActionSaveAs
 
     abstract class MyFileFilter extends FileFilter {
-        public boolean accept(File f) {
+        @Override
+		public boolean accept(File f) {
             return f.isDirectory()
                     || f.getName().toLowerCase().endsWith(getExtention());
         }
@@ -402,7 +407,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Export", "Export to graphics file", "export", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_bIsExporting = true;
 
 //            JFileChooser fc = new JFileChooser(m_sDir);
@@ -548,7 +554,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Exit", "Exit Program", "exit", KeyEvent.VK_F4);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             if (!m_doc.m_bIsSaved) {
                 int result = JOptionPane.showConfirmDialog(null,
                         "Drawing changed. Do you want to save it?",
@@ -577,7 +584,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("New", "New Network", "new", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_sFileName = "";
             m_doc = new Document();
             m_Selection.setDocument(m_doc);
@@ -598,7 +606,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Load", "Load Graph", "open", KeyEvent.VK_O);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             JFileChooser fc = new JFileChooser(m_sDir);
             fc.addChoosableFileFilter(ef1);
             fc.setDialogTitle("Load Graph");
@@ -635,11 +644,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public boolean isEnabled() {
+        @Override
+		public boolean isEnabled() {
             return m_doc.canUndo();
         }
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.undo();
             m_Selection.clear();
             setDrawingFlag();
@@ -658,11 +669,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public boolean isEnabled() {
+        @Override
+		public boolean isEnabled() {
             return m_doc.canRedo();
         }
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.redo();
             m_Selection.clear();
             setDrawingFlag();
@@ -680,7 +693,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Select All", "Select All", "selectall", KeyEvent.VK_A);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_Selection.clear();
             for (int i = 0; i < m_doc.m_objects.size(); i++) {
                 if (m_doc.m_objects.get(i).m_bNeedsDrawing) {
@@ -703,7 +717,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.deleteShapes(m_Selection.m_Selection);
             m_Selection.clear();
             updateStatus();
@@ -726,7 +741,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super(sName, sToolTipText, sIcon, acceleratorKey);
         } // c'rot
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             copy();
         }
 
@@ -753,7 +769,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             copy();
             m_doc.deleteShapes(m_Selection.m_Selection);
             m_Selection.clear();
@@ -772,7 +789,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             try {
                 m_doc.pasteShape(m_clipboard.getText());
                 updateStatus();
@@ -781,7 +799,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             }
         }
 
-        public boolean isEnabled() {
+        @Override
+		public boolean isEnabled() {
             return m_clipboard.hasText();
         }
     } // class ActionPasteNode
@@ -796,7 +815,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.collapse(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -822,7 +842,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Select", "Select", "select", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_nMode = MODE_SELECT;
         }
     } // class ActionSelect
@@ -834,7 +855,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Arrow", "Arrow", "arrow", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_nMode = MODE_ARROW;
         }
     } // class ActionArrow
@@ -846,7 +868,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Function", "Function", "function", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_nMode = MODE_FUNCTION;
         }
     } // class ActionFunction
@@ -859,8 +882,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
-            Shape shape = (Shape) m_doc.m_objects.get(m_Selection
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+            Shape shape = m_doc.m_objects.get(m_Selection
                     .getSingleSelection());
             Color color = JColorChooser.showDialog(g_panel,
                     "Select Fill color", shape.getFillColor());
@@ -879,8 +903,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
-            Shape shape = (Shape) m_doc.m_objects.get(m_Selection
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+            Shape shape = m_doc.m_objects.get(m_Selection
                     .getSingleSelection());
             Color color = JColorChooser.showDialog(g_panel,
                     "Select Fill color", shape.getFillColor());
@@ -902,7 +927,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Bring to front", "To front", "tofront", KeyEvent.VK_PLUS);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.toFront(m_Selection);
             g_panel.repaint();
         }
@@ -920,7 +946,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             putValue(Action.ACCELERATOR_KEY, keyStroke);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.forward(m_Selection);
             g_panel.repaint();
         }
@@ -936,7 +963,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Bring to back", "To back", "toback", KeyEvent.VK_MINUS);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.toBack(m_Selection);
             g_panel.repaint();
         }
@@ -954,7 +982,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             putValue(Action.ACCELERATOR_KEY, keyStroke);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.backward(m_Selection);
             g_panel.repaint();
         }
@@ -970,7 +999,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Align Left", "Align Left", "alignleft", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.alignLeft(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -987,7 +1017,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Align Right", "Align Right", "alignright", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.alignRight(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1004,7 +1035,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Align Top", "Align Top", "aligntop", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.alignTop(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1021,7 +1053,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Align Bottom", "Align Bottom", "alignbottom", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.alignBottom(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1039,7 +1072,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.centreHorizontal(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1056,7 +1090,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Center Vertical", "Center Vertical", "centervertical", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.centreVertical(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1073,7 +1108,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Space Horizontal", "Space Horizontal", "spacehorizontal", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.spaceHorizontal(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1090,7 +1126,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Space Vertical", "Space Vertical", "spacevertical", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_doc.spaceVertical(m_Selection);
             m_Selection.refreshTracker();
             updateStatus();
@@ -1107,7 +1144,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("About", "Help about", "about", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             JOptionPane
                     .showMessageDialog(
                             null,
@@ -1124,7 +1162,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Relax", "Relax positions", "about", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_bRelax = !m_bRelax;
             m_viewRelax.setState(m_bRelax);
             g_panel.repaint();
@@ -1138,7 +1177,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("View loggers", "View loggers", "about", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_bViewLoggers = !m_bViewLoggers;
             setDrawingFlag();
             g_panel.repaint();
@@ -1152,7 +1192,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("View Operators", "View Operators", "viewoperators", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_bViewOperators = !m_bViewOperators;
             setDrawingFlag();
             g_panel.repaint();
@@ -1166,7 +1207,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("View Sequences", "View Sequences", "viewsequences", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent ae) {
+        @Override
+		public void actionPerformed(ActionEvent ae) {
             m_bViewSequences = !m_bViewSequences;
             setDrawingFlag();
             g_panel.repaint();
@@ -1180,7 +1222,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Layout", "Layout graph", "layout", -1);
         } // c'tor
 
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
             g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             m_doc.layout();
             m_doc.adjustArrows();
@@ -1310,7 +1353,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     public void setDrawingFlag() {
         for (int i = 0; i < m_doc.m_objects.size(); i++) {
-            Shape shape = (Shape) m_doc.m_objects.get(i);
+            Shape shape = m_doc.m_objects.get(i);
             shape.m_bNeedsDrawing = false;
             if (shape.m_bNeedsDrawing) {
                 shape.m_bNeedsDrawing = true;
@@ -1365,7 +1408,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             addMouseListener(new GBDrawMouseEventListener());
         }
 
-        public void paintComponent(Graphics gr) {
+        @Override
+		public void paintComponent(Graphics gr) {
             Graphics2D g = (Graphics2D) gr;
             RenderingHints rh = new RenderingHints(
                     RenderingHints.KEY_ANTIALIASING,
@@ -1373,13 +1417,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             rh.put(RenderingHints.KEY_RENDERING,
                     RenderingHints.VALUE_RENDER_SPEED);
             g.setRenderingHints(rh);
-            ((Graphics2D) g).setBackground(Color.WHITE);
+            g.setBackground(Color.WHITE);
             Rectangle r = g.getClipBounds();
             g.clearRect(r.x, r.y, r.width, r.height);
 
             m_doc.adjustInputs();
             for (int i = 0; i < m_doc.m_objects.size(); i++) {
-                Shape shape = (Shape) m_doc.m_objects.get(i);
+                Shape shape = m_doc.m_objects.get(i);
                 if (shape.m_bNeedsDrawing) {
                     shape.draw(g, this);
                 }
@@ -1391,7 +1435,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 if (m_Selection.m_tracker != null) {
                     g.setColor(Color.BLACK);
                     for (int i = 0; i < m_Selection.m_tracker.size(); i++) {
-                        TrackPoint p = (TrackPoint) m_Selection.m_tracker
+                        TrackPoint p = m_Selection.m_tracker
                                 .get(i);
                         g.fillRect(p.m_nX - 4, p.m_nY - 4, 8, 8);
                     }
@@ -1414,7 +1458,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
          *
          * @see Printable
          */
-        public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+        @Override
+		public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
             if (pageIndex > 0) {
                 return (NO_SUCH_PAGE);
             } else {
@@ -1436,13 +1481,14 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
         class GBDrawMouseMotionListener extends MouseMotionAdapter {
 
-            public void mouseDragged(MouseEvent me) {
+            @Override
+			public void mouseDragged(MouseEvent me) {
                 switch (m_nMode) {
                     case MODE_SELECT:
                         if (m_bIsMoving || m_Selection.isSingleSelection()
                                 && m_Selection.intersects(me.getX(), me.getY())) {
                             m_bIsMoving = true;
-                            Shape shape = (Shape) m_doc.m_objects.get(m_Selection
+                            Shape shape = m_doc.m_objects.get(m_Selection
                                     .getSingleSelection());
                             if (getCursor().getType() == Cursor.DEFAULT_CURSOR) {
                                 // simple move operation
@@ -1511,7 +1557,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             int iSelection = -1;
                             for (int i = 0; iSelection < 0
                                     && i < m_doc.m_objects.size(); i++) {
-                                Shape shape = (Shape) m_doc.m_objects.get(i);
+                                Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing
                                         && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
@@ -1522,7 +1568,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             if (iSelection < 0) {
                                 return;
                             }
-                            Shape shape = (Shape) m_doc.m_objects.get(iSelection);
+                            Shape shape = m_doc.m_objects.get(iSelection);
                             if (shape instanceof Arrow) {
                                 return;
                             }
@@ -1544,14 +1590,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 }
             } // mouseDragged
 
-            public void mouseMoved(MouseEvent me) {
+            @Override
+			public void mouseMoved(MouseEvent me) {
                 if (m_Selection.m_tracker != null
                         && m_Selection.isSingleSelection()) {
                     if (getCursor().getType() != Cursor.DEFAULT_CURSOR) {
                         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
                     for (int i = 0; i < m_Selection.m_tracker.size(); i++) {
-                        TrackPoint p = (TrackPoint) m_Selection.m_tracker
+                        TrackPoint p = m_Selection.m_tracker
                                 .get(i);
                         if (me.getX() > p.m_nX - 4 && me.getX() < p.m_nX + 4
                                 && me.getY() > p.m_nY - 4
@@ -1563,7 +1610,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             return;
                         }
                     }
-                    Shape shape = (Shape) m_doc.m_objects.get(m_Selection
+                    Shape shape = m_doc.m_objects.get(m_Selection
                             .getSingleSelection());
                     m_nPosX = me.getX() - shape.m_x;
                     m_nPosY = me.getY() - shape.m_y;
@@ -1575,7 +1622,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
                 // set up tool tip text
                 for (int i = m_doc.m_objects.size() - 1; i >= 0; i--) {
-                    Shape shape = (Shape) m_doc.m_objects.get(i);
+                    Shape shape = m_doc.m_objects.get(i);
                     if (shape.m_bNeedsDrawing
                             && shape.intersects(me.getX(), me.getY())) {
                         if (shape instanceof BEASTObjectShape) {
@@ -1601,7 +1648,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         } // class GBDrawMouseMotionListener
 
         class GBDrawMouseEventListener extends MouseAdapter {
-            public void mouseClicked(MouseEvent me) {
+            @Override
+			public void mouseClicked(MouseEvent me) {
                 if (me.getClickCount() == 2) {
                     handleDoubleClick(me);
                     return;
@@ -1616,7 +1664,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     case MODE_SELECT:
                         int iSelection = -1;
                         for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
-                            Shape shape = (Shape) m_doc.m_objects.get(i);
+                            Shape shape = m_doc.m_objects.get(i);
                             if (shape.m_bNeedsDrawing && !(shape instanceof Arrow) && shape.intersects(me.getX(), me.getY())) {
                                 m_nPosX = shape.offsetX(me.getX());
                                 m_nPosY = shape.offsetY(me.getY());
@@ -1625,7 +1673,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         }
                         if (iSelection < 0) {
                             for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
-                                Shape shape = (Shape) m_doc.m_objects.get(i);
+                                Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
                                     m_nPosY = shape.offsetY(me.getY());
@@ -1636,9 +1684,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 return;
                             }
                         }
-                        if ((me.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+                        if ((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                             m_Selection.toggleSelection(iSelection);
-                        } else if ((me.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+                        } else if ((me.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) {
                             m_Selection.addToSelection(iSelection);
                         } else {
                             m_Selection.clear();
@@ -1695,7 +1743,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     int iSelection = -1;
                     for (int i = 0; iSelection < 0
                             && i < m_doc.m_objects.size(); i++) {
-                        Shape shape = (Shape) m_doc.m_objects.get(i);
+                        Shape shape = m_doc.m_objects.get(i);
                         if (shape.m_bNeedsDrawing
                                 && shape.intersects(me.getX(), me.getY())) {
                             m_nPosX = shape.offsetX(me.getX());
@@ -1708,7 +1756,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
                 JMenuItem addNodeItem = new JMenuItem("Change label");
                 ActionListener label = new ActionListener() {
-                    public void actionPerformed(ActionEvent ae) {
+                    @Override
+					public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         String sName = (String) JOptionPane.showInputDialog(
                                 null, shape.getID(), "New label",
@@ -1832,7 +1881,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 popupMenu.show(g_panel, me.getX(), me.getY());
             } // handleRightClick
 
-            public void mouseReleased(MouseEvent me) {
+            @Override
+			public void mouseReleased(MouseEvent me) {
                 if (m_drawShape != null) {
                     m_drawShape.normalize();
                 }
@@ -1842,17 +1892,17 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     case MODE_SELECT:
                         if (m_selectRect != null) {
 
-                            if ((me.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0
-                                    && (me.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) == 0) {
+                            if ((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0
+                                    && (me.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == 0) {
                                 // fresh selection
                                 m_Selection.clear();
                             }
 
                             for (int i = 0; i < m_doc.m_objects.size(); i++) {
-                                if (((Shape) m_doc.m_objects.get(i))
+                                if (m_doc.m_objects.get(i)
                                         .intersects(m_selectRect)
-                                        && ((Shape) m_doc.m_objects.get(i)).m_bNeedsDrawing) {
-                                    if ((me.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+                                        && m_doc.m_objects.get(i).m_bNeedsDrawing) {
+                                    if ((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
                                         m_Selection.toggleSelection(i);
                                     } else {
                                         m_Selection.addToSelection(i);
@@ -1899,7 +1949,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             int iSelection = -1;
                             for (int i = 0; iSelection < 0
                                     && i < m_doc.m_objects.size(); i++) {
-                                Shape shape = (Shape) m_doc.m_objects.get(i);
+                                Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing
                                         && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
@@ -2132,25 +2182,29 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     // implements ComponentListener
 
-    public void componentHidden(ComponentEvent e) {
+    @Override
+	public void componentHidden(ComponentEvent e) {
         m_jScrollPane.revalidate();
     }
 
     // implements ComponentListener
 
-    public void componentMoved(ComponentEvent e) {
+    @Override
+	public void componentMoved(ComponentEvent e) {
         m_jScrollPane.revalidate();
     }
 
     // implements ComponentListener
 
-    public void componentResized(ComponentEvent e) {
+    @Override
+	public void componentResized(ComponentEvent e) {
         m_jScrollPane.revalidate();
     }
 
     // implements ComponentListener
 
-    public void componentShown(ComponentEvent e) {
+    @Override
+	public void componentShown(ComponentEvent e) {
         m_jScrollPane.revalidate();
     }
 

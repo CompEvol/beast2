@@ -491,7 +491,8 @@ public class Node extends BEASTObject {
         return buf.toString();
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return toShortNewick(true);
     }
 

@@ -47,11 +47,13 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
         super.initAndValidate();
     }
 
-    Integer getMax() {
+    @Override
+	Integer getMax() {
         return Integer.MAX_VALUE - 1;
     }
 
-    Integer getMin() {
+    @Override
+	Integer getMin() {
         return Integer.MIN_VALUE + 1;
     }
 
@@ -67,7 +69,7 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
 
     @Override
     public double getArrayValue() {
-        return (double) values[0];
+        return values[0];
     }
 
     public int getNativeValue(final int iValue) {
@@ -76,7 +78,7 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
 
     @Override
     public double getArrayValue(int iValue) {
-        return (double) values[iValue];
+        return values[iValue];
     }
 
     /**

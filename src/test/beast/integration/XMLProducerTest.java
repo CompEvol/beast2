@@ -34,7 +34,8 @@ public class XMLProducerTest extends TestCase {
             System.out.println("Test XML Examples in " + dir);
             File exampleDir = new File(dir);
             String[] exampleFiles = exampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
                 }
             });

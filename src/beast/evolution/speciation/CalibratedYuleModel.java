@@ -45,7 +45,8 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
             this.ename = name;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return ename;
         }
 

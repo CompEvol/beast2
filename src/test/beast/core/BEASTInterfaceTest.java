@@ -69,7 +69,7 @@ public class BEASTInterfaceTest extends TestCase {
 
 		System.err.println("test initByName");
 		beasti.initByName("value", "hello world");
-		Input<?> input = (Input<?>) beasti.getInput("value");
+		Input<?> input = beasti.getInput("value");
 		assertEquals("hello world", input.get());
 		
 		System.err.println("test listInputs");

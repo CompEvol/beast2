@@ -12,12 +12,14 @@ public class MessageLogHandler extends StreamHandler {
     }
 
 
-    public void publish(LogRecord record) {
+    @Override
+	public void publish(LogRecord record) {
         super.publish(record);
         flush();
     }
 
-    public void close() {
+    @Override
+	public void close() {
         flush();
     }
 
@@ -37,7 +39,8 @@ public class MessageLogHandler extends StreamHandler {
          * @param record the log record to be formatted.
          * @return a formatted log record
          */
-        public synchronized String format(LogRecord record) {
+        @Override
+		public synchronized String format(LogRecord record) {
             final StringBuffer sb = new StringBuffer();
             sb.append(formatMessage(record));
             sb.append(lineSeparator);

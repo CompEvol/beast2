@@ -15,7 +15,8 @@ public class IntUniformOperator extends Operator {
     final public Input<IntegerParameter> parameterInput = new Input<>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
 
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
     	Log.warning.println("\n\nIntUniformOperator is depracated. Use UniformOperator instead.\n\n");
     }
 

@@ -61,7 +61,8 @@ public class MullerSolver extends UnivariateRealSolverImpl {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public double solve(final double min, final double max)
             throws ConvergenceException, FunctionEvaluationException {
         return solve(f, min, max);
@@ -70,7 +71,8 @@ public class MullerSolver extends UnivariateRealSolverImpl {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public double solve(final double min, final double max, final double initial)
             throws ConvergenceException, FunctionEvaluationException {
         return solve(f, min, max, initial);
@@ -92,7 +94,8 @@ public class MullerSolver extends UnivariateRealSolverImpl {
      *                                        function
      * @throws IllegalArgumentException       if any parameters are invalid
      */
-    public double solve(final UnivariateRealFunction f,
+    @Override
+	public double solve(final UnivariateRealFunction f,
                         final double min, final double max, final double initial)
             throws MaxIterationsExceededException, FunctionEvaluationException {
 
@@ -141,7 +144,8 @@ public class MullerSolver extends UnivariateRealSolverImpl {
      *                                        function
      * @throws IllegalArgumentException       if any parameters are invalid
      */
-    public double solve(final UnivariateRealFunction f,
+    @Override
+	public double solve(final UnivariateRealFunction f,
                         final double min, final double max)
             throws MaxIterationsExceededException, FunctionEvaluationException {
 

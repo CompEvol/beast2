@@ -40,19 +40,23 @@ public class HKYTest extends TestCase {
      * expm(q0 * d)
      */
     protected Instance test0 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.25, 0.25, 0.25, 0.25};
         }
 
-        public Double getKappa() {
+        @Override
+		public Double getKappa() {
             return 2.0;
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.906563342722, 0.023790645491, 0.045855366296, 0.023790645491,
                     0.023790645491, 0.906563342722, 0.023790645491, 0.045855366296,
@@ -63,19 +67,23 @@ public class HKYTest extends TestCase {
     };
 
     protected Instance test1 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.50, 0.20, 0.2, 0.1};
         }
 
-        public Double getKappa() {
+        @Override
+		public Double getKappa() {
             return 2.0;
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.928287993055, 0.021032136637, 0.040163801989, 0.010516068319,
                     0.052580341593, 0.906092679369, 0.021032136637, 0.020294842401,
@@ -86,19 +94,23 @@ public class HKYTest extends TestCase {
     };
 
     protected Instance test2 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.20, 0.30, 0.25, 0.25};
         }
 
-        public Double getKappa() {
+        @Override
+		public Double getKappa() {
             return 5.0;
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.904026219693, 0.016708646875, 0.065341261036, 0.013923872396,
                     0.011139097917, 0.910170587813, 0.013923872396, 0.064766441875,

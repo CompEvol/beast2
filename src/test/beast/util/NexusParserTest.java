@@ -23,7 +23,8 @@ public class NexusParserTest extends TestCase {
             System.out.println("Test Nexus Examples in " + sDir);
             File sExampleDir = new File(sDir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".nex") || name.endsWith(".nxs") ;
                 }
             });

@@ -224,7 +224,8 @@ public abstract class Operator extends BEASTObject {
         return list;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return OperatorSchedule.prettyPrintOperator(this, 70, 10, 4, 0.0, detailedRejection);
     }
 

@@ -44,7 +44,8 @@ public class ExampleXmlParsingTest extends TestCase {
             System.out.println("Test XML Examples in " + dir);
             File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
                 }
             });
@@ -86,7 +87,8 @@ public class ExampleXmlParsingTest extends TestCase {
             System.out.println("Test that XML Examples run in " + dir);
             File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
                 }
             });

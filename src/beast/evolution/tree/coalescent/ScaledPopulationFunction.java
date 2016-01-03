@@ -28,23 +28,27 @@ public class ScaledPopulationFunction extends PopulationFunction.Abstract {
 
     // Implementation of abstract methods
 
-    public List<String> getParameterIds() {
+    @Override
+	public List<String> getParameterIds() {
         List<String> ids = popParameterInput.get().getParameterIds();
         ids.add(scaleFactorInput.get().getID());
         return ids;
     }
 
-    public double getPopSize(double t) {
+    @Override
+	public double getPopSize(double t) {
         return popParameterInput.get().getPopSize(t) * scaleFactorInput.get().getValue();
     }
 
-    public double getIntensity(double t) {
+    @Override
+	public double getIntensity(double t) {
         double fIntensity = popParameterInput.get().getIntensity(t);
         double fScale = scaleFactorInput.get().getValue();
         return fIntensity / fScale;
     }
 
-    public double getInverseIntensity(double x) {
+    @Override
+	public double getInverseIntensity(double x) {
         throw new RuntimeException("unimplemented");
     }
 

@@ -57,7 +57,8 @@ public class JSONParserException extends XMLParserException {
     }
 
     // format message and resolve parent
-    public String getMessage() {
+    @Override
+	public String getMessage() {
         String msg = "\nError " + m_nErrorNr + " parsing the json input file\n\n" + m_sMsg + super.getOriginalMessage();
         if (node == null) {
             return "NULL NODE\n" + msg;

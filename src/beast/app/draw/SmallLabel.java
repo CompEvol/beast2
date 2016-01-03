@@ -36,7 +36,8 @@ public class SmallLabel extends JLabel {
     /**
      * paints the SmallButton
      */
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
         if (m_bIsEnabled) {
             int s = 14;
             GradientPaint m_gradientPaint = new GradientPaint(new Point(0, 0), Color.WHITE, new Point(getWidth(), getHeight()), m_circleColor);

@@ -148,7 +148,8 @@ public class Package {
         return depString;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return description;
     }
 

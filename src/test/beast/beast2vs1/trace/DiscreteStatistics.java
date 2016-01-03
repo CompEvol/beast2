@@ -52,7 +52,7 @@ public class DiscreteStatistics {
             }
         }
 
-        return m / (double) count;
+        return m / count;
     }
 
     /**
@@ -138,7 +138,7 @@ public class DiscreteStatistics {
             count = count - 1; // for ML estimate
         }
 
-        return var / (double) count;
+        return var / count;
     }
 
 
@@ -238,7 +238,7 @@ public class DiscreteStatistics {
      * @return variance of x (ML estimator)
      */
     public static double varianceSampleMean(double[] x, double mean) {
-        return variance(x, mean) / (double) x.length;
+        return variance(x, mean) / x.length;
     }
 
     /**
@@ -248,7 +248,7 @@ public class DiscreteStatistics {
      * @return variance of x (ML estimator)
      */
     public static double varianceSampleMean(double[] x) {
-        return variance(x) / (double) x.length;
+        return variance(x) / x.length;
     }
 
 
@@ -318,7 +318,7 @@ public class DiscreteStatistics {
         double minRange = Double.MAX_VALUE;
         int hpdIndex = 0;
 
-        final int diff = (int) Math.round(proportion * (double) x.length);
+        final int diff = (int) Math.round(proportion * x.length);
         for (int i = 0; i <= (x.length - diff); i++) {
             final double minValue = x[indices[i]];
             final double maxValue = x[indices[i + diff - 1]];
@@ -388,6 +388,6 @@ public class DiscreteStatistics {
             gm += Math.log(x[i]);
         }
 
-        return Math.exp(gm / (double) len);
+        return Math.exp(gm / len);
     }
 }

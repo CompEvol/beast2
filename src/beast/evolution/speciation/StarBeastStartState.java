@@ -43,7 +43,8 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             this.ename = name;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return ename;
         }
 

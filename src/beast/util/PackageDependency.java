@@ -65,7 +65,8 @@ public class PackageDependency implements Comparable {
         return dependson.toUpperCase().compareTo(o.toString().toUpperCase());
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return dependson;
     }
 }

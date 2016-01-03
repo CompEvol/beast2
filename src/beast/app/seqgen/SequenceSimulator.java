@@ -295,7 +295,7 @@ public class SequenceSimulator extends beast.core.Runnable {
             // find relevant objects from the model
             TreeLikelihood treeLikelihood = getTreeLikelihood(plugin);
             if (treeLikelihood == null) {
-                throw new Exception("No treelikelihood found in file. Giving up now.");
+                throw new IllegalArgumentException("No treelikelihood found in file. Giving up now.");
             }
             Alignment data = ((Input<Alignment>) treeLikelihood.getInput("data")).get();
             Tree tree = ((Input<Tree>) treeLikelihood.getInput("tree")).get();

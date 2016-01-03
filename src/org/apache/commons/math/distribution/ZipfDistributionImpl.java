@@ -64,7 +64,8 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the number of elements
      */
-    public int getNumberOfElements() {
+    @Override
+	public int getNumberOfElements() {
         return numberOfElements;
     }
 
@@ -77,7 +78,8 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if n &le; 0
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setNumberOfElements(final int n) {
         setNumberOfElementsInternal(n);
     }
@@ -105,7 +107,8 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the exponent
      */
-    public double getExponent() {
+    @Override
+	public double getExponent() {
         return exponent;
     }
 
@@ -118,7 +121,8 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * @throws IllegalArgumentException if s &le; 0.0
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setExponent(final double s) {
         setExponentInternal(s);
     }
@@ -147,7 +151,8 @@ public class ZipfDistributionImpl extends AbstractIntegerDistribution
      * @param x the value at which the probability density function is evaluated.
      * @return the value of the probability mass function at x
      */
-    public double probability(final int x) {
+    @Override
+	public double probability(final int x) {
         if (x <= 0 || x > numberOfElements) {
             return 0.0;
         }

@@ -45,7 +45,8 @@ public class DeltaExchangeOperator extends Operator {
     private CompoundParameterHelper compoundParameter = null;
     // because CompoundParameter cannot derive from parameter due to framework, the code complexity is doubled
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
 
         autoOptimize = autoOptimizeiInput.get();
         delta = deltaInput.get();
@@ -172,7 +173,7 @@ public class DeltaExchangeOperator extends Operator {
                     final double d = Randomizer.nextDouble() * delta;
                     scalar1 -= d;
                     if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
+                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
                     } else {
                         scalar2 += d;
                     }
@@ -240,7 +241,7 @@ public class DeltaExchangeOperator extends Operator {
                     final double d = Randomizer.nextDouble() * delta;
                     scalar1 -= d;
                     if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
+                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
                     } else {
                         scalar2 += d;
                     }

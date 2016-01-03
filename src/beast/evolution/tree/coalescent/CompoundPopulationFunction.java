@@ -54,7 +54,8 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
             this.name = name;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return name;
         }
 
@@ -378,7 +379,8 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         return interval * Math.log(pop1 / pop0) / (pop1 - pop0);
     }
 
-    public double getIntegral(double start, double finish) {
+    @Override
+	public double getIntegral(double start, double finish) {
 
         double intensity = 0.0;
 

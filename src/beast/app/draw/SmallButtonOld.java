@@ -46,7 +46,8 @@ public class SmallButtonOld extends JButton {
     /**
      * paints the SmallButton
      */
-    public void paint(Graphics g) {
+    @Override
+	public void paint(Graphics g) {
         if (image != null) {
             g.drawImage(image, 0, 0, null);
             return;

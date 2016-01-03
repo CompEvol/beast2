@@ -306,7 +306,7 @@ public class JSONParser {
 			Object o = node.get(key);
 			if (o instanceof JSONObject) {
 				JSONObject child = (JSONObject) o;
-				processPlates((JSONObject) child);
+				processPlates(child);
 			}
 			if (o instanceof JSONArray) {
 				JSONArray list = (JSONArray) o;

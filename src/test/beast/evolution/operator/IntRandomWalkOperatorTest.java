@@ -49,7 +49,7 @@ public class IntRandomWalkOperatorTest extends TestCase {
 		            operator.proposal();
 		            Integer [] values = parameter.getValues();
 		            for (int k = 0; k < values.length; k++) {
-		                int j = (int) values[k];
+		                int j = values[k];
 		                count[k][j] += 1; 
 		            }
 		        }

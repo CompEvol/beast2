@@ -88,7 +88,7 @@ public class Binomial {
         choose2LUT[1] = 0;
         choose2LUT[2] = 1;
         for (int i = 3; i <= maxN; i++) {
-            choose2LUT[i] = ((double) (i * (i - 1))) * 0.5;
+            choose2LUT[i] = (i * (i - 1)) * 0.5;
         }
     }
 

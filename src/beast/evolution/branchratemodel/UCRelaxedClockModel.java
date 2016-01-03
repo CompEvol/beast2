@@ -119,7 +119,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
     }
 
-    public double getRateForBranch(Node node) {
+    @Override
+	public double getRateForBranch(Node node) {
         if (node.isRoot()) {
             // root has no rate
             return 1;

@@ -79,10 +79,12 @@ public class RealNumberField extends JTextField implements FocusListener, Docume
         this.allowEmpty = allowEmpty;
     }
 
-    public void focusGained(FocusEvent evt) {
+    @Override
+	public void focusGained(FocusEvent evt) {
     }
 
-    public void focusLost(FocusEvent evt) {
+    @Override
+	public void focusLost(FocusEvent evt) {
         validateField();
     }
 
@@ -228,21 +230,25 @@ public class RealNumberField extends JTextField implements FocusListener, Docume
         }
     }
 
-    protected Document createDefaultModel() {
+    @Override
+	protected Document createDefaultModel() {
         Document doc = new RealNumberField.RealNumberFieldDocument();
         doc.addDocumentListener(this);
         return doc;
     }
 
-    public void insertUpdate(DocumentEvent e) {
+    @Override
+	public void insertUpdate(DocumentEvent e) {
         fireChanged();
     }
 
-    public void removeUpdate(DocumentEvent e) {
+    @Override
+	public void removeUpdate(DocumentEvent e) {
         fireChanged();
     }
 
-    public void changedUpdate(DocumentEvent e) {
+    @Override
+	public void changedUpdate(DocumentEvent e) {
         fireChanged();
     }
 
@@ -253,6 +259,7 @@ public class RealNumberField extends JTextField implements FocusListener, Docume
     class RealNumberFieldDocument extends PlainDocument {
 		private static final long serialVersionUID = 1L;
 
+		@Override
 		public void insertString(int offs, String str, AttributeSet a)
                 throws BadLocationException {
 

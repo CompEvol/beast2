@@ -27,7 +27,8 @@ public class ContourWithSynder extends KernelDensityEstimator2D  {
         super(x, y, n);
     }
 
-    public ContourPath[] getContourPaths(double hpdValue) {
+    @Override
+	public ContourPath[] getContourPaths(double hpdValue) {
 
         if (contourPaths == null) {
 

@@ -317,7 +317,8 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		} else {
 			_file = new File(dir + "/" + file);
 			execute(new GuiTask() {
-		        protected void executeInEDT() {
+		        @Override
+				protected void executeInEDT() {
 	                doc.newAnalysis();
 	                doc.setFileName(_file.getAbsolutePath());
 	                try {

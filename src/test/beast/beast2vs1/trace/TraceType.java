@@ -15,7 +15,8 @@ public enum TraceType {
         this.type = type;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 

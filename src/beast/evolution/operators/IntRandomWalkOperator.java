@@ -18,7 +18,8 @@ public class IntRandomWalkOperator extends Operator {
 
     int windowSize = 1;
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
         windowSize = windowSizeInput.get();
     }
 

@@ -51,7 +51,8 @@ abstract public class LikelihoodCore {
     /**
      * clean up after last likelihood calculation, if at all required *
      */
-    abstract public void finalize() throws java.lang.Throwable;
+    @Override
+	abstract public void finalize() throws java.lang.Throwable;
 
     /**
      * reserve memory for partials for node with number iNode *

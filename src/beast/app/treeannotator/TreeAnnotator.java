@@ -175,7 +175,8 @@ public class TreeAnnotator {
             burninCount = Math.max(0, (burninPercentage * totalTrees)/100);
 		}
 
-    	void reset() throws Exception {
+    	@Override
+		void reset() throws Exception {
     		current = 0;
             fin = new BufferedReader(new FileReader(new File(inputFileName)));
             lineNr = 0;
@@ -322,11 +323,13 @@ public class TreeAnnotator {
 
     	
     	
-    	boolean hasNext() {
+    	@Override
+		boolean hasNext() {
     		return current < totalTrees;
     	}
     	
-    	Tree next() throws Exception {
+    	@Override
+		Tree next() throws Exception {
 			String sStr = nextLine();
     		if (!isNexus) {
                 TreeParser treeParser;
@@ -383,7 +386,8 @@ public class TreeAnnotator {
             desc = s;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return desc;
         }
     }
@@ -400,7 +404,8 @@ public class TreeAnnotator {
             desc = s;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return desc;
         }
     }
@@ -1013,7 +1018,7 @@ public class TreeAnnotator {
         double minRange = Double.MAX_VALUE;
         int hpdIndex = 0;
 
-        int diff = (int) Math.round(hpd * (double) values.length);
+        int diff = (int) Math.round(hpd * values.length);
         for (int i = 0; i <= (values.length - diff); i++) {
             double minValue = values[indices[i]];
             double maxValue = values[indices[i + diff - 1]];

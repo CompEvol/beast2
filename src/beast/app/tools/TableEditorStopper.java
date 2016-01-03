@@ -50,7 +50,8 @@ public class TableEditorStopper extends FocusAdapter implements PropertyChangeLi
         table.addPropertyChangeListener("tableCellEditor", this);
     }
 
-    public void propertyChange(PropertyChangeEvent evt) {
+    @Override
+	public void propertyChange(PropertyChangeEvent evt) {
         if (focused != null) {
             focused.removeFocusListener(this);
         }
@@ -60,7 +61,8 @@ public class TableEditorStopper extends FocusAdapter implements PropertyChangeLi
         }
     }
 
-    public void focusLost(FocusEvent e) {
+    @Override
+	public void focusLost(FocusEvent e) {
         if (focused != null) {
             focused.removeFocusListener(this);
             focused = e.getOppositeComponent();

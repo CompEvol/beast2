@@ -97,7 +97,8 @@ public abstract class BinaryFunction implements BivariateRealFunction {
     /**
      * {@inheritDoc}
      */
-    public abstract double value(double x, double y) throws FunctionEvaluationException;
+    @Override
+	public abstract double value(double x, double y) throws FunctionEvaluationException;
 
     /**
      * Get a composable function by fixing the first argument of the instance.

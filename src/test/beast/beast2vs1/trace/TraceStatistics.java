@@ -113,7 +113,7 @@ public class TraceStatistics {
                 //varGammaStat[lag] += (del1*del1*del2*del2);
             }
 
-            gammaStat[lag] /= ((double) (samples - lag));
+            gammaStat[lag] /= (samples - lag);
             //varGammaStat[lag] /= ((double) samples-lag);
             //varGammaStat[lag] -= (gammaStat[0] * gammaStat[0]);
 
@@ -141,7 +141,7 @@ public class TraceStatistics {
         // effective sample size
         ESS = (stepSize * samples) / autoCorrelationTime;
         // standard deviation of autocorrelation time
-        stdevAutoCorrelationTime = (2.0 * Math.sqrt(2.0 * (2.0 * (double) (maxLag + 1)) / samples) * (varStat / gammaStat[0]) * stepSize);
+        stdevAutoCorrelationTime = (2.0 * Math.sqrt(2.0 * (2.0 * (maxLag + 1)) / samples) * (varStat / gammaStat[0]) * stepSize);
 
         isValid = true;
     }

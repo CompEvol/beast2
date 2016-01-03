@@ -110,7 +110,8 @@ public class AppStore {
             //of the list.  An alternative would be to set the unitIncrement
             //of the JScrollBar to a fixed value. You wouldn't get the nice
             //aligned scrolling, but it should work.
-            public int getScrollableUnitIncrement(Rectangle visibleRect,
+            @Override
+			public int getScrollableUnitIncrement(Rectangle visibleRect,
                                                   int orientation,
                                                   int direction) {
                 int row;
@@ -143,15 +144,16 @@ public class AppStore {
                 JLabel label = (JLabel) super
                         .getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 label.setIcon(((PackageApp) value).icon);
-                label.setHorizontalTextPosition(JLabel.CENTER);
-                label.setVerticalTextPosition(JLabel.BOTTOM);
+                label.setHorizontalTextPosition(SwingConstants.CENTER);
+                label.setVerticalTextPosition(SwingConstants.BOTTOM);
                 return label;
             }
         });
         listApps.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         listApps.setVisibleRowCount(-1);
         listApps.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     launchButton.doClick();
                 }
@@ -166,7 +168,7 @@ public class AppStore {
 
         JScrollPane listScroller = new JScrollPane(listApps);
         listScroller.setPreferredSize(new Dimension(660, 400));
-        listScroller.setAlignmentX(JDialog.LEFT_ALIGNMENT);
+        listScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel label = new JLabel("List of available package applications");
         label.setLabelFor(listApps);

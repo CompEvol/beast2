@@ -20,9 +20,9 @@ public class SnyderContour {
     // Below, constant data members:
     final static boolean SHOW_NUMBERS = true;
     final static int BLANK = 32,
-            OPEN_SUITE = (int) '{',
-            CLOSE_SUITE = (int) '}',
-            BETWEEN_ARGS = (int) ',',
+            OPEN_SUITE = '{',
+            CLOSE_SUITE = '}',
+            BETWEEN_ARGS = ',',
             N_CONTOURS = 1,
             PLOT_MARGIN = 20,
             WEE_BIT = 3,

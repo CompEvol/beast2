@@ -100,7 +100,8 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public double integrate(final double min, final double max)
             throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
         return integrate(f, min, max);
@@ -109,7 +110,8 @@ public class TrapezoidIntegrator extends UnivariateRealIntegratorImpl {
     /**
      * {@inheritDoc}
      */
-    public double integrate(final UnivariateRealFunction f,
+    @Override
+	public double integrate(final UnivariateRealFunction f,
                             final double min, final double max)
             throws MaxIterationsExceededException, FunctionEvaluationException, IllegalArgumentException {
 

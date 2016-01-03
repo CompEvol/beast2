@@ -49,7 +49,8 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     // Public stuff
     //
 
-    public void initAndValidate() throws Exception {
+    @Override
+	public void initAndValidate() throws Exception {
         if (popSizeParameterInput.get() != null) {
             popSizeParameterInput.get().setBounds(
             		Math.max(0.0, popSizeParameterInput.get().getLower()), 
@@ -103,7 +104,8 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
 //    }
 
     // Implementation of abstract methods
-    public double getPopSize(double t) {
+    @Override
+	public double getPopSize(double t) {
 
         double r = getGrowthRate();
         if (r == 0) {
@@ -126,7 +128,8 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
         }
     }
 
-    public double getIntensity(double t) {
+    @Override
+	public double getIntensity(double t) {
         double r = getGrowthRate();
         if (r == 0.0) {
             return t / getN0();
@@ -135,7 +138,8 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
         }
     }
 
-    public double getInverseIntensity(double x) {
+    @Override
+	public double getInverseIntensity(double x) {
 
         double r = getGrowthRate();
         if (r == 0.0) {
@@ -148,7 +152,8 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
 
     // Implementation of abstract methods
 
-    public List<String> getParameterIds() {
+    @Override
+	public List<String> getParameterIds() {
         return Collections.singletonList(popSizeParameterInput.get().getID());
     }
 

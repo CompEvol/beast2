@@ -124,7 +124,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         }
     }
 
-    public int getSampleCount() {
+    @Override
+	public int getSampleCount() {
         // Assumes a binary tree!
         return treeInput.get().getInternalNodeCount();
     }
@@ -132,7 +133,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * get number of intervals
      */
-    public int getIntervalCount() {
+    @Override
+	public int getIntervalCount() {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -142,7 +144,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * Gets an interval.
      */
-    public double getInterval(int i) {
+    @Override
+	public double getInterval(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -189,7 +192,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * Required for s-coalescents, where new lineages are added as
      * earlier samples are come across.
      */
-    public int getLineageCount(int i) {
+    @Override
+	public int getLineageCount(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -219,7 +223,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * Returns the number of coalescent events in an interval
      */
-    public int getCoalescentEvents(int i) {
+    @Override
+	public int getCoalescentEvents(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -234,7 +239,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     /**
      * Returns the type of interval observed.
      */
-    public IntervalType getIntervalType(int i) {
+    @Override
+	public IntervalType getIntervalType(int i) {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -260,7 +266,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * get the total height of the genealogy represented by these
      * intervals.
      */
-    public double getTotalDuration() {
+    @Override
+	public double getTotalDuration() {
 
         if (!intervalsKnown) {
             calculateIntervals();
@@ -277,7 +284,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * (i.e. whether is has exactly one coalescent event in each
      * subsequent interval)
      */
-    public boolean isBinaryCoalescent() {
+    @Override
+	public boolean isBinaryCoalescent() {
         if (!intervalsKnown) {
             calculateIntervals();
         }
@@ -295,7 +303,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
      * (i.e. whether is has exactly one or more coalescent event in each
      * subsequent interval)
      */
-    public boolean isCoalescentOnly() {
+    @Override
+	public boolean isCoalescentOnly() {
         if (!intervalsKnown) {
             calculateIntervals();
         }

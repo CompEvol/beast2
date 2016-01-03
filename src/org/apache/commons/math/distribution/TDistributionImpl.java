@@ -85,7 +85,8 @@ public class TDistributionImpl
      * @param degreesOfFreedom the new degrees of freedom.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setDegreesOfFreedom(double degreesOfFreedom) {
         setDegreesOfFreedomInternal(degreesOfFreedom);
     }
@@ -109,7 +110,8 @@ public class TDistributionImpl
      *
      * @return the degrees of freedom.
      */
-    public double getDegreesOfFreedom() {
+    @Override
+	public double getDegreesOfFreedom() {
         return degreesOfFreedom;
     }
 
@@ -136,7 +138,8 @@ public class TDistributionImpl
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         double ret;
         if (x == 0.0) {
             ret = 0.5;

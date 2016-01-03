@@ -30,7 +30,7 @@ public class BeastDialog {
 
     private final OptionsPanel optionPanel;
 
-    private final WholeNumberField seedText = new WholeNumberField((long) 1, Long.MAX_VALUE);
+    private final WholeNumberField seedText = new WholeNumberField(1, Long.MAX_VALUE);
     //    private final JCheckBox overwriteCheckBox = new JCheckBox("Allow overwriting of log files");
     private final JComboBox<String> logginMode = new JComboBox<>(new String[]{"default: only write new log files",
             "overwrite: overwrite log files",
@@ -163,7 +163,8 @@ public class BeastDialog {
 
         beagleInfoCheckBox.setEnabled(false);
         beagleCheckBox.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+            @Override
+			public void stateChanged(ChangeEvent e) {
                 beagleInfo.setEnabled(beagleCheckBox.isSelected());
                 beagleInfoCheckBox.setEnabled(beagleCheckBox.isSelected());
                 label1.setEnabled(beagleCheckBox.isSelected());

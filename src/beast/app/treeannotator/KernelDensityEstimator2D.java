@@ -133,7 +133,8 @@ public class KernelDensityEstimator2D implements ContourMaker {
         return level;
     }
 
-    public ContourPath[] getContourPaths(double hpdValue) {
+    @Override
+	public ContourPath[] getContourPaths(double hpdValue) {
 
         double thresholdDensity = findLevelCorrespondingToMass(hpdValue);
         ContourGenerator contour = new ContourGenerator(getXGrid(), getYGrid(), getKDE(),

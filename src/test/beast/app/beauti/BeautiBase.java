@@ -52,6 +52,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	protected Beauti beauti;
 	protected BeautiDoc doc;
 
+	@Override
 	protected void onSetUp() {
 		beautiFrame = new FrameFixture(robot(), createNewEditor());
 		beautiFrame.show();
@@ -64,6 +65,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 	@RunsInEDT
 	private static JFrame createNewEditor() {
 		return execute(new GuiQuery<JFrame>() {
+			@Override
 			protected JFrame executeInEDT() throws Throwable {
 				Beauti beauti = Beauti.main2(new String[] {});
 				return beauti.frame;
@@ -273,7 +275,8 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		} else {
 			_file = new File(dir + "/" + file);
 			execute(new GuiTask() {
-		        protected void executeInEDT() {
+		        @Override
+				protected void executeInEDT() {
 		        	try {
 		        		beauti.doc.save(_file);
 		        	} catch (Exception e) {
@@ -303,7 +306,8 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			for (File file : files) {
 				_file = new File(dir + "/" + file.getName());
 				execute(new GuiTask() {
-			        protected void executeInEDT() {
+			        @Override
+					protected void executeInEDT() {
 			        	try {
 			        		beauti.doc.importNexus(_file);
 			    			beauti.refreshPanel();

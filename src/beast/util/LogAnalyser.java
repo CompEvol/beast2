@@ -237,7 +237,7 @@ public class LogAnalyser {
                     double gm = 0;
                     for (double f : fTrace)
                         gm += Math.log(f);
-                    m_fGeometricMean[i] = Math.exp(gm / (double) fTrace.length);
+                    m_fGeometricMean[i] = Math.exp(gm / fTrace.length);
                 } else
                     m_fGeometricMean[i] = Double.NaN;
             } else {

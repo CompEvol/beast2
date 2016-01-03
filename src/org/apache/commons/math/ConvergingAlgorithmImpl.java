@@ -85,70 +85,80 @@ public abstract class ConvergingAlgorithmImpl implements ConvergingAlgorithm {
     /**
      * {@inheritDoc}
      */
-    public int getIterationCount() {
+    @Override
+	public int getIterationCount() {
         return iterationCount;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setAbsoluteAccuracy(double accuracy) {
+    @Override
+	public void setAbsoluteAccuracy(double accuracy) {
         absoluteAccuracy = accuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public double getAbsoluteAccuracy() {
+    @Override
+	public double getAbsoluteAccuracy() {
         return absoluteAccuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void resetAbsoluteAccuracy() {
+    @Override
+	public void resetAbsoluteAccuracy() {
         absoluteAccuracy = defaultAbsoluteAccuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setMaximalIterationCount(int count) {
+    @Override
+	public void setMaximalIterationCount(int count) {
         maximalIterationCount = count;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getMaximalIterationCount() {
+    @Override
+	public int getMaximalIterationCount() {
         return maximalIterationCount;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void resetMaximalIterationCount() {
+    @Override
+	public void resetMaximalIterationCount() {
         maximalIterationCount = defaultMaximalIterationCount;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setRelativeAccuracy(double accuracy) {
+    @Override
+	public void setRelativeAccuracy(double accuracy) {
         relativeAccuracy = accuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public double getRelativeAccuracy() {
+    @Override
+	public double getRelativeAccuracy() {
         return relativeAccuracy;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void resetRelativeAccuracy() {
+    @Override
+	public void resetRelativeAccuracy() {
         relativeAccuracy = defaultRelativeAccuracy;
     }
 

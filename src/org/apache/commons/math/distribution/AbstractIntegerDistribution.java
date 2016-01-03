@@ -72,7 +72,8 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         return cumulativeProbability((int) Math.floor(x));
     }
 
@@ -116,7 +117,8 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    public abstract double cumulativeProbability(int x) throws MathException;
+    @Override
+	public abstract double cumulativeProbability(int x) throws MathException;
 
     /**
      * For a random variable X whose values are distributed according
@@ -128,7 +130,8 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      * @param x the value at which the probability density function is evaluated
      * @return the value of the probability density function at x
      */
-    public double probability(double x) {
+    @Override
+	public double probability(double x) {
         double fl = Math.floor(x);
         if (fl == x) {
             return this.probability((int) x);
@@ -148,7 +151,8 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if x0 > x1
      */
-    public double cumulativeProbability(int x0, int x1) throws MathException {
+    @Override
+	public double cumulativeProbability(int x0, int x1) throws MathException {
         if (x0 > x1) {
             throw MathRuntimeException.createIllegalArgumentException(
                     WRONG_ORDER_ENDPOINTS_MESSAGE, x0, x1);
@@ -167,7 +171,8 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p < 0 or p > 1
      */
-    public int inverseCumulativeProbability(final double p) throws MathException {
+    @Override
+	public int inverseCumulativeProbability(final double p) throws MathException {
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
                     OUT_OF_RANGE_POINT, p, 0.0, 1.0);

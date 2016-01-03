@@ -242,7 +242,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             final DecimalFormat myFormatter = new DecimalFormat("#.#####", new DecimalFormatSymbols(Locale.US));
 
             if (m_left == null) {
@@ -326,7 +327,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
      * comparator used by priority queue*
      */
     class TupleComparator implements Comparator<Tuple> {
-        public int compare(final Tuple o1, final Tuple o2) {
+        @Override
+		public int compare(final Tuple o1, final Tuple o2) {
             if (o1.m_fDist < o2.m_fDist) {
                 return -1;
             } else if (o1.m_fDist == o2.m_fDist) {

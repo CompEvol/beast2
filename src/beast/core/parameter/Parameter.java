@@ -182,7 +182,7 @@ public interface Parameter<T> extends Function {
                 for (int i = 0; i < nDimension; i++) {
                     values2[i] = values[i % getDimension()];
                 }
-                values = (T[]) values2;
+                values = values2;
                 //storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
             }
             m_bIsDirty = new boolean[nDimension];

@@ -91,7 +91,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *                       computed due to convergence or other numerical errors.
      */
     //@Override
-    public double inverseCumulativeProbability(final double p) throws MathException {
+    @Override
+	public double inverseCumulativeProbability(final double p) throws MathException {
         final org.apache.commons.math.distribution.Distribution dist = getDistribution();
         double offset = getOffset();
         if (dist instanceof ContinuousDistribution) {
@@ -110,7 +111,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @return The pdf at point x.
      */
     //@Override
-    public double density(double x) {
+    @Override
+	public double density(double x) {
         final double offset = getOffset();
  //       if( x >= offset ) {
             x -= offset;
@@ -141,7 +143,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     }
 
     //@Override
-    public double logDensity(final double x) {
+    @Override
+	public double logDensity(final double x) {
         return logDensity(x, getOffset());
     }
 
@@ -158,7 +161,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      *                       computed due to convergence or other numerical errors.
      */
     //@Override
-    public double cumulativeProbability(final double x) throws MathException {
+    @Override
+	public double cumulativeProbability(final double x) throws MathException {
         return getDistribution().cumulativeProbability(x);
     }
 
@@ -176,7 +180,8 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
     //@Override
-    public double cumulativeProbability(final double x0, final double x1) throws MathException {
+    @Override
+	public double cumulativeProbability(final double x0, final double x1) throws MathException {
         return getDistribution().cumulativeProbability(x0, x1);
     }
 

@@ -26,7 +26,8 @@ public class TreeTest extends TestFramework {
         super.setUp(XML_FILES);
     }
 
-    protected List<Expectation> giveExpectations(int index_XML) throws Exception {
+    @Override
+	protected List<Expectation> giveExpectations(int index_XML) throws Exception {
         List<Expectation> expList = new ArrayList<Expectation>();
 
         // all values below are from BEAST 1.7

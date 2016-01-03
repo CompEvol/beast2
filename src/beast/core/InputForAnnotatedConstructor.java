@@ -180,20 +180,20 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
         }
 
         if (theClass.equals(Integer.class)) {
-            setValue((T) new Integer(sValue));
+            setValue(new Integer(sValue));
             return;
         }
         if (theClass.equals(Double.class)) {
-        	setValue((T) new Double(sValue));
+        	setValue(new Double(sValue));
             return;
         }
         if (theClass.equals(Boolean.class)) {
             final String sValue2 = sValue.toLowerCase();
             if (sValue2.equals("yes") || sValue2.equals("true")) {
-            	setValue((T) Boolean.TRUE);
+            	setValue(Boolean.TRUE);
                 return;
             } else if (sValue2.equals("no") || sValue2.equals("false")) {
-            	setValue((T) Boolean.FALSE);
+            	setValue(Boolean.FALSE);
                 return;
             }
         }
@@ -201,7 +201,7 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
             final RealParameter param = new RealParameter();
             param.initByName("value", sValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
             param.initAndValidate();
-        	setValue((T) param);
+        	setValue(param);
             param.getOutputs().add(beastObject);
             return;
         }

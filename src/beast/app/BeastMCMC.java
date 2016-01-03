@@ -48,6 +48,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -270,7 +272,8 @@ public class BeastMCMC {
     String getFileNameByDialog() {
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         fc.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File f) {
+            @Override
+			public boolean accept(File f) {
                 if (f.isDirectory()) {
                     return true;
                 }
@@ -282,7 +285,8 @@ public class BeastMCMC {
             }
 
             // The description of this filter
-            public String getDescription() {
+            @Override
+			public String getDescription() {
                 return "xml files";
             }
         });
@@ -316,7 +320,7 @@ public class BeastMCMC {
         JComboBox<String> m_mode;
 
         public BeastStartDialog() {
-            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setModalityType(DEFAULT_MODALITY_TYPE);
             init();
             setVisible(true);
@@ -376,7 +380,7 @@ public class BeastMCMC {
             String sIconLocation = "beast/app/draw/icons/beast.png";
             ImageIcon icon = null;
             try {
-                URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+                URL url = ClassLoader.getSystemResource(sIconLocation);
                 if (url == null) {
                     System.err.println("Cannot find icon " + sIconLocation);
                     return null;
@@ -392,7 +396,7 @@ public class BeastMCMC {
             label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
             box.add(label, BorderLayout.WEST);
             label = new JLabel("<html><center>BEAST<br>Version: " + VERSION + "<br>Developers: " + DEVELOPERS + "<br>Copyright: " + COPYRIGHT + "</html>");
-            label.setHorizontalAlignment(JLabel.CENTER);
+            label.setHorizontalAlignment(SwingConstants.CENTER);
             box.add(label);
             return box;
         } // BeastStartDialog::createHeader
@@ -436,7 +440,7 @@ public class BeastMCMC {
             Box box = Box.createHorizontalBox();
             box.add(new JLabel("Random number seed: "));
             m_seedEntry = new JTextField("127");
-            m_seedEntry.setHorizontalAlignment(JTextField.RIGHT);
+            m_seedEntry.setHorizontalAlignment(SwingConstants.RIGHT);
             Dimension size = new Dimension(100, 20);
             m_seedEntry.setMinimumSize(size);
             m_seedEntry.setPreferredSize(size);

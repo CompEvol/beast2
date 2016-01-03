@@ -57,7 +57,8 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public double solve(final double min, final double max)
             throws MaxIterationsExceededException,
             FunctionEvaluationException {
@@ -67,7 +68,8 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public double solve(final double min, final double max, final double startValue)
             throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max, startValue);
@@ -85,7 +87,8 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
      *                                        function or derivative
      * @throws IllegalArgumentException       if min is not less than max
      */
-    public double solve(final UnivariateRealFunction f,
+    @Override
+	public double solve(final UnivariateRealFunction f,
                         final double min, final double max)
             throws MaxIterationsExceededException, FunctionEvaluationException {
         return solve(f, min, max, UnivariateRealSolverUtils.midpoint(min, max));
@@ -105,7 +108,8 @@ public class NewtonSolver extends UnivariateRealSolverImpl {
      * @throws IllegalArgumentException       if startValue is not between min and max or
      *                                        if function is not a {@link DifferentiableUnivariateRealFunction} instance
      */
-    public double solve(final UnivariateRealFunction f,
+    @Override
+	public double solve(final UnivariateRealFunction f,
                         final double min, final double max, final double startValue)
             throws MaxIterationsExceededException, FunctionEvaluationException {
 

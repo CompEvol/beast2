@@ -16,7 +16,8 @@ public class TrimLineReader extends BufferedReader {
         super(reader);
     }
 
-    public String readLine() throws IOException {
+    @Override
+	public String readLine() throws IOException {
         lineNumber += 1;
         String line = super.readLine();
         if (line != null) return line.trim();

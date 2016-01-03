@@ -46,7 +46,8 @@ public class ExtensionFileFilter extends FileFilter implements FilenameFilter {
      *
      * @return the description.
      */
-    public String getDescription() {
+    @Override
+	public String getDescription() {
 
         return m_Description;
     }
@@ -57,7 +58,7 @@ public class ExtensionFileFilter extends FileFilter implements FilenameFilter {
      * @return the accepted extensions
      */
     public String[] getExtensions() {
-        return (String[]) m_Extension.clone();
+        return m_Extension.clone();
     }
 
     /**
@@ -67,7 +68,8 @@ public class ExtensionFileFilter extends FileFilter implements FilenameFilter {
      * @param file the file of interest.
      * @return true if the file is accepted by the filter.
      */
-    public boolean accept(File file) {
+    @Override
+	public boolean accept(File file) {
 
         String name = file.getName().toLowerCase();
         if (file.isDirectory()) {
@@ -89,7 +91,8 @@ public class ExtensionFileFilter extends FileFilter implements FilenameFilter {
      * @param name the name of the file.
      * @return true if the file is accepted.
      */
-    public boolean accept(File dir, String name) {
+    @Override
+	public boolean accept(File dir, String name) {
         return accept(new File(dir, name));
     }
 }

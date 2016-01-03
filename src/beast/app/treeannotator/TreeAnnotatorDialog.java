@@ -140,7 +140,8 @@ public class TreeAnnotatorDialog {
         targetFileButton.setEnabled(false);
 
         summaryTreeCombo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
+            @Override
+			public void itemStateChanged(ItemEvent itemEvent) {
                 boolean selected = summaryTreeCombo.getSelectedItem().toString().equals("User target tree");
                 label1.setEnabled(selected);
                 targetFileNameText.setEnabled(selected);
@@ -155,7 +156,8 @@ public class TreeAnnotatorDialog {
         Color focusColor = UIManager.getColor("Focus.color");
         Border focusBorder = BorderFactory.createMatteBorder( 2, 2, 2, 2, focusColor );
         new FileDrop( null, inputFileNameText, focusBorder, new FileDrop.Listener()
-        {   public void filesDropped( java.io.File[] files )
+        {   @Override
+		public void filesDropped( java.io.File[] files )
             {
                 inputFile = files[0];
                 inputFileNameText.setText(inputFile.getName());

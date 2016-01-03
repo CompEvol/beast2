@@ -251,7 +251,8 @@ public class Frequencies extends CalculationNode {
         return total;
     }
 
-    public void restore() {
+    @Override
+	public void restore() {
         needsUpdate = true;
         super.restore();
     }

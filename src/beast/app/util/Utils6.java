@@ -23,7 +23,8 @@ public class Utils6 {
 		Image imageBuffer;
         public Canvas() { }
 
-        public void paintComponent( Graphics g ) {
+        @Override
+		public void paintComponent( Graphics g ) {
             // copy buffered image
             if ( imageBuffer != null )
                 g.drawImage(imageBuffer, 0,0, this);
@@ -38,7 +39,8 @@ public class Utils6 {
             return imageBuffer.getGraphics();
         }
 
-        public void setBounds( int x, int y, int width, int height ) {
+        @Override
+		public void setBounds( int x, int y, int width, int height ) {
             setPreferredSize( new Dimension(width, height) );
             setMinimumSize( new Dimension(width, height) );
             super.setBounds( x, y, width, height );
@@ -84,7 +86,7 @@ public class Utils6 {
 
 	public static ImageIcon getIcon(String sIconLocation) {
 	    try {
-	        URL url = (URL) ClassLoader.getSystemResource(sIconLocation);
+	        URL url = ClassLoader.getSystemResource(sIconLocation);
 	        if (url == null) {
 	        	Log.warning.println("Cannot find icon " + sIconLocation);
 	            return null;

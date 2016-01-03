@@ -33,7 +33,8 @@ public class SliceOperator extends Operator {
     double windowSize = 1;
     Distribution sliceDensity;
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
         totalDelta = 0.0;
         totalNumber = 0;
         n_learning_iterations = 100;
@@ -54,7 +55,8 @@ public class SliceOperator extends Operator {
         return (x > X.getUpper());
     }
 
-    public Distribution getEvaluatorDistribution() {
+    @Override
+	public Distribution getEvaluatorDistribution() {
         return sliceDensity;
     }
 

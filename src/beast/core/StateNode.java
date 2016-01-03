@@ -220,8 +220,10 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
         return true;
     }
 
-    abstract protected void store();
+    @Override
+	abstract protected void store();
 
-    abstract public void restore();
+    @Override
+	abstract public void restore();
 
 } // class StateNode

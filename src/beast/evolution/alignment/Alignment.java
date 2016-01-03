@@ -44,7 +44,8 @@ import beast.util.AddOnManager;
 @Description("Class representing alignment data")
 public class Alignment extends Map<String> {
 
-    protected Class<?> mapType() {
+    @Override
+	protected Class<?> mapType() {
         return String.class;
     }
 
@@ -514,7 +515,8 @@ public class Alignment extends Map<String> {
      * which makes it easy to identify patterns.
      */
     class SiteComparator implements Comparator<int[]> {
-        public int compare(int[] o1, int[] o2) {
+        @Override
+		public int compare(int[] o1, int[] o2) {
             for (int i = 0; i < o1.length; i++) {
                 if (o1[i] > o2[i]) {
                     return 1;

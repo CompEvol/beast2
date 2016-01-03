@@ -12,7 +12,8 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when both children have states.
      */
-    protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
+    @Override
+	protected void calculateStatesStatesPruning(int[] iStates1, double[] fMatrices1,
                                                 int[] iStates2, double[] fMatrices2,
                                                 double[] fPartials3) {
         int v = 0;
@@ -90,7 +91,8 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when one child has states and one has partials.
      */
-    protected void calculateStatesPartialsPruning(int[] iStates1, double[] fMatrices1,
+    @Override
+	protected void calculateStatesPartialsPruning(int[] iStates1, double[] fMatrices1,
                                                   double[] fPartials2, double[] fMatrices2,
                                                   double[] fPartials3) {
 
@@ -180,7 +182,8 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when both children have partials.
      */
-    protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
+    @Override
+	protected void calculatePartialsPartialsPruning(double[] fPartials1, double[] fMatrices1,
                                                     double[] fPartials2, double[] fMatrices2,
                                                     double[] fPartials3) {
         double sum1, sum2;

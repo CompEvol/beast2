@@ -249,7 +249,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * This method samples the sequences based on the tree and site model.
      */
-    public void sample(State state, Random random) {
+    @Override
+	public void sample(State state, Random random) {
         throw new UnsupportedOperationException("Can't sample a fixed alignment!");
     }
 
@@ -528,14 +529,16 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * @return a list of unique ids for the state nodes that form the argument
      */
-    public List<String> getArguments() {
+    @Override
+	public List<String> getArguments() {
         return Collections.singletonList(dataInput.get().getID());
     }
 
     /**
      * @return a list of unique ids for the state nodes that make up the conditions
      */
-    public List<String> getConditions() {
+    @Override
+	public List<String> getConditions() {
         return m_siteModel.getConditions();
     }
 

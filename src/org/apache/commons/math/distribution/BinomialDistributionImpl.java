@@ -63,7 +63,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the number of trials.
      */
-    public int getNumberOfTrials() {
+    @Override
+	public int getNumberOfTrials() {
         return numberOfTrials;
     }
 
@@ -72,7 +73,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *
      * @return the probability of success.
      */
-    public double getProbabilityOfSuccess() {
+    @Override
+	public double getProbabilityOfSuccess() {
         return probabilityOfSuccess;
     }
 
@@ -84,7 +86,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *                                  number of trials.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setNumberOfTrials(int trials) {
         setNumberOfTrialsInternal(trials);
     }
@@ -112,7 +115,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      *                                  probability.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setProbabilityOfSuccess(double p) {
         setProbabilityOfSuccessInternal(p);
     }
@@ -186,7 +190,8 @@ public class BinomialDistributionImpl extends AbstractIntegerDistribution
      * @param x the value at which the PMF is evaluated.
      * @return PMF for this distribution.
      */
-    public double probability(int x) {
+    @Override
+	public double probability(int x) {
         double ret;
         if (x < 0 || x > numberOfTrials) {
             ret = 0.0;

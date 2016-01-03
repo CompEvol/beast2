@@ -58,11 +58,13 @@ public class AscertainedAlignment extends Alignment {
 //		}
     } // initAndValidate
 
-    public Set<Integer> getExcludedPatternIndices() {
+    @Override
+	public Set<Integer> getExcludedPatternIndices() {
         return excludedPatterns;
     }
 
-    public int getExcludedPatternCount() {
+    @Override
+	public int getExcludedPatternCount() {
         return excludedPatterns.size();
     }
 
@@ -70,7 +72,8 @@ public class AscertainedAlignment extends Alignment {
 //		return m_nIncluded;
 //	}
 
-    public double getAscertainmentCorrection(double[] patternLogProbs) {
+    @Override
+	public double getAscertainmentCorrection(double[] patternLogProbs) {
         double excludeProb = 0, includeProb = 0, returnProb = 1.0;
 
 //        for (int i = 0; i < m_nIncluded.size(); i++) {

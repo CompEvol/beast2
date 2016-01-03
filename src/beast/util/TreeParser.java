@@ -46,6 +46,7 @@ import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -226,7 +227,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         if( m_taxonset.get() == null && labels != null && isLabelledNewickInput.get() ) {
-            m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(labels)), this);
+            m_taxonset.setValue(new TaxonSet(Taxon.createTaxonList(labels)), this);
         }
 
         initStateNodes();
@@ -261,7 +262,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         if (taxaNames == null) {
             isLabelledNewickInput.setValue(true, this);
         } else {
-            m_taxonset.setValue(new TaxonSet(TaxonSet.createTaxonList(taxaNames)), this);
+            m_taxonset.setValue(new TaxonSet(Taxon.createTaxonList(taxaNames)), this);
         }
         newickInput.setValue(newick, this);
         offsetInput.setValue(offset, this);

@@ -70,7 +70,7 @@ public class ModelBuilder extends JPanel {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        java.net.URL tempURL = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
         try {
-            URL url = (URL) ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
+            URL url = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
             ImageIcon icon = new ImageIcon(url);
             f.setIconImage(icon.getImage());
         } catch (Exception e) {

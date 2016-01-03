@@ -41,7 +41,8 @@ public class BeastMain {
             getDefaultFrame().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         }
 
-        public void doStop() {
+        @Override
+		public void doStop() {
             // thread.stop is deprecated so need to send a message to running threads...
 //            Iterator iter = parser.getThreads();
 //            while (iter.hasNext()) {
@@ -175,7 +176,8 @@ public class BeastMain {
     static String getFileNameByDialog(final String title) {
         final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         fc.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(final File f) {
+            @Override
+			public boolean accept(final File f) {
                 if (f.isDirectory()) {
                     return true;
                 }
@@ -187,7 +189,8 @@ public class BeastMain {
             }
 
             // The description of this filter
-            public String getDescription() {
+            @Override
+			public String getDescription() {
                 return "xml files";
             }
         });
@@ -354,7 +357,8 @@ public class BeastMain {
 
         if (arguments.hasOption("noerr")) {
 		 	System.setErr(new PrintStream(new OutputStream() {
-		 		public void write(int b) {
+		 		@Override
+				public void write(int b) {
 		 		}
 		 	}));
         }        

@@ -19,6 +19,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -123,7 +124,7 @@ public class ListInputEditor extends InputEditor.Base {
         if (m_inputLabel != null) {
             m_inputLabel.setMaximumSize(new Dimension(m_inputLabel.getSize().width, 1000));
             m_inputLabel.setAlignmentY(1.0f);
-            m_inputLabel.setVerticalAlignment(JLabel.TOP);
+            m_inputLabel.setVerticalAlignment(SwingConstants.TOP);
             m_inputLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         }
 
@@ -189,7 +190,8 @@ public class ListInputEditor extends InputEditor.Base {
         if (m_bExpandOption == ExpandOption.FALSE || m_bExpandOption == ExpandOption.IF_ONE_ITEM && ((List<?>) m_input.get()).size() > 1) {
             editButton.setToolTipText("Edit item in the list");
             editButton.addActionListener(new ActionListenerObject(plugin) {
-                public void actionPerformed(ActionEvent e) {
+                @Override
+				public void actionPerformed(ActionEvent e) {
                     m_o = editItem(m_o);
                 }
             });
@@ -233,7 +235,8 @@ public class ListInputEditor extends InputEditor.Base {
                 editButton.setVisible(false);
             }
             editButton.addActionListener(new ExpandActionListener(expandBox, plugin) {
-                public void actionPerformed(ActionEvent e) {
+                @Override
+				public void actionPerformed(ActionEvent e) {
                     SmallButton editButton = (SmallButton) e.getSource();
                     m_box.setVisible(!m_box.isVisible());
                     if (m_box.isVisible()) {

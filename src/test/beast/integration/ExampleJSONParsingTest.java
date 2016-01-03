@@ -35,7 +35,8 @@ public class ExampleJSONParsingTest extends TestCase {
             System.out.println("Test JSON Examples in " + dir);
             File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".json");
                 }
             });
@@ -77,7 +78,8 @@ public class ExampleJSONParsingTest extends TestCase {
             System.out.println("Test that JSON Examples run in " + dir);
             File sExampleDir = new File(dir);
             String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
+                @Override
+				public boolean accept(File dir, String name) {
                     return name.endsWith(".json");
                 }
             });

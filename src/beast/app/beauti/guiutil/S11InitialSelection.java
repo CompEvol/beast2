@@ -46,7 +46,8 @@ public class S11InitialSelection extends PlainDocument {
                 if (!selecting) highlightCompletedText(0);
             });
         editor.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+            @Override
+			public void keyPressed(KeyEvent e) {
                 if (comboBox.isDisplayable()) comboBox.setPopupVisible(true);
             }
         });
@@ -56,13 +57,15 @@ public class S11InitialSelection extends PlainDocument {
         highlightCompletedText(0);
     }
 
-    public void remove(int offs, int len) throws BadLocationException {
+    @Override
+	public void remove(int offs, int len) throws BadLocationException {
         // return immediately when selecting an item
         if (selecting) return;
         super.remove(offs, len);
     }
 
-    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+    @Override
+	public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         // return immediately when selecting an item
         if (selecting) return;
         // insert the string into the document
@@ -147,7 +150,8 @@ public class S11InitialSelection extends PlainDocument {
 
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 createAndShowGUI();
             }
         });

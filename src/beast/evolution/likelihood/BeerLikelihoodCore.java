@@ -341,7 +341,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param fProportions the proportions of sites in each category
      * @param fOutPartials an array into which the partials will go
      */
-    protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
+    @Override
+	protected void calculateIntegratePartials(double[] fInPartials, double[] fProportions, double[] fOutPartials) {
 
         int u = 0;
         int v = 0;
@@ -378,7 +379,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param fFrequencies       an array of state frequencies
      * @param fOutLogLikelihoods an array into which the likelihoods will go
      */
-    public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods) {
+    @Override
+	public void calculateLogLikelihoods(double[] fPartials, double[] fFrequencies, double[] fOutLogLikelihoods) {
         int v = 0;
         for (int k = 0; k < nrOfPatterns; k++) {
 
@@ -401,7 +403,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param nMatrixCount         the number of matrices (i.e., number of categories)
      * @param bIntegrateCategories whether sites are being integrated over all matrices
      */
-    public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean bUseAmbiguities) {
+    @Override
+	public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean bUseAmbiguities) {
 
         this.nrOfNodes = nNodeCount;
         this.nrOfPatterns = nPatternCount;
@@ -440,7 +443,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * cleans up and deallocates arrays.
      */
-    public void finalize() throws java.lang.Throwable {
+    @Override
+	public void finalize() throws java.lang.Throwable {
         nrOfNodes = 0;
         nrOfPatterns = 0;
         nrOfMatrices = 0;
@@ -468,7 +472,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Allocates partials for a node
      */
-    public void createNodePartials(int iNodeIndex) {
+    @Override
+	public void createNodePartials(int iNodeIndex) {
 
         this.partials[0][iNodeIndex] = new double[partialsSize];
         this.partials[1][iNodeIndex] = new double[partialsSize];
@@ -477,7 +482,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Sets partials for a node
      */
-    public void setNodePartials(int iNodeIndex, double[] fPartials) {
+    @Override
+	public void setNodePartials(int iNodeIndex, double[] fPartials) {
 
         if (this.partials[0][iNodeIndex] == null) {
             createNodePartials(iNodeIndex);
@@ -509,7 +515,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Sets states for a node
      */
-    public void setNodeStates(int iNodeIndex, int[] iStates) {
+    @Override
+	public void setNodeStates(int iNodeIndex, int[] iStates) {
 
         if (this.states[iNodeIndex] == null) {
             createNodeStates(iNodeIndex);
@@ -520,7 +527,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Gets states for a node
      */
-    public void getNodeStates(int iNodeIndex, int[] iStates) {
+    @Override
+	public void getNodeStates(int iNodeIndex, int[] iStates) {
         System.arraycopy(this.states[iNodeIndex], 0, iStates, 0, nrOfPatterns);
     }
 
@@ -534,7 +542,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Sets probability matrix for a node
      */
-    public void setNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
+    @Override
+	public void setNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
         System.arraycopy(fMatrix, 0, matrices[currentMatrixIndex[iNodeIndex]][iNodeIndex],
                 iMatrixIndex * matrixSize, matrixSize);
     }
@@ -548,7 +557,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Gets probability matrix for a node
      */
-    public void getNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
+    @Override
+	public void getNodeMatrix(int iNodeIndex, int iMatrixIndex, double[] fMatrix) {
         System.arraycopy(matrices[currentMatrixIndex[iNodeIndex]][iNodeIndex],
                 iMatrixIndex * matrixSize, fMatrix, 0, matrixSize);
     }
@@ -581,7 +591,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param iNodeIndex2 the 'child 2' node
      * @param iNodeIndex3 the 'parent' node
      */
-    public void calculatePartials(int iNodeIndex1, int iNodeIndex2, int iNodeIndex3) {
+    @Override
+	public void calculatePartials(int iNodeIndex1, int iNodeIndex2, int iNodeIndex3) {
         if (states[iNodeIndex1] != null) {
             if (states[iNodeIndex2] != null) {
                 calculateStatesStatesPruning(
@@ -665,7 +676,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     }
 
 
-    public void integratePartials(int iNodeIndex, double[] fProportions, double[] fOutPartials) {
+    @Override
+	public void integratePartials(int iNodeIndex, double[] fProportions, double[] fOutPartials) {
         calculateIntegratePartials(partials[currentPartialsIndex[iNodeIndex]][iNodeIndex], fProportions, fOutPartials);
     }
 
@@ -740,7 +752,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      *
      * @return the log scaling factor
      */
-    public double getLogScalingFactor(int iPattern) {
+    @Override
+	public double getLogScalingFactor(int iPattern) {
 //    	if (m_bUseScaling) {
 //    		return -(m_nNodeCount/2) * Math.log(SCALE);
 //    	} else {
@@ -782,7 +795,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         storedPartialsIndex = iTmp2;
     }
 
-    public void unstore() {
+    @Override
+	public void unstore() {
         System.arraycopy(storedMatrixIndex, 0, currentMatrixIndex, 0, nrOfNodes);
         System.arraycopy(storedPartialsIndex, 0, currentPartialsIndex, 0, nrOfNodes);
     }

@@ -24,7 +24,8 @@ public class SampleOffValues extends Operator {
     public final Input<Boolean> scaleAll =
             new Input<>("all", "if true, sample all off values in one go.", false);
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
     }
 
     @Override

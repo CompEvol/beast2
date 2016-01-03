@@ -57,6 +57,7 @@ public class ContourAttrib implements Cloneable, java.io.Serializable {
 	*
 	*  @return  Returns a clone of this object.
 	**/
+	@Override
 	public Object clone() {
 		ContourAttrib newObject = null;
 

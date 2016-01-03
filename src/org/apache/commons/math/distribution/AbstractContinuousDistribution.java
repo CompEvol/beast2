@@ -63,7 +63,8 @@ public abstract class AbstractContinuousDistribution
      * @throws MathRuntimeException if the specialized class hasn't implemented this function
      * @since 2.1
      */
-    public double density(double x) throws MathRuntimeException {
+    @Override
+	public double density(double x) throws MathRuntimeException {
         throw new MathRuntimeException(new UnsupportedOperationException(),
                 "This distribution does not have a density function implemented");
     }
@@ -84,7 +85,8 @@ public abstract class AbstractContinuousDistribution
      * @throws IllegalArgumentException if <code>p</code> is not a valid
      *                                  probability.
      */
-    public double inverseCumulativeProbability(final double p)
+    @Override
+	public double inverseCumulativeProbability(final double p)
             throws MathException {
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
@@ -95,7 +97,8 @@ public abstract class AbstractContinuousDistribution
         // subclasses can override if there is a better method.
         UnivariateRealFunction rootFindingFunction =
                 new UnivariateRealFunction() {
-                    public double value(double x) throws FunctionEvaluationException {
+                    @Override
+					public double value(double x) throws FunctionEvaluationException {
                         double ret = Double.NaN;
                         try {
                             ret = cumulativeProbability(x) - p;

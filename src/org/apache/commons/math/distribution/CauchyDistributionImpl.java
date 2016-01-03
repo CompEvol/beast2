@@ -98,7 +98,8 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      * @param x the value at which the CDF is evaluated.
      * @return CDF evaluted at <code>x</code>.
      */
-    public double cumulativeProbability(double x) {
+    @Override
+	public double cumulativeProbability(double x) {
         return 0.5 + (Math.atan((x - median) / scale) / Math.PI);
     }
 
@@ -107,7 +108,8 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      *
      * @return median for this distribution
      */
-    public double getMedian() {
+    @Override
+	public double getMedian() {
         return median;
     }
 
@@ -116,7 +118,8 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      *
      * @return scale parameter for this distribution
      */
-    public double getScale() {
+    @Override
+	public double getScale() {
         return scale;
     }
 
@@ -167,7 +170,8 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      * @param median for this distribution
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setMedian(double median) {
         setMedianInternal(median);
     }
@@ -188,7 +192,8 @@ public class CauchyDistributionImpl extends AbstractContinuousDistribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setScale(double s) {
         setScaleInternal(s);
     }

@@ -19,7 +19,8 @@ public class TreeTopFinder extends CalculationNode {
     double oldHeight;
     double height;
 
-    public void initAndValidate() throws Exception {
+    @Override
+	public void initAndValidate() throws Exception {
         oldHeight = Double.NaN;
         trees = treeInputs.get();
         height = calcHighestTreeHeight();

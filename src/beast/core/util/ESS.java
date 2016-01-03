@@ -108,7 +108,7 @@ public class ESS extends BEASTObject implements Loggable {
             // though a more accurate estimate would be
             // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
             fAutoCorrelation[iLag] = squareLaggedSums.get(iLag) - (fSum1 + fSum2) * fMean + fMean * fMean * (nSamples - iLag);
-            fAutoCorrelation[iLag] /= ((double) (nSamples - iLag));
+            fAutoCorrelation[iLag] /= (nSamples - iLag);
             fSum1 -= trace.get(nTotalSamples - 1 - iLag);
             fSum2 -= trace.get(iStart + iLag);
         }
@@ -182,7 +182,7 @@ public class ESS extends BEASTObject implements Loggable {
                 // though a more accurate estimate would be
                 // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
                 fAutoCorrelation[iLag] = fSquareLaggedSums[iLag] - (fSum1 + fSum2) * fMean + fMean * fMean * (i + 1 - iLag);
-                fAutoCorrelation[iLag] /= ((double) (i + 1 - iLag));
+                fAutoCorrelation[iLag] /= (i + 1 - iLag);
                 fSum1 -= fTrace[i - iLag];
                 fSum2 -= fTrace[iLag];
             }
@@ -231,7 +231,7 @@ public class ESS extends BEASTObject implements Loggable {
                 // though a more accurate estimate would be
                 // fAutoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - fSum1 * fSum2
                 fAutoCorrelation[iLag] = fSquareLaggedSums[iLag] - (fSum1 + fSum2) * fMean + fMean * fMean * (i + 1 - iLag);
-                fAutoCorrelation[iLag] /= ((double) (i + 1 - iLag));
+                fAutoCorrelation[iLag] /= (i + 1 - iLag);
                 fSum1 -= fTrace[i - iLag];
                 fSum2 -= fTrace[iLag];
             }

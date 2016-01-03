@@ -68,19 +68,23 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
 
     // Implementation of abstract methods
 
-    public List<String> getParameterIds() {
+    @Override
+	public List<String> getParameterIds() {
         return Collections.singletonList(popSizeParameter.get().getID());
     }
 
-    public double getPopSize(double t) {
+    @Override
+	public double getPopSize(double t) {
         return getN0();
     }
 
-    public double getIntensity(double t) {
+    @Override
+	public double getIntensity(double t) {
         return t / getN0();
     }
 
-    public double getInverseIntensity(double x) {
+    @Override
+	public double getInverseIntensity(double x) {
         return getN0() * x;
     }
 

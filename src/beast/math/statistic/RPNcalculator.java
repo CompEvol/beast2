@@ -38,7 +38,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     RPNexpressionCalculator.GetVariable[] vars;
     int dim;
 
-    public void initAndValidate() throws Exception {
+    @Override
+	public void initAndValidate() throws Exception {
 
         names = new ArrayList<>();
         dim = parametersInput.get().get(0).getDimension();
@@ -70,7 +71,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
         for (int i = 0; i < dim; i++) {
             final int index = i;
             vars[i] = new RPNexpressionCalculator.GetVariable() {
-                public double get(final String name) {
+                @Override
+				public double get(final String name) {
                     final Object[] values = ((Object[]) variables.get(name));
                     if (values == null) {
                     	String ids = "";
@@ -113,7 +115,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
         }
     }
 
-    public int getDimension() {
+    @Override
+	public int getDimension() {
         return dim;
     }
 

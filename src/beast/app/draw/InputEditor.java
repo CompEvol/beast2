@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -138,14 +139,16 @@ public abstract class Base extends JPanel implements InputEditor {
      */
     List<InputEditor> m_validateListeners;
 
-    public void addValidationListener(InputEditor validateListener) {
+    @Override
+	public void addValidationListener(InputEditor validateListener) {
         if (m_validateListeners == null) {
             m_validateListeners = new ArrayList<>();
         }
         m_validateListeners.add(validateListener);
     }
 
-    public void notifyValidationListeners(ValidationStatus state) {
+    @Override
+	public void notifyValidationListeners(ValidationStatus state) {
         if (m_validateListeners != null) {
             for (InputEditor listener : m_validateListeners) {
                 listener.startValidating(state);
@@ -183,9 +186,11 @@ public abstract class Base extends JPanel implements InputEditor {
      * Either implement type() or types() if multiple
      * types are supported *
      */
-    abstract public Class<?> type();
+    @Override
+	abstract public Class<?> type();
 
-    public Class<?>[] types() {
+    @Override
+	public Class<?>[] types() {
         Class<?>[] types = new Class<?>[1];
         types[0] = type();
         return types;
@@ -194,7 +199,8 @@ public abstract class Base extends JPanel implements InputEditor {
     /**
      * construct an editor consisting of a label and input entry *
      */
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    @Override
+	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
         m_plugin = plugin;
@@ -304,7 +310,7 @@ public abstract class Base extends JPanel implements InputEditor {
         if (m_bAddButtons) {
             m_inputLabel = new JLabel(sLabel);
             m_inputLabel.setToolTipText(sTipText);
-            m_inputLabel.setHorizontalTextPosition(JLabel.RIGHT);
+            m_inputLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
             //Dimension size = new Dimension(g_nLabelWidth, 20);
             Dimension size = new Dimension(200, 20);
             m_inputLabel.setMaximumSize(size);
@@ -443,7 +449,8 @@ public abstract class Base extends JPanel implements InputEditor {
     }
 
     // we should leave it to the component to set its own border
-    @Deprecated
+    @Override
+	@Deprecated
     public void setBorder(Border border) {
 		super.setBorder(border);
     }
@@ -456,6 +463,7 @@ public abstract class Base extends JPanel implements InputEditor {
     // what is this method for? We should leave repainting to the standard mechanism
     // RRB: Did not always work in the past. The following should suffice (though perhaps
     // slightly less efficient to also revalidate, but have not noticed any difference)
+	@Override
 	public void repaint() {
 		// tell Swing that an area of the window is dirty
 		super.repaint();
@@ -464,6 +472,7 @@ public abstract class Base extends JPanel implements InputEditor {
 		super.revalidate();
 	}
 
+	@Override
 	public Component getComponent() {
 		return this;
 	}

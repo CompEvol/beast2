@@ -38,19 +38,23 @@ public class GTRTest extends TestCase {
      * expm(q0 * d)
      */
     protected Instance test0 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.25, 0.25, 0.25, 0.25};
         }
 
-        public Double [] getRates() {
+        @Override
+		public Double [] getRates() {
             return new Double[] {0.5, 1.0, 0.5, 0.5, 1.0, 0.5};
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.906563342722, 0.023790645491, 0.045855366296, 0.023790645491,
                     0.023790645491, 0.906563342722, 0.023790645491, 0.045855366296,
@@ -61,19 +65,23 @@ public class GTRTest extends TestCase {
     };
 
     protected Instance test1 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.50, 0.20, 0.2, 0.1};
         }
 
-        public Double [] getRates() {
+        @Override
+		public Double [] getRates() {
             return new Double[] {0.5, 1.0, 0.5, 0.5, 1.0, 0.5};
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.928287993055, 0.021032136637, 0.040163801989, 0.010516068319,
                     0.052580341593, 0.906092679369, 0.021032136637, 0.020294842401,
@@ -84,19 +92,23 @@ public class GTRTest extends TestCase {
     };
 
     protected Instance test2 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.20, 0.30, 0.25, 0.25};
         }
 
-        public Double [] getRates() {
+        @Override
+		public Double [] getRates() {
             return new Double[] {0.2, 1.0, 0.2, 0.2, 1.0, 0.2};
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
                     0.904026219693, 0.016708646875, 0.065341261036, 0.013923872396,
                     0.011139097917, 0.910170587813, 0.013923872396, 0.064766441875,
@@ -107,19 +119,23 @@ public class GTRTest extends TestCase {
     };
 
     protected Instance test3 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.20, 0.30, 0.25, 0.25};
         }
 
-        public Double [] getRates() {
+        @Override
+		public Double [] getRates() {
             return new Double[] {0.2, 1.0, 0.3, 0.4, 1.0, 0.5};
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
             		0.9151233523912986, 0.01419463331835106, 0.053614529507541434, 0.017067484782809166, 
             		0.009463088878900653, 0.9148659231065082, 0.022324155452048293, 0.05334683256254297, 
@@ -130,19 +146,23 @@ public class GTRTest extends TestCase {
     };
     
     protected Instance test4 = new Instance() {
-        public Double[] getPi() {
+        @Override
+		public Double[] getPi() {
             return new Double[]{0.20, 0.30, 0.25, 0.25};
         }
 
-        public Double [] getRates() {
+        @Override
+		public Double [] getRates() {
             return new Double[] {0.2, 10.0, 0.3, 0.4, 5.0, 0.5};
         }
 
-        public double getDistance() {
+        @Override
+		public double getDistance() {
             return 0.1;
         }
 
-        public double[] getExpectedResult() {
+        @Override
+		public double[] getExpectedResult() {
             return new double[]{
             			0.8780963047046206, 0.0033252855682803723, 0.11461112844510626, 0.003967281281992822, 
             			0.002216857045520258, 0.9327483979953872, 0.005055665025823634, 0.05997907993326873, 

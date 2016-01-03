@@ -104,7 +104,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      *
      * @return mean for this distribution
      */
-    public double getMean() {
+    @Override
+	public double getMean() {
         return mean;
     }
 
@@ -114,7 +115,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * @param mean for this distribution
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setMean(double mean) {
         setMeanInternal(mean);
     }
@@ -133,7 +135,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      *
      * @return standard deviation for this distribution
      */
-    public double getStandardDeviation() {
+    @Override
+	public double getStandardDeviation() {
         return standardDeviation;
     }
 
@@ -144,7 +147,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * @throws IllegalArgumentException if <code>sd</code> is not positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setStandardDeviation(double sd) {
         setStandardDeviationInternal(sd);
     }
@@ -171,7 +175,9 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      * @return The pdf at point x.
      * @deprecated
      */
-    public double density(Double x) {
+    @Deprecated
+	@Override
+	public double density(Double x) {
         return density(x.doubleValue());
     }
 
@@ -205,7 +211,8 @@ public class NormalDistributionImpl extends AbstractContinuousDistribution
      *                       x is more than 20 standard deviations from the mean, in which case the
      *                       convergence exception is caught and 0 or 1 is returned.
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         try {
             return 0.5 * (1.0 + Erf.erf((x - mean) /
                     (standardDeviation * Math.sqrt(2.0))));

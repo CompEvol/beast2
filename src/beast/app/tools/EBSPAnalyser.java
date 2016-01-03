@@ -253,7 +253,7 @@ public class EBSPAnalyser {
         private final JTextField inputFileNameText = new JTextField("not selected", 16);
         private final JComboBox<String> typeCombo = new JComboBox<>(new String[]{"linear", "stepwise"});
 
-        final WholeNumberField burninText = new WholeNumberField((long) 0, Long.MAX_VALUE);
+        final WholeNumberField burninText = new WholeNumberField(0, Long.MAX_VALUE);
         private final JTextField outputFileNameText = new JTextField("not selected", 16);
 
         private File outputFile = null;

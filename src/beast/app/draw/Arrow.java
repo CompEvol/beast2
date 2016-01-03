@@ -209,23 +209,23 @@ public class Arrow extends Shape {
         double ar, br, ga, gb, A, B, C, p, q;
 
         if (p1.x > p0.x)
-            p = (double) (p0.x + w - a);
+            p = p0.x + w - a;
         else
-            p = (double) (p0.x - w + a);
+            p = p0.x - w + a;
         if (p1.y > p0.y)
-            q = (double) (p0.y + h - b);
+            q = p0.y + h - b;
         else
-            q = (double) (p0.y - h + b);
+            q = p0.y - h + b;
 
-        ar = (double) a;
-        br = (double) b;
+        ar = a;
+        br = b;
         if (p1.x == p0.x) // cheat to prevent divsion by zero
         {
             ga = (double) (p1.y - p0.y) / 1;
         } else {
             ga = (double) (p1.y - p0.y) / (double) (p1.x - p0.x);
         }
-        gb = (double) (p0.y - ga * p0.x);
+        gb = p0.y - ga * p0.x;
         A = 1 / (ar * ar) + (ga * ga) / (br * br);
         B = -2.0 * p / (ar * ar) + 2.0 * ga * gb / (br * br) - 2.0 * ga * q / (br * br);
         C = p * p / (ar * ar) + gb * gb / (br * br) - 2.0 * gb * q / (br * br) + q * q / (br * br) - 1.0;
@@ -251,7 +251,8 @@ public class Arrow extends Shape {
         m_sID = sID;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return m_sTailID + "-->" + m_sHeadID;
     }
 

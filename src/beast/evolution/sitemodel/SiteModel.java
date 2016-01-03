@@ -603,7 +603,8 @@ public class SiteModel extends SiteModelInterface.Base {
         return (prob < 0.5 ? -z : z);
     }
 
-    public double getProportionInvariant() {
+    @Override
+	public double getProportionInvariant() {
         //if (invarParameter == null) {
         //	return 0;
         //}

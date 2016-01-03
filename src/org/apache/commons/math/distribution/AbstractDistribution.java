@@ -58,7 +58,8 @@ public abstract class AbstractDistribution
      *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if <code>x0 > x1</code>
      */
-    public double cumulativeProbability(double x0, double x1)
+    @Override
+	public double cumulativeProbability(double x0, double x1)
             throws MathException {
         if (x0 > x1) {
             throw MathRuntimeException.createIllegalArgumentException(

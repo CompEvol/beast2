@@ -139,7 +139,8 @@ public class TN93 extends SubstitutionModel.NucleotideBase {
      *
      * @param matrix an array to store the matrix
      */
-    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+    @Override
+	public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
 
         double distance = (fStartTime - fEndTime) * fRate;
 
@@ -224,7 +225,8 @@ public class TN93 extends SubstitutionModel.NucleotideBase {
         //System.arraycopy(fa1, 0, matrix, 0, 16);
     }
 
-    public EigenDecomposition getEigenDecomposition(Node node) {
+    @Override
+	public EigenDecomposition getEigenDecomposition(Node node) {
 
         if (eigenDecomposition == null) {
             double[] evec = new double[STATE_COUNT * STATE_COUNT];

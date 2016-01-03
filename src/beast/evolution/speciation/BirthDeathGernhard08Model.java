@@ -104,7 +104,8 @@ public class BirthDeathGernhard08Model extends YuleModel {
     /**
      * scaling coefficient of tree *
      */
-    protected double logCoeff(final int taxonCount) {
+    @Override
+	protected double logCoeff(final int taxonCount) {
         switch (type) {
             case UNSCALED:
                 break;

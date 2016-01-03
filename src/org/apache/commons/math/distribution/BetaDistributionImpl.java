@@ -101,7 +101,8 @@ public class BetaDistributionImpl
      *
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setAlpha(double alpha) {
         this.alpha = alpha;
         z = Double.NaN;
@@ -110,7 +111,8 @@ public class BetaDistributionImpl
     /**
      * {@inheritDoc}
      */
-    public double getAlpha() {
+    @Override
+	public double getAlpha() {
         return alpha;
     }
 
@@ -119,7 +121,8 @@ public class BetaDistributionImpl
      *
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setBeta(double beta) {
         this.beta = beta;
         z = Double.NaN;
@@ -128,7 +131,8 @@ public class BetaDistributionImpl
     /**
      * {@inheritDoc}
      */
-    public double getBeta() {
+    @Override
+	public double getBeta() {
         return beta;
     }
 
@@ -148,7 +152,9 @@ public class BetaDistributionImpl
      * @return The pdf at point x.
      * @deprecated
      */
-    public double density(Double x) {
+    @Deprecated
+	@Override
+	public double density(Double x) {
         return density(x.doubleValue());
     }
 
@@ -159,7 +165,8 @@ public class BetaDistributionImpl
      * @return The pdf at point x.
      * @since 2.1
      */
-    public double density(double x) {
+    @Override
+	public double density(double x) {
         recomputeZ();
         if (x < 0 || x > 1) {
             return 0;
@@ -223,7 +230,8 @@ public class BetaDistributionImpl
     /**
      * {@inheritDoc}
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         if (x <= 0) {
             return 0;
         } else if (x >= 1) {

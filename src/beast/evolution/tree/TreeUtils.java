@@ -36,7 +36,8 @@ public class TreeUtils {
 
         return new Comparator<Node>() {
 
-            public int compare(Node node1, Node node2) {
+            @Override
+			public int compare(Node node1, Node node2) {
                 return node2.getLeafNodeCount() - node1.getLeafNodeCount();
             }
 
@@ -51,7 +52,8 @@ public class TreeUtils {
 
         return new Comparator<Node>() {
 
-            public int compare(Node node1, Node node2) {
+            @Override
+			public int compare(Node node1, Node node2) {
                 int larger = node1.getLeafNodeCount() - node2.getLeafNodeCount();
 
                 if (larger != 0) return larger;
@@ -68,7 +70,8 @@ public class TreeUtils {
     public static Comparator<Node> createReverseNodeDensityMinNodeHeightComparator() {
         return new Comparator<Node>() {
 
-            public int compare(Node node1, Node node2) {
+            @Override
+			public int compare(Node node1, Node node2) {
                 int larger = node2.getLeafNodeCount() - node1.getLeafNodeCount();
 
 
@@ -98,7 +101,7 @@ public class TreeUtils {
 
     public static double getDoubleMetaData(Node node, String metaDataName) {
         Object metaData = node.getMetaData(metaDataName);
-        if (metaData instanceof Integer) return (double) ((Integer) metaData);
+        if (metaData instanceof Integer) return ((Integer) metaData);
         if (metaData instanceof Double) return (Double) metaData;
         if (metaData instanceof String) return Double.parseDouble((String) metaData);
         return -1;

@@ -124,18 +124,21 @@ public interface PopulationFunction extends UnivariateRealFunction {
         }
 
         // general functions
-        public void initAndValidate() throws Exception {
+        @Override
+		public void initAndValidate() throws Exception {
             prepare();
         }
 
-        public double getThreshold() {
+        @Override
+		public double getThreshold() {
             return 0;
         }
 
         /**
          * Calculates the integral 1/N(t) dt between start and finish.
          */
-        public double getIntegral(double start, double finish) {
+        @Override
+		public double getIntegral(double start, double finish) {
             return getIntensity(finish) - getIntensity(start);
         }
 
@@ -185,7 +188,8 @@ public interface PopulationFunction extends UnivariateRealFunction {
          * @param t the time
          * @return the intensity
          */
-        public double value(double t) {
+        @Override
+		public double value(double t) {
             return 1.0 / getPopSize(t);
         }
 
@@ -238,10 +242,10 @@ public interface PopulationFunction extends UnivariateRealFunction {
          */
         public static void testConsistency(PopulationFunction populationFunction, int steps, double maxTime) {
 
-            final double delta = maxTime / (double) steps;
+            final double delta = maxTime / steps;
 
             for (int i = 0; i <= steps; i++) {
-                final double time = (double) i * delta;
+                final double time = i * delta;
                 final double intensity = populationFunction.getIntensity(time);
                 final double newTime = populationFunction.getInverseIntensity(intensity);
 

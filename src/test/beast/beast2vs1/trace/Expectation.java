@@ -83,7 +83,8 @@ public class Expectation extends BEASTObject {
 //        return stderr;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return traceName.get() + " " + expValue.get();
     }
 

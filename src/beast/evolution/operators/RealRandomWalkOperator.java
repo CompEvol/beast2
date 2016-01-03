@@ -25,7 +25,8 @@ public class RealRandomWalkOperator extends Operator {
     double windowSize = 1;
     boolean useGaussian;
 
-    public void initAndValidate() {
+    @Override
+	public void initAndValidate() {
         windowSize = windowSizeInput.get();
         useGaussian = useGaussianInput.get();
     }

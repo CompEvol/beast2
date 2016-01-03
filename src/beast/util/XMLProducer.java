@@ -961,7 +961,7 @@ public class XMLProducer extends XMLParser {
                 return;
             } else if (value instanceof BEASTInterface) {
             	if (!value.equals(input.defaultValue)) {
-                    if (isShort && isDone.contains((BEASTInterface) value)) {
+                    if (isShort && isDone.contains(value)) {
                         buf.append(" " + input.getName() + "='@" + normalise( ((BEASTInterface) value).getID() ) + "'");
                         if (!isInputsDone.containsKey(beastObject)) {
                         	isInputsDone.put(beastObject, new HashSet<>());

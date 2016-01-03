@@ -15,7 +15,6 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
 import beast.math.distributions.Prior;
 
 public class PriorInputEditor extends InputEditor.Base {

@@ -127,7 +127,8 @@ public class FDistributionImpl
      * @throws MathException if the cumulative probability can not be
      *                       computed due to convergence or other numerical errors.
      */
-    public double cumulativeProbability(double x) throws MathException {
+    @Override
+	public double cumulativeProbability(double x) throws MathException {
         double ret;
         if (x <= 0.0) {
             ret = 0.0;
@@ -222,7 +223,8 @@ public class FDistributionImpl
      *                                  positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setNumeratorDegreesOfFreedom(double degreesOfFreedom) {
         setNumeratorDegreesOfFreedomInternal(degreesOfFreedom);
     }
@@ -247,7 +249,8 @@ public class FDistributionImpl
      *
      * @return the numerator degrees of freedom.
      */
-    public double getNumeratorDegreesOfFreedom() {
+    @Override
+	public double getNumeratorDegreesOfFreedom() {
         return numeratorDegreesOfFreedom;
     }
 
@@ -259,7 +262,8 @@ public class FDistributionImpl
      *                                  positive.
      * @deprecated as of 2.1 (class will become immutable in 3.0)
      */
-    @Deprecated
+    @Override
+	@Deprecated
     public void setDenominatorDegreesOfFreedom(double degreesOfFreedom) {
         setDenominatorDegreesOfFreedomInternal(degreesOfFreedom);
     }
@@ -284,7 +288,8 @@ public class FDistributionImpl
      *
      * @return the denominator degrees of freedom.
      */
-    public double getDenominatorDegreesOfFreedom() {
+    @Override
+	public double getDenominatorDegreesOfFreedom() {
         return denominatorDegreesOfFreedom;
     }
 
