@@ -67,6 +67,7 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
+import beast.util.XMLParser.NameValuePair;
 
 
 /**
@@ -214,12 +215,14 @@ public class XMLParser {
         }
     }
 
-    public class NameValuePair {
+    public static class NameValuePair {
 		String name;
 		Object value;
+		boolean processed;
 		public NameValuePair(String name, Object value) {
 			this.name = name;
 			this.value = value;
+			processed = false;
 		}
 	}
 
@@ -842,41 +845,64 @@ public class XMLParser {
 		    		}
 	    		}
 	    	}
-	    	Class<?>[] types  = ctor.getParameterTypes();	    	
+	    	
+	    	for (NameValuePair pair : inputInfo) {
+	    		pair.processed = false;
+	    	}
+
+	    	Class<?>[] types  = ctor.getParameterTypes();
     		//Type[] gtypes = ctor.getGenericParameterTypes();
 	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
-	    		Object [] args = new Object[types.length];
-	    		for (int i = 0; i < types.length; i++) {
-	    			Param param = paramAnnotations.get(i);
-	    			Type type = types[i];
-	    			if (type.getTypeName().equals("java.util.List")) {
-	    				if (args[i] == null) {
-	    					// no need to parameterise list due to type erasure
-	    					args[i] = new ArrayList();
-	    				}
-	    				List<Object> values = getListOfValues(param, inputInfo);
-	    				((List)args[i]).addAll(values);
-	    			} else {
-	    				args[i] = getValue(param, types[i], inputInfo);
-	    			}
-	    		}
-	    		// TODO: more error checking here to ensure all inputs are used
-	    		try {
-					Object o = ctor.newInstance(args);
-					BEASTInterface beastObject = (BEASTInterface) o;
-					register(node, beastObject);
-					return beastObject;
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					throw new XMLParserException(node, "Could not create object: " + e.getMessage(), 1012);
+		    	try {
+		    		Object [] args = new Object[types.length];
+		    		for (int i = 0; i < types.length; i++) {
+		    			Param param = paramAnnotations.get(i);
+		    			Type type = types[i];
+		    			if (type.getTypeName().equals("java.util.List")) {
+		    				if (args[i] == null) {
+		    					// no need to parameterise list due to type erasure
+		    					args[i] = new ArrayList();
+		    				}
+		    				List<Object> values = getListOfValues(param, inputInfo);
+		    				((List)args[i]).addAll(values);
+		    			} else {
+		    				args[i] = getValue(param, types[i], inputInfo);
+		    			}
+		    		}
+
+		    		// ensure all inputs are used
+		    		boolean allUsed = true;
+			    	for (NameValuePair pair : inputInfo) {
+			    		if (!pair.processed) {
+			    			allUsed= false;
+			    		}
+			    	}
+
+			    	if (allUsed) {
+				    	try {
+							Object o = ctor.newInstance(args);
+							BEASTInterface beastObject = (BEASTInterface) o;
+							register(node, beastObject);
+							return beastObject;
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new XMLParserException(node, "Could not create object: " + e.getMessage(), 1012);
+						}
+			    	}
+				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					// we get here when a param value cannot be constructed from a default value
+					// let's try the next constructor (if any)
 				}
+
 	    	}
 		}
 		return null;
 	}
 
-	private Object getValue(Param param, Class<?> type, List<NameValuePair> inputInfo) {
+	private Object getValue(Param param, Class<?> type, List<NameValuePair> inputInfo) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		for (NameValuePair pair : inputInfo) {
 			if (pair.name.equals(param.name())) {
+				pair.processed = true;
 				if (type.isAssignableFrom(Integer.class)) {
 					return Integer.parseInt((String) pair.value);
 				}
@@ -886,14 +912,48 @@ public class XMLParser {
 				return pair.value;
 			}
 		}
-		return param.defaultValue();
+		
+		// could not find Param entry in inputInfo
+		
+		// check if this parameter is required or optional
+		if (!param.optional()) {
+			throw new IllegalArgumentException();
+		}
+
+		// try using a String constructor of the default value
+        Constructor<?> ctor;
+        String value = param.defaultValue();
+        Object v = value; 
+        try {
+        	ctor = type.getDeclaredConstructor(String.class);
+        } catch (NoSuchMethodException e) {
+        	// we get here if there is not String constructor
+        	// try integer constructor instead
+        	try {
+        		if (value.startsWith("0x")) {
+        			v = Integer.parseInt(value.substring(2), 16);
+        		} else {
+        			v = Integer.parseInt(value);
+        		}
+            	ctor = type.getDeclaredConstructor(int.class);
+            	
+        	} catch (NumberFormatException e2) {
+            	// could not parse as integer, try double instead
+        		v = Double.parseDouble(value);
+            	ctor = type.getDeclaredConstructor(double.class);
+        	}
+        }
+        ctor.setAccessible(true);
+        final Object o = ctor.newInstance(v);
+        return o;
 	}
 
-	private List<Object> getListOfValues(Param param, List<NameValuePair> inputInfo) {
+	static List<Object> getListOfValues(Param param, List<NameValuePair> inputInfo) {
 		List<Object> values = new ArrayList<>();
 		for (NameValuePair pair : inputInfo) {
 			if (pair.name.equals(param.name())) {
 				values.add(pair.value);
+				pair.processed = true;
 			}
 		}
 		return values;
@@ -1158,6 +1218,5 @@ public class XMLParser {
             e.printStackTrace();
         }
     }
-
-
+    
 } // class XMLParser

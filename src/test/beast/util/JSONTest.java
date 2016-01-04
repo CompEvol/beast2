@@ -55,6 +55,35 @@ public class JSONTest extends TestCase {
     	BEASTInterface b = parser.parseFile(new File("/tmp/JSONTest.json"));
     	assertEquals(3, (int) ((AnnotatedRunnableTestClass) b).getParam1());
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
+    	
+    	
+    	// test that default value for param1 comes through
+    	String json2 = "{version: \"2.3\"," + 
+    			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\"," + 
+    			"" + 
+    			"beast: [" + 
+    			"" + 
+    			"" + 
+    			"        {id: \"JSONTest\"," + 
+    			"         spec: \"test.beast.util.AnnotatedRunnableTestClass\"," + 
+    			"         taxon: [" + 
+    			"                 {id: \"first one\" }," + 
+    			"                 {id: \"second one\" }" + 
+    			"          ]" + 
+    			"        }" + 
+    			"]" + 
+    			"}";
+    	
+        outfile = new FileWriter(new File("/tmp/JSONTest.json"));
+        outfile.write(json2);
+        outfile.close();
+
+        parser = new JSONParser();
+    	b = parser.parseFile(new File("/tmp/JSONTest.json"));
+    	assertEquals(10, (int) ((AnnotatedRunnableTestClass) b).getParam1());
+    	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
+    	
+
     }
 
 }
