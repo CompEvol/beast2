@@ -25,6 +25,12 @@ public class AnnotatedRunnableTestClass extends Runnable {
 		this.param1 = param1;
 	}
 
+	/** default constructor, should not be used **/
+	public AnnotatedRunnableTestClass() {
+    	this.param1 = 0;
+    	this.taxa = new ArrayList<>();
+	}
+
 	public AnnotatedRunnableTestClass(
 			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated constructors", name = "param1", optional=true, defaultValue = "10") Integer param1,
 			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated List", name = "taxon") List<Taxon> taxa) {

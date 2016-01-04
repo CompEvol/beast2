@@ -26,6 +26,7 @@ import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.InputForAnnotatedConstructor;
 import beast.core.Param;
 
 /**
@@ -189,15 +190,17 @@ public class XMLParserUtils {
 			List<Input<?>> inputs = null;
 			inputs = beastObject.listInputs();
 			for (Input<?> input : inputs) {
-				try {
-					// force class types to be determined
-					if (input.getType() == null) {
-						input.determineClass(beastObject);
+				if (!(input instanceof InputForAnnotatedConstructor)) {
+					try {
+						// force class types to be determined
+						if (input.getType() == null) {
+							input.determineClass(beastObject);
+						}
+						inputTypes.add(new InputType(input.getName(), input.getType(), true, input.defaultValue));
+					} catch (Exception e) {
+						// seems safe to ignore
+						e.printStackTrace();
 					}
-					inputTypes.add(new InputType(input.getName(), input.getType(), true, input.defaultValue));
-				} catch (Exception e) {
-					// seems safe to ignore
-					e.printStackTrace();
 				}
 			}
 		} catch (InstantiationException e) {
