@@ -35,6 +35,10 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class XMLParserException extends Exception {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
      * DOM Node where the anomaly was in the vicinity *
      */
     Node _node;

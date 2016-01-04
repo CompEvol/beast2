@@ -35,6 +35,11 @@ import org.json.JSONObject;
 @SuppressWarnings("serial")
 public class JSONParserException extends XMLParserException {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * JSONObject where the anomaly was in the vicinity *
      */
 	JSONObject node;

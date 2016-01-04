@@ -9,7 +9,7 @@ import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;
 
 import beast.evolution.operators.DeltaExchangeOperator;
-import junit.framework.TestCase;
+import junit.framework.Assert;
 
 /** test how the FixedMeanRate flag interact with link/unlink **/
 public class FixedMeanRateTest extends BeautiBase {
@@ -70,10 +70,10 @@ public class FixedMeanRateTest extends BeautiBase {
 		}
 
 		List<Integer> weights = operator.parameterWeightsInput.get().valuesInput.get();
-		TestCase.assertEquals(weights.size(), 3);
-		TestCase.assertEquals(weights.get(0), (Integer)614);
-		TestCase.assertEquals(weights.get(1), (Integer)601);
-		TestCase.assertEquals(weights.get(2), (Integer)819);
+		Assert.assertEquals(weights.size(), 3);
+		Assert.assertEquals(weights.get(0), (Integer)614);
+		Assert.assertEquals(weights.get(1), (Integer)601);
+		Assert.assertEquals(weights.get(2), (Integer)819);
 
 		beautiFrame.table().selectCells(TableCell.row(0).column(1), TableCell.row(2).column(1));
 		beautiFrame.button("Link Site Models").click();
@@ -86,9 +86,9 @@ public class FixedMeanRateTest extends BeautiBase {
 			throw new Exception("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
 		}
 		weights = operator.parameterWeightsInput.get().valuesInput.get();
-		TestCase.assertEquals(weights.size(), 2);
-		TestCase.assertEquals(weights.get(0), (Integer)(614 + 819));
-		TestCase.assertEquals(weights.get(1), (Integer)601);
+		Assert.assertEquals(weights.size(), 2);
+		Assert.assertEquals(weights.get(0), (Integer)(614 + 819));
+		Assert.assertEquals(weights.get(1), (Integer)601);
 
 		makeSureXMLParses();
 	}

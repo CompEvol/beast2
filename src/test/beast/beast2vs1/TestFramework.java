@@ -7,6 +7,7 @@ import beagle.BeagleFlag;
 import beast.core.Logger;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
@@ -61,13 +62,13 @@ public abstract class TestFramework extends TestCase {
         LogAnalyser logAnalyser = new LogAnalyser(logFile, giveExpectations(index_XML)); // burnIn = 0.1 * maxState
 
         for (Expectation expectation : logAnalyser.m_pExpectations.get()) {
-            TestCase.assertTrue(xmls[index_XML] + ": Expected " + expectation.traceName.get() + " delta mean: "
+            Assert.assertTrue(xmls[index_XML] + ": Expected " + expectation.traceName.get() + " delta mean: "
                     + expectation.expValue.get() + " - " + expectation.getTraceStatistics().getMean()
                     + " <= delta stdErr: 2*(" + expectation.getStdError() + " + "
                     + expectation.getTraceStatistics().getStdErrorOfMean() + ")", expectation.isPassed());
 
             if (checkESS)
-            	TestCase.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
+            	Assert.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
                     + expectation.getTraceStatistics().getESS(), expectation.isValid());
         }
 

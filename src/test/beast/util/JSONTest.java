@@ -58,28 +58,28 @@ public class JSONTest extends TestCase {
     	
     	
     	// test that default value for param1 comes through
-    	String json2 = "{version: \"2.3\"," + 
-    			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\"," + 
-    			"" + 
-    			"beast: [" + 
-    			"" + 
-    			"" + 
-    			"        {id: \"JSONTest\"," + 
-    			"         spec: \"test.beast.util.AnnotatedRunnableTestClass\"," + 
-    			"         taxon: [" + 
-    			"                 {id: \"first one\" }," + 
-    			"                 {id: \"second one\" }" + 
-    			"          ]" + 
-    			"        }" + 
-    			"]" + 
+    	String json2 = "{version: \"2.3\",\n" + 
+    			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\",\n" + 
+    			"\n" + 
+    			"beast: [\n" + 
+    			"\n" + 
+    			"\n" + 
+    			"        {id: \"JSONTest\",\n" + 
+    			"         spec: \"test.beast.util.AnnotatedRunnableTestClass\",\n" + 
+    			"         taxon: [\n" + 
+    			"                 {id: \"first one\" },\n" + 
+    			"                 {id: \"second one\" }\n" + 
+    			"          ]\n" + 
+    			"        }\n" + 
+    			"]\n" + 
     			"}";
     	
-        outfile = new FileWriter(new File("/tmp/JSONTest.json"));
+        outfile = new FileWriter(new File("/tmp/JSONTest2.json"));
         outfile.write(json2);
         outfile.close();
 
         parser = new JSONParser();
-    	b = parser.parseFile(new File("/tmp/JSONTest.json"));
+    	b = parser.parseFile(new File("/tmp/JSONTest2.json"));
     	assertEquals(10, (int) ((AnnotatedRunnableTestClass) b).getParam1());
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     	

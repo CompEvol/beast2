@@ -67,7 +67,6 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
-import beast.util.XMLParser.NameValuePair;
 
 
 /**
