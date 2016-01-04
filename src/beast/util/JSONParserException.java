@@ -32,11 +32,8 @@ import org.json.JSONObject;
  * Exception thrown by JSONParser
  * that keeps track of the JSONOBject that caused the anomaly.
  */
-@SuppressWarnings("serial")
 public class JSONParserException extends XMLParserException {
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	/**

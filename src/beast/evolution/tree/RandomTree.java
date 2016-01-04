@@ -148,7 +148,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //        return bIsSubset;
 //    }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void initStateNodes() throws Exception {
         // find taxon sets we are dealing with
         taxonSets = new ArrayList<>();
@@ -344,8 +345,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 final TaxonSet taxonSet = p.taxonsetInput.get();
                 final Set<String> bTaxa = new HashSet<>();
                 bTaxa.addAll(taxonSet.asStringList());
-                int c = traverse(root, bTaxa, taxonSet.getTaxonCount(), new int[1]);
-                boolean b = c == nrOfTaxa + 127;
+                /* int c = */ traverse(root, bTaxa, taxonSet.getTaxonCount(), new int[1]);
+                // boolean b = c == nrOfTaxa + 127;
             }
         }
     }

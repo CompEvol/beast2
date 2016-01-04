@@ -32,7 +32,6 @@ import org.w3c.dom.Node;
  * that keeps track of the DOM Node that caused the
  * anomaly.
  */
-@SuppressWarnings("serial")
 public class XMLParserException extends Exception {
     /**
 	 * 

@@ -38,7 +38,7 @@ import beast.core.Description;
  * modified by Walter Xie
  */
 @Description("BEAUti plugin dependency class")
-public class PackageDependency implements Comparable {
+public class PackageDependency implements Comparable<Object> {
     String packageName;
     String dependson;
     Double atLeast;
@@ -69,4 +69,5 @@ public class PackageDependency implements Comparable {
 	public String toString() {
         return dependson;
     }
+
 }

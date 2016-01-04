@@ -9,7 +9,7 @@ public enum TraceType {
     INTEGER("integer", "I", Integer.class),
     STRING("string", "S", String.class);
 
-    TraceType(String name, String brief, Class type) {
+    TraceType(String name, String brief, Class<?> type) {
         this.name = name;
         this.brief = brief;
         this.type = type;
@@ -24,11 +24,11 @@ public enum TraceType {
         return brief;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
     private final String name;
     private final String brief;
-    private final Class type;
+    private final Class<?> type;
 }

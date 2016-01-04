@@ -34,7 +34,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     private RPNexpressionCalculator[] expressions;
     private List<String> names;
 
-    private Map variables;
+    private Map<String, Object[]> variables;
     RPNexpressionCalculator.GetVariable[] vars;
     int dim;
 
@@ -73,7 +73,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
             vars[i] = new RPNexpressionCalculator.GetVariable() {
                 @Override
 				public double get(final String name) {
-                    final Object[] values = ((Object[]) variables.get(name));
+                    final Object[] values = (variables.get(name));
                     if (values == null) {
                     	String ids = "";
                         for (final Parameter<?> p : parametersInput.get()) {
