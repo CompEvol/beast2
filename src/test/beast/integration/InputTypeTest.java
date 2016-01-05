@@ -5,15 +5,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.Policy.Parameters;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
+import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Input;
-import beast.core.InputForAnnotatedConstructor;
 import beast.core.Param;
 import beast.util.AddOnManager;
 import junit.framework.TestCase;
@@ -63,10 +62,11 @@ public class InputTypeTest extends TestCase {
 	}
 	
 	public void testAnnotatedInputHasGetters(String [] packages) throws Exception {
-		List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTObject.class, packages);
+		List<String> beastObjectNames = AddOnManager.find(Object.class, packages);
 		System.err.println("Testing " + beastObjectNames.size() + " classes");
 		List<String> failingInputs = new ArrayList<String>();
 		for (String beastObject : beastObjectNames) {
+			try {
 				Class<?> _class = Class.forName(beastObject);
 			    Constructor<?>[] allConstructors = _class.getDeclaredConstructors();
 			    for (Constructor<?> ctor : allConstructors) {
@@ -79,6 +79,9 @@ public class InputTypeTest extends TestCase {
 				    		}
 				    	}
 			    	}
+			    	if (paramAnnotations.size() > 0 && !BEASTInterface.class.isAssignableFrom(_class)) {
+			    		failingInputs.add(_class.getName() + " has Param annotations but does not implement BEASTInterface\n");
+			    	}
 			    	Class<?>[] types  = ctor.getParameterTypes();	    	
 		    		Type[] gtypes = ctor.getGenericParameterTypes();
 			    	if (types.length > 0 && paramAnnotations.size() > 0) {
@@ -89,43 +92,60 @@ public class InputTypeTest extends TestCase {
 			    		for (int i = 0; i < paramAnnotations.size(); i++) {
 			    			Class<?> type;
 			    			Class<?> clazz = null;
-							try {
-								clazz = Class.forName(types[i + offset].getTypeName());
-							} catch (ClassNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+			    			boolean isList = false;
+							String typeName = types[i + offset].getTypeName();
+							if (typeName.endsWith("[]")) {
+								failingInputs.add(_class.getName() + " constructor has arrray as argument, should be a List\n");
+							} else {
+								switch (typeName) {
+								case "int" : type = Integer.class; break;
+								case "long" : type = Long.class; break;
+								case "float" : type = Float.class; break;
+								case "double" : type = Double.class; break;
+								case "boolean" : type = Boolean.class; break;
+								default:
+									clazz = Class.forName(typeName);
+					    			if (clazz.isAssignableFrom(List.class)) {
+				                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
+				                        type = (Class<?>) genericTypes2[0];
+				                        isList = true;
+					    			} else {
+					    				type =  types[i + offset];
+					    			}
+								}
+				    			
+						    	String name = paramAnnotations.get(i).name();
+						    	String getter = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
+						    	try {
+						    		Method method = _class.getMethod(getter);
+						    		if (isList) {
+						    			if (!method.getReturnType().isAssignableFrom(List.class)) {
+											failingInputs.add(_class.getName() + ":" + getter + "() should return List<" + type.getName() + "> instead of " + method.getReturnType().getName() + "\n");
+						    			}
+						    		} else if (!method.getReturnType().isAssignableFrom(type)) {
+										failingInputs.add(_class.getName() + ":" + getter + "() should return " + type.getName() + " instead of " + method.getReturnType().getName() + "\n");
+						    		}
+						    	} catch (NoSuchMethodException e) {
+									failingInputs.add(_class.getName() + ":" + getter + "() missing\n");
+						    	}
+						    	String setter = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
+						    	try {
+						    		_class.getMethod(setter, type);
+						    	} catch (NoSuchMethodException e) {
+									failingInputs.add(_class.getName() + ":" + setter + "("+ type.getName() + ") missing, or does not have correct argument\n");
+						    	}
 							}
-			    			if (clazz.isAssignableFrom(List.class)) {
-		                        Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
-		                        type = (Class<?>) genericTypes2[0];
-			    			} else {
-			    				type =  types[i + offset];
-			    			}
-			    			
-					    	String name = paramAnnotations.get(i).name();
-					    	String getter = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
-					    	try {
-					    		Method method = _class.getMethod(getter);
-					    		if (!method.getReturnType().isAssignableFrom(type)) {
-									failingInputs.add(_class.getName() + ":" + getter + "() should return " + type.getName() + " instead of " + method.getReturnType().getName() + "\n");
-					    		}
-					    	} catch (NoSuchMethodException e) {
-								failingInputs.add(_class.getName() + ":" + getter + "() missing\n");
-					    	}
-					    	String setter = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
-					    	try {
-					    		_class.getMethod(setter, type);
-					    	} catch (NoSuchMethodException e) {
-								failingInputs.add(_class.getName() + ":" + setter + "("+ type.getName() + ") missing, or does not have correct argument\n");
-					    	}
 			    		}
 			    	}
 				}
+			} catch (Exception e) {
+				System.err.println(beastObject + " " + e.getClass().getName() + " " + e.getMessage());
+			}
 		}
 		System.err.println("Done!");
 
 		assertTrue(
-				"Type of input could not be set for these inputs (probably requires to be set by using the appropriate constructure of Input): "
+				"Something is wrong with these annotated constructor(s): \n"
 						+ failingInputs.toString(),
 				failingInputs.size() == 0);
 	}
