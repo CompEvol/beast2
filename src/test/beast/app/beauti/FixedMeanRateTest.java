@@ -66,7 +66,7 @@ public class FixedMeanRateTest extends BeautiBase {
 		DeltaExchangeOperator operator = (DeltaExchangeOperator) beauti.doc.pluginmap.get("FixMeanMutationRatesOperator");
 		int nrOfParameters = operator.parameterInput.get().size();
 		if (nrOfParameters != 3) {
-			throw new Exception("Expected 3 parameters for deltaExchangeOperator, not " + nrOfParameters);
+			throw new IllegalArgumentException("Expected 3 parameters for deltaExchangeOperator, not " + nrOfParameters);
 		}
 
 		List<Integer> weights = operator.parameterWeightsInput.get().valuesInput.get();
@@ -83,7 +83,7 @@ public class FixedMeanRateTest extends BeautiBase {
 		//SiteModelInputEditor.customConnector(doc);
 		
 		if (nrOfParameters != 2) {
-			throw new Exception("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
+			throw new IllegalArgumentException("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
 		}
 		weights = operator.parameterWeightsInput.get().valuesInput.get();
 		Assert.assertEquals(weights.size(), 2);
