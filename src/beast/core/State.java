@@ -505,7 +505,7 @@ public class State extends BEASTObject {
                     if (plugin instanceof CalculationNode) {
                         stateNodeOutputs[i].add((CalculationNode) plugin);
                     } else {
-                        throw new Exception("DEVELOPER ERROR: output of StateNode (" + stateNode[i].getID() + ") should be a CalculationNode, but " + plugin.getClass().getName() + " is not.");
+                        throw new RuntimeException("DEVELOPER ERROR: output of StateNode (" + stateNode[i].getID() + ") should be a CalculationNode, but " + plugin.getClass().getName() + " is not.");
                     }
                 }
             } else {
@@ -579,7 +579,7 @@ public class State extends BEASTObject {
                                 bProgress = true;
                             }
                         } else {
-                            throw new Exception("DEVELOPER ERROR: found a"
+                            throw new RuntimeException("DEVELOPER ERROR: found a"
                                     + " non-CalculatioNode ("
                                     +output.getClass().getName()
                                     +") on path between StateNode and Runnable");

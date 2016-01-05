@@ -663,7 +663,7 @@ public class Node extends BEASTObject {
                 getRight().scale(fScale);
             }
             if (height < getLeft().height || height < getRight().height) {
-                throw new Exception("Scale gives negative branch length");
+                throw new IllegalArgumentException("Scale gives negative branch length");
             }
         }
     }

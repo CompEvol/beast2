@@ -90,7 +90,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             	parameter.setDimension(oldDim);
                 parameter.valuesInput.setValue(oldValue, parameter);
                 parameter.initAndValidate();
-                throw new Exception("Entry caused change in dimension");
+                throw new IllegalArgumentException("Entry caused change in dimension");
             }
             validateInput();
         } catch (Exception ex) {

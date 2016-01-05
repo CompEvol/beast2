@@ -297,7 +297,7 @@ public class DoubleListInputEditor extends ListInputEditor {
             try {
                 m_input.validate();
                 if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
-                    throw new Exception("invalid value");
+                    throw new IllegalArgumentException("invalid value");
                 }
                 // recurse
                 try {
@@ -345,7 +345,7 @@ public class DoubleListInputEditor extends ListInputEditor {
                         try {
                             input2.validate();
                         } catch (Exception e) {
-                            throw new Exception(((BEASTInterface) input.get()).getID() + "</p><p> " + e.getMessage());
+                            throw new IllegalArgumentException(((BEASTInterface) input.get()).getID() + "</p><p> " + e.getMessage());
                         }
                         validateRecursively(input2, done);
                     }
@@ -358,7 +358,7 @@ public class DoubleListInputEditor extends ListInputEditor {
                                 try {
                                     input2.validate();
                                 } catch (Exception e) {
-                                    throw new Exception(((BEASTInterface) o).getID() + " " + e.getMessage());
+                                    throw new IllegalArgumentException(((BEASTInterface) o).getID() + " " + e.getMessage());
                                 }
                                 validateRecursively(input2, done);
                             }

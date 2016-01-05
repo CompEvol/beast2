@@ -96,7 +96,7 @@ public class RealParameter extends Parameter.Base<Double> {
         for (int i = 0; i < values.length; i++) {
             values[i] *= fScale;
             if (values[i] < m_fLower || values[i] > m_fUpper) {
-                throw new Exception("parameter scaled our of range");
+                throw new IllegalArgumentException("parameter scaled our of range");
             }
         }
         return values.length;

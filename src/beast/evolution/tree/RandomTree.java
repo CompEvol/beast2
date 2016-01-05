@@ -208,7 +208,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            for (final String sTaxonID : taxonSet.asStringList()) {
 
 	                if (!sTaxa.contains(sTaxonID)) {
-	                    throw new Exception("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
+	                    throw new IllegalArgumentException("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
 	                }
 	                bTaxa.add(sTaxonID);
 	            }
@@ -263,7 +263,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                     // o taxonset1 is superset of taxonset2 OR
                     // o taxonset1 does not intersect taxonset2
                     if (!(bIsSubset || bIsSubset2)) {
-                        throw new Exception("333: Don't know how to generate a Random Tree for taxon sets that intersect, " +
+                        throw new IllegalArgumentException("333: Don't know how to generate a Random Tree for taxon sets that intersect, " +
                                 "but are not inclusive. Taxonset " + taxonSetIDs.get(i) + " and " + taxonSetIDs.get(j));
                     }
                     // swap i & j if b1 subset of b2

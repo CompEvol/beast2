@@ -438,10 +438,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			SiteModelInterface target = this.likelihoods[iRow].siteModelInput.get();
 			if (target instanceof SiteModel.Base && siteModel instanceof SiteModel.Base) {
 				if (!((SiteModel.Base)target).substModelInput.canSetValue(((SiteModel.Base)siteModel).substModelInput.get(), (SiteModel.Base) target)) {
-					throw new Exception("Cannot link site model: substitution models are incompatible");
+					throw new IllegalArgumentException("Cannot link site model: substitution models are incompatible");
 				}
 			} else {
-				throw new Exception("Don't know how to link this site model");
+				throw new IllegalArgumentException("Don't know how to link this site model");
 			}
 			needsRePartition = (this.likelihoods[iRow].siteModelInput.get() != siteModel);
 			this.likelihoods[iRow].siteModelInput.setValue(siteModel, this.likelihoods[iRow]);
@@ -476,7 +476,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 			}
 			if (tree != null && tree != this.likelihoods[iRow].treeInput.get()) {
-				throw new Exception("Cannot link clock model with different trees");
+				throw new IllegalArgumentException("Cannot link clock model with different trees");
 			}
 
 			needsRePartition = (this.likelihoods[iRow].branchRateModelInput.get() != clockModel);
@@ -964,7 +964,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					partitionID = BeautiDoc.TREEMODEL_PARTITION;
 					break;
 				default:
-					throw new Exception("Cannot rename item in column");
+					throw new IllegalArgumentException("Cannot rename item in column");
 				}
 				getDoc().renamePartition(partitionID, oldName, newName);
 				table.setValueAt(newName, table.getSelectedRow(), table.getSelectedColumn());

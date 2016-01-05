@@ -51,7 +51,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
             pdim = p.getDimension();
 
             if (pdim != dim && dim != 1 && pdim != 1) {
-                throw new Exception("error: all parameters have to have same length or be of dimension 1.");
+                throw new IllegalArgumentException("error: all parameters have to have same length or be of dimension 1.");
             }
             if (pdim > dim) dim = pdim;
 

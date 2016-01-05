@@ -64,7 +64,7 @@ public class Dirichlet extends ParametricDistribution {
     public double calcLogP(Function pX) throws Exception {
         Double[] fAlpha = alphaInput.get().getValues();
         if (alphaInput.get().getDimension() != pX.getDimension()) {
-            throw new Exception("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()
+            throw new IllegalArgumentException("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()
                     + " and dim(x)=" + pX.getDimension());
         }
         double fLogP = 0;

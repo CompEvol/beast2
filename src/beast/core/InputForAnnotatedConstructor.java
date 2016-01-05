@@ -216,7 +216,7 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
                     return;
                 }
             }
-            throw new Exception("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
+            throw new IllegalArgumentException("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
         }
 
         // call a string constructor of theClass
@@ -249,7 +249,7 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
                 ((BEASTInterface) o).getOutputs().add(beastObject);
             }
         } catch (Exception e) {
-            throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +
+            throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
                     "' with value '" + sValue + "'.\nExpected something of type " + getType().getName() +
                     ". " + (e.getMessage() != null ? e.getMessage() : ""));
         }

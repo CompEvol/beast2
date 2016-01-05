@@ -111,7 +111,7 @@ public interface DataType {
         public void initAndValidate() throws Exception {
             if (mapCodeToStateSet != null) {
                 if (mapCodeToStateSet.length != codeMap.length() / codeLength) {
-                    throw new Exception("m_sCodeMap and m_mapCodeToStateSet have incompatible lengths");
+                    throw new IllegalArgumentException("codeMap and mapCodeToStateSet have incompatible lengths");
                 }
             }
         }
@@ -162,7 +162,7 @@ public interface DataType {
                         char cCode = data.charAt(i);
                         int nState = codeMap.indexOf(cCode);
                         if (nState < 0) {
-                            throw new Exception("Unknown code found in sequence: " + cCode);
+                            throw new IllegalArgumentException("Unknown code found in sequence: " + cCode);
                         }
                         sequence.add(nState);
                     }
@@ -182,7 +182,7 @@ public interface DataType {
                         if (map.containsKey(code)) {
                             sequence.add(map.get(code));
                         } else {
-                            throw new Exception("Unknown code found in sequence: " + code);
+                            throw new IllegalArgumentException("Unknown code found in sequence: " + code);
                         }
                     }
                 } else {
@@ -198,7 +198,7 @@ public interface DataType {
                             }
                         }
                         if (!isFound) {
-                            throw new Exception("Could not find code " + code + " in codemap");
+                            throw new RuntimeException("Could not find code " + code + " in codemap");
                         }
                     }
                 }

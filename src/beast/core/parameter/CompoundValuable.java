@@ -31,7 +31,7 @@ public class CompoundValuable extends CalculationNode implements Function {
         int nDimension = 0;
         for (BEASTObject plugin : m_values.get()) {
             if (!(plugin instanceof Function)) {
-                throw new Exception("Input does not implement Valuable");
+                throw new IllegalArgumentException("Input does not implement Valuable");
             }
             nDimension += ((Function) plugin).getDimension();
         }

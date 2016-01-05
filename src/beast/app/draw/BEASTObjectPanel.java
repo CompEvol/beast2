@@ -455,7 +455,7 @@ public class BEASTObjectPanel extends JPanel {
             } else if (args.length == 2) {
                 pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
             } else {
-                throw new Exception("Incorrect number of arguments");
+                throw new IllegalArgumentException("Incorrect number of arguments");
             }
         } catch (Exception e) {
             e.printStackTrace();

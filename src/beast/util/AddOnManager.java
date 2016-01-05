@@ -297,9 +297,9 @@ public class AddOnManager {
      * @param packages  if not null, install all dependent packages of aPackage, but not work for customDir != null
      * @throws Exception
      */
-    public static String installPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages) throws Exception {
+    public static String installPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages) throws IOException {
         if (!aPackage.url.toLowerCase().endsWith(".zip")) {
-            throw new Exception("Package should be packaged in a zip file");
+            throw new IOException("Package should be packaged in a zip file");
         }
 //        String sName = URL2PackageName(sURL); // not safe to use
         String sName = aPackage.packageName;
@@ -325,7 +325,7 @@ public class AddOnManager {
         File dir = new File(sDir);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                throw new Exception("Could not create template directory " + sDir);
+                throw new IOException("Could not create template directory " + sDir);
             }
         }
         // grab file from URL
@@ -341,9 +341,9 @@ public class AddOnManager {
         return sDir;
     }
 
-    public static String uninstallPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages, boolean autoUninstall) throws Exception {
+    public static String uninstallPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages, boolean autoUninstall) throws IOException {
         if (!aPackage.url.toLowerCase().endsWith(".zip")) {
-            throw new Exception("Package should be packaged in a zip file");
+            throw new IOException("Package should be packaged in a zip file");
         }
 //        String sName = URL2PackageName(sURL);
         String sName = aPackage.packageName;
@@ -633,7 +633,7 @@ public class AddOnManager {
     /**
      * load external jars in beast directories *
      */
-    public static void loadExternalJars() throws Exception {
+    public static void loadExternalJars() throws IOException {
         processDeleteList();
 
         List<String> sDirs = getBeastDirectories();

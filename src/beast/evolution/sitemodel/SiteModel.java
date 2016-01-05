@@ -93,7 +93,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
 
         if (/*invarParameter != null && */(invarParameter.getValue() < 0 || invarParameter.getValue() > 1)) {
-            throw new Exception("proportion invariant should be between 0 and 1");
+            throw new IllegalArgumentException("proportion invariant should be between 0 and 1");
         }
         refresh();
 
@@ -362,7 +362,7 @@ public class SiteModel extends SiteModelInterface.Base {
         double xx, c, ch, a, q, p1, p2, t, x, b, s1, s2, s3, s4, s5, s6;
 
         if (prob < 0.000002 || prob > 0.999998 || v <= 0) {
-            throw new Exception("Error SiteModel 102: Arguments out of range");
+            throw new IllegalArgumentException("Error SiteModel 102: Arguments out of range");
         }
         g = GammaFunctionlnGamma(v / 2);
         xx = v / 2;
@@ -400,7 +400,7 @@ public class SiteModel extends SiteModelInterface.Base {
             q = ch;
             p1 = 0.5 * ch;
             if ((t = GammaFunctionincompleteGammaP(xx, p1, g)) < 0) {
-                throw new Exception("Error SiteModel 101: Arguments out of range: t < 0");
+                throw new IllegalArgumentException("Error SiteModel 101: Arguments out of range: t < 0");
             }
             p2 = prob - t;
             t = p2 * Math.exp(xx * aa + g + p1 - c * Math.log(ch));
@@ -495,7 +495,7 @@ public class SiteModel extends SiteModelInterface.Base {
             return 0.0;
         }
         if (x < 0.0 || alpha <= 0.0) {
-            throw new Exception("Error SiteModel 103: Arguments out of bounds");
+            throw new IllegalArgumentException("Error SiteModel 103: Arguments out of bounds");
         }
 
         factor = Math.exp(alpha * Math.log(x) - x - ln_gamma_alpha);
@@ -595,7 +595,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
         p1 = (prob < 0.5 ? prob : 1 - prob);
         if (p1 < 1e-20) {
-            throw new Exception("Error SiteModel 104: Argument prob out of range");
+            throw new IllegalArgumentException("Error SiteModel 104: Argument prob out of range");
         }
 
         y = Math.sqrt(Math.log(1 / (p1 * p1)));

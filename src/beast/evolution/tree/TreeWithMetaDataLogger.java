@@ -36,7 +36,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         if (parameterInput.get().size() == 0 && clockModelInput.get() == null) {
         	someMetaDataNeedsLogging = false;
         	return;
-            //throw new Exception("At least one of the metadata and branchratemodel inputs must be defined");
+            //throw new IllegalArgumentException("At least one of the metadata and branchratemodel inputs must be defined");
         }
     	someMetaDataNeedsLogging = true;
     	// without substitution model, reporting substitutions == reporting branch lengths 

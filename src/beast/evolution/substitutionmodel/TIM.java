@@ -37,14 +37,14 @@ public class TIM extends GeneralSubstitutionModel {
     @Override
     public void initAndValidate() throws Exception {
         if (ratesInput.get() != null) {
-            throw new Exception("the rates attribute should not be used. Use the individual rates rateAG, rateCT, etc, instead.");
+            throw new IllegalArgumentException("the rates attribute should not be used. Use the individual rates rateAG, rateCT, etc, instead.");
         }
 
         frequencies = frequenciesInput.get();
         updateMatrix = true;
         nrOfStates = frequencies.getFreqs().length;
         if (nrOfStates != 4) {
-            throw new Exception("Frequencies has wrong size. Expected 4, but got " + nrOfStates);
+            throw new IllegalArgumentException("Frequencies has wrong size. Expected 4, but got " + nrOfStates);
         }
 
         eigenSystem = createEigenSystem();

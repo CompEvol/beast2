@@ -284,7 +284,7 @@ public class XMLParser {
         if (m_runnable != null)
             return m_runnable;
         else {
-            throw new Exception("Run element does not point to a runnable object.");
+            throw new XMLParserException("Run element does not point to a runnable object.");
         }
     } // parseFile
 
@@ -313,7 +313,7 @@ public class XMLParser {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {
-            throw new Exception("Expected top level beast element in XML");
+            throw new XMLParserException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
         // sanity check that we are reading a beast 2 file
@@ -382,7 +382,7 @@ public class XMLParser {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {
-            throw new Exception("Expected top level beast element in XML");
+            throw new XMLParserException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
         initIDNodeMap(topNode);
@@ -390,7 +390,7 @@ public class XMLParser {
 
         final NodeList children = topNode.getChildNodes();
         if (children.getLength() == 0) {
-            throw new Exception("Need at least one child element");
+            throw new XMLParserException("Need at least one child element");
         }
         int i = children.getLength() - 1;
         while (i >= 0 && (children.item(i).getNodeType() != Node.ELEMENT_NODE ||
@@ -404,7 +404,7 @@ public class XMLParser {
             }
         }
         if (i < 0) {
-            throw new Exception("Need at least one child element");
+            throw new XMLParserException("Need at least one child element");
         }
 
         final BEASTInterface beastObject = createObject(children.item(i), BEAST_INTERFACE_CLASS);
@@ -440,7 +440,7 @@ public class XMLParser {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {
-            throw new Exception("Expected top level beast element in XML");
+            throw new XMLParserException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
         initIDNodeMap(topNode);
@@ -467,7 +467,7 @@ public class XMLParser {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {
-            throw new Exception("Expected top level beast element in XML");
+            throw new XMLParserException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
         final double fVersion = getAttributeAsDouble(topNode, "version");
@@ -1070,7 +1070,7 @@ public class XMLParser {
             if (input.get() == input.defaultValue) {
                 beastObject.setInputValue(name, beastObject2);
             } else {
-                throw new Exception("Multiple entries for non-list input " + input.getName());
+                throw new XMLParserException("Multiple entries for non-list input " + input.getName());
             }
             return;
         } catch (Exception e) {

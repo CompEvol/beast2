@@ -70,7 +70,7 @@ public class UserDataType extends Base {
                 codeMap += sCode;
                 if (codeLength > 0) {
                     if (sCode.length() != codeLength) {
-                        throw new Exception("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
+                        throw new IllegalArgumentException("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
                     }
                 } else {
                     codeMap += ",";
@@ -82,7 +82,7 @@ public class UserDataType extends Base {
                     if (sStr2.length() > 0) {
                         int i = Integer.parseInt(sStr2);
                         if (i < 0 || (stateCount > 0 && i >= stateCount)) {
-                            throw new Exception("state index should be from 0 to statecount, not " + i);
+                            throw new IllegalArgumentException("state index should be from 0 to statecount, not " + i);
                         }
                         stateSet.add(i);
                     }

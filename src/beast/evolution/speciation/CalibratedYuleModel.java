@@ -124,7 +124,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                             if (_MRCAPrior.distInput.get() != null) {
                                 // make sure MRCAPrior is monophyletic
                                 if (!_MRCAPrior.isMonophyleticInput.get()) {
-                                    throw new Exception("MRCAPriors must be monophyletic for Calibrated Yule prior");
+                                    throw new IllegalArgumentException("MRCAPriors must be monophyletic for Calibrated Yule prior");
                                 }
                                 // create CalibrationPoint from MRCAPrior
                                 final CalibrationPoint cal = new CalibrationPoint();
@@ -161,7 +161,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                 final TaxonSet ti = taxaSets.get(i);
                 if (ti.containsAny(tk)) {
                     if (!(ti.containsAll(tk) || tk.containsAll(ti))) {
-                        throw new Exception("Overlapping taxaSets??");
+                        throw new IllegalArgumentException("Overlapping taxaSets??");
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                     final int taxonIndex = getTaxonIndex(tree, tk.get(nt));
                     this.xclades[loc][nt] = taxonIndex;
                     if (taxonIndex < 0) {
-                        throw new Exception("Taxon not found in tree: " + tk.get(nt));
+                        throw new IllegalArgumentException("Taxon not found in tree: " + tk.get(nt));
                     }
                 }
 
@@ -252,7 +252,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                         }
                     }
                     if (anyParent) {
-                        throw new Exception("Sorry, not implemented: calibration on parent for more than one clade.");
+                        throw new IllegalArgumentException("Sorry, not implemented: calibration on parent for more than one clade.");
                     }
                     if (nCals == 2 && orderedCalibrations[1].taxa().containsAll(orderedCalibrations[0].taxa())) {
                         // closed form formulas

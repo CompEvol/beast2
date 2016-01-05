@@ -535,7 +535,7 @@ public class Input<T> {
                                     // Log.warning.println(rawType.getTypeName());
                             		if (rawType.getTypeName().equals("java.util.List")) {
                             			// if we got here, value==null
-                            			throw new Exception("Programming error: Input<List> not initialised");
+                            			throw new RuntimeException("Programming error: Input<List> not initialised");
                             		}
                             	}
                                 theClass = (Class<?>) o;
@@ -638,7 +638,7 @@ public class Input<T> {
                     return;
                 }
             }
-            throw new Exception("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
+            throw new IllegalArgumentException("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
         }
 
         // call a string constructor of theClass
@@ -675,7 +675,7 @@ public class Input<T> {
                 ((BEASTInterface) o).getOutputs().add(plugin);
             }
         } catch (Exception e) {
-            throw new Exception("Input 103: type mismatch, cannot initialize input '" + getName() +
+            throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
                     "' with value '" + sValue + "'.\nExpected something of type " + getType().getName() +
                     ". " + (e.getMessage() != null ? e.getMessage() : ""));
         }
@@ -696,7 +696,7 @@ public class Input<T> {
                 }
             }
             if (!bFound) {
-                throw new Exception("Expected one of " + Arrays.toString(possibleValues) + " but got " + this.value);
+                throw new IllegalArgumentException("Expected one of " + Arrays.toString(possibleValues) + " but got " + this.value);
             }
         }
 
@@ -706,22 +706,22 @@ public class Input<T> {
                 break;
             case REQUIRED:
                 if (get() == null) {
-                    throw new Exception("Input '" + getName() + "' must be specified.");
+                    throw new IllegalArgumentException("Input '" + getName() + "' must be specified.");
                 }
                 if (get() instanceof List<?>) {
                     if (((List<?>) get()).size() == 0) {
-                        throw new Exception("At least one input of name '" + getName() + "' must be specified.");
+                        throw new IllegalArgumentException("At least one input of name '" + getName() + "' must be specified.");
                     }
                 }
                 break;
             case XOR:
                 if (get() == null) {
                     if (other.get() == null) {
-                        throw new Exception("Either input '" + getName() + "' or '" + other.getName() + "' needs to be specified");
+                        throw new IllegalArgumentException("Either input '" + getName() + "' or '" + other.getName() + "' needs to be specified");
                     }
                 } else {
                     if (other.get() != null) {
-                        throw new Exception("Only one of input '" + getName() + "' and '" + other.getName() + "' must be specified (not both)");
+                        throw new IllegalArgumentException("Only one of input '" + getName() + "' and '" + other.getName() + "' must be specified (not both)");
                     }
                 }
                 // noting to do
@@ -729,10 +729,10 @@ public class Input<T> {
             case FORBIDDEN:
                 if (get() instanceof List<?>) {
                     if (((List<?>) get()).size() > 0) {
-                        throw new Exception("No input of name '" + getName() + "' must be specified.");
+                        throw new IllegalArgumentException("No input of name '" + getName() + "' must be specified.");
                     }
                 } else if (get() != null) {
-                    throw new Exception("Input '" + getName() + "' must not be specified.");
+                    throw new IllegalArgumentException("Input '" + getName() + "' must not be specified.");
                 }
                 break;
         }

@@ -96,7 +96,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_bUseAmbiguities = m_useAmbiguities.get();
         m_bUseTipLikelihoods = m_useTipLikelihoods.get();
         if (!(siteModelInput.get() instanceof SiteModel.Base)) {
-        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        	throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
         }
         m_siteModel = (SiteModel.Base) siteModelInput.get();
         m_siteModel.setDataType(dataInput.get().getDataType());

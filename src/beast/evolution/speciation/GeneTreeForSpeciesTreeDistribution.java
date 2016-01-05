@@ -92,7 +92,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         // sanity check lineage nodes are all at height=0
         for (int i = 0; i < nGtLineages; i++) {
             if (gtNodes[i].getHeight() != 0) {
-                throw new Exception("Cannot deal with taxon " + gtNodes[i].getID() +
+                throw new IllegalArgumentException("Cannot deal with taxon " + gtNodes[i].getID() +
                         ", which has non-zero height + " + gtNodes[i].getHeight());
             }
         }
@@ -104,7 +104,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             final String sSpeciesID = getSetID(gtNodes[i].getID());
             // ??? can this be a startup check? can this happen during run due to tree change?
             if (sSpeciesID == null) {
-                throw new Exception("Cannot find species for lineage " + gtNodes[i].getID());
+                throw new IllegalArgumentException("Cannot find species for lineage " + gtNodes[i].getID());
             }
             for (int iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
                 if (sSpeciesID.equals(sptNodes[iSpecies].getID())) {
@@ -113,7 +113,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                 }
             }
             if (nrOfLineageToSpeciesMap[i] < 0) {
-                throw new Exception("Cannot find species with name " + sSpeciesID + " in species tree");
+                throw new IllegalArgumentException("Cannot find species with name " + sSpeciesID + " in species tree");
             }
         }
 

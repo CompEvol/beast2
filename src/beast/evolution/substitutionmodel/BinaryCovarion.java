@@ -100,25 +100,25 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         
         if (mode.equals(MODE.BEAST) || mode.equals(MODE.REVERSIBLE)) {
         	if (switchRate.getDimension() != 1) {
-        		throw new Exception("switchRate should have dimension 1");
+        		throw new IllegalArgumentException("switchRate should have dimension 1");
         	}
         } else {
         	if (switchRate.getDimension() != 2) {
-        		throw new Exception("switchRate should have dimension 2");
+        		throw new IllegalArgumentException("switchRate should have dimension 2");
         	}
         }
         if (alpha.getDimension() != 1) {
-            throw new Exception("alpha should have dimension 1");
+            throw new IllegalArgumentException("alpha should have dimension 1");
         }
         if (frequencies.getDimension() != 2) {
-            throw new Exception("frequencies should have dimension 2");
+            throw new IllegalArgumentException("frequencies should have dimension 2");
         }
         if (mode.equals(MODE.BEAST) || mode.equals(MODE.REVERSIBLE)) {
         	if (hfrequenciesInput.get() == null) {
-        		throw new Exception("hiddenFrequenciesshould should be specified");
+        		throw new IllegalArgumentException("hiddenFrequenciesshould should be specified");
         	}
             if (hiddenFrequencies.getDimension() != 2) {
-                throw new Exception("hiddenFrequenciesshould have dimension 2");
+                throw new IllegalArgumentException("hiddenFrequenciesshould have dimension 2");
             }
         } else {
         	if (hfrequenciesInput.get() != null) {

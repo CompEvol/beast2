@@ -213,7 +213,7 @@ public class Alignment extends Map<String> {
     public void initAndValidate() throws Exception {
 
         if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
-            throw new Exception("Either a sequence input must be specified, or a map of strings must be specified");
+            throw new IllegalArgumentException("Either a sequence input must be specified, or a map of strings must be specified");
         }
 
         if (siteWeightsInput.get() != null) {
@@ -230,7 +230,7 @@ public class Alignment extends Map<String> {
             m_dataType = userDataTypeInput.get();
         } else {
             if (types.indexOf(dataTypeInput.get()) < 0) {
-                throw new Exception("data type + '" + dataTypeInput.get() + "' cannot be found. " +
+                throw new IllegalArgumentException("data type + '" + dataTypeInput.get() + "' cannot be found. " +
                         "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
             // seems to spend forever in there??

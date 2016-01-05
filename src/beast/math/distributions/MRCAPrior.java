@@ -84,18 +84,18 @@ public class MRCAPrior extends Distribution {
         	}
         }
         if (!onlyUseTips && !useOriginate && nrOfTaxa < 2) {
-            throw new Exception("At least two taxa are required in a taxon set");
+            throw new IllegalArgumentException("At least two taxa are required in a taxon set");
         }
         if (!onlyUseTips && taxonsetInput.get() == null) {
-            throw new Exception("Taxonset must be specified OR tipsonly be set to true");
+            throw new IllegalArgumentException("Taxonset must be specified OR tipsonly be set to true");
         }
         
        
         if (useOriginate && onlyUseTips) {
-        	throw new Exception("'useOriginate' and 'tipsOnly' cannot be both true");
+        	throw new IllegalArgumentException("'useOriginate' and 'tipsOnly' cannot be both true");
         }
         if (useOriginate && nrOfTaxa == tree.getLeafNodeCount()) {
-        	throw new Exception("Cannot use originate of root. You can set useOriginate to false to fix this");
+        	throw new IllegalArgumentException("Cannot use originate of root. You can set useOriginate to false to fix this");
         }
         initialised = false;
     }

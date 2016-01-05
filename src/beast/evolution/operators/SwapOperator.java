@@ -36,7 +36,7 @@ public class SwapOperator extends Operator {
 
         howMany = howManyInput.get();
         if (howMany * 2 > parameter.getDimension()) {
-            throw new Exception("howMany it too large: must be less than half the dimension of the parameter");
+            throw new IllegalArgumentException("howMany it too large: must be less than half the dimension of the parameter");
         }
 
         List<Integer> list = new ArrayList<>();

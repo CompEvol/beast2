@@ -165,7 +165,7 @@ public class EBSPAnalyser {
         return 0;
     }
 
-    private void parseArgs(String[] args) throws Exception {
+    private void parseArgs(String[] args) {
         int i = 0;
         try {
             while (i < args.length) {
@@ -189,7 +189,7 @@ public class EBSPAnalyser {
                         } else if (args[i + 1].equals("stepwise")) {
                             m_type = Type.STEPWISE;
                         } else {
-                            throw new Exception("Expected linear of stepwise, not " + args[i + 1]);
+                            throw new IllegalArgumentException("Expected linear or stepwise, not " + args[i + 1]);
                         }
                         i += 2;
                     } else if (args[i].equals("-burnin")) {
@@ -197,13 +197,15 @@ public class EBSPAnalyser {
                         i += 2;
                     }
                     if (i == iOld) {
-                        throw new Exception("Unrecognised argument (argument " + i + ": " + args[i] + ")");
+                        throw new IllegalArgumentException("Unrecognised argument (argument " + i + ": " + args[i] + ")");
                     }
                 }
             }
+        } catch (IllegalArgumentException e) {
+        	throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
+            throw new IllegalArgumentException("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
         }
         if (m_sFileOut == null) {
         	Log.warning.println("No output file specified");

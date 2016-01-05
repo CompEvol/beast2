@@ -49,7 +49,7 @@ public class SYM extends GeneralSubstitutionModel {
     @Override
     public void initAndValidate() throws Exception {
         if (ratesInput.get() != null) {
-            throw new Exception("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
+            throw new IllegalArgumentException("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
         }
 
         //if (frequenciesInput.get() != null) {

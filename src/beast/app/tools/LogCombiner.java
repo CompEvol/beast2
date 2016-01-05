@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -47,7 +48,7 @@ public class LogCombiner extends LogAnalyser {
     // resample the log files to this frequency (the original sampling frequency must be a factor of this value)
     int m_nResample = 1;
 
-    private void parseArgs(String[] args) throws Exception {
+    private void parseArgs(String[] args) {
         int i = 0;
         format = new DecimalFormat("#.############E0", new DecimalFormatSymbols(Locale.US));
         m_sLogFileName = new ArrayList<>();
@@ -95,13 +96,15 @@ public class LogCombiner extends LogAnalyser {
                         i++;
                     }
                     if (i == iOld) {
-                        throw new Exception("Unrecognised argument");
+                        throw new IllegalArgumentException("Unrecognised argument");
                     }
                 }
             }
+        } catch (IllegalArgumentException e) {
+        	throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
+            throw new IllegalArgumentException("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
         }
     }
 
@@ -111,22 +114,27 @@ public class LogCombiner extends LogAnalyser {
      */
     Double[][] m_fCombinedTraces;
 
-    private void combineParticleLogs() throws Exception {
+    private void combineParticleLogs() {
         List<String> sLogs = new ArrayList<>();
         for (int i = 0; i < m_nParticles; i++) {
             String sDir = m_sParticleDir + "/particle" + i;
             File dir = new File(sDir);
             if (!dir.exists() || !dir.isDirectory()) {
-                throw new Exception("Could not process particle " + i + ". Expected " + sDir + " to be a directory, but it is not.");
+                throw new IllegalArgumentException("Could not process particle " + i + ". Expected " + sDir + " to be a directory, but it is not.");
             }
             sLogs.add(sDir + "/" + m_sLogFileName.get(0));
         }
         int[] nBurnIns = new int[sLogs.size()];
         Arrays.fill(nBurnIns, m_nBurninPercentage);
-        combineLogs(sLogs.toArray(new String[0]), nBurnIns);
+        try {
+			combineLogs(sLogs.toArray(new String[0]), nBurnIns);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e.getMessage());
+		}
     }
 
-    private void combineLogs(String[] sLogs, int[] nBurbIns) throws Exception {
+    private void combineLogs(String[] sLogs, int[] nBurbIns) throws IOException {
         m_fCombinedTraces = null;
         // read logs
         int nColumns = 0;
@@ -149,7 +157,7 @@ public class LogCombiner extends LogAnalyser {
             } else {
                 if (nColumns != m_sLabels.length) {
                     fin.close();
-                    throw new Exception("ERROR: The number of columns in file " + sFile + " does not match that of the first file");
+                    throw new IllegalArgumentException("ERROR: The number of columns in file " + sFile + " does not match that of the first file");
                 }
                 for (int i = 0; i < m_fTraces.length; i++) {
                     Double[] logLine = m_fTraces[i];
@@ -177,7 +185,7 @@ public class LogCombiner extends LogAnalyser {
         }
     }
 
-    protected void readTreeLogFile(String sFile, int nBurnInPercentage) throws Exception {
+    protected void readTreeLogFile(String sFile, int nBurnInPercentage) throws IOException {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr = null;

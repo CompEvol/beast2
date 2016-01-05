@@ -25,7 +25,7 @@ public class Uniform extends ParametricDistribution {
         _lower = lowerInput.get();
         _upper = upperInput.get();
         if (_lower >= _upper) {
-            throw new Exception("Upper value should be higher than lower value");
+            throw new IllegalArgumentException("Upper value should be higher than lower value");
         }
         distr.setBounds(_lower, _upper);
         infiniteSupport = Double.isInfinite(_lower) || Double.isInfinite(_upper);

@@ -28,6 +28,7 @@ package beast.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -123,7 +124,7 @@ public class JSONParser {
 		objectsWaitingToInit = new ArrayList<>();
 	}
 
-	public Runnable parseFile(File file) throws Exception {
+	public Runnable parseFile(File file) throws IOException, JSONException, JSONParserException {
 		// parse the JSON file into a JSONObject
 		
 		// first get rid of comments: remove all text on lines starting with space followed by //
@@ -161,7 +162,7 @@ public class JSONParser {
 		if (runnable != null)
 			return runnable;
 		else {
-			throw new Exception("Run element does not point to a runnable object.");
+			throw new IOException("Run element does not point to a runnable object.");
 		}
 	} // parseFile
 	
@@ -303,7 +304,7 @@ public class JSONParser {
 	 * @throws Exception 
 	 * 
 	 */
-	void processPlates(JSONObject node) throws Exception {
+	void processPlates(JSONObject node) throws IOException, JSONException, JSONParserException {
 		for (String key : node.keySet()) {
 			Object o = node.get(key);
 			if (o instanceof JSONObject) {
@@ -326,10 +327,10 @@ public class JSONParser {
 		}
 	} // processPlates
 
-	private void unrollPlate(JSONArray list, JSONObject plate) throws Exception {
+	private void unrollPlate(JSONArray list, JSONObject plate) throws IOException, JSONParserException, JSONException {
 		int index = list.indexOf(plate);
 		if (index < 0) {
-			throw new Exception("Programmer error: plate should be in list");
+			throw new RuntimeException("Programmer error: plate should be in list");
 		}
 		list.remove(index);
 		if (plate.keySet().size() != 3 || 
@@ -1189,7 +1190,7 @@ public class JSONParser {
 						}
 					}
 				} else {
-					throw new Exception("Developer error: Don't know how to handle this JSON construction");
+					throw new RuntimeException("Developer error: Don't know how to handle this JSON construction");
 				}
 			}
 		}		
@@ -1206,7 +1207,7 @@ public class JSONParser {
 			if (input.get() == input.defaultValue) {
 				beastObject.setInputValue(name, value);
 			} else {
-				throw new Exception("Multiple entries for non-list input " + input.getName());
+				throw new IOException("Multiple entries for non-list input " + input.getName());
 			}
 			return;
 		} catch (Exception e) {

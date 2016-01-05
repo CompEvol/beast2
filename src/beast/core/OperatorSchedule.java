@@ -285,7 +285,7 @@ public class OperatorSchedule extends BEASTObject {
 	                operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
 	                operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
 	            } else {
-	                throw new Exception("Cannot resume: operator order or set changed from previous run");
+	                throw new RuntimeException("Cannot resume: operator order or set changed from previous run");
 	            }
 	        }
 	    }

@@ -5,6 +5,7 @@ import static beast.util.OutputUtils.format;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,7 +100,7 @@ public class LogAnalyser {
     }
 
     @SuppressWarnings("unchecked")
-	protected void readLogFile(String sFile, int nBurnInPercentage) throws Exception {
+	protected void readLogFile(String sFile, int nBurnInPercentage) throws IOException {
         log("\nLoading " + sFile);
         BufferedReader fin = new BufferedReader(new FileReader(sFile));
         String sStr;

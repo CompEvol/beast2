@@ -22,7 +22,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
         m_empiricalRates = getEmpericalRateValues();
         int nFreqs = frequencies.getFreqs().length;
         if (m_empiricalRates.length != nFreqs * (nFreqs - 1)) {
-            throw new Exception("The number of empirical rates (" + m_empiricalRates.length + ") should be " +
+            throw new IllegalArgumentException("The number of empirical rates (" + m_empiricalRates.length + ") should be " +
                     "equal to #frequencies * (#frequencies-1) = (" + nFreqs + "*" + (nFreqs - 1) + ").");
         }
 

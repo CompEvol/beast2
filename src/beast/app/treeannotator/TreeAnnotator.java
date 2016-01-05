@@ -150,7 +150,7 @@ public class TreeAnnotator {
     	private void init(int burninPercentage) throws Exception {
             fin = new BufferedReader(new FileReader(new File(inputFileName)));
             if (!fin.ready()) {
-            	throw new Exception("File appears empty");
+            	throw new IOException("File appears empty");
             }
         	String str = nextLine();
             if (!str.toUpperCase().trim().startsWith("#NEXUS")) {
@@ -194,7 +194,7 @@ public class TreeAnnotator {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new Exception("Around line " + lineNr + "\n" + e.getMessage());
+                throw new RuntimeException("Around line " + lineNr + "\n" + e.getMessage());
             }
         } // parseFile
 

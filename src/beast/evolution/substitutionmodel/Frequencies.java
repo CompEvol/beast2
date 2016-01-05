@@ -64,7 +64,7 @@ public class Frequencies extends CalculationNode {
         double fSum = getSumOfFrequencies(getFreqs());
         // sanity check
         if (Math.abs(fSum - 1.0) > 1e-6) {
-            throw new Exception("Frequencies do not add up to 1");
+            throw new IllegalArgumentException("Frequencies do not add up to 1");
         }
 
     }

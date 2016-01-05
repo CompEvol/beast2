@@ -122,7 +122,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     public void initAndValidate() throws Exception {
         // sanity check: alignment should have same #taxa as tree
         if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
-            throw new Exception("The number of nodes in the tree does not match the number of sequences");
+            throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
         }
         beagle = null;
         beagle = new BeagleTreeLikelihood();
@@ -143,7 +143,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
         int nodeCount = treeInput.get().getNodeCount();
         if (!(siteModelInput.get() instanceof SiteModel.Base)) {
-        	throw new Exception ("siteModel input should be of type SiteModel.Base");
+        	throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
         }
         m_siteModel = (SiteModel.Base) siteModelInput.get();
         m_siteModel.setDataType(dataInput.get().getDataType());
@@ -440,7 +440,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 if (m_siteModel.integrateAcrossCategories()) {
                     likelihoodCore.calculatePartials(childNum1, childNum2, iNode);
                 } else {
-                    throw new Exception("Error TreeLikelihood 201: Site categories not supported");
+                    throw new RuntimeException("Error TreeLikelihood 201: Site categories not supported");
                     //m_pLikelihoodCore->calculatePartials(childNum1, childNum2, nodeNum, siteCategories);
                 }
 

@@ -187,11 +187,11 @@ public class MCMC extends Runnable {
                     }
                 }
                 if (distrs.size() == nDistr) {
-                    throw new Exception("Sample from prior flag is set, but distribution with id 'likelihood' is " +
+                    throw new RuntimeException("Sample from prior flag is set, but distribution with id 'likelihood' is " +
                             "not an input to posterior.");
                 }
             } else {
-                throw new Exception("Don't know how to sample from prior since posterior is not a compound distribution. " +
+                throw new RuntimeException("Don't know how to sample from prior since posterior is not a compound distribution. " +
                         "Suggestion: set sampleFromPrior flag to false.");
             }
         }
@@ -206,7 +206,7 @@ public class MCMC extends Runnable {
                 initialiser.getInitialisedStateNodes(list);
                 for (final StateNode stateNode : list) {
                     if (initialisedStateNodes.contains(stateNode)) {
-                        throw new Exception("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
+                        throw new RuntimeException("Trying to initialise stateNode (id=" + stateNode.getID() + ") more than once. " +
                                 "Remove an initialiser from MCMC to fix this.");
                     }
                 }
@@ -259,7 +259,7 @@ public class MCMC extends Runnable {
             }
 	        for (final StateNode stateNode : op.listStateNodes()) {
 	            if (!stateNodes.contains(stateNode)) {
-	                throw new Exception("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
+	                throw new RuntimeException("Operator " + op.getID() + " has a statenode " + stateNode.getID() + " in its inputs that is missing from the state.");
 	            }
 	        }
 	    }
@@ -336,7 +336,7 @@ public class MCMC extends Runnable {
         Log.info.println("Start likelihood: " + oldLogLikelihood + " " + (nInitialisationAttempts > 1 ? "after " + nInitialisationAttempts + " initialisation attempts" : ""));
         if (Double.isInfinite(oldLogLikelihood) || Double.isNaN(oldLogLikelihood)) {
             reportLogLikelihoods(posterior, "");
-            throw new Exception("Could not find a proper state to initialise. Perhaps try another seed.");
+            throw new RuntimeException("Could not find a proper state to initialise. Perhaps try another seed.");
         }
 
         loggers = loggersInput.get();

@@ -75,7 +75,7 @@ public class NexusParser {
      *
      * @param file the file to parse.
      */
-    public void parseFile(final File file) throws Exception {
+    public void parseFile(final File file) throws IOException {
         final String fileName = file.getName().replaceAll(".*[\\/\\\\]", "").replaceAll("\\..*", "");
 
         parseFile(fileName, new FileReader(file));
@@ -86,8 +86,10 @@ public class NexusParser {
      *
      * @param id     a name to give to the parsed results
      * @param reader a reader to parse from
+     * TODO: RRB: throws IOException now instead of just Exception. 
+     * java.text.ParseException seems more appropriate, but requires keeping track of the position in the file, which is non-trivial 
      */
-    public void parseFile(final String id, final Reader reader) throws Exception {
+    public void parseFile(final String id, final Reader reader) throws IOException {
         lineNr = 0;
         final BufferedReader fin;
         if (reader instanceof BufferedReader) {
@@ -119,7 +121,7 @@ public class NexusParser {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Around line " + lineNr + "\n" + e.getMessage());
+            throw new IOException("Around line " + lineNr + "\n" + e.getMessage());
         }
     } // parseFile
 
@@ -242,7 +244,7 @@ public class NexusParser {
         return translationMap;
     }
 
-    private void parseTaxaBlock(final BufferedReader fin) throws Exception {
+    private void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
         int nTaxaExpected = -1;
         String sStr;
@@ -265,7 +267,7 @@ public class NexusParser {
                             	while (i < sStrs.length && taxon.charAt(0) != taxon.charAt(taxon.length() - 1)) {
                             		i++;
                             		if (i == sStrs.length) {
-                            			throw new Exception("Unclosed quote starting with " + taxon);
+                            			throw new IOException("Unclosed quote starting with " + taxon);
                             		}
                             		taxon += " " + sStrs[i];
                             	}
@@ -278,7 +280,7 @@ public class NexusParser {
             }
         } while (!sStr.toLowerCase().equals("end"));
         if (nTaxaExpected >= 0 && taxa.size() != nTaxaExpected) {
-            throw new Exception("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
+            throw new IOException("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
             		"field (" + nTaxaExpected + ") specified in 'taxa' block");
         }
     }
@@ -359,7 +361,7 @@ public class NexusParser {
 
                 final String sChar = getAttValue("nchar", sStr);
                 if (sChar == null) {
-                    throw new Exception("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + sStr);
+                    throw new IOException("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + sStr);
                 }
                 nChar = Integer.parseInt(sChar);
                 final String sTaxa = getAttValue("ntax", sStr);
@@ -566,7 +568,7 @@ public class NexusParser {
                 } else {
                     sTaxon = sPrevTaxon;
                     if (sTaxon == null) {
-                        throw new Exception("Could not recognise taxon");
+                        throw new IOException("Could not recognise taxon");
                     }
                     iEnd = iStart;
                 }
@@ -598,7 +600,7 @@ public class NexusParser {
             }
         }
         if (nTaxa > 0 && sTaxa.size() > nTaxa) {
-            throw new Exception("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
+            throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
         }
 
         HashSet<String> sortedAmbiguities = new HashSet<>();
@@ -641,7 +643,7 @@ public class NexusParser {
 
             //check the length of the sequence (treat ambiguity sets as single characters)
             if (sData_without_ambiguities.length() != nChar) {
-                throw new Exception(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+                throw new IOException(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
             }
 
             // map to standard missing and gap chars
@@ -687,7 +689,7 @@ public class NexusParser {
 
         alignment.initAndValidate();
         if (nTaxa > 0 && nTaxa != alignment.getTaxonCount()) {
-            throw new Exception("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getTaxonCount() + " taxa found");
+            throw new IOException("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getTaxonCount() + " taxa found");
         }
         return alignment;
     } // parseDataBlock
@@ -769,7 +771,7 @@ public class NexusParser {
      * TAXSET 'spa' = 'spa_138a_Cerb' 'spa_JB_Eyre1' 'spa_JB_Eyre2';
      * END; [Sets]
      */
-    void parseSetsBlock(final BufferedReader fin) throws Exception {
+    void parseSetsBlock(final BufferedReader fin) throws IOException {
         String sStr;
         do {
             sStr = nextLine(fin);
@@ -807,7 +809,7 @@ public class NexusParser {
     /**
      * read line from nexus file *
      */
-    String readLine(final BufferedReader fin) throws Exception {
+    String readLine(final BufferedReader fin) throws IOException {
         if (!fin.ready()) {
             return null;
         }
@@ -818,7 +820,7 @@ public class NexusParser {
     /**
      * read next line from nexus file that is not a comment and not empty *
      */
-    String nextLine(final BufferedReader fin) throws Exception {
+    String nextLine(final BufferedReader fin) throws IOException {
         String sStr = readLine(fin);
         if (sStr == null) {
             return null;
@@ -858,7 +860,7 @@ public class NexusParser {
         return sAtt;
     }
 
-    private ArrayList<String> readInCharstatelablesTokens(final BufferedReader fin) throws Exception {
+    private ArrayList<String> readInCharstatelablesTokens(final BufferedReader fin) throws IOException {
 
         ArrayList<String> tokens = new ArrayList<>();
         String token="";
@@ -953,7 +955,7 @@ public class NexusParser {
         return tokens;
     }
 
-    private ArrayList<UserDataType> processCharstatelabelsTokens(ArrayList<String> tokens, int[] maxNumberOfStates) throws Exception {
+    private ArrayList<UserDataType> processCharstatelabelsTokens(ArrayList<String> tokens, int[] maxNumberOfStates) throws IOException {
 
         ArrayList<UserDataType> charDescriptions = new ArrayList<>();
 
@@ -974,7 +976,7 @@ public class NexusParser {
                         mode = STATES;
                     } else if (token.equals(",")) {
                         if (charNumber > charDescriptions.size()+1) {
-                            throw new Exception("Character descriptions should go in the ascending order and there " +
+                            throw new IOException("Character descriptions should go in the ascending order and there " +
                                     "should not be any description missing.");
                         }
                         charDescriptions.add(new UserDataType(charName, states));
@@ -990,7 +992,7 @@ public class NexusParser {
                 case STATES:
                     if (token.equals(",")) {
                         if (charNumber > charDescriptions.size()+1) {
-                            throw new Exception("Character descriptions should go in the ascending order and there " +
+                            throw new IOException("Character descriptions should go in the ascending order and there " +
                                     "should not be any description missing.");
                         }
                         charDescriptions.add(new UserDataType(charName, states));

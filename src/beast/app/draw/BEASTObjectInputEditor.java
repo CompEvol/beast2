@@ -272,7 +272,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                         }
                     } else {
                         if (!m_input.canSetValue(beastObject, m_plugin)) {
-                            throw new Exception("Cannot set input to this value");
+                            throw new IllegalArgumentException("Cannot set input to this value");
                         }
 //                    	// get handle on ID of the beastObject, and add to combobox if necessary
 //                        String id = beastObject.getID();

@@ -218,7 +218,7 @@ public class BeautiConnector extends BEASTObject {
                         }
                         break;
                     default:
-                        throw new Exception("Unexpected operation: " + conditionOperations[i]);
+                        throw new IllegalArgumentException("Unexpected operation: " + conditionOperations[i]);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

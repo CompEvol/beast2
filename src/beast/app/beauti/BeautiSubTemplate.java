@@ -112,7 +112,7 @@ public class BeautiSubTemplate extends BEASTObject {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {
-            throw new Exception("Expected top level beast element in XML");
+            throw new IllegalArgumentException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
         // process top level elements
@@ -168,7 +168,7 @@ public class BeautiSubTemplate extends BEASTObject {
         	        						hasIDRef = false;
         	        					}
         	        					if (sourceID == null) {
-        	        						throw new Exception("idref and id not specified on element with name '" + name +"'");
+        	        						throw new RuntimeException("idref and id not specified on element with name '" + name +"'");
         	        					}
         	        					inputName = child2.getNodeName();
         	        					String name2 = XMLParser.getAttribute(child2, "name");
@@ -198,7 +198,7 @@ public class BeautiSubTemplate extends BEASTObject {
 	        						hasIDRef = false;
 	        					}
 	        					if (sourceID == null) {
-	        						throw new Exception("idref and id not specified on element with name '" + name +"'");
+	        						throw new RuntimeException("idref and id not specified on element with name '" + name +"'");
 	        					}
 	        					String condition = XMLParser.getAttribute(child, "beauti:if");
 	        					if (condition != null) {
@@ -268,7 +268,7 @@ public class BeautiSubTemplate extends BEASTObject {
             }
         }
         if (template == null) {
-            throw new Exception("Cannot find template for removing " + plugin.getID());
+            throw new RuntimeException("Cannot find template for removing " + plugin.getID());
         }
         PartitionContext context = doc.getContextFor(plugin);
         removeSubNet(template, context);

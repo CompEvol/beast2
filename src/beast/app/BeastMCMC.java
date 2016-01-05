@@ -150,14 +150,14 @@ public class BeastMCMC {
                             beastFile = new File(args[i]);
                             i++;
                         } else {
-                            throw new Exception("Wrong argument");
+                            throw new IllegalArgumentException("Wrong argument");
                         }
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
+            throw new IllegalArgumentException("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
         }
 
         if (beastFile == null) {

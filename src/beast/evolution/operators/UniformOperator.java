@@ -29,12 +29,12 @@ public class UniformOperator extends Operator {
             iLower = (Integer) parameter.getLower();
             iUpper = (Integer) parameter.getUpper();
         } else {
-            throw new Exception("parameter should be a RealParameter or IntergerParameter, not " + parameter.getClass().getName());
+            throw new IllegalArgumentException("parameter should be a RealParameter or IntergerParameter, not " + parameter.getClass().getName());
         }
 
         howMany = howManyInput.get();
         if (howMany > parameter.getDimension()) {
-            throw new Exception("howMany it too large: must be less than the dimension of the parameter");
+            throw new IllegalArgumentException("howMany it too large: must be less than the dimension of the parameter");
         }
     }
 

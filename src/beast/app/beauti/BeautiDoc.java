@@ -246,7 +246,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     } else if (args[i + 1].equals("merge")) {
                         endState = ActionOnExit.MERGE_AND_WRITE_XML;
                     } else {
-                        throw new Exception("Expected one of 'writexml','usetemplate' or 'usexml', not " + args[i + 1]);
+                        throw new IllegalArgumentException("Expected one of 'writexml','usetemplate' or 'usexml', not " + args[i + 1]);
                     }
                     i += 2;
                 } else if (args[i].equals("-out")) {
@@ -262,7 +262,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
 
                 if (i == iOld) {
-                    throw new Exception("Wrong argument: " + args[i]);
+                    throw new IllegalArgumentException("Wrong argument: " + args[i]);
                 }
             }
         } catch (Exception e) {
@@ -1397,7 +1397,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         String sSrcID = translatePartitionNames(connector.sSourceID, context);
         BEASTInterface srcPlugin = pluginmap.get(sSrcID);
         if (srcPlugin == null) {
-            throw new Exception("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?\n");
+            throw new IllegalArgumentException("Could not find plugin with id " + sSrcID + ". Typo in template perhaps?\n");
         }
         String sTargetID = translatePartitionNames(connector.sTargetID, context);
         connect(srcPlugin, sTargetID, connector.sTargetInput);
@@ -2100,7 +2100,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         for (BEASTInterface plugin : pluginmap.values()) {
             if (plugin.getID().endsWith(newsuffix)) {
-                throw new Exception("Name " + newName + " is already in use");
+                throw new IllegalArgumentException("Name " + newName + " is already in use");
             }
         }
 

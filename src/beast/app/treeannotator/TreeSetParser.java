@@ -352,7 +352,7 @@ public class TreeSetParser {
 			sStr = sStr.substring(1, sStr.length()-1);
 			return getLabelIndex(sStr);
 		}
-		throw new Exception("Label '" + sStr + "' in Newick tree could not be identified");
+		throw new IllegalArgumentException("Label '" + sStr + "' in Newick tree could not be identified");
 	}
 	
 
@@ -475,7 +475,7 @@ public class TreeSetParser {
 						break;
 					} else {
 						// don't know how to process single child nodes
-						throw new Exception("Node with single child found.");
+						throw new IllegalArgumentException("Node with single child found.");
 					}
 				}
 				// process multi(i.e. more than 2)-child nodes by pairwise merging.
@@ -554,13 +554,13 @@ public class TreeSetParser {
 				parseMetaData(stack.lastElement(), sMetaData.lastElement());
 				return stack.lastElement();
 			default:
-				throw new Exception("parseNewick: unknown token");	
+				throw new IllegalArgumentException("parseNewick: unknown token");	
 			}
 		}
 		return stack.lastElement();
 		 } catch (Exception e) {
 			 e.printStackTrace();
-			 throw new Exception(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart-100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ..."); 
+			 throw new IllegalArgumentException(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart-100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ..."); 
 		 }
 		//return node;
 	 }

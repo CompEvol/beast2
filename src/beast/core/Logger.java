@@ -120,7 +120,7 @@ public class Logger extends BEASTObject {
         final List<BEASTObject> loggers = loggersInput.get();
         final int nLoggers = loggers.size();
         if (nLoggers == 0) {
-            throw new Exception("Logger with nothing to log specified");
+            throw new RuntimeException("Logger with nothing to log specified");
         }
 
         loggerList = new ArrayList<>();
@@ -140,7 +140,7 @@ public class Logger extends BEASTObject {
         } else if (sMode.equals(LOGMODE.compound)) {
             mode = LOGMODE.compound;
         } else {
-            throw new Exception("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
+            throw new IllegalArgumentException("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
         }
 
         if (everyInput.get() != null) {
@@ -396,7 +396,7 @@ public class Logger extends BEASTObject {
                             assert sStr != null;
                             final int nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
                             if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
-                                throw new Exception("Error 400: Cannot resume: log files do not end in same sample number");
+                                throw new RuntimeException("Error 400: Cannot resume: log files do not end in same sample number");
                             }
                             sampleOffset = nSampleOffset;
                             // open the file for appending
@@ -438,14 +438,14 @@ public class Logger extends BEASTObject {
                             // determine number of the last sample
                             if( sStrLast == null ) {
                                 // empty log file?
-                                 throw new Exception("Error 402: empty tree log file " + fileName + "? (check if there is a back up file " + fileName + ".bu)");
+                                 throw new RuntimeException("Error 402: empty tree log file " + fileName + "? (check if there is a back up file " + fileName + ".bu)");
                             }
                             final String sStr = sStrLast.split("\\s+")[1];
                             final int nSampleOffset = Integer.parseInt(sStr.substring(6));
                             if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
                                 //final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
                                 Files.move(treeFileBackup.toPath(), new File(fileName).toPath(), StandardCopyOption.ATOMIC_MOVE);
-                                throw new Exception("Error 401: Cannot resume: log files do not end in same sample number");
+                                throw new RuntimeException("Error 401: Cannot resume: log files do not end in same sample number");
                             }
                             sampleOffset = nSampleOffset;
                             // it is safe to remove the backup file now
@@ -461,7 +461,7 @@ public class Logger extends BEASTObject {
                     }
                 }
                 default:
-                    throw new Exception("DEVELOPER ERROR: unknown file mode for logger " + FILE_MODE);
+                    throw new RuntimeException("DEVELOPER ERROR: unknown file mode for logger " + FILE_MODE);
             }
         }
     } // openLogFile

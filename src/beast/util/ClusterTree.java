@@ -101,7 +101,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     		taxaNames = dataInput.get().getTaxaNames();
     	} else {
     		if (m_taxonset.get() == null) {
-    			throw new Exception("At least one of taxa and taxonset input needs to be specified");
+    			throw new RuntimeException("At least one of taxa and taxonset input needs to be specified");
     		}
     		taxaNames = m_taxonset.get().asStringList();
     	}

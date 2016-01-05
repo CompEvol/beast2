@@ -61,7 +61,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         updateMatrix = true;
         nrOfStates = frequencies.getFreqs().length;
         if (ratesInput.get().getDimension() != nrOfStates * (nrOfStates - 1)) {
-            throw new Exception("Dimension of input 'rates' is " + ratesInput.get().getDimension() + " but a " +
+            throw new IllegalArgumentException("Dimension of input 'rates' is " + ratesInput.get().getDimension() + " but a " +
                     "rate matrix of dimension " + nrOfStates + "x" + (nrOfStates - 1) + "=" + nrOfStates * (nrOfStates - 1) + " was " +
                     "expected");
         }

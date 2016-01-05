@@ -86,12 +86,12 @@ public class ScaleOperator extends Operator {
         final BooleanParameter indicators = indicatorInput.get();
         if (indicators != null) {
             if (m_bIsTreeScaler) {
-                throw new Exception("indicator is specified which has no effect for scaling a tree");
+                throw new IllegalArgumentException("indicator is specified which has no effect for scaling a tree");
             }
             final int dataDim = parameterInput.get().getDimension();
             final int indsDim = indicators.getDimension();
             if (!(indsDim == dataDim || indsDim + 1 == dataDim)) {
-                throw new Exception("indicator dimension not compatible from parameter dimension");
+                throw new IllegalArgumentException("indicator dimension not compatible from parameter dimension");
             }
         }
     }

@@ -188,7 +188,7 @@ public class BEASTObjectDialog extends JDialog {
             } else if (args.length == 2) {
                 dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
             } else {
-                throw new Exception("Incorrect number of arguments");
+                throw new IllegalArgumentException("Incorrect number of arguments");
             }
         } catch (Exception e) {
             e.printStackTrace();

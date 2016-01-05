@@ -293,7 +293,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 	            if (nChar < 0) {nChar = sData.length();}
 	            if (sData.length() != nChar) {
-	                throw new Exception("Expected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+	                throw new IllegalArgumentException("Expected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
 	            }
 	            // map to standard missing and gap chars
 	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);

@@ -59,7 +59,7 @@ public class FilteredAlignment extends Alignment {
 
         if (constantSiteWeightsInput.get() != null) {
         	if (constantSiteWeightsInput.get().getDimension() != m_dataType.getStateCount()) {
-        		throw new Exception("constantSiteWeights should be of the same dimension as the datatype " +
+        		throw new IllegalArgumentException("constantSiteWeights should be of the same dimension as the datatype " +
         				"(" + constantSiteWeightsInput.get().getDimension() + "!="+ m_dataType.getStateCount() +")");
         	}
     	}
@@ -86,7 +86,7 @@ public class FilteredAlignment extends Alignment {
         setupAscertainment();
     }
 
-    private void parseFilterSpec() throws Exception {
+    private void parseFilterSpec() {
         // parse filter specification
         String filterString = filterInput.get();
         String[] filters = filterString.split(",");
@@ -118,7 +118,7 @@ public class FilteredAlignment extends Alignment {
                 to[i] = from[i];
             	step[i] = 1;
             } else {
-                throw new Exception("Don't know how to parse filter " + filterString);
+                throw new IllegalArgumentException("Don't know how to parse filter " + filterString);
             }
         }
     }

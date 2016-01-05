@@ -218,7 +218,7 @@ public class BeautiPanelConfig extends BEASTObject {
                             }
                         }
                     } else {
-                        throw new Exception("input " + sPathComponents[i] + "  is not a plugin or list");
+                        throw new IllegalArgumentException("input " + sPathComponents[i] + "  is not a plugin or list");
                     }
                 }
             }

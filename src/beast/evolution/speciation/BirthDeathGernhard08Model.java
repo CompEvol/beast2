@@ -79,7 +79,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
         } else if (sType.equals("labeled")) {
             type = TreeType.LABELED;
         } else {
-            throw new Exception("type '" + sType + "' is not recognized. Should be one of unscaled, timesonly, oriented and labeled.");
+            throw new IllegalArgumentException("type '" + sType + "' is not recognized. Should be one of unscaled, timesonly, oriented and labeled.");
         }
     }
 

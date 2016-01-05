@@ -80,12 +80,12 @@ public class TraitSet extends BEASTObject {
             trait = trait.replaceAll("\\s+", " ");
             String[] sStrs = trait.split("=");
             if (sStrs.length != 2) {
-                throw new Exception("could not parse trait: " + trait);
+                throw new IllegalArgumentException("could not parse trait: " + trait);
             }
             String taxonID = normalize(sStrs[0]);
             int taxonNr = labels.indexOf(taxonID);
             if (taxonNr < 0) {
-                throw new Exception("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
+                throw new IllegalArgumentException("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
             }
             taxonValues[taxonNr] = normalize(sStrs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);

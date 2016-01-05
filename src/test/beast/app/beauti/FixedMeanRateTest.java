@@ -42,7 +42,7 @@ public class FixedMeanRateTest extends BeautiBase {
 		DeltaExchangeOperator operator = (DeltaExchangeOperator) beauti.doc.pluginmap.get("FixMeanMutationRatesOperator");
 		int nrOfParameters = operator.parameterInput.get().size();
 		if(nrOfParameters != 2) {
-			throw new Exception("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
+			throw new IllegalArgumentException("Expected 2 parameters for deltaExchangeOperator, not " + nrOfParameters);
 		}
 	}
 	

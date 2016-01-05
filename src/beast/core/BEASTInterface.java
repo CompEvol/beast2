@@ -359,7 +359,7 @@ public interface BEASTInterface {
         for (final Input<?> input : listInputs()) {
             inputNames += input.getName() + ",";
         }
-        throw new Exception("This BEASTInterface (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
+        throw new IllegalArgumentException("This BEASTInterface (" + (this.getID() == null ? this.getClass().getName() : this.getID()) + ") has no input with name " + name + ". " +
                 "Choose one of these inputs:" + inputNames.substring(0, inputNames.length() - 1));
     } // getInput
 

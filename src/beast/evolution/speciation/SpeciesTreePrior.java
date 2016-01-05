@@ -62,14 +62,14 @@ public class SpeciesTreePrior extends TreeDistribution {
                 break;
             case linear:
                 if (popSizesTop == null) {
-                    throw new Exception("topPopSize must be specified");
+                    throw new IllegalArgumentException("topPopSize must be specified");
                 }
                 popSizesBottom.setDimension(nSpecies);
                 popSizesTop.setDimension(nNodes);
                 break;
             case linear_with_constant_root:
                 if (popSizesTop == null) {
-                    throw new Exception("topPopSize must be specified");
+                    throw new IllegalArgumentException("topPopSize must be specified");
                 }
                 popSizesBottom.setDimension(nSpecies);
                 popSizesTop.setDimension(nNodes - 1);
@@ -87,13 +87,13 @@ public class SpeciesTreePrior extends TreeDistribution {
         gamma4Prior.betaInput.setValue(gammaParameterInput.get(), gamma4Prior);
 
         if (popFunction != TreePopSizeFunction.constant && gamma4Prior == null) {
-            throw new Exception("Top prior must be specified when population function is not constant");
+            throw new IllegalArgumentException("Top prior must be specified when population function is not constant");
         }
         // make sure the m_taxonSet is a set of taxonsets
 // HACK to make Beauti initialise: skip the check here
 //		for (Taxon taxon : m_taxonSet.get().m_taxonset.get()) {
 //			if (!(taxon instanceof TaxonSet)) {
-//				throw new Exception("taxonset should be sets of taxa only, not individual taxons");
+//				throw new IllegalArgumentException("taxonset should be sets of taxa only, not individual taxons");
 //			}
 //		}
     }

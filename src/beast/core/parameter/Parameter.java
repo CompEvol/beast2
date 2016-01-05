@@ -101,7 +101,7 @@ public interface Parameter<T> extends Function {
 
             minorDimension = minorDimensionInput.get();
             if (minorDimension > 0 && dimensionInput.get() % minorDimension > 0) {
-                throw new Exception("Dimension must be divisible by stride");
+                throw new IllegalArgumentException("Dimension must be divisible by stride");
             }
             this.storedValues = values.clone();
         }
@@ -196,7 +196,7 @@ public interface Parameter<T> extends Function {
         public void setMinorDimension(final int nDimension) throws Exception {
             minorDimension = nDimension;
             if (minorDimension > 0 && dimensionInput.get() % minorDimension > 0) {
-                throw new Exception("Dimension must be divisible by stride");
+                throw new IllegalArgumentException("Dimension must be divisible by stride");
             }
         }
 

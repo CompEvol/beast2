@@ -66,7 +66,7 @@ public class BayesianSkyline extends TreeDistribution {
     @Override
 	public void initAndValidate() throws Exception {
         if (treeInput.get() != null) {
-            throw new Exception("only tree intervals (not tree) should not be specified");
+            throw new IllegalArgumentException("only tree intervals (not tree) should not be specified");
         }
         intervals = treeIntervalsInput.get();
         groupSizes = groupSizeParamInput.get();
