@@ -17,6 +17,7 @@ import beast.core.Input;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 
@@ -152,10 +153,23 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 	
     Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
-        Set<Taxon> candidates = new HashSet<Taxon>();
-        for (String sTaxon : prior.treeInput.get().getTaxaNames()) {
-            Taxon taxon = doc.getTaxon(sTaxon);
-            candidates.add(taxon);
+        Set<Taxon> candidates = new HashSet<>();
+        Tree tree = prior.treeInput.get();
+        String [] taxa = null;
+        if (tree.m_taxonset.get() != null) {
+        	try {
+            	TaxonSet set = tree.m_taxonset.get();
+        		set.initAndValidate();
+            	taxa = set.asStringList().toArray(new String[0]);
+        	} catch (Exception e) {
+            	taxa = prior.treeInput.get().getTaxaNames();
+			}
+        } else {
+        	taxa = prior.treeInput.get().getTaxaNames();
+        }
+        
+        for (String sTaxon : taxa) {
+            candidates.add(doc.getTaxon(sTaxon));
         }
         return candidates;
     }
