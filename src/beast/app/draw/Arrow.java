@@ -46,8 +46,8 @@ public class Arrow extends Shape {
 //	String m_sPenStyle;
 
     /* c'tor for creating arrow while parsing XDL format XML **/
-    public Arrow(Node node, Document doc, boolean bReconstructPlugins) {
-        parse(node, doc, bReconstructPlugins);
+    public Arrow(Node node, Document doc, boolean reconstructBEASTObjects) {
+        parse(node, doc, reconstructBEASTObjects);
     }
 
     /* c'tor for creating arrow when starting to draw new one **/
@@ -67,7 +67,7 @@ public class Arrow extends Shape {
 	        m_tailShape = tailShape;
 	        InputShape input = headShape.getInputShape(sInputName);
 	        if (input == null) {
-	        	Log.warning.println("Arrow from " + tailShape.m_plugin.getID() + " to " + headShape.m_plugin.getID() + "." + sInputName + " skipped");	        	
+	        	Log.warning.println("Arrow from " + tailShape.m_beastObject.getID() + " to " + headShape.m_beastObject.getID() + "." + sInputName + " skipped");	        	
 	        }
 	        m_sHeadID = input.getID();
 	        m_headShape = input;
@@ -103,14 +103,14 @@ public class Arrow extends Shape {
         m_headShape = shape;
         adjustCoordinates();
         String sInputName = m_headShape.getInputName();
-        m_headShape.getPlugin().setInputValue(sInputName, m_tailShape.m_plugin);
+        m_headShape.getBEASTObject().setInputValue(sInputName, m_tailShape.m_beastObject);
         return true;//setFunctionInput(objects, doc);
     }
 
     /* parse arrow in XDL format XML **/
     @Override
-    void parse(Node node, Document doc, boolean bReconstructPlugins) {
-        super.parse(node, doc, bReconstructPlugins);
+    void parse(Node node, Document doc, boolean reconstructBEASTObjects) {
+        super.parse(node, doc, reconstructBEASTObjects);
         if (node.getAttributes().getNamedItem("headid") != null) {
             m_sHeadID = node.getAttributes().getNamedItem("headid").getNodeValue();
         }

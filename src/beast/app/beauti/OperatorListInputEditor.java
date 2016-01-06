@@ -39,7 +39,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	Box box = Box.createHorizontalBox();
     	box.add(Box.createHorizontalStrut(25));
     	box.add(new JLabel("Operator"));
@@ -49,12 +49,12 @@ public class OperatorListInputEditor extends ListInputEditor {
     	add(box);
     	
     	m_buttonStatus = ButtonStatus.NONE;
-    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
     }
     
     @Override
-    protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
-        Operator operator = (Operator) plugin;
+    protected InputEditor addPluginItem(Box itemBox, BEASTInterface beastObject) {
+        Operator operator = (Operator) beastObject;
 
         JTextField entry = new JTextField(" " + getLabel(operator));
         entry.setMinimumSize(new Dimension(200, 16));
@@ -149,9 +149,9 @@ public class OperatorListInputEditor extends ListInputEditor {
         }
         sName += ": ";
         try {
-            for (BEASTInterface plugin2 : operator.listActivePlugins()) {
-                if (plugin2 instanceof StateNode && ((StateNode) plugin2).isEstimatedInput.get()) {
-                    sName += plugin2.getID() + " ";
+            for (BEASTInterface beastObject2 : operator.listActiveBEASTObjects()) {
+                if (beastObject2 instanceof StateNode && ((StateNode) beastObject2).isEstimatedInput.get()) {
+                    sName += beastObject2.getID() + " ";
                 }
             }
         } catch (Exception e) {

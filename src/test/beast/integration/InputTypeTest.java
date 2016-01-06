@@ -29,14 +29,14 @@ public class InputTypeTest extends TestCase {
 		List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTObject.class,
 				AddOnManager.IMPLEMENTATION_DIR);
 		List<String> failingInputs = new ArrayList<String>();
-		for (String beastObject : beastObjectNames) {
+		for (String beastObjectName : beastObjectNames) {
 			try {
-				BEASTObject plugin = (BEASTObject) Class.forName(beastObject).newInstance();
-				List<Input<?>> inputs = plugin.listInputs();
+				BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+				List<Input<?>> inputs = beastObject.listInputs();
 				for (Input<?> input : inputs) {
 					if (input.getType() == null) {
 						try {
-							input.determineClass(plugin);
+							input.determineClass(beastObject);
 							if (input.getType() == null) {
 								failingInputs.add(beastObject + ":" + input.getName());
 							}

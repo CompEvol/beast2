@@ -21,9 +21,9 @@ public class JSONTest extends TestCase {
     @Test
     public void testJSONtoXMLtoJSON() throws Exception {
     	JSONParser parser = new JSONParser();
-		BEASTObject plugin = parser.parseFile(new File(JSON_FILE));
+		BEASTObject beastObject = parser.parseFile(new File(JSON_FILE));
 		JSONProducer producer = new JSONProducer();
-		String actual = producer.toJSON(plugin).trim();//.replaceAll("\\s+", " ");
+		String actual = producer.toJSON(beastObject).trim();//.replaceAll("\\s+", " ");
 		
 		String expected = BeautiDoc.load(JSON_FILE).trim();//.replaceAll("\\s+", " ");
 		assertEquals("Produced JSON differs from original", 

@@ -53,12 +53,12 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     }
     
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr,
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr,
     		ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
     	fixMeanRatesCheckBox.setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
-    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
 
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
     	fixMeanRatesCheckBox.addActionListener(e -> {
@@ -132,7 +132,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 			@Override
 			public void validateInput() {
         		super.validateInput();
-            	SiteModel sitemodel = (SiteModel) m_plugin; 
+            	SiteModel sitemodel = (SiteModel) m_beastObject; 
                 if (sitemodel.gammaCategoryCount.get() < 2 && sitemodel.shapeParameterInput.get().isEstimatedInput.get()) {
                 	m_validateLabel.m_circleColor = Color.orange;
                 	m_validateLabel.setToolTipText("shape parameter is estimated, but not used");

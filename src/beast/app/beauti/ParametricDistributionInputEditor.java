@@ -42,18 +42,18 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        useDefaultBehavior = !((plugin instanceof beast.math.distributions.Prior) || plugin instanceof MRCAPrior || plugin instanceof TreeDistribution);
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+        useDefaultBehavior = !((beastObject instanceof beast.math.distributions.Prior) || beastObject instanceof MRCAPrior || beastObject instanceof TreeDistribution);
 
 //    	if (useDefaultBehavior && false) {
-//    		super.init(input, plugin, bExpandOption, bAddButtons);
+//    		super.init(input, beastObject, bExpandOption, bAddButtons);
 //    	} else {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
 		this.itemNr = itemNr;
         if (input.get() != null) {
-            super.init(input, plugin, itemNr, ExpandOption.TRUE, bAddButtons);
+            super.init(input, beastObject, itemNr, ExpandOption.TRUE, bAddButtons);
         }
         add(createGraph());
 //    	}
@@ -62,9 +62,9 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
     @Override
     /** suppress combobox **/
-    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface beastObject) {
         if (useDefaultBehavior) {
-            super.addComboBox(box, input, plugin);
+            super.addComboBox(box, input, beastObject);
         }
     }
 

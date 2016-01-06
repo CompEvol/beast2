@@ -28,14 +28,14 @@ import beast.core.Input;
 import beast.core.util.Log;
 
 /**
- * Base class for editors that provide a GUI for manipulating an Input for a Plugin.
+ * Base class for editors that provide a GUI for manipulating an Input for a BEASTObject.
  * The idea is that for every type of Input there will be a dedicated editor, e.g.
  * for a String Input, there will be an edit field, for a Boolean Input, there will
  * be a checkbox in the editor.
  * <p/>
  * The default just provides an edit field and uses toString() on Input to get its value.
  * To change the behaviour, override
- * public void init(Input<?> input, Plugin plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons)
+ * public void init(Input<?> input, BEASTObject beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons)
  */
 /** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
@@ -52,20 +52,20 @@ public interface InputEditor {
         HAS_INVALIDMEMBERS
     }
 
-    /** type of Plugin to which this editor can be used **/ 
+    /** type of BEASTObject to which this editor can be used **/ 
     Class<?> type();
 
-    /** list of types of Plugins to which this editor can be used **/ 
+    /** list of types of BEASTObjects to which this editor can be used **/ 
     Class<?>[] types();
 
     /** initialise InputEditor
      * @param input to be edited
-     * @param plugin parent plugin containing the input
+     * @param beastObject parent beastObject containing the input
      * @param itemNr if the input is a list, itemNr indicates which item to edit in the list
      * @param bExpandOption start state of input editor
      * @param bAddButtons button status of input editor
      */
-    void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons);
+    void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons);
 
     /** set document with the model containing the input **/
     void setDoc(BeautiDoc doc);
@@ -85,7 +85,7 @@ public interface InputEditor {
     /** add input editor to listen for changes **/
     void addValidationListener(InputEditor validateListener);
     
-    /** propagate status of predecessor inputs through list of plugins **/
+    /** propagate status of predecessor inputs through list of beastObjects **/
     void notifyValidationListeners(ValidationStatus state);
     
     Component getComponent();
@@ -100,9 +100,9 @@ public abstract class Base extends JPanel implements InputEditor {
     protected Input<?> m_input;
 
     /**
-     * parent plugin *
+     * parent beastObject *
      */
-    protected BEASTInterface m_plugin;
+    protected BEASTInterface m_beastObject;
 
     /**
      * text field used for primitive input editors *
@@ -200,10 +200,10 @@ public abstract class Base extends JPanel implements InputEditor {
      * construct an editor consisting of a label and input entry *
      */
     @Override
-	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
         this.itemNr= itemNr;
         
         addInputLabel();
@@ -254,18 +254,18 @@ public abstract class Base extends JPanel implements InputEditor {
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void setValue(Object o) throws Exception {
     	if (itemNr < 0) {
-    		m_input.setValue(o, m_plugin);
+    		m_input.setValue(o, m_beastObject);
     	} else {
     		// set value of an item in a list
     		List list = (List) m_input.get();
     		Object other = list.get(itemNr);
     		if (other != o) {
     			if (other instanceof BEASTInterface) {
-    				BEASTInterface.getOutputs(other).remove(m_plugin);
+    				BEASTInterface.getOutputs(other).remove(m_beastObject);
     			}
     			list.set(itemNr, o);
     			if (o instanceof BEASTInterface) {
-    				BEASTInterface.getOutputs(o).add(m_plugin);
+    				BEASTInterface.getOutputs(o).add(m_beastObject);
     			}
     		}
     	}
@@ -297,8 +297,8 @@ public abstract class Base extends JPanel implements InputEditor {
     }
 
     protected String formatName(String sName) {
-	    if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName() + "." + sName)) {
-	        sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName() + "." + sName);
+	    if (doc.beautiConfig.inputLabelMap.containsKey(m_beastObject.getClass().getName() + "." + sName)) {
+	        sName = doc.beautiConfig.inputLabelMap.get(m_beastObject.getClass().getName() + "." + sName);
 	    } else {
 	        sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
 	        sName = sName.substring(0, 1).toUpperCase() + sName.substring(1);
@@ -346,7 +346,7 @@ public abstract class Base extends JPanel implements InputEditor {
     public void validateInput() {
         try {
             m_input.validate();
-            if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
+            if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_beastObject)) {
                 throw new IllegalArgumentException("invalid value");
             }
             // recurse
@@ -378,7 +378,7 @@ public abstract class Base extends JPanel implements InputEditor {
         repaint();
     }
 
-    /* Recurse in any of the input plugins
+    /* Recurse in any of the input beastObjects
       * and validate its inputs */
     void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
         if (done.contains(input)) {
@@ -389,8 +389,8 @@ public abstract class Base extends JPanel implements InputEditor {
         }
         if (input.get() != null) {
             if (input.get() instanceof BEASTInterface) {
-                BEASTInterface plugin = ((BEASTInterface) input.get());
-                for (Input<?> input2 : plugin.listInputs()) {
+                BEASTInterface beastObject = ((BEASTInterface) input.get());
+                for (Input<?> input2 : beastObject.listInputs()) {
                     try {
                         input2.validate();
                     } catch (Exception e) {
@@ -402,8 +402,8 @@ public abstract class Base extends JPanel implements InputEditor {
             if (input.get() instanceof List<?>) {
                 for (Object o : (List<?>) input.get()) {
                     if (o != null && o instanceof BEASTInterface) {
-                        BEASTInterface plugin = (BEASTInterface) o;
-                        for (Input<?> input2 : plugin.listInputs()) {
+                        BEASTInterface beastObject = (BEASTInterface) o;
+                        for (Input<?> input2 : beastObject.listInputs()) {
                             try {
                                 input2.validate();
                             } catch (Exception e) {

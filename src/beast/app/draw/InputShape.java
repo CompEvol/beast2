@@ -49,23 +49,23 @@ public class InputShape extends Shape {
         m_input = input;
     }
 
-    public InputShape(Node node, Document doc, boolean bReconstructPlugins) {
-        parse(node, doc, bReconstructPlugins);
+    public InputShape(Node node, Document doc, boolean reconstructBEASTObjects) {
+        parse(node, doc, reconstructBEASTObjects);
         //TODO: set inputName
     }
 
-    public BEASTObjectShape m_pluginShape = null;
+    public BEASTObjectShape m_beastObjectShape = null;
 
     BEASTObjectShape getPluginShape() {
-        return m_pluginShape;
+        return m_beastObjectShape;
     }
 
     void setPluginShape(BEASTObjectShape function) {
-        m_pluginShape = function;
+        m_beastObjectShape = function;
     }
 
-    BEASTInterface getPlugin() {
-        return m_pluginShape.m_plugin;
+    BEASTInterface getBEASTObject() {
+        return m_beastObjectShape.m_beastObject;
     }
 
     String getInputName() throws Exception {
@@ -79,7 +79,7 @@ public class InputShape extends Shape {
 
     @Override
     public void draw(Graphics2D g, JPanel panel) {
-        if (m_pluginShape == null || m_pluginShape.m_bNeedsDrawing) {
+        if (m_beastObjectShape == null || m_beastObjectShape.m_bNeedsDrawing) {
             if (m_bFilled) {
                 g.setColor(m_fillcolor);
                 g.fillOval(m_x, m_y, m_w, m_h);
@@ -98,8 +98,8 @@ public class InputShape extends Shape {
     }
 
     @Override
-    void parse(Node node, Document doc, boolean bReconstructPlugins) {
-        super.parse(node, doc, bReconstructPlugins);
+    void parse(Node node, Document doc, boolean reconstructBEASTObjects) {
+        super.parse(node, doc, reconstructBEASTObjects);
     }
 
     @Override
@@ -171,8 +171,8 @@ public class InputShape extends Shape {
 
     @Override
     String getID() {
-        if (m_pluginShape != null) {
-            return m_pluginShape.m_plugin.getID() + "." + m_input.getName();
+        if (m_beastObjectShape != null) {
+            return m_beastObjectShape.m_beastObject.getID() + "." + m_input.getName();
         } else {
             return m_sID;
         }

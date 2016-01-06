@@ -43,16 +43,16 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
     ActionEvent m_e;
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
         this.itemNr = listItemNr;
 
         Box itemBox = Box.createHorizontalBox();
 
-        TreeDistribution distr = (TreeDistribution) plugin;
-        String sText = ""/* plugin.getID() + ": " */;
+        TreeDistribution distr = (TreeDistribution) beastObject;
+        String sText = ""/* beastObject.getID() + ": " */;
         if (distr.treeInput.get() != null) {
             sText += distr.treeInput.get().getID();
         } else {
@@ -62,26 +62,26 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
         label.setMinimumSize(Base.PREFERRED_SIZE);
         label.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(label);
-        // List<String> sAvailablePlugins =
-        // PluginPanel.getAvailablePlugins(m_input, m_plugin, null);
+        // List<String> availableBEASTObjects =
+        // PluginPanel.getAvailablePlugins(m_input, m_beastObject, null);
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(m_input, m_plugin,
+        List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(m_input, m_beastObject,
                 null, doc); 
         // make sure we are dealing with a TreeDistribution
-        for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
-        	BeautiSubTemplate t = sAvailablePlugins.get(i);
+        for (int i = availableBEASTObjects.size() - 1; i >= 0; i--) {
+        	BeautiSubTemplate t = availableBEASTObjects.get(i);
         	Class<?> c = t._class;
         	if (!(TreeDistribution.class.isAssignableFrom(c))) {
-        		sAvailablePlugins.remove(i);
+        		availableBEASTObjects.remove(i);
         	}
         }
         
-        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(sAvailablePlugins.toArray(new BeautiSubTemplate[]{}));
+        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(availableBEASTObjects.toArray(new BeautiSubTemplate[]{}));
         comboBox.setName("TreeDistribution");
 
-        for (int i = sAvailablePlugins.size() - 1; i >= 0; i--) {
-            if (!TreeDistribution.class.isAssignableFrom(sAvailablePlugins.get(i)._class)) {
-                sAvailablePlugins.remove(i);
+        for (int i = availableBEASTObjects.size() - 1; i >= 0; i--) {
+            if (!TreeDistribution.class.isAssignableFrom(availableBEASTObjects.get(i)._class)) {
+                availableBEASTObjects.remove(i);
             }
         }
 
@@ -92,7 +92,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
         } catch (Exception e) {
             throw new RuntimeException("Improperly formatted ID: " + distr.getID());
         }
-        for (BeautiSubTemplate template : sAvailablePlugins) {
+        for (BeautiSubTemplate template : availableBEASTObjects) {
             if (template.matchesName(sID)) { // getMainID().replaceAll(".\\$\\(n\\)",
                 // "").equals(sID)) {
                 comboBox.setSelectedItem(template);
@@ -132,7 +132,7 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
 
     @Override
     public void validateInput() {
-        TreeDistribution distr = (TreeDistribution) m_plugin;
+        TreeDistribution distr = (TreeDistribution) m_beastObject;
         // TODO: robustify for the case the tree is not a simple binary tree
         Tree tree = (Tree) distr.treeInput.get();
         if (tree == null) {

@@ -114,9 +114,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         } else {
             // find calibration points from prior
-            for (final Object plugin : getOutputs()) {
-                if (plugin instanceof CompoundDistribution) {
-                    final CompoundDistribution prior = (CompoundDistribution) plugin;
+            for (final Object beastObject : getOutputs()) {
+                if (beastObject instanceof CompoundDistribution) {
+                    final CompoundDistribution prior = (CompoundDistribution) beastObject;
                     for (final Distribution distr : prior.pDistributions.get()) {
                         if (distr instanceof MRCAPrior) {
                             final MRCAPrior _MRCAPrior = (MRCAPrior) distr;

@@ -36,15 +36,15 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTInterface plugin, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface beastObject, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
         this.itemNr= listItemNr;
 		
         Box itemBox = Box.createHorizontalBox();
 
-        MRCAPrior prior = (MRCAPrior) plugin;
+        MRCAPrior prior = (MRCAPrior) beastObject;
         String sText = prior.getID();
 
         JButton taxonButton = new JButton(sText);
@@ -80,15 +80,15 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 
         }
 
-        List<BeautiSubTemplate> sAvailablePlugins = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
-        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(sAvailablePlugins.toArray(new BeautiSubTemplate[]{}));
+        List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
+        JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(availableBEASTObjects.toArray(new BeautiSubTemplate[]{}));
         comboBox.setName(sText+".distr");
 
         if (prior.distInput.get() != null) {
             String sID = prior.distInput.get().getID();
             //sID = BeautiDoc.parsePartition(sID);
             sID = sID.substring(0, sID.indexOf('.'));
-            for (BeautiSubTemplate template : sAvailablePlugins) {
+            for (BeautiSubTemplate template : availableBEASTObjects) {
                 if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
                     comboBox.setSelectedItem(template);
                 }
@@ -105,15 +105,15 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 List<?> list = (List<?>) m_input.get();
                 MRCAPrior prior = (MRCAPrior) list.get(itemNr);
 
-//System.err.println("PRIOR" + plugin2);
+//System.err.println("PRIOR" + beastObject2);
 //            	try {
-//					prior.m_distInput.setValue(plugin2, prior);
+//					prior.m_distInput.setValue(beastObject2, prior);
 //				} catch (Exception e1) {
 //					// TODO Auto-generated catch block
 //					e1.printStackTrace();
 //				}
                 try {
-                    //Plugin plugin2 =
+                    //BEASTObject beastObject2 =
                     template.createSubNet(new PartitionContext(""), prior, prior.distInput, true);
                 } catch (Exception e1) {
                     e1.printStackTrace();

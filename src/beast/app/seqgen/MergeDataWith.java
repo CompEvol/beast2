@@ -57,8 +57,8 @@ public class MergeDataWith extends BEASTObject {
 		outputFile = outputFile.replaceAll("\\$\\(n\\)", iteration+"");
 		FileWriter outfile = new FileWriter(outputFile);
 		
-		Set<BEASTInterface> plugins = new HashSet<>();
-		String sXML = new XMLProducer().toXML(b, plugins);
+		Set<BEASTInterface> beastObjects = new HashSet<>();
+		String sXML = new XMLProducer().toXML(b, beastObjects);
         outfile.write(sXML);
         outfile.close();
 	} // process
@@ -66,7 +66,7 @@ public class MergeDataWith extends BEASTObject {
 
 	private Alignment getAlignment(BEASTInterface b) throws IllegalArgumentException, IllegalAccessException {
 		Alignment a = null;
-		for (BEASTInterface i : b.listActivePlugins()) {
+		for (BEASTInterface i : b.listActiveBEASTObjects()) {
 			if (i.getClass().equals(Alignment.class)){
 				return (Alignment) i;
 			} else {

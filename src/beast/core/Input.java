@@ -383,15 +383,15 @@ public class Input<T> {
      * Otherwise, m_value is assigned to value.
      *
      * @param value
-     * @param plugin
+     * @param beastObject
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void setValue(final Object value, final BEASTInterface plugin) {
+    public void setValue(final Object value, final BEASTInterface beastObject) {
         if (value == null) {
             if (this.value != null) {
                 if (this.value instanceof BEASTInterface) {
-                    ((BEASTInterface) this.value).getOutputs().remove(plugin);
+                    ((BEASTInterface) this.value).getOutputs().remove(beastObject);
                 }
             }
             this.value = null;
@@ -399,19 +399,19 @@ public class Input<T> {
         }
         if (theClass == null) {
             try {
-                determineClass(plugin);
+                determineClass(beastObject);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("Failed to determine class of beastobject id=" + plugin.getID());
+                throw new RuntimeException("Failed to determine class of beastobject id=" + beastObject.getID());
             }
         }
         if (value instanceof String) {
             try {
-                setStringValue((String) value, plugin);
+                setStringValue((String) value, beastObject);
             } catch (Exception e) {
                 e.printStackTrace();
-            	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
-                throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
+            	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
+                throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
             }
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
@@ -428,7 +428,7 @@ public class Input<T> {
 //                }
                 vector.add(value);
                 if (value instanceof BEASTInterface) {
-                    ((BEASTInterface) value).getOutputs().add(plugin);
+                    ((BEASTInterface) value).getOutputs().add(beastObject);
                 }
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
@@ -437,7 +437,7 @@ public class Input<T> {
                 for (Object v : ((List<?>) value)) {
                     vector.add(v);
                     if (v instanceof BEASTInterface) {
-                        ((BEASTInterface) v).getOutputs().add(plugin);
+                        ((BEASTInterface) v).getOutputs().add(beastObject);
                     }
                 }
             } else {
@@ -449,9 +449,9 @@ public class Input<T> {
             if (theClass.isAssignableFrom(value.getClass())) {
                 if (value instanceof BEASTInterface) {
                     if (this.value != null) {
-                        ((BEASTInterface) this.value).getOutputs().remove(plugin);
+                        ((BEASTInterface) this.value).getOutputs().remove(beastObject);
                     }
-                    ((BEASTInterface) value).getOutputs().add(plugin);
+                    ((BEASTInterface) value).getOutputs().add(beastObject);
                 }
                 this.value = (T) value;
             } else {
@@ -469,17 +469,17 @@ public class Input<T> {
      * It is best for Beauti to throw an Exception from canSetName() with some
      * diagnostic info when the value cannot be set.
      */
-    public boolean canSetValue(Object value, BEASTInterface plugin) {
+    public boolean canSetValue(Object value, BEASTInterface beastObject) {
         String inputName = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
         try {
-            Method method = plugin.getClass().getMethod("canSet" + inputName, Object.class);
-            //System.err.println("Calling method " + plugin.getClass().getName() +"."+ method.getName());
-            Object o = method.invoke(plugin, value);
+            Method method = beastObject.getClass().getMethod("canSet" + inputName, Object.class);
+            //System.err.println("Calling method " + beastObject.getClass().getName() +"."+ method.getName());
+            Object o = method.invoke(beastObject, value);
             return (Boolean) o;
         } catch (java.lang.NoSuchMethodException e) {
             return true;
         } catch (java.lang.reflect.InvocationTargetException e) {
-        	Log.warning.println(plugin.getClass().getName() + "." + getName() + ": " + e.getCause());
+        	Log.warning.println(beastObject.getClass().getName() + "." + getName() + ": " + e.getCause());
 
             if (e.getCause() != null) {
                 throw new RuntimeException(e.getCause().getMessage());
@@ -487,7 +487,7 @@ public class Input<T> {
             return false;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            throw new RuntimeException("Illegal method access attempted on beastobject id=" + plugin.getID());
+            throw new RuntimeException("Illegal method access attempted on beastobject id=" + beastObject.getID());
         }
     }
 
@@ -497,16 +497,16 @@ public class Input<T> {
      * If T is a vector, i.e. Input<List<S>>, the actual value of S
      * is assigned instead
      *
-     * @param plugin whose type is to be determined
+     * @param beastObject whose type is to be determined
      * @throws Exception
      */
-    public void determineClass(final Object plugin) throws Exception {
+    public void determineClass(final Object beastObject) throws Exception {
         try {
-            final Field[] fields = plugin.getClass().getFields();
-            // find this input in the plugin
+            final Field[] fields = beastObject.getClass().getFields();
+            // find this input in the beastObject
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
-                    final Input<?> input = (Input<?>) fields[i].get(plugin);
+                    final Input<?> input = (Input<?>) fields[i].get(beastObject);
                     if (input == this) {
                         // found the input, now determine the type of the input
                         Type t = fields[i].getGenericType();
@@ -542,15 +542,15 @@ public class Input<T> {
                             } catch (Exception e) {
                                 // resolve ID
                                 String id = "";
-                                Method method = plugin.getClass().getMethod("getID");
+                                Method method = beastObject.getClass().getMethod("getID");
                                 if (method != null) {
-                                    id = (String) method.invoke(plugin);
+                                    id = (String) method.invoke(beastObject);
                                 }
                                 // assemble error message
-                                Log.err.println(plugin.getClass().getName() + " " + id + " failed. " +
-                                        "Possibly template or abstract Plugin used " +
+                                Log.err.println(beastObject.getClass().getName() + " " + id + " failed. " +
+                                        "Possibly template or abstract BEASTObject used " +
                                         "or if it is a list, the list was not initilised???");
-                                Log.err.println("class is " + plugin.getClass());
+                                Log.err.println("class is " + beastObject.getClass());
                                 e.printStackTrace(System.err);
                                 System.exit(1);
                             }
@@ -572,7 +572,7 @@ public class Input<T> {
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(final String sValue, final BEASTInterface plugin) throws Exception {
+    private void setStringValue(final String sValue, final BEASTInterface beastObject) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (value instanceof List<?>) {
             List list = (List) value;
@@ -624,7 +624,7 @@ public class Input<T> {
             } else {
                 value = (T) param;
             }
-            param.getOutputs().add(plugin);
+            param.getOutputs().add(beastObject);
             return;
         }
 
@@ -672,7 +672,7 @@ public class Input<T> {
                 value = (T) o;
             }
             if (o instanceof BEASTInterface) {
-                ((BEASTInterface) o).getOutputs().add(plugin);
+                ((BEASTInterface) o).getOutputs().add(beastObject);
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +

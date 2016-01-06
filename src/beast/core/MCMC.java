@@ -94,7 +94,7 @@ public class MCMC extends Runnable {
     /**
      * The state that takes care of managing StateNodes,
      * operations on StateNodes and propagates store/restore/requireRecalculation
-     * calls to the appropriate Plugins.
+     * calls to the appropriate BEASTObjects.
      */
     protected State state;
 
@@ -173,7 +173,7 @@ public class MCMC extends Runnable {
         }
 
         if (sampleFromPriorInput.get()) {
-            // remove plugin with id likelihood from posterior, if it is a CompoundDistribution
+            // remove beastObject with id likelihood from posterior, if it is a CompoundDistribution
             if (posteriorInput.get() instanceof CompoundDistribution) {
                 final CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
                 final List<Distribution> distrs = posterior.pDistributions.get();
@@ -296,7 +296,7 @@ public class MCMC extends Runnable {
 
     @Override
     public void run() throws Exception {
-        // set up state (again). Other plugins may have manipulated the
+        // set up state (again). Other beastObjects may have manipulated the
         // StateNodes, e.g. set up bounds or dimensions
         state.initAndValidate();
         // also, initialise state with the file name to store and set-up whether to resume from file

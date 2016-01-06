@@ -14,10 +14,10 @@ import beast.core.Input.Validate;
 @Citation("Created by Walter Xie")
 public class Expectation extends BEASTObject {
 
-    public Input<String> traceName = new Input<>("traceName", "The trace name of a loggable plugin", Validate.REQUIRED);
+    public Input<String> traceName = new Input<>("traceName", "The trace name of a loggable beastObject", Validate.REQUIRED);
 
     public Input<Double> expValue =
-            new Input<>("expectedValue", "The expected value of the referred loggable plugin", Validate.REQUIRED);
+            new Input<>("expectedValue", "The expected value of the referred loggable beastObject", Validate.REQUIRED);
 
     public Input<Double> standErrorOfMean =
             new Input<>("stdError", "The expected standard error of mean. If not given, it will estimate error from log",

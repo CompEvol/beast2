@@ -238,12 +238,12 @@ public class SequenceSimulator extends beast.core.Runnable {
     /**
      * find a treelikelihood object among the plug-ins by recursively inspecting plug-ins *
      */
-    static TreeLikelihood getTreeLikelihood(BEASTInterface plugin) throws Exception {
-        for (BEASTInterface plugin2 : plugin.listActivePlugins()) {
-            if (plugin2 instanceof TreeLikelihood) {
-                return (TreeLikelihood) plugin2;
+    static TreeLikelihood getTreeLikelihood(BEASTInterface beastObject) throws Exception {
+        for (BEASTInterface beastObject2 : beastObject.listActiveBEASTObjects()) {
+            if (beastObject2 instanceof TreeLikelihood) {
+                return (TreeLikelihood) beastObject2;
             } else {
-                TreeLikelihood likelihood = getTreeLikelihood(plugin2);
+                TreeLikelihood likelihood = getTreeLikelihood(beastObject2);
                 if (likelihood != null) {
                     return likelihood;
                 }
@@ -290,10 +290,10 @@ public class SequenceSimulator extends beast.core.Runnable {
 
             // parse the xml
             XMLParser parser = new XMLParser();
-            BEASTInterface plugin = parser.parseFragment(sXML, true);
+            BEASTInterface beastObject = parser.parseFragment(sXML, true);
 
             // find relevant objects from the model
-            TreeLikelihood treeLikelihood = getTreeLikelihood(plugin);
+            TreeLikelihood treeLikelihood = getTreeLikelihood(beastObject);
             if (treeLikelihood == null) {
                 throw new IllegalArgumentException("No treelikelihood found in file. Giving up now.");
             }

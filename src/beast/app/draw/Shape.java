@@ -105,7 +105,7 @@ abstract public class Shape {
         return tracker;
     }
 
-    void parse(Node node, Document doc, boolean bReconstructPlugins) {
+    void parse(Node node, Document doc, boolean reconstructBEASTObjects) {
         if (node.getAttributes().getNamedItem("id") != null) {
             m_sID = node.getAttributes().getNamedItem("id").getNodeValue();
         }

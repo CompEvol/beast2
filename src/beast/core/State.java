@@ -97,7 +97,7 @@ public class State extends BEASTObject {
      */
 
     /**
-     * Maps a Plugin to a list of Outputs.
+     * Maps a BEASTObject to a list of Outputs.
      * This map only contains those plug-ins that have a path to the posterior *
      */
     private HashMap<BEASTInterface, List<BEASTInterface>> outputMap;
@@ -105,7 +105,7 @@ public class State extends BEASTObject {
     /**
      * Same as m_outputMap, but only for StateNodes indexed by the StateNode number
      * We need this since the StateNode changes regularly, so unlike the output map
-     * for Plugins cannot be accessed by the current StateNode as key.
+     * for BEASTObjects cannot be accessed by the current StateNode as key.
      */
     private List<CalculationNode>[] stateNodeOutputs;
 
@@ -262,7 +262,7 @@ public class State extends BEASTObject {
     }
 
     /**
-     * Visit all calculation nodes in partial order determined by the Plugin-input relations
+     * Visit all calculation nodes in partial order determined by the BEASTObject-input relations
      * (i.e. if A is input of B then A < B). There are 4 operations that can be propagated this
      * way:
      * <p/>
@@ -455,13 +455,13 @@ public class State extends BEASTObject {
     /**
      * Sets the posterior, needed to calculate paths of CalculationNode
      * that need store/restore/requireCalculation checks.
-     * As a side effect, outputs for every plugin in the model are calculated.
-     * NB the output map only contains outputs on a path to the posterior Plugin!
+     * As a side effect, outputs for every beastObject in the model are calculated.
+     * NB the output map only contains outputs on a path to the posterior BEASTObject!
      */
     @SuppressWarnings("unchecked")
     public void setPosterior(BEASTObject posterior) throws Exception {
-        // first, calculate output map that maps Plugins on a path
-        // to the posterior to the list of output Plugins. Strictly
+        // first, calculate output map that maps BEASTObjects on a path
+        // to the posterior to the list of output BEASTObjects. Strictly
         // speaking, this is a bit of overkill, since only
         // CalculationNodes need to be taken in account, but for
         // debugging purposes (developer forgot to derive from CalculationNode)
@@ -469,23 +469,23 @@ public class State extends BEASTObject {
         outputMap = new HashMap<>();
         outputMap.put(posterior, new ArrayList<>());
         boolean bProgress = true;
-        List<BEASTInterface> plugins = new ArrayList<>();
-        plugins.add(posterior);
+        List<BEASTInterface> beastObjects = new ArrayList<>();
+        beastObjects.add(posterior);
         while (bProgress) {
             bProgress = false;
             // loop over plug-ins, till no more plug-ins can be added
             // efficiency is no issue here
-            for (int iPlugin = 0; iPlugin < plugins.size(); iPlugin++) {
-            	BEASTInterface plugin = plugins.get(iPlugin);
+            for (int i = 0; i < beastObjects.size(); i++) {
+            	BEASTInterface beastObject = beastObjects.get(i);
                 try {
-                    for (BEASTInterface inputPlugin : plugin.listActivePlugins()) {
-                        if (!outputMap.containsKey(inputPlugin)) {
-                            outputMap.put(inputPlugin, new ArrayList<>());
-                            plugins.add(inputPlugin);
+                    for (BEASTInterface inputBEASTObject : beastObject.listActiveBEASTObjects()) {
+                        if (!outputMap.containsKey(inputBEASTObject)) {
+                            outputMap.put(inputBEASTObject, new ArrayList<>());
+                            beastObjects.add(inputBEASTObject);
                             bProgress = true;
                         }
-                        if (!outputMap.get(inputPlugin).contains(plugin)) {
-                            outputMap.get(inputPlugin).add(plugin);
+                        if (!outputMap.get(inputBEASTObject).contains(beastObject)) {
+                            outputMap.get(inputBEASTObject).add(beastObject);
                             bProgress = true;
                         }
                     }
@@ -501,11 +501,11 @@ public class State extends BEASTObject {
         for (int i = 0; i < stateNode.length; i++) {
             stateNodeOutputs[i] = new ArrayList<>();
             if (outputMap.containsKey(stateNode[i])) {
-                for (BEASTInterface plugin : outputMap.get(stateNode[i])) {
-                    if (plugin instanceof CalculationNode) {
-                        stateNodeOutputs[i].add((CalculationNode) plugin);
+                for (BEASTInterface beastObject : outputMap.get(stateNode[i])) {
+                    if (beastObject instanceof CalculationNode) {
+                        stateNodeOutputs[i].add((CalculationNode) beastObject);
                     } else {
-                        throw new RuntimeException("DEVELOPER ERROR: output of StateNode (" + stateNode[i].getID() + ") should be a CalculationNode, but " + plugin.getClass().getName() + " is not.");
+                        throw new RuntimeException("DEVELOPER ERROR: output of StateNode (" + stateNode[i].getID() + ") should be a CalculationNode, but " + beastObject.getClass().getName() + " is not.");
                     }
                 }
             } else {
@@ -546,7 +546,7 @@ public class State extends BEASTObject {
     /**
      * Collect all CalculationNodes on a path from any StateNode that is changed (as
      * indicated by m_changedStateNodeCode) to the posterior. Return the list in
-     * partial order as determined by the Plugins input relations.
+     * partial order as determined by the BEASTObjects input relations.
      */
     private List<CalculationNode> calculateCalcNodePath() throws Exception {
         final List<CalculationNode> calcNodes = new ArrayList<>();
@@ -566,7 +566,7 @@ public class State extends BEASTObject {
             // next the path following the outputs
             while (bProgress) {
                 bProgress = false;
-                // loop over plugins till no more plugins can be added
+                // loop over beastObjects till no more beastObjects can be added
                 // efficiency is no issue here, assuming the graph remains 
                 // constant
                 for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
@@ -593,7 +593,7 @@ public class State extends BEASTObject {
         // put calc nodes in partial order
         for (int i = 0; i < calcNodes.size(); i++) {
             CalculationNode node = calcNodes.get(i);
-            List<BEASTInterface> inputList = node.listActivePlugins();
+            List<BEASTInterface> inputList = node.listActiveBEASTObjects();
             for (int j = calcNodes.size() - 1; j > i; j--) {
                 if (inputList.contains(calcNodes.get(j))) {
                     // swap

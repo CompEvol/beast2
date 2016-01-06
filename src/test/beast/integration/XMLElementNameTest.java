@@ -24,15 +24,15 @@ public class XMLElementNameTest extends TestCase {
     public void test_NameUniqueness() {
         List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sImproperInputs = new ArrayList<String>();
-        for (String sPlugin : sPluginNames) {
+        for (String beastObjectName : sPluginNames) {
             try {
-                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
-                List<Input<?>> inputs = plugin.listInputs();
+                BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+                List<Input<?>> inputs = beastObject.listInputs();
                 Set<String> sNames = new HashSet<String>();
                 for (Input<?> input : inputs) {
                     String sName = input.getName();
                     if (sNames.contains(sName)) {
-                        sImproperInputs.add(sPlugin + "." + sName);
+                        sImproperInputs.add(beastObjectName + "." + sName);
                         break;
                     }
                     sNames.add(sName);
@@ -65,23 +65,23 @@ public class XMLElementNameTest extends TestCase {
         // allow 'parameter' for any of the various parameter derivatives, not just RealParameter
         sElement2ClassMap.put("parameter", "beast.core.parameter.Parameter");
 
-        // check each plugin
+        // check each beastObject
         List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         List<String> sImproperInputs = new ArrayList<String>();
-        for (String sPlugin : sPluginNames) {
+        for (String beastObjectName : sPluginNames) {
             try {
-                BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
+                BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
                 // check each input
-                List<Input<?>> inputs = plugin.listInputs();
+                List<Input<?>> inputs = beastObject.listInputs();
                 for (Input<?> input : inputs) {
                     if (sElement2ClassMap.containsKey(input.getName())) {
-                        if (plugin.getClass() == null) {
-                            input.determineClass(plugin);
+                        if (beastObject.getClass() == null) {
+                            input.determineClass(beastObject);
                         }
                         Class<?> type = input.getType();
                         String sBaseType = sElement2ClassMap.get(input.getName());
                         if (!isDerivedType(type, sBaseType)) {
-                            sImproperInputs.add(sPlugin + "." + input.getName());
+                            sImproperInputs.add(beastObjectName + "." + input.getName());
                         }
                     }
                 }

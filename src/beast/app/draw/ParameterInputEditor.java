@@ -47,9 +47,9 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     
     
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
-    	m_plugin = plugin;
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    	m_beastObject = beastObject;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
 
     @Override
-    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface plugin) {
+    protected void addComboBox(JComponent box, Input<?> input, BEASTInterface beastObject) {
         Box paramBox = Box.createHorizontalBox();
         Parameter.Base<?> parameter = null;
         if (itemNr >= 0) {
@@ -113,7 +113,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         }
 
         if (parameter == null) {
-            super.addComboBox(box, input, plugin);
+            super.addComboBox(box, input, beastObject);
         } else {
             setUpEntry();
             paramBox.add(m_entry);
@@ -128,8 +128,8 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 							if (doc.isLinked(m_input)) {
 								// unlink
 								try {
-									BEASTInterface candidate = doc.getUnlinkCandidate(m_input, m_plugin);
-									m_input.setValue(candidate, m_plugin);
+									BEASTInterface candidate = doc.getUnlinkCandidate(m_input, m_beastObject);
+									m_input.setValue(candidate, m_beastObject);
 									doc.deLink(m_input);
 								} catch (Exception e2) {
 									e2.printStackTrace();
@@ -143,7 +143,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 								BEASTInterface candidate = (BEASTInterface) jcb.getSelectedItem();
 								if (candidate != null) {
 									try {
-										m_input.setValue(candidate, m_plugin);
+										m_input.setValue(candidate, m_beastObject);
 										doc.addLink(m_input);
 									} catch (Exception e2) {
 										e2.printStackTrace();
@@ -184,16 +184,16 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 
                         	if (sID.startsWith("RealParameter")) {
                             	ParametricDistribution parent = null; 
-                	            for (Object plugin2 : parameter2.getOutputs()) {
-                	                if (plugin2 instanceof ParametricDistribution) {
-                                		parent = (ParametricDistribution) plugin2; 
+                	            for (Object beastObject2 : parameter2.getOutputs()) {
+                	                if (beastObject2 instanceof ParametricDistribution) {
+                                		parent = (ParametricDistribution) beastObject2; 
                 	                    break;
                 	                }
                 	            }
                 	            Distribution grandparent = null; 
-                	            for (Object plugin2 : parent.getOutputs()) {
-                	                if (plugin2 instanceof Distribution) {
-                                		grandparent = (Distribution) plugin2; 
+                	            for (Object beastObject2 : parent.getOutputs()) {
+                	                if (beastObject2 instanceof Distribution) {
+                                		grandparent = (Distribution) beastObject2; 
                 	                    break;
                 	                }
                 	            }
@@ -222,23 +222,23 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             //m_editPluginButton.setVisible(false);
             //m_bAddButtons = false;
             if (itemNr < 0) {
-	            for (Object plugin2 : ((BEASTInterface) m_input.get()).getOutputs()) {
-	                if (plugin2 instanceof ParametricDistribution) {
+	            for (Object beastObject2 : ((BEASTInterface) m_input.get()).getOutputs()) {
+	                if (beastObject2 instanceof ParametricDistribution) {
 	                    m_isEstimatedBox.setVisible(true);
 	                	isParametricDistributionParameter = true;
 	                    break;
 	                }
 	            }
-	            for (Object plugin2 : ((BEASTInterface) m_input.get()).getOutputs()) {
-	                if (plugin2 instanceof Operator) {
+	            for (Object beastObject2 : ((BEASTInterface) m_input.get()).getOutputs()) {
+	                if (beastObject2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
 	                    break;
 	                }
 	            }
             } else {
-	            for (Object plugin2 : ((BEASTInterface) ((List<?>)m_input.get()).get(itemNr)).getOutputs()) {
-	                if (plugin2 instanceof Operator) {
+	            for (Object beastObject2 : ((BEASTInterface) ((List<?>)m_input.get()).get(itemNr)).getOutputs()) {
+	                if (beastObject2 instanceof Operator) {
 	                    m_isEstimatedBox.setVisible(true);
 	                    //m_editPluginButton.setVisible(true);
 	                    break;
@@ -254,8 +254,8 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     protected void addValidationLabel() {
         super.addValidationLabel();
         // make edit button invisible (if it exists) when this parameter is not estimateable
-        if (m_editPluginButton != null)
-            m_editPluginButton.setVisible(m_isEstimatedBox.isVisible());
+        if (m_editBEASTObjectButton != null)
+            m_editBEASTObjectButton.setVisible(m_isEstimatedBox.isVisible());
     }
 
     @Override

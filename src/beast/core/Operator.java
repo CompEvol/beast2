@@ -213,7 +213,7 @@ public abstract class Operator extends BEASTObject {
     public List<StateNode> listStateNodes() throws Exception {
         // pick up all inputs that are stateNodes that are estimated
         final List<StateNode> list = new ArrayList<>();
-        for (BEASTInterface o : listActivePlugins()) {
+        for (BEASTInterface o : listActiveBEASTObjects()) {
             if (o instanceof StateNode) {
                 final StateNode stateNode = (StateNode) o;
                 if (stateNode.isEstimatedInput.get()) {

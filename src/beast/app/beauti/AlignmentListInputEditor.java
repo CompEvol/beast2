@@ -119,7 +119,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 		this.itemNr = itemNr;
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
@@ -214,7 +214,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
     }
 
     private void addFiles(File[] fileArray) {
-        List<BEASTInterface> plugins = null;
+        List<BEASTInterface> beastObjects = null;
 
         List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
         BeautiAlignmentProvider selectedProvider = null;
@@ -230,11 +230,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
             }
         }
 
-        plugins = selectedProvider.getAlignments(doc, fileArray);
+        beastObjects = selectedProvider.getAlignments(doc, fileArray);
 
         // create taxon sets, if any
-        if (plugins != null) {
-	        for (BEASTInterface o : plugins) {
+        if (beastObjects != null) {
+	        for (BEASTInterface o : beastObjects) {
 	        	if (o instanceof Alignment) {
 	        		try {
 						BeautiDoc.createTaxonSet((Alignment) o, doc);
@@ -246,7 +246,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
         }
 
         // Component c = this;
-        if (plugins != null) {
+        if (beastObjects != null) {
             refreshPanel();
         }
     }
@@ -528,14 +528,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					// remove old tree from model
 					((BEASTInterface)oldTree).setInputValue("estimate", false);
                 	// use toArray to prevent ConcurrentModificationException
-					for (Object plugin : BEASTInterface.getOutputs(oldTree).toArray()) { //.toArray(new BEASTInterface[0])) {
-						for (Input<?> input : ((BEASTInterface)plugin).listInputs()) {
+					for (Object beastObject : BEASTInterface.getOutputs(oldTree).toArray()) { //.toArray(new BEASTInterface[0])) {
+						for (Input<?> input : ((BEASTInterface)beastObject).listInputs()) {
 							try {
 							if (input.get() == oldTree) {
 								if (input.getRule() != Input.Validate.REQUIRED) {
-									input.setValue(tree/*null*/, (BEASTInterface) plugin);
+									input.setValue(tree/*null*/, (BEASTInterface) beastObject);
 								//} else {
-									//input.setValue(tree, (BEASTInterface) plugin);
+									//input.setValue(tree, (BEASTInterface) beastObject);
 								}
 							} else if (input.get() instanceof List) {
 								@SuppressWarnings("unchecked")
@@ -661,8 +661,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	private String getPartition(Input<?> input) {
-		BEASTInterface plugin = (BEASTInterface) input.get();
-		String sID = plugin.getID();
+		BEASTInterface beastObject = (BEASTInterface) input.get();
+		String sID = beastObject.getID();
 		String sPartition = BeautiDoc.parsePartition(sID);
 		return sPartition;
 	}
@@ -1061,17 +1061,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	@Override
-	protected void addSingleItem(BEASTInterface plugin) {
+	protected void addSingleItem(BEASTInterface beastObject) {
 		initTableData();
 		repaint();
 	}
 
 	@Override
 	protected void addItem() {
-		List<BEASTInterface> plugins = doc.beautiConfig.selectAlignments(doc, this);
+		List<BEASTInterface> beastObjects = doc.beautiConfig.selectAlignments(doc, this);
 
 		// Component c = this;
-		if (plugins != null) {
+		if (beastObjects != null) {
 			refreshPanel();
 		}
 	} // addItem

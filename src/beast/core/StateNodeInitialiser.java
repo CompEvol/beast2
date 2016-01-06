@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Typically, StateNodes are initialised through their inputs. However, there are initialisation scenarios
  * too complex for this approach to work. For example, initialisation may require additional information not
- * provided by the inputs, or several dependent plugins need to initialise together,
+ * provided by the inputs, or several dependent beastObjects need to initialise together,
  * such as gene trees and a species tree.
  * <p/>
  * StateNodeInitialisers take one or more StateNodes as input and  initializes them in initStateNodes().

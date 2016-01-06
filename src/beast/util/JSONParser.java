@@ -208,7 +208,7 @@ public class JSONParser {
 	 * retrieving all non-runnable elements when a template is instantiated by
 	 * Beauti *
 	 */
-	// public List<Plugin> parseTemplate(String sXML, HashMap<String, Plugin>
+	// public List<BEASTObject> parseTemplate(String sXML, HashMap<String, BEASTObject>
 	// sIDMap, boolean bInitialize) throws Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML file into a DOM document
@@ -222,7 +222,7 @@ public class JSONParser {
 	// likelihoodMap = new HashMap<>();
 	// IDNodeMap = new HashMap<>();
 	//
-	// List<Plugin> plugins = new ArrayList<>();
+	// List<BEASTObject> beastObjects = new ArrayList<>();
 	//
 	// // find top level beast element
 	// NodeList nodes = doc.getElementsByTagName("*");
@@ -234,12 +234,12 @@ public class JSONParser {
 	// double fVersion = getAttributeAsDouble(topNode, "version");
 	// if (!topNode.getNodeName().equals(BEAST_ELEMENT) || fVersion < 2.0 ||
 	// fVersion == Double.MAX_VALUE) {
-	// return plugins;
+	// return beastObjects;
 	// }
 	// // only process templates
 	// // String sType = getAttribute(topNode, "type");
 	// // if (sType == null || !sType.equals("template")) {
-	// // return plugins;
+	// // return beastObjects;
 	// // }
 	//
 	//
@@ -252,15 +252,15 @@ public class JSONParser {
 	// Node child = children.item(i);
 	// Log.warning.println(child.getNodeName());
 	// if (!child.getNodeName().equals(MAP_ELEMENT)) {
-	// plugins.add(createObject(child, PLUGIN_CLASS, null));
+	// beastObjects.add(createObject(child, PLUGIN_CLASS, null));
 	// }
 	// }
 	// }
 	// initPlugins();
-	// return plugins;
+	// return beastObjects;
 	// } // parseTemplate
 
-	private void initPlugins() throws JSONParserException {
+	private void initBEASTObjects() throws JSONParserException {
 		JSONObject node = null;
 		try {
 			for (int i = 0; i < objectsWaitingToInit.size(); i++) {
@@ -271,8 +271,8 @@ public class JSONParser {
 			}
 		} catch (Exception e) {
 			// next lines for debugging only
-			// plugin.validateInputs();
-			// plugin.initAndValidate();
+			// beastObject.validateInputs();
+			// beastObject.initAndValidate();
 			e.printStackTrace();
 			throw new JSONParserException(node, "validate and intialize error: " + e.getMessage(), 110);
 		}
@@ -412,7 +412,7 @@ public class JSONParser {
 	// of
 	// * the top level <beast> element is considered.
 	// */
-	// public Plugin parseFragment(String sXML, boolean bInitialize) throws
+	// public BEASTObject parseFragment(String sXML, boolean bInitialize) throws
 	// Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML fragment into a DOM document
@@ -454,20 +454,20 @@ public class JSONParser {
 	// throw new Exception("Need at least one child element");
 	// }
 	//
-	// Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
+	// BEASTObject beastObject = createObject(children.item(i), PLUGIN_CLASS, null);
 	// initPlugins();
-	// return plugin;
+	// return beastObject;
 	// } // parseFragment
 	//
 	// /**
 	// * Parse XML fragment that will be wrapped in a beast element
-	// * before parsing. This allows for ease of creating Plugin objects,
+	// * before parsing. This allows for ease of creating BEASTObject objects,
 	// * like this:
 	// * Tree tree = (Tree) new
 	// XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
 	// * to create a simple tree.
 	// */
-	// public Plugin parseBareFragment(String sXML, boolean bInitialize) throws
+	// public BEASTObject parseBareFragment(String sXML, boolean bInitialize) throws
 	// Exception {
 	// // get rid of XML processing instruction
 	// sXML = sXML.replaceAll("<\\?xml[^>]*>", "");
@@ -478,7 +478,7 @@ public class JSONParser {
 	// }
 	// }
 	//
-	// public List<Plugin> parseBareFragments(String sXML, boolean bInitialize)
+	// public List<BEASTObject> parseBareFragments(String sXML, boolean bInitialize)
 	// throws Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML fragment into a DOM document
@@ -498,15 +498,15 @@ public class JSONParser {
 	// parseNameSpaceAndMap(topNode);
 	//
 	// NodeList children = topNode.getChildNodes();
-	// List<Plugin> plugins = new ArrayList<>();
+	// List<BEASTObject> beastObjects = new ArrayList<>();
 	// for (int i = 0; i < children.getLength(); i++) {
 	// if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-	// Plugin plugin = createObject(children.item(i), PLUGIN_CLASS, null);
-	// plugins.add(plugin);
+	// BEASTObject beastObject = createObject(children.item(i), PLUGIN_CLASS, null);
+	// beastObjects.add(beastObject);
 	// }
 	// }
 	// initPlugins();
-	// return plugins;
+	// return beastObjects;
 	// }
 
 	/**
@@ -531,7 +531,7 @@ public class JSONParser {
 
 		// parseState();
 		parseRunElement(doc);
-		initPlugins();
+		initBEASTObjects();
 	} // parse
 
 	/**
@@ -853,11 +853,11 @@ public class JSONParser {
 			try {
 				beastObject.validateInputs();
 				objectsWaitingToInit.add(new BEASTObjectWrapper(beastObject, node));
-				// plugin.initAndValidate();
+				// beastObject.initAndValidate();
 			} catch (Exception e) {
 				// next lines for debugging only
-				// plugin.validateInputs();
-				// plugin.initAndValidate();
+				// beastObject.validateInputs();
+				// beastObject.initAndValidate();
 				e.printStackTrace();
 				throw new JSONParserException(node, "validate and intialize error: " + e.getMessage(), 110);
 			}

@@ -21,10 +21,10 @@ import beast.core.MCMC;
 import beast.util.XMLProducer;
 
 /**
- * Dialog for editing Plugins.
+ * Dialog for editing BEASTObjects.
  * <p/>
  * This dynamically creates a dialog consisting of
- * InputEditors associated with the inputs of a Plugin.
+ * InputEditors associated with the inputs of a BEASTObject.
  * *
  */
 
@@ -50,12 +50,12 @@ public class BEASTObjectDialog extends JDialog {
         this.doc = doc;
     }
 
-    public BEASTObjectDialog(BEASTInterface plugin, Class<? extends BEASTInterface> aClass, List<BEASTInterface> plugins, BeautiDoc doc) {
-        this(new BEASTObjectPanel(plugin, aClass, plugins, doc), doc);
+    public BEASTObjectDialog(BEASTInterface beastObject, Class<? extends BEASTInterface> aClass, List<BEASTInterface> beastObjects, BeautiDoc doc) {
+        this(new BEASTObjectPanel(beastObject, aClass, beastObjects, doc), doc);
     }
 
-    public BEASTObjectDialog(BEASTInterface plugin, Class<?> type, BeautiDoc doc) {
-        this(new BEASTObjectPanel(plugin, type, doc), doc);
+    public BEASTObjectDialog(BEASTInterface beastObject, Class<?> type, BeautiDoc doc) {
+        this(new BEASTObjectPanel(beastObject, type, doc), doc);
     }
 
     
@@ -86,20 +86,20 @@ public class BEASTObjectDialog extends JDialog {
     }
     
     /* to be called when OK is pressed **/
-    public void accept(BEASTInterface plugin, BeautiDoc doc) {
+    public void accept(BEASTInterface beastObject, BeautiDoc doc) {
         try {
-            for (Input<?> input : m_panel.m_plugin.listInputs()) {
+            for (Input<?> input : m_panel.m_beastObject.listInputs()) {
             	if (input.get() != null && (input.get() instanceof List)) {
                     // setInpuValue (below) on lists does not lead to expected result
             		// it appends values to the list instead, so we have to clear it first
-                    List<?> list = (List<?>)plugin.getInput(input.getName()).get();
+                    List<?> list = (List<?>)beastObject.getInput(input.getName()).get();
                     list.clear();
             	}
-            	plugin.setInputValue(input.getName(), input.get());
+            	beastObject.setInputValue(input.getName(), input.get());
             }
-            plugin.setID(m_panel.m_plugin.getID());
+            beastObject.setID(m_panel.m_beastObject.getID());
             if (doc != null) {
-            	doc.addPlugin(plugin);
+            	doc.addPlugin(beastObject);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class BEASTObjectDialog extends JDialog {
 
         add(BorderLayout.CENTER, panel);
 
-        setTitle(panel.m_plugin.getID() + " Editor");
+        setTitle(panel.m_beastObject.getID() + " Editor");
 
 
 //        /* add cancel and ok buttons at the bottom */
@@ -154,10 +154,10 @@ public class BEASTObjectDialog extends JDialog {
         //PluginDialog.m_position.x -= 30;
         //PluginDialog.m_position.y -= 30;
         if (m_bOK) {
-            String sOldID = m_panel.m_plugin.getID();
+            String sOldID = m_panel.m_beastObject.getID();
             BEASTObjectPanel.g_plugins.remove(sOldID);
-            m_panel.m_plugin.setID(m_panel.m_identry.getText());
-            BEASTObjectPanel.registerPlugin(m_panel.m_plugin.getID(), m_panel.m_plugin, doc);
+            m_panel.m_beastObject.setID(m_panel.m_identry.getText());
+            BEASTObjectPanel.registerPlugin(m_panel.m_beastObject.getID(), m_panel.m_beastObject, doc);
         }
         return m_bOK;
     }
@@ -181,8 +181,8 @@ public class BEASTObjectDialog extends JDialog {
                 } finally {
                     scanner.close();
                 }
-                BEASTInterface plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
-                dlg = new BEASTObjectDialog(new BEASTObjectPanel(plugin, plugin.getClass(), null), null);
+                BEASTInterface beastObject = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
+                dlg = new BEASTObjectDialog(new BEASTObjectPanel(beastObject, beastObject.getClass(), null), null);
             } else if (args.length == 1) {
                 dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
             } else if (args.length == 2) {
@@ -193,16 +193,16 @@ public class BEASTObjectDialog extends JDialog {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Usage: " + BEASTObjectDialog.class.getName() + " [-x file ] [class [type]]\n" +
-                    "where [class] (optional, default MCMC) is a Plugin to edit\n" +
-                    "and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
+                    "where [class] (optional, default MCMC) is a BEASTObject to edit\n" +
+                    "and [type] (optional only if class is specified, default Runnable) the type of the BEASTObject.\n" +
                     "for example\n" +
                     "");
             System.exit(1);
         }
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         if (dlg.showDialog()) {
-            BEASTInterface plugin = dlg.m_panel.m_plugin;
-            String sXML = new XMLProducer().modelToXML(plugin);
+            BEASTInterface beastObject = dlg.m_panel.m_beastObject;
+            String sXML = new XMLProducer().modelToXML(beastObject);
             System.out.println(sXML);
         }
     } // main

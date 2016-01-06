@@ -53,10 +53,10 @@ public class ClockModelListInputEditor extends ListInputEditor {
     protected SmallLabel fixMeanRatesValidateLabel;
     
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean rate of clock models");
     	m_buttonStatus = ButtonStatus.NONE;
-    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
     	fixMeanRatesCheckBox.addActionListener(e -> {

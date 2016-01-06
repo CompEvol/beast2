@@ -61,7 +61,7 @@ public class PriorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
     	List<?> list = (List<?>) input.get();
     	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
@@ -114,7 +114,7 @@ public class PriorListInputEditor extends ListInputEditor {
         taxonButtons = new ArrayList<>();
         
         //m_buttonStatus = ButtonStatus.NONE;
-        super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+        super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
 
         
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
@@ -131,17 +131,17 @@ public class PriorListInputEditor extends ListInputEditor {
 
 
     /**
-     * add components to box that are specific for the plugin.
-     * By default, this just inserts a label with the plugin ID
+     * add components to box that are specific for the beastObject.
+     * By default, this just inserts a label with the beastObject ID
      *
      * @param itemBox box to add components to
-     * @param plugin  plugin to add
+     * @param beastObject  beastObject to add
      */
     @Override
-    protected InputEditor addPluginItem(Box itemBox, BEASTInterface plugin) {
+    protected InputEditor addPluginItem(Box itemBox, BEASTInterface beastObject) {
 		try {
-	    	int listItemNr = ((List<?>) m_input.get()).indexOf(plugin);
-	    	InputEditor editor = doc.getInputEditorFactory().createInputEditor(m_input, listItemNr, plugin, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
+	    	int listItemNr = ((List<?>) m_input.get()).indexOf(beastObject);
+	    	InputEditor editor = doc.getInputEditorFactory().createInputEditor(m_input, listItemNr, beastObject, false, ExpandOption.FALSE, ButtonStatus.NONE, null, doc);
 	    	itemBox.add((Component) editor);
 	    	return editor;
 		} catch (Exception e) {

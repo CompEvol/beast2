@@ -76,7 +76,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
      * @return
      */
     public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
-        List<BEASTInterface> selectedPlugins = new ArrayList<>();
+        List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
         for (File file : files) {
             String fileName = file.getName();
 			String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
@@ -121,10 +121,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
 							/** add alignments **/
 							for (Alignment data : parser.filteredAlignments) {
 								sortByTaxonName(data.sequenceInput.get());
-								selectedPlugins.add(data);
+								selectedBEASTObjects.add(data);
 							}
 						} else {
-							selectedPlugins.add(parser.m_alignment);
+							selectedBEASTObjects.add(parser.m_alignment);
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -135,7 +135,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 				case ".xml":
 					alignment = (Alignment)getXMLData(file);
-					selectedPlugins.add(alignment);
+					selectedBEASTObjects.add(alignment);
 					break;
 
 				case ".fa":
@@ -148,7 +148,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				case ".frn":
 					alignment = getFASTAData(file);
 					sortByTaxonName(alignment.sequenceInput.get());
-					selectedPlugins.add(alignment);
+					selectedBEASTObjects.add(alignment);
 					break;
 
                 default:
@@ -158,19 +158,19 @@ public class BeautiAlignmentProvider extends BEASTObject {
                     break;
 			}
         }
-        for (BEASTInterface plugin : selectedPlugins) {
+        for (BEASTInterface beastObject : selectedBEASTObjects) {
         	// ensure ID of alignment is unique
         	int k = 0;
-        	String id = plugin.getID();
+        	String id = beastObject.getID();
         	while (doc.pluginmap.containsKey(id)) {
         		k++;
-        		id = plugin.getID() + k;
+        		id = beastObject.getID() + k;
         	}
-        	plugin.setID(id);
-        	sortByTaxonName(((Alignment) plugin).sequenceInput.get());
-            doc.addAlignmentWithSubnet((Alignment) plugin, getStartTemplate());
+        	beastObject.setID(id);
+        	sortByTaxonName(((Alignment) beastObject).sequenceInput.get());
+            doc.addAlignmentWithSubnet((Alignment) beastObject, getStartTemplate());
         }
-        return selectedPlugins;
+        return selectedBEASTObjects;
     }
 
 	/** provide GUI for manipulating the alignment **/
@@ -379,14 +379,14 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	} // parseBeast1XML
 
 
-	static BEASTInterface getAlignment(BEASTInterface plugin) throws IllegalArgumentException, IllegalAccessException {
-		if (plugin instanceof Alignment) {
-			return plugin;
+	static BEASTInterface getAlignment(BEASTInterface beastObject) throws IllegalArgumentException, IllegalAccessException {
+		if (beastObject instanceof Alignment) {
+			return beastObject;
 		}
-		for (BEASTInterface plugin2 : plugin.listActivePlugins()) {
-			plugin2 = getAlignment(plugin2);
-			if (plugin2 != null) {
-				return plugin2;
+		for (BEASTInterface beastObject2 : beastObject.listActiveBEASTObjects()) {
+			beastObject2 = getAlignment(beastObject2);
+			if (beastObject2 != null) {
+				return beastObject2;
 			}
 		}
 		return null;

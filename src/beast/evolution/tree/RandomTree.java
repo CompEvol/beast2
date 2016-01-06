@@ -167,17 +167,17 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
         List<MRCAPrior> calibrations = new ArrayList<>();
         calibrations.addAll(calibrationsInput.get());
-//    	for (Plugin plugin : outputs) {
+//    	for (BEASTObject beastObject : outputs) {
 //    	// pick up constraints in outputs
-//		if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
-//			calibrations.add((MRCAPrior) plugin);
-//		} else  if (plugin instanceof Tree) {
+//		if (beastObject instanceof MRCAPrior && !calibrations.contains(beastObject)) {
+//			calibrations.add((MRCAPrior) beastObject);
+//		} else  if (beastObject instanceof Tree) {
 //        	// pick up constraints in outputs if output tree
-//			Tree tree = (Tree) plugin;
+//			Tree tree = (Tree) beastObject;
 //			if (tree.m_initial.get() == this) {
-//            	for (Plugin plugin2 : tree.outputs) {
-//            		if (plugin2 instanceof MRCAPrior && !calibrations.contains(plugin2)) {
-//            			calibrations.add((MRCAPrior) plugin2);
+//            	for (BEASTObject beastObject2 : tree.outputs) {
+//            		if (beastObject2 instanceof MRCAPrior && !calibrations.contains(beastObject2)) {
+//            			calibrations.add((MRCAPrior) beastObject2);
 //            		}                		
 //            	}
 //			}
@@ -185,15 +185,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //		
 //	}
         // pick up constraints in m_initial tree
-        for (final Object plugin : getOutputs()) {
-            if (plugin instanceof MRCAPrior && !calibrations.contains(plugin) ) {
-                calibrations.add((MRCAPrior) plugin);
+        for (final Object beastObject : getOutputs()) {
+            if (beastObject instanceof MRCAPrior && !calibrations.contains(beastObject) ) {
+                calibrations.add((MRCAPrior) beastObject);
             }
         }
         if (m_initial.get() != null) {
-            for (final Object plugin : m_initial.get().getOutputs()) {
-                if (plugin instanceof MRCAPrior && !calibrations.contains(plugin)) {
-                    calibrations.add((MRCAPrior) plugin);
+            for (final Object beastObject : m_initial.get().getOutputs()) {
+                if (beastObject instanceof MRCAPrior && !calibrations.contains(beastObject)) {
+                    calibrations.add((MRCAPrior) beastObject);
                 }
             }
         }
@@ -215,10 +215,10 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            final ParametricDistribution distr = prior.distInput.get();
 	            final Bound bounds = new Bound();
 	            if (distr != null) {
-	        		List<BEASTInterface> plugins = new ArrayList<>();
-	        		distr.getPredecessors(plugins);
-	        		for (int i = plugins.size() - 1; i >= 0 ; i--) {
-	        			plugins.get(i).initAndValidate();
+	        		List<BEASTInterface> beastObjects = new ArrayList<>();
+	        		distr.getPredecessors(beastObjects);
+	        		for (int i = beastObjects.size() - 1; i >= 0 ; i--) {
+	        			beastObjects.get(i).initAndValidate();
 	        		}
 	                bounds.lower = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
 	                bounds.upper = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();

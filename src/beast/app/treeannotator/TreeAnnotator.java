@@ -669,8 +669,8 @@ public class TreeAnnotator {
             }
         }
 
-        for (TreeAnnotationPlugin plugin : plugins) {
-            Set<String> claimed = plugin.setAttributeNames(attributeNames);
+        for (TreeAnnotationPlugin beastObject : beastObjects) {
+            Set<String> claimed = beastObject.setAttributeNames(attributeNames);
             attributeNames.removeAll(claimed);
         }
     }
@@ -881,8 +881,8 @@ public class TreeAnnotator {
 
                     if (!filter) {
                         boolean processed = false;
-                        for (TreeAnnotationPlugin plugin : plugins) {
-                            if (plugin.handleAttribute(node, attributeName, values)) {
+                        for (TreeAnnotationPlugin beastObject : beastObjects) {
+                            if (beastObject.handleAttribute(node, attributeName, values)) {
                                 processed = true;
                             }
                         }
@@ -1183,7 +1183,7 @@ public class TreeAnnotator {
     double posteriorLimit = 0.0;
     double hpd2D = 0.80;
 
-    private final List<TreeAnnotationPlugin> plugins = new ArrayList<>();
+    private final List<TreeAnnotationPlugin> beastObjects = new ArrayList<>();
 
     Set<String> attributeNames = new HashSet<>();
     TaxonSet taxa = null;

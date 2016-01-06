@@ -65,7 +65,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     BeagleTreeLikelihood beagle;
 
     /**
-     * Plugin associated with inputs. Since none of the inputs are StateNodes, it
+     * BEASTObject associated with inputs. Since none of the inputs are StateNodes, it
      * is safe to link to them only once, during initAndValidate.
      */
     SubstitutionModel.Base substitutionModel;

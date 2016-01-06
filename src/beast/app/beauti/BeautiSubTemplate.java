@@ -37,10 +37,10 @@ import beast.util.XMLParser;
 //import beast.app.beauti.BeautiConnector.ConnectCondition;
 
 @Description("Template that specifies which sub-net needs to be created when " +
-        "a plugin of a paricular class is created.")
+        "a beastObject of a paricular class is created.")
 public class BeautiSubTemplate extends BEASTObject {
     final public Input<String> sClassInput = new Input<>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
-    final public Input<String> sMainInput = new Input<>("mainid", "specifies id of the main plugin to be created by the template", Validate.REQUIRED);
+    final public Input<String> sMainInput = new Input<>("mainid", "specifies id of the main beastObject to be created by the template", Validate.REQUIRED);
     //public Input<XML> sXMLInput = new Input<>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
     final public Input<String> sXMLInput = new Input<>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
     final public Input<List<BeautiConnector>> connectorsInput = new Input<>("connect", "Specifies which part of the template get connected to the main network", new ArrayList<>());
@@ -251,13 +251,13 @@ public class BeautiSubTemplate extends BEASTObject {
             // nothing to do
             return;
         }
-        BEASTInterface plugin = null;
+        BEASTInterface beastObject = null;
         if (o instanceof BEASTInterface) {
-            plugin = (BEASTInterface) o;
+            beastObject = (BEASTInterface) o;
         }
 
-        // find template that created this plugin
-        String sID = plugin.getID();
+        // find template that created this beastObject
+        String sID = beastObject.getID();
         //String sPartition = BeautiDoc.parsePartition(sID);
         sID = sID.substring(0, sID.indexOf("."));
         BeautiSubTemplate template = null;
@@ -268,21 +268,21 @@ public class BeautiSubTemplate extends BEASTObject {
             }
         }
         if (template == null) {
-            throw new RuntimeException("Cannot find template for removing " + plugin.getID());
+            throw new RuntimeException("Cannot find template for removing " + beastObject.getID());
         }
-        PartitionContext context = doc.getContextFor(plugin);
+        PartitionContext context = doc.getContextFor(beastObject);
         removeSubNet(template, context);
     }
 
-    public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface plugin, Input<?> input, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface beastObject, Input<?> input, boolean init) throws Exception {
         removeSubNet(input.get());
         if (sXML == null) {
             // this is the NULL_TEMPLATE
-            input.setValue(null, plugin);
+            input.setValue(null, beastObject);
             return null;
         }
         BEASTInterface o = createSubNet(partition, doc.pluginmap, init);
-        input.setValue(o, plugin);
+        input.setValue(o, beastObject);
         return o;
     }
 
@@ -330,15 +330,15 @@ public class BeautiSubTemplate extends BEASTObject {
 
         XMLParser parser = new XMLParser();
         parser.setRequiredInputProvider(doc, context);
-        List<BEASTInterface> plugins = null;
+        List<BEASTInterface> beastObjects = null;
         try {
-            plugins = parser.parseTemplate(_sXML, sIDMap, true);
-            for (BEASTInterface plugin : plugins) {
-                doc.addPlugin(plugin);
+            beastObjects = parser.parseTemplate(_sXML, sIDMap, true);
+            for (BEASTInterface beastObject : beastObjects) {
+                doc.addPlugin(beastObject);
                 try {
-                	Log.warning.println("Adding " + plugin.getClass().getName() + " " + plugin);
+                	Log.warning.println("Adding " + beastObject.getClass().getName() + " " + beastObject);
                 } catch (Exception e) {
-                	Log.err.println("Adding " + plugin.getClass().getName());
+                	Log.err.println("Adding " + beastObject.getClass().getName());
 				}
             }
 
@@ -362,7 +362,7 @@ public class BeautiSubTemplate extends BEASTObject {
                 String[] inputs = suppressedInputs.get().split(",");
                 for (String input : inputs) {
                     input = input.trim();
-                    doc.beautiConfig.suppressPlugins.add(input);
+                    doc.beautiConfig.suppressBEASTObjects.add(input);
                 }
             }
 
@@ -370,7 +370,7 @@ public class BeautiSubTemplate extends BEASTObject {
                 String[] inputs = inlineInput.get().split(",");
                 for (String input : inputs) {
                     input = input.trim();
-                    doc.beautiConfig.inlinePlugins.add(input);
+                    doc.beautiConfig.inlineBEASTObject.add(input);
                 }
             }
 
@@ -378,7 +378,7 @@ public class BeautiSubTemplate extends BEASTObject {
                 String[] inputs = collapsedInput.get().split(",");
                 for (String input : inputs) {
                     input = input.trim();
-                    doc.beautiConfig.collapsedPlugins.add(input);
+                    doc.beautiConfig.collapsedBEASTObjects.add(input);
                 }
             }
 
@@ -388,12 +388,12 @@ public class BeautiSubTemplate extends BEASTObject {
         }
 
         if (sMainID.equals("[top]")) {
-            return plugins.get(0);
+            return beastObjects.get(0);
         }
 
         String sID = sMainID;
         sID = BeautiDoc.translatePartitionNames(sID, context); //sID.replaceAll("\\$\\(n\\)", sPartition);
-        BEASTInterface plugin = doc.pluginmap.get(sID);
+        BEASTInterface beastObject = doc.pluginmap.get(sID);
 
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
@@ -432,8 +432,8 @@ public class BeautiSubTemplate extends BEASTObject {
             }
         }
 
-        //System.err.println(new XMLProducer().toXML(plugin));
-        return plugin;
+        //System.err.println(new XMLProducer().toXML(beastObject));
+        return beastObject;
     }
 
     public String getMainID() {

@@ -106,7 +106,7 @@ public class XMLProducer extends XMLParser {
             isInputsDone = new HashMap<>();
             IDs = new HashSet<>();
             indent = 0;
-            pluginToXML(beastObject, buf, null, true);
+            beastObjectToXML(beastObject, buf, null, true);
             String endBeastString = "</" + XMLParser.BEAST_ELEMENT + ">";
             buf.append(endBeastString);
             //return buf.toString();
@@ -127,7 +127,7 @@ public class XMLProducer extends XMLParser {
             if (others.size() > 0) {
                 for (BEASTInterface beastObject2 : others) {
                     if (!IDs.contains(beastObject2.getID())) {
-                        pluginToXML(beastObject2, buf, null, false);
+                        beastObjectToXML(beastObject2, buf, null, false);
                     }
                 }
             }
@@ -398,7 +398,7 @@ public class XMLProducer extends XMLParser {
             isInputsDone = new HashMap<>();
             IDs = new HashSet<>();
             indent = 0;
-            pluginToXML(beastObject, buf, name, false);
+            beastObjectToXML(beastObject, buf, name, false);
             return buf.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -415,7 +415,7 @@ public class XMLProducer extends XMLParser {
             isDone = new HashSet<>();
             IDs = new HashSet<>();
             indent = 0;
-            pluginToXML(beastObject, buf, null, false);
+            beastObjectToXML(beastObject, buf, null, false);
             return buf.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -776,7 +776,7 @@ public class XMLProducer extends XMLParser {
      * that is moderately readable.
      */
     @SuppressWarnings("rawtypes")
-    void pluginToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws Exception {
+    void beastObjectToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws Exception {
         // determine element name, default is input, otherswise find one of the defaults
         String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
@@ -787,28 +787,28 @@ public class XMLProducer extends XMLParser {
         	}
         }
         
-//        if (plugin instanceof Alignment) {
+//        if (beastObject instanceof Alignment) {
 //            sElementName = XMLParser.DATA_ELEMENT;
 //        }
-//        if (plugin instanceof Sequence) {
+//        if (beastObject instanceof Sequence) {
 //            sElementName = XMLParser.SEQUENCE_ELEMENT;
 //        }
-//        if (plugin instanceof State) {
+//        if (beastObject instanceof State) {
 //            sElementName = XMLParser.STATE_ELEMENT;
 //        }
-//        if (plugin instanceof Distribution) {
+//        if (beastObject instanceof Distribution) {
 //            sElementName = XMLParser.DISTRIBUTION_ELEMENT;
 //        }
-//        if (plugin instanceof Logger) {
+//        if (beastObject instanceof Logger) {
 //            sElementName = XMLParser.LOG_ELEMENT;
 //        }
-//        if (plugin instanceof Operator) {
+//        if (beastObject instanceof Operator) {
 //            sElementName = XMLParser.OPERATOR_ELEMENT;
 //        }
-//        if (plugin instanceof RealParameter) {
+//        if (beastObject instanceof RealParameter) {
 //            sElementName = XMLParser.REAL_PARAMETER_ELEMENT;
 //        }
-//        if (plugin instanceof Tree) {
+//        if (beastObject instanceof Tree) {
 //            sElementName = XMLParser.TREE_ELEMENT;
 //        }
 
@@ -948,7 +948,7 @@ public class XMLProducer extends XMLParser {
                 	List<?> list = (List<?>) value;
                     for (Object o2 : list) {
                     	if (o2 instanceof BEASTInterface) {
-                    		pluginToXML((BEASTInterface) o2, buf, input.getName(), false);
+                    		beastObjectToXML((BEASTInterface) o2, buf, input.getName(), false);
                     	} else {
                     		k++;
                     		buf.append(o2.toString());
@@ -970,7 +970,7 @@ public class XMLProducer extends XMLParser {
                     }
                     if (!isShort && (!isInputsDone.containsKey(beastObject) ||
                     		!isInputsDone.get(beastObject).contains(input.getName()))) {
-                        pluginToXML((BEASTInterface) value, buf, input.getName(), false);
+                        beastObjectToXML((BEASTInterface) value, buf, input.getName(), false);
                     }
             	}
                 return;

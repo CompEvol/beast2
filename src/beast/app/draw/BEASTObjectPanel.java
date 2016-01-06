@@ -26,10 +26,10 @@ import beast.core.util.Log;
 import beast.util.XMLProducer;
 
 /**
- * Panel for editing Plugins.
+ * Panel for editing BEASTObjects.
  * <p/>
  * This dynamically creates a Panel consisting of
- * InputEditors associated with the inputs of a Plugin.
+ * InputEditors associated with the inputs of a BEASTObject.
  * *
  */
 
@@ -38,18 +38,18 @@ public class BEASTObjectPanel extends JPanel {
     /**
      * plug in to be edited *
      */
-    public BEASTInterface m_plugin;
+    public BEASTInterface m_beastObject;
     /**
      * (super) class of plug-in, this determines the super-class
-     * that is allowable if the plugin class is changed.
+     * that is allowable if the beastObject class is changed.
      */
-    Class<?> m_pluginClass;
-    JLabel m_pluginButton;
+    Class<?> m_beastObjectClass;
+    JLabel m_beastObjectButton;
     JTextField m_identry;
 
     private boolean m_bOK = false;
-    /* Set of plugins in the system.
-      * These are the plugins that an input can be connected to **/
+    /* Set of beastObjects in the system.
+      * These are the beastObjects that an input can be connected to **/
     static public HashMap<String, BEASTInterface> g_plugins = null;
     //    static public Set<Operator> g_operators = null;
 //    static public Set<StateNode> g_stateNodes = null;
@@ -92,91 +92,91 @@ public class BEASTObjectPanel extends JPanel {
     }
 
 
-    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, List<BEASTInterface> plugins, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, List<BEASTInterface> beastObjects, BeautiDoc doc) {
         //g_plugins = new HashMap<>();
-        for (BEASTInterface plugin2 : plugins) {
-            String sID = getID(plugin2);
+        for (BEASTInterface beastObject2 : beastObjects) {
+            String sID = getID(beastObject2);
             // ensure IDs are unique
             if (g_plugins.containsKey(sID)) {
-                plugin2.setID(null);
-                sID = getID(plugin2);
+                beastObject2.setID(null);
+                sID = getID(beastObject2);
             }
-            registerPlugin(getID(plugin2), plugin2, doc);
+            registerPlugin(getID(beastObject2), beastObject2, doc);
         }
-        init(plugin, _pluginClass, true, doc);
+        init(beastObject, _pluginClass, true, doc);
     }
 
     /**
-     * add plugin to plugin map and update related maps
+     * add beastObject to beastObject map and update related maps
      *
      * @return true if it was already registered *
      */
-    static public boolean registerPlugin(String sID, BEASTInterface plugin, BeautiDoc doc) {
+    static public boolean registerPlugin(String sID, BEASTInterface beastObject, BeautiDoc doc) {
         if (doc != null) {
-            doc.registerPlugin(plugin);
+            doc.registerPlugin(beastObject);
         }
-//    	if (plugin instanceof Operator) {
-//    		g_operators.add((Operator)plugin);
+//    	if (beastObject instanceof Operator) {
+//    		g_operators.add((Operator)beastObject);
 //    	}
-//    	if (plugin instanceof StateNode) {
-//    		g_stateNodes.add((StateNode)plugin);
+//    	if (beastObject instanceof StateNode) {
+//    		g_stateNodes.add((StateNode)beastObject);
 //    	}
-//    	if (plugin instanceof Loggable) {
-//    		g_loggers.add((Loggable)plugin);
+//    	if (beastObject instanceof Loggable) {
+//    		g_loggers.add((Loggable)beastObject);
 //    	}
-//    	if (plugin instanceof Distribution) {
-//    		g_distributions.add((Distribution)plugin);
+//    	if (beastObject instanceof Distribution) {
+//    		g_distributions.add((Distribution)beastObject);
 //    	}
-        if (g_plugins.containsKey(sID) && g_plugins.get(sID) == plugin) {
+        if (g_plugins.containsKey(sID) && g_plugins.get(sID) == beastObject) {
             return true;
         }
-        g_plugins.put(sID, plugin);
+        g_plugins.put(sID, beastObject);
         return false;
     }
 
-    public static void renamePluginID(BEASTInterface plugin, String sOldID, String sID, BeautiDoc doc) {
+    public static void renamePluginID(BEASTInterface beastObject, String sOldID, String sID, BeautiDoc doc) {
         if (doc != null) {
-            doc.unregisterPlugin(plugin);
+            doc.unregisterPlugin(beastObject);
         }
         g_plugins.remove(sOldID);
 //		g_operators.remove(sOldID);
 //		g_stateNodes.remove(sOldID);
 //		g_loggers.remove(sOldID);
 //		g_distributions.remove(sOldID);
-        registerPlugin(sID, plugin, doc);
+        registerPlugin(sID, beastObject, doc);
     }
 
-    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, BeautiDoc doc) {
-        this(plugin, _pluginClass, true, doc);
+    public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, BeautiDoc doc) {
+        this(beastObject, _pluginClass, true, doc);
     }
 
-    public BEASTObjectPanel(BEASTInterface plugin, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
-        initPlugins(plugin, doc);
-        init(plugin, _pluginClass, bShowHeader, doc);
+    public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
+        initPlugins(beastObject, doc);
+        init(beastObject, _pluginClass, bShowHeader, doc);
     }
 
-    void init(BEASTInterface plugin, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
+    void init(BEASTInterface beastObject, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
         try {
-            m_plugin = plugin.getClass().newInstance();
-            for (Input<?> input : plugin.listInputs()) {
-                m_plugin.setInputValue(input.getName(), input.get());
+            m_beastObject = beastObject.getClass().newInstance();
+            for (Input<?> input : beastObject.listInputs()) {
+                m_beastObject.setInputValue(input.getName(), input.get());
             }
-            m_plugin.setID(plugin.getID());
+            m_beastObject.setID(beastObject.getID());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
         //setModal(true);
-        //m_plugin = plugin;
-        m_pluginClass = _pluginClass;
-        //setTitle(m_plugin.getID() + " Editor");
+        //m_beastObject = beastObject;
+        m_beastObjectClass = _pluginClass;
+        //setTitle(m_beastObject.getID() + " Editor");
 
         Box mainBox = Box.createVerticalBox();
         mainBox.add(Box.createVerticalStrut(5));
 
         if (showHeader) {
-            /* add plugin + help button at the top */
+            /* add beastObject + help button at the top */
             Box pluginBox = createPluginBox();
             mainBox.add(pluginBox);
             mainBox.add(Box.createVerticalStrut(5));
@@ -186,7 +186,7 @@ public class BEASTObjectPanel extends JPanel {
             }
         }
 
-        doc.getInputEditorFactory().addInputs(mainBox, m_plugin, null, null, doc);
+        doc.getInputEditorFactory().addInputs(mainBox, m_beastObject, null, null, doc);
 
 
         mainBox.add(Box.createVerticalStrut(5));
@@ -207,15 +207,15 @@ public class BEASTObjectPanel extends JPanel {
     }
 
     /**
-     * add all inputs of a plugin to a box *
+     * add all inputs of a beastObject to a box *
      */
-    public static int countInputs(BEASTInterface plugin, BeautiDoc doc) {
+    public static int countInputs(BEASTInterface beastObject, BeautiDoc doc) {
         int nInputs = 0;
         try {
-            List<Input<?>> inputs = plugin.listInputs();
+            List<Input<?>> inputs = beastObject.listInputs();
             for (Input<?> input : inputs) {
-                String sFullInputName = plugin.getClass().getName() + "." + input.getName();
-                if (!doc.beautiConfig.suppressPlugins.contains(sFullInputName)) {
+                String sFullInputName = beastObject.getClass().getName() + "." + input.getName();
+                if (!doc.beautiConfig.suppressBEASTObjects.contains(sFullInputName)) {
                     nInputs++;
                 }
             }
@@ -228,19 +228,19 @@ public class BEASTObjectPanel extends JPanel {
 
 
     /**
-     * create box for manipulating the plugin, or ask for help *
+     * create box for manipulating the beastObject, or ask for help *
      */
     Box createPluginBox() {
         Box box = Box.createHorizontalBox();
         //sJLabel icon = new JLabel();
         box.add(Box.createHorizontalGlue());
 
-        JLabel label = new JLabel(m_pluginClass.getName().replaceAll(".*\\.", "") + ":");
+        JLabel label = new JLabel(m_beastObjectClass.getName().replaceAll(".*\\.", "") + ":");
         box.add(label);
 
-//        m_pluginButton = new JLabel(m_plugin.getID());
-//        m_pluginButton.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
-        label.setToolTipText(m_plugin.getID() + " is of type " + m_plugin.getClass().getName() + " Click to change.");
+//        m_pluginButton = new JLabel(m_beastObject.getID());
+//        m_pluginButton.setToolTipText(m_beastObject.getID() + " is of type " + m_beastObject.getClass().getName() + " Click to change.");
+        label.setToolTipText(m_beastObject.getID() + " is of type " + m_beastObject.getClass().getName() + " Click to change.");
 
 //		m_pluginButton.addActionListener(new ActionListener() {
 //			@Override
@@ -252,16 +252,16 @@ public class BEASTObjectPanel extends JPanel {
 //						JOptionPane.PLAIN_MESSAGE, null,
 //						sClasses.toArray(new String[0]),
 //						null);
-//				if (sClassName.equals(m_plugin.getClass().getName())) {
+//				if (sClassName.equals(m_beastObject.getClass().getName())) {
 //					return;
 //				}
 //				try {
-//					m_plugin = (Plugin) Class.forName(sClassName).newInstance();
+//					m_beastObject = (BEASTObject) Class.forName(sClassName).newInstance();
 //					m_pluginButton.setText(sClassName.replaceAll(".*\\.", ""));
 //					// TODO: replace InputEditors where appropriate.
 //					
 //				} catch (Exception ex) {
-//					JOptionPane.showMessageDialog(null, "Could not change plugin: " +
+//					JOptionPane.showMessageDialog(null, "Could not change beastObject: " +
 //							ex.getClass().getName() + " " +
 //							ex.getMessage()
 //							);
@@ -272,10 +272,10 @@ public class BEASTObjectPanel extends JPanel {
 //        box.add(m_pluginButton);
 
 
-        box.add(new JLabel(" " + m_plugin.getID()));
+        box.add(new JLabel(" " + m_beastObject.getID()));
         
 //        m_identry = new JTextField();
-//        m_identry.setText(m_plugin.getID());
+//        m_identry.setText(m_beastObject.getID());
 //        m_identry.setToolTipText("Name/ID that uniquely identifies this item");
 //
 //        m_identry.getDocument().addDocumentListener(new DocumentListener() {
@@ -307,20 +307,20 @@ public class BEASTObjectPanel extends JPanel {
     } // createPluginBox
 
     void processID() {
-//		PluginPanel.g_plugins.remove(m_plugin.getID());
-//		m_plugin.setID(m_identry.getText());
-//		PluginPanel.g_plugins.put(m_plugin.getID(), m_plugin);
+//		PluginPanel.g_plugins.remove(m_beastObject.getID());
+//		m_beastObject.setID(m_identry.getText());
+//		PluginPanel.g_plugins.put(m_beastObject.getID(), m_beastObject);
     }
 
 
 
     /**
-     * collect all plugins that can reach this input (actually, it's parent)
+     * collect all beastObjects that can reach this input (actually, it's parent)
      * and add them to the tabu list.
      */
-    static List<BEASTInterface> listAscendants(BEASTInterface parent, Collection<BEASTInterface> plugins) {
-        /* First, calculate outputs for each plugin */
-        HashMap<BEASTInterface, List<BEASTInterface>> outputs = getOutputs(plugins);
+    static List<BEASTInterface> listAscendants(BEASTInterface parent, Collection<BEASTInterface> beastObjects) {
+        /* First, calculate outputs for each beastObject */
+        HashMap<BEASTInterface, List<BEASTInterface>> outputs = getOutputs(beastObjects);
         /* process outputs */
         List<BEASTInterface> ascendants = new ArrayList<>();
         ascendants.add(parent);
@@ -342,19 +342,19 @@ public class BEASTObjectPanel extends JPanel {
         return ascendants;
     }
 
-    /* calculate outputs for each plugin
+    /* calculate outputs for each beastObject
       * and put them as ArrayLists in a Map
-      * so they can be retrieved indexed by plugin like this:
-      * ArrayList<Plugin> output = outputs.get(plugin)*/
+      * so they can be retrieved indexed by beastObject like this:
+      * ArrayList<BEASTObject> output = outputs.get(beastObject)*/
 
-    static HashMap<BEASTInterface, List<BEASTInterface>> getOutputs(Collection<BEASTInterface> plugins) {
+    static HashMap<BEASTInterface, List<BEASTInterface>> getOutputs(Collection<BEASTInterface> beastObjects) {
         HashMap<BEASTInterface, List<BEASTInterface>> outputs = new HashMap<>();
-        for (BEASTInterface plugin : plugins) {
-            outputs.put(plugin, new ArrayList<>());
+        for (BEASTInterface beastObject : beastObjects) {
+            outputs.put(beastObject, new ArrayList<>());
         }
-        for (BEASTInterface plugin : plugins) {
+        for (BEASTInterface beastObject : beastObjects) {
             try {
-                for (Input<?> input2 : plugin.listInputs()) {
+                for (Input<?> input2 : beastObject.listInputs()) {
                     Object o = input2.get();
                     if (o != null && o instanceof BEASTInterface) {
                         List<BEASTInterface> list = outputs.get(o);
@@ -362,7 +362,7 @@ public class BEASTObjectPanel extends JPanel {
 //                    		int h = 3;
 //                    		h++;
 //                    	} else {
-                        list.add(plugin);
+                        list.add(beastObject);
 //                    	}
                     }
                     if (o != null && o instanceof List<?>) {
@@ -370,7 +370,7 @@ public class BEASTObjectPanel extends JPanel {
                             if (o2 != null && o2 instanceof BEASTInterface) {
                                 List<BEASTInterface> list = outputs.get(o2);
                                 if (list != null) {
-                                    list.add(plugin);
+                                    list.add(beastObject);
                                 }
                             }
                         }
@@ -383,17 +383,17 @@ public class BEASTObjectPanel extends JPanel {
         return outputs;
     } // getOutputs
 
-    public void initPlugins(BEASTInterface plugin, BeautiDoc doc) {
+    public void initPlugins(BEASTInterface beastObject, BeautiDoc doc) {
         //g_plugins = new HashMap<>();
-        addPluginToMap(plugin, doc);
+        addPluginToMap(beastObject, doc);
     }
 
-    static public void addPluginToMap(BEASTInterface plugin, BeautiDoc doc) {
-        if (registerPlugin(getID(plugin), plugin, doc)) {
+    static public void addPluginToMap(BEASTInterface beastObject, BeautiDoc doc) {
+        if (registerPlugin(getID(beastObject), beastObject, doc)) {
             return;
         }
         try {
-            for (Input<?> input : plugin.listInputs()) {
+            for (Input<?> input : beastObject.listInputs()) {
                 if (input.get() != null) {
                     if (input.get() instanceof BEASTInterface) {
                         addPluginToMap((BEASTInterface) input.get(), doc);
@@ -414,18 +414,18 @@ public class BEASTObjectPanel extends JPanel {
     } // addPluginToMap
 
     /**
-     * return ID of plugin, if no ID is specified, generate an appropriate ID first
+     * return ID of beastObject, if no ID is specified, generate an appropriate ID first
      */
-    public static String getID(BEASTInterface plugin) {
-        if (plugin.getID() == null || plugin.getID().length() == 0) {
-            String sID = plugin.getClass().getName().replaceAll(".*\\.", "");
+    public static String getID(BEASTInterface beastObject) {
+        if (beastObject.getID() == null || beastObject.getID().length() == 0) {
+            String sID = beastObject.getClass().getName().replaceAll(".*\\.", "");
             int i = 0;
             while (g_plugins.containsKey(sID + i)) {
                 i++;
             }
-            plugin.setID(sID + "." + i);
+            beastObject.setID(sID + "." + i);
         }
-        return plugin.getID();
+        return beastObject.getID();
     }
 
     /**
@@ -448,8 +448,8 @@ public class BEASTObjectPanel extends JPanel {
                 } finally {
                     scanner.close();
                 }
-                BEASTInterface plugin = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
-                pluginPanel = new BEASTObjectPanel(plugin, plugin.getClass(), null);
+                BEASTInterface beastObject = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
+                pluginPanel = new BEASTObjectPanel(beastObject, beastObject.getClass(), null);
             } else if (args.length == 1) {
                 pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
             } else if (args.length == 2) {
@@ -460,16 +460,16 @@ public class BEASTObjectPanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Usage: " + BEASTObjectPanel.class.getName() + " [-x file ] [class [type]]\n" +
-                    "where [class] (optional, default MCMC) is a Plugin to edit\n" +
-                    "and [type] (optional only if class is specified, default Runnable) the type of the Plugin.\n" +
+                    "where [class] (optional, default MCMC) is a BEASTObject to edit\n" +
+                    "and [type] (optional only if class is specified, default Runnable) the type of the BEASTObject.\n" +
                     "for example\n" +
                     "");
             System.exit(1);
         }
         pluginPanel.setVisible(true);
         if (pluginPanel.m_bOK) {
-            BEASTInterface plugin = pluginPanel.m_plugin;
-            String sXML = new XMLProducer().modelToXML(plugin);
+            BEASTInterface beastObject = pluginPanel.m_beastObject;
+            String sXML = new XMLProducer().modelToXML(beastObject);
             System.out.println(sXML);
         }
     } // main

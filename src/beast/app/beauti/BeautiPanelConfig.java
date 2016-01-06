@@ -26,7 +26,7 @@ public class BeautiPanelConfig extends BEASTObject {
     final public Input<String> sNameInput = new Input<>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
     final public Input<String> sTipTextInput = new Input<>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
 
-    final public Input<String> sPathInput = new Input<>("path", "path of the Plugin to be shown in this panel, in xpath-like format. " +
+    final public Input<String> sPathInput = new Input<>("path", "path of the BEASTObject to be shown in this panel, in xpath-like format. " +
             "For example operator to edit the operator input of the top level run element. " +
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
@@ -42,7 +42,7 @@ public class BeautiPanelConfig extends BEASTObject {
 
     final public Input<InputEditor.ExpandOption> forceExpansionInput = new Input<>("forceExpansion", "whether to expand the input(s)" +
             "This can be " + Arrays.toString(InputEditor.ExpandOption.values()) + " (default 'FALSE')", InputEditor.ExpandOption.FALSE, InputEditor.ExpandOption.values());
-    final public Input<String> sTypeInput = new Input<>("type", "type used for finding the appropriate plugin editor. By default, type is determined " +
+    final public Input<String> sTypeInput = new Input<>("type", "type used for finding the appropriate beastObject editor. By default, type is determined " +
             "by the input type of the last component of the path");
 
     final public Input<Integer> nLabelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
@@ -56,17 +56,17 @@ public class BeautiPanelConfig extends BEASTObject {
     Class<?> type;
 
     /**
-     * plugins associated with inputs *
+     * beastObjects associated with inputs *
      */
     List<BEASTInterface> inputs;
     /**
-     * plugins associated with inputs before editing starts *
+     * beastObjects associated with inputs before editing starts *
      */
     List<BEASTInterface> startInputs;
     /**
-     * plugins that are parents, i.e. contain inputs of m_inputs *
+     * beastObjects that are parents, i.e. contain inputs of m_inputs *
      */
-    List<BEASTInterface> parentPlugins;
+    List<BEASTInterface> parentBEASTObjects;
     List<Input<?>> parentInputs = new ArrayList<>();
     /**
      * flag to indicate we are dealing with a list input *
@@ -149,49 +149,49 @@ public class BeautiPanelConfig extends BEASTObject {
     @SuppressWarnings("unchecked")
     final public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
         try {
-//            if (parentPlugins != null && parentPlugins.size() > 0 && _input != null)
-//                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
+//            if (parentBEASTObjects != null && parentBEASTObjects.size() > 0 && _input != null)
+//                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
 
-            List<BEASTInterface> plugins;
+            List<BEASTInterface> beastObjects;
             if (bHasPartitionsInput.get() == Partition.none) {
-                plugins = new ArrayList<>();
-                plugins.add(doc.mcmc.get());
+                beastObjects = new ArrayList<>();
+                beastObjects.add(doc.mcmc.get());
             } else {
-                plugins = doc.getPartitions(bHasPartitionsInput.get().toString());
+                beastObjects = doc.getPartitions(bHasPartitionsInput.get().toString());
             }
-            parentPlugins = new ArrayList<>();
+            parentBEASTObjects = new ArrayList<>();
             parentInputs = new ArrayList<>();
 
-            parentPlugins.add(doc);
+            parentBEASTObjects.add(doc);
             parentInputs.add(doc.mcmc);
             type = doc.mcmc.getType();
             bIsList = false;
             for (int i = 0; i < sPathComponents.length; i++) {
-                List<BEASTInterface> oldPlugins = plugins;
-                plugins = new ArrayList<>();
-                parentPlugins = new ArrayList<>();
+                List<BEASTInterface> oldPlugins = beastObjects;
+                beastObjects = new ArrayList<>();
+                parentBEASTObjects = new ArrayList<>();
                 parentInputs = new ArrayList<>();
-                for (BEASTInterface plugin : oldPlugins) {
-                    final Input<?> namedInput = plugin.getInput(sPathComponents[i]);
+                for (BEASTInterface beastObject : oldPlugins) {
+                    final Input<?> namedInput = beastObject.getInput(sPathComponents[i]);
                     type = namedInput.getType();
                     if (namedInput.get() instanceof List<?>) {
                         bIsList = true;
                         List<?> list = (List<?>) namedInput.get();
                         if (sConditionalAttribute[i] == null) {
                             for (Object o : list) {
-                                BEASTInterface plugin2 = (BEASTInterface) o;
-                                plugins.add(plugin2);
-                                parentPlugins.add(plugin);
+                                BEASTInterface beastObject2 = (BEASTInterface) o;
+                                beastObjects.add(beastObject2);
+                                parentBEASTObjects.add(beastObject);
                                 parentInputs.add(namedInput);
                             }
                             //throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
                         } else {
                             int nMatches = 0;
                             for (int j = 0; j < list.size(); j++) {
-                                BEASTInterface plugin2 = (BEASTInterface) list.get(j);
-                                if (matches(plugin2, sConditionalAttribute[i], sConditionalValue[i])) {
-                                    plugins.add(plugin2);
-                                    parentPlugins.add(plugin);
+                                BEASTInterface beastObject2 = (BEASTInterface) list.get(j);
+                                if (matches(beastObject2, sConditionalAttribute[i], sConditionalValue[i])) {
+                                    beastObjects.add(beastObject2);
+                                    parentBEASTObjects.add(beastObject);
                                     parentInputs.add(namedInput);
                                     nMatches++;
                                     break;
@@ -199,26 +199,26 @@ public class BeautiPanelConfig extends BEASTObject {
                             }
                             if (nMatches == 0) {
                                 parentInputs.add(namedInput);
-                                parentPlugins.add(plugin);
+                                parentBEASTObjects.add(beastObject);
                             }
                         }
                     } else if (namedInput.get() instanceof BEASTInterface) {
                         bIsList = false;
                         if (sConditionalAttribute[i] == null) {
-                            plugins.add((BEASTInterface) namedInput.get());
-                            parentPlugins.add(plugin);
+                            beastObjects.add((BEASTInterface) namedInput.get());
+                            parentBEASTObjects.add(beastObject);
                             parentInputs.add(namedInput);
                         } else {
-                            if (matches(plugin, sConditionalAttribute[i], sConditionalValue[i])) {
-//							if ((m_sConditionalAttribute[i].equals("id") && plugin.getID().equals(m_sConditionalValue[i])) ||
-//							    (m_sConditionalAttribute[i].equals("type") && plugin.getClass().getName().equals(m_sConditionalValue[i]))) {
-                                plugins.add(plugin);
-                                parentPlugins.add(plugin);
+                            if (matches(beastObject, sConditionalAttribute[i], sConditionalValue[i])) {
+//							if ((m_sConditionalAttribute[i].equals("id") && beastObject.getID().equals(m_sConditionalValue[i])) ||
+//							    (m_sConditionalAttribute[i].equals("type") && beastObject.getClass().getName().equals(m_sConditionalValue[i]))) {
+                                beastObjects.add(beastObject);
+                                parentBEASTObjects.add(beastObject);
                                 parentInputs.add(namedInput);
                             }
                         }
                     } else {
-                        throw new IllegalArgumentException("input " + sPathComponents[i] + "  is not a plugin or list");
+                        throw new IllegalArgumentException("input " + sPathComponents[i] + "  is not a beastObject or list");
                     }
                 }
             }
@@ -226,18 +226,18 @@ public class BeautiPanelConfig extends BEASTObject {
                 type = Class.forName(sTypeInput.get());
             }
             // sanity check
-            if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && plugins.size() > 1) {
-            	Log.warning.println("WARNING: multiple plugins match, but hasPartitions=none");
-                // this makes sure that all mathing plugins are available in one go
+            if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && beastObjects.size() > 1) {
+            	Log.warning.println("WARNING: multiple beastObjects match, but hasPartitions=none");
+                // this makes sure that all mathing beastObjects are available in one go
                 bIsList = true;
                 // this suppresses syncing
                 parentInputs.clear();
             }
             inputs.clear();
             startInputs.clear();
-            for (BEASTInterface plugin : plugins) {
-                inputs.add(plugin);
-                startInputs.add(plugin);
+            for (BEASTInterface beastObject : beastObjects) {
+                inputs.add(beastObject);
+                startInputs.add(beastObject);
             }
 
             if (!bIsList) {
@@ -247,8 +247,8 @@ public class BeautiPanelConfig extends BEASTObject {
             }
             _input.setRule(Validate.REQUIRED);
             syncTo(iPartition);
-//            if (parentPlugins != null && parentPlugins.size() > 0)
-//                System.err.println("sync " + parentPlugins.get(iPartition) + "[?] = " + _input.get());
+//            if (parentBEASTObjects != null && parentBEASTObjects.size() > 0)
+//                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
 
 
             if (bIsList) {
@@ -273,10 +273,10 @@ public class BeautiPanelConfig extends BEASTObject {
 
     }
 
-    private boolean matches(BEASTInterface plugin2, String sConditionalAttribute, String sConditionalValue) {
-        if (sConditionalAttribute.equals("id") && plugin2.getID().equals(sConditionalValue)) return true;
-        if (sConditionalAttribute.equals("type") && plugin2.getClass().getName().equals(sConditionalValue)) return true;
-        if (sConditionalAttribute.equals("type!") && !plugin2.getClass().getName().equals(sConditionalValue))
+    private boolean matches(BEASTInterface beastObject2, String sConditionalAttribute, String sConditionalValue) {
+        if (sConditionalAttribute.equals("id") && beastObject2.getID().equals(sConditionalValue)) return true;
+        if (sConditionalAttribute.equals("type") && beastObject2.getClass().getName().equals(sConditionalValue)) return true;
+        if (sConditionalAttribute.equals("type!") && !beastObject2.getClass().getName().equals(sConditionalValue))
             return true;
         return false;
     }
@@ -290,20 +290,20 @@ public class BeautiPanelConfig extends BEASTObject {
                 List<Object> targetList = ((List<Object>) input.get());
                 //targetList.clear();
                 // only clear former members
-                for (BEASTInterface plugin : startInputs) {
-                    targetList.remove(plugin);
+                for (BEASTInterface beastObject : startInputs) {
+                    targetList.remove(beastObject);
                 }
                 targetList.addAll(list);
                 // sync outputs of items in list
                 for (Object o : list) {
                 	if (o instanceof BEASTInterface) {
-                		((BEASTInterface)o).getOutputs().add(parentPlugins.get(iPartition));
+                		((BEASTInterface)o).getOutputs().add(parentBEASTObjects.get(iPartition));
                 	}
                 }
             } else {
                 try {
-                    //System.err.println("sync " + parentPlugins.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
-                    input.setValue(_input.get(), parentPlugins.get(iPartition));
+                    //System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
+                    input.setValue(_input.get(), parentBEASTObjects.get(iPartition));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -312,19 +312,19 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     /**
-     * initialise m_input, and either m_plugin or m_pluginList *
+     * initialise m_input, and either m_beastObject or m_pluginList *
      */
     public void syncTo(int iPartition) {
         _input.setType(type);
         try {
             if (bIsList) {
-                for (BEASTInterface plugin : inputs) {
-                    _input.setValue(plugin, this);
+                for (BEASTInterface beastObject : inputs) {
+                    _input.setValue(beastObject, this);
                 }
             } else {
             	if (inputs.size() > 0) {
-	                BEASTInterface plugin = inputs.get(iPartition);
-	                _input.setValue(plugin, this);
+	                BEASTInterface beastObject = inputs.get(iPartition);
+	                _input.setValue(beastObject, this);
             	}
             }
         } catch (Exception e) {
@@ -337,7 +337,7 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     /**
-     * returns name of the plugin *
+     * returns name of the beastObject *
      */
     public String getType() {
         if (bIsList) {
@@ -349,7 +349,7 @@ public class BeautiPanelConfig extends BEASTObject {
         return _input.get().getClass().getName();
     }
 
-//	public void addItem(Plugin plugin) {
+//	public void addItem(BEASTObject beastObject) {
 //		m_parentInputs.add(m_parentInputs.get(m_parentInputs.size()-1));
 //		m_parentPlugins.add(m_parentPlugins.get(m_parentPlugins.size()-1));
 //	}

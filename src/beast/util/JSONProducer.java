@@ -120,7 +120,7 @@ public class JSONProducer {
     	if (beastObject instanceof TraitSet) {
     		priorityBeastObjects.add(beastObject);
     	}
-		for (BEASTInterface beastObject2 : beastObject.listActivePlugins()) {
+		for (BEASTInterface beastObject2 : beastObject.listActiveBEASTObjects()) {
 			findPriorityBeastObjects(beastObject2, priorityBeastObjects);
 		}
 	}

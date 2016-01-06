@@ -33,14 +33,14 @@ public class LoggerListInputEditor extends ListInputEditor {
     
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-    	super.init(input, plugin, itemNr, bExpandOption, bAddButtons);
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
     }
     
     @Override
-    protected void addSingleItem(BEASTInterface plugin) {
-    	currentLogger = (Logger) plugin;
-    	super.addSingleItem(plugin);
+    protected void addSingleItem(BEASTInterface beastObject) {
+    	currentLogger = (Logger) beastObject;
+    	super.addSingleItem(beastObject);
     }
     
     public InputEditor createFileNameEditor() throws Exception {

@@ -43,7 +43,7 @@ import beast.core.util.Log;
 
 /**
  * Dialog for showing HTML help, with hyperlinks and some browser
- * functionality to navigate around the Plugin help facilities.
+ * functionality to navigate around the BEASTObject help facilities.
  */
 public class HelpBrowser extends JDialog implements HyperlinkListener {
     /**
@@ -68,7 +68,7 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
     JButton m_backwardButton;
 
 
-    public HelpBrowser(String sPlugin) {
+    public HelpBrowser(String beastObjectName) {
         if (m_docMaker == null) {
             m_docMaker = new DocMaker();
         }
@@ -115,7 +115,7 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
         box.add(scroller);
 
 
-        m_sPlugins.add(sPlugin);
+        m_sPlugins.add(beastObjectName);
         updateState();
         this.add(box);
     } // c'tor
@@ -139,14 +139,14 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
         try {
             HyperlinkEvent.EventType type = link.getEventType();
             if (type == HyperlinkEvent.EventType.ACTIVATED) {
-                String sPlugin = link.getDescription();
-                sPlugin = sPlugin.replaceAll(".html", "");
+                String beastObjectName = link.getDescription();
+                beastObjectName = beastObjectName.replaceAll(".html", "");
                 // update browser stack
                 m_iCurrentPlugin++;
                 while (m_iCurrentPlugin < m_sPlugins.size()) {
                     m_sPlugins.remove(m_iCurrentPlugin);
                 }
-                m_sPlugins.add(sPlugin);
+                m_sPlugins.add(beastObjectName);
                 updateState();
             }
         } catch (Exception e) {
@@ -160,9 +160,9 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
      * change html text and enable/disable buttons (where appropriate) *
      */
     void updateState() {
-        String sPlugin = m_sPlugins.get(m_iCurrentPlugin);
+        String beastObjectName = m_sPlugins.get(m_iCurrentPlugin);
         try {
-            String sHTML = m_docMaker.getHTML(sPlugin, false);
+            String sHTML = m_docMaker.getHTML(beastObjectName, false);
             m_editorPane.setText(sHTML);
         } catch (Exception e) {
             // ignore

@@ -24,9 +24,9 @@ public class DocumentationTest extends TestCase {
     public void testDescriptions() {
         final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         final List<String> sUndocumentedPlugins = new ArrayList<String>();
-        for (final String sPlugin : sPluginNames) {
+        for (final String beastObjectName : sPluginNames) {
             try {
-                final Class<?> pluginClass = Class.forName(sPlugin);
+                final Class<?> pluginClass = Class.forName(beastObjectName);
                 final Annotation[] classAnnotations = pluginClass.getAnnotations();
                 boolean hasSatisfactoryDescription = false;
                 for (final Annotation annotation : classAnnotations) {
@@ -39,7 +39,7 @@ public class DocumentationTest extends TestCase {
                     }
                 }
                 if (!hasSatisfactoryDescription) {
-                    sUndocumentedPlugins.add(sPlugin);
+                    sUndocumentedPlugins.add(beastObjectName);
                 }
             } catch (Exception e) {
             }
@@ -55,10 +55,10 @@ public class DocumentationTest extends TestCase {
     public void testInputTipText() {
         final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
         final List<String> sUndocumentedInputs = new ArrayList<String>();
-        for (final String sPlugin : sPluginNames) {
+        for (final String beastObjectName : sPluginNames) {
             try {
-                final BEASTObject plugin = (BEASTObject) Class.forName(sPlugin).newInstance();
-                final List<Input<?>> inputs = plugin.listInputs();
+                final BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+                final List<Input<?>> inputs = beastObject.listInputs();
                 for (final Input<?> input : inputs) {
                     boolean hasSatisfactoryDescription = false;
                     final String sTipText = input.getTipText();
@@ -66,7 +66,7 @@ public class DocumentationTest extends TestCase {
                         hasSatisfactoryDescription = true;
                     }
                     if (!hasSatisfactoryDescription) {
-                        sUndocumentedInputs.add(sPlugin + ":" + input.getName());
+                        sUndocumentedInputs.add(beastObjectName + ":" + input.getName());
                     }
                 }
             } catch (Exception e) {

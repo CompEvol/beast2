@@ -823,9 +823,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		                setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
 		                // get user-specified alignments
-				        List<BEASTInterface> plugins = provider.getAlignments(doc);
-				        if (plugins != null) {
-					        for (BEASTInterface o : plugins) {
+				        List<BEASTInterface> beastObjects = provider.getAlignments(doc);
+				        if (beastObjects != null) {
+					        for (BEASTInterface o : beastObjects) {
 					        	if (o instanceof Alignment) {
 					        		try {
 					        			BeautiDoc.createTaxonSet((Alignment) o, doc);

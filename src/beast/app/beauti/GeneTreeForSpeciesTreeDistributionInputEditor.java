@@ -24,12 +24,12 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
         this.itemNr= itemNr;
-        String sID = plugin.getID();
+        String sID = beastObject.getID();
         if (sID.contains(".t:")) {
         	sID = sID.substring(sID.indexOf(".t:") + 3);
         }
@@ -40,7 +40,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	static final int OTHER = 3;
 	String [] sValues = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
 	Double [] fValues = new Double[]{2.0, 1.5, 0.5, -1.0};
-	JComboBox<String> m_selectPluginBox;
+	JComboBox<String> m_selectBeastObjectBox;
 	
 	public InputEditor createPloidyEditor() {
 		InputEditor editor = new InputEditor.Base(doc) {
@@ -52,49 +52,49 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 			}
 			
 			@Override
-			public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-				m_plugin = plugin;
+			public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+				m_beastObject = beastObject;
 				m_input = input;
 				m_bAddButtons = bAddButtons;
 				this.itemNr = itemNr;
 				addInputLabel();
 				
-	            m_selectPluginBox = new JComboBox<>(sValues);
+	            m_selectBeastObjectBox = new JComboBox<>(sValues);
 	            setSelection();
 	            String sSelectString = input.get().toString();
-	            m_selectPluginBox.setSelectedItem(sSelectString);
+	            m_selectBeastObjectBox.setSelectedItem(sSelectString);
 
-	            m_selectPluginBox.addActionListener(e -> {
-	                    int i = m_selectPluginBox.getSelectedIndex();
+	            m_selectBeastObjectBox.addActionListener(e -> {
+	                    int i = m_selectBeastObjectBox.getSelectedIndex();
 	                    if (i == OTHER) {
 	                    	setSelection();
 	                    	return;
 	                    }
 	                    try {
 	                    	setValue(fValues[i]);
-	                        //lm_input.setValue(sSelected, m_plugin);
+	                        //lm_input.setValue(sSelected, m_beastObject);
 	                    } catch (Exception e1) {
 	                        e1.printStackTrace();
 	                    }
 	                });
-	            m_selectPluginBox.setToolTipText(input.getHTMLTipText());
-	            add(m_selectPluginBox);
+	            m_selectBeastObjectBox.setToolTipText(input.getHTMLTipText());
+	            add(m_selectBeastObjectBox);
 	            add(Box.createGlue());
 			}
 
 			private void setSelection() {
 				Double value = (Double) m_input.get();
-				m_selectPluginBox.setSelectedIndex(OTHER);
+				m_selectBeastObjectBox.setSelectedIndex(OTHER);
 				for (int i = 0; i < fValues.length; i++) {
 					if (value.equals(fValues[i])) {
-						m_selectPluginBox.setSelectedIndex(i);
+						m_selectBeastObjectBox.setSelectedIndex(i);
 					}
 				}
 			}
 			
 		};
-		editor.init(((GeneTreeForSpeciesTreeDistribution)m_plugin).ploidyInput, 
-			m_plugin, -1, ExpandOption.FALSE, true);
+		editor.init(((GeneTreeForSpeciesTreeDistribution)m_beastObject).ploidyInput, 
+			m_beastObject, -1, ExpandOption.FALSE, true);
 		return editor;
 	}
     

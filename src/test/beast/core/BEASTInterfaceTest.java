@@ -107,11 +107,11 @@ public class BEASTInterfaceTest extends TestCase {
 		b = beasti.isPrimitive("other");
 		assertEquals(false, b);
 		
-		List<BEASTInterface> plugins = beasti.listActivePlugins();
-		assertEquals(1, plugins.size());
-		assertEquals(beasti2, plugins.get(0));
-		plugins = beasti2.listActivePlugins();
-		assertEquals(0, plugins.size());
+		List<BEASTInterface> beastObjbects = beasti.listActiveBEASTObjects();
+		assertEquals(1, beastObjbects.size());
+		assertEquals(beasti2, beastObjbects.get(0));
+		beastObjbects = beasti2.listActiveBEASTObjects();
+		assertEquals(0, beastObjbects.size());
 		
 		
 		beasti.validateInputs();

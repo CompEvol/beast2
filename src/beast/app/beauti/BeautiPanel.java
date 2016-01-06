@@ -229,13 +229,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		g_currentPanel = this;
     }
     
-    void refreshInputPanel(BEASTInterface plugin, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
+    void refreshInputPanel(BEASTInterface beastObject, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
         }
         if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
-            InputEditor inputEditor = doc.getInputEditorFactory().createInputEditor(input, plugin, bAddButtons, bForceExpansion, bs, null, doc);
+            InputEditor inputEditor = doc.getInputEditorFactory().createInputEditor(input, beastObject, bAddButtons, bForceExpansion, bs, null, doc);
 
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -281,12 +281,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     void refreshInputPanel() throws Exception {
         doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
-        BEASTInterface plugin = config;
+        BEASTInterface beastObject = config;
         final Input<?> input = config.resolveInput(doc, iPartition);
 
         boolean bAddButtons = config.addButtons();
         ExpandOption bForceExpansion = config.forceExpansion();
-        refreshInputPanel(plugin, input, bAddButtons, bForceExpansion);
+        refreshInputPanel(beastObject, input, bAddButtons, bForceExpansion);
     }
 
     /** 

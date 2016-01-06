@@ -341,11 +341,11 @@ public class XMLParser {
                 }
             }
         }
-        initPlugins();
+        initBEASTObjects();
         return beastObjects;
     } // parseTemplate
 
-    private void initPlugins() throws Exception {
+    private void initBEASTObjects() throws Exception {
     	Node node = null;
         try {
         	for (int i = 0; i < beastObjectsWaitingToInit.size(); i++) {
@@ -408,7 +408,7 @@ public class XMLParser {
         }
 
         final BEASTInterface beastObject = createObject(children.item(i), BEAST_INTERFACE_CLASS);
-        initPlugins();
+        initBEASTObjects();
         return beastObject;
     } // parseFragment
 
@@ -454,7 +454,7 @@ public class XMLParser {
                 beastObjects.add(beastObject);
             }
         }
-        initPlugins();
+        initBEASTObjects();
         return beastObjects;
     }
 
@@ -480,7 +480,7 @@ public class XMLParser {
 
         //parseState();
         parseRunElement(topNode);
-        initPlugins();
+        initBEASTObjects();
     } // parse
 
 

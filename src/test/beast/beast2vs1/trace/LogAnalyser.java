@@ -57,10 +57,10 @@ public class LogAnalyser extends Runnable {
             new Input<>("report", "Display all availble information", false);
 
     public Input<List<Expectation>> m_pExpectations = new Input<>("expectation",
-            "Expectation of log statistics analysis regarding a loggable plugin.",
+            "Expectation of log statistics analysis regarding a loggable beastObject.",
             new ArrayList<Expectation>(), Validate.REQUIRED);
     public Input<MCMC> m_pMCMC = new Input<>("expectation",
-            "Expectation of log statistics analysis regarding a loggable plugin.", Validate.REQUIRED);
+            "Expectation of log statistics analysis regarding a loggable beastObject.", Validate.REQUIRED);
 
 //    <run spec='beast.trace.LogAnalyser' fileName="test.$(seed).log" report="true">
 //        <input idref='MCMC'/>   

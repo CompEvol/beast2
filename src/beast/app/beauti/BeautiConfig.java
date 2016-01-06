@@ -56,16 +56,16 @@ public class BeautiConfig extends BEASTObject {
      * list of inputs for which the input editor should be expanded inline in a dialog
      * in the format <className>.<inputName>, e.g. beast.evolution.sitemodel.SiteModel.substModel
      */
-    public Set<String> inlinePlugins = new HashSet<>();
+    public Set<String> inlineBEASTObject = new HashSet<>();
     /**
      * list of inputs for which the input editor should be expanded inline in a dialog but initially collapsed.
      * e.g. beast.evolution.sitemodel.SiteModel.substModel
      */
-    public Set<String> collapsedPlugins = new HashSet<>();
+    public Set<String> collapsedBEASTObjects = new HashSet<>();
     /**
-     * list of inputs that should not be shown in a dialog. Same format as for m_inlinePlugins*
+     * list of inputs that should not be shown in a dialog. Same format as for inlineBEASTObjects*
      */
-    public Set<String> suppressPlugins = new HashSet<>();
+    public Set<String> suppressBEASTObjects = new HashSet<>();
     /**
      * map that identifies the label to be used for a particular input *
      */
@@ -86,11 +86,11 @@ public class BeautiConfig extends BEASTObject {
     
     @Override
     public void initAndValidate() {
-        parseSet(inlineInput.get(), null, inlinePlugins);
-        parseSet(collapsedInput.get(), null, collapsedPlugins);
-        inlinePlugins.addAll(collapsedPlugins);
+        parseSet(inlineInput.get(), null, inlineBEASTObject);
+        parseSet(collapsedInput.get(), null, collapsedBEASTObjects);
+        inlineBEASTObject.addAll(collapsedBEASTObjects);
 //		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
-        parseSet(suppressInputs.get(), null, suppressPlugins);
+        parseSet(suppressInputs.get(), null, suppressBEASTObjects);
         parseSet(disableMenus.get(), null, sDisabledMenus);
         parseSet(disableButtons.get(), null, sDisabledButtons);
 
@@ -126,11 +126,11 @@ public class BeautiConfig extends BEASTObject {
     		"    	<!-- Parameter Hyper Prior -->\n" +
     		"    	        <subtemplate id='HyperPrior' class='beast.math.distributions.Prior' mainid='HyperPrior.$(n)'>\n" +
     		"    	<![CDATA[\n" +
-    		"    	        <plugin id='HyperPrior.$(n)' spec='Prior' x='@parameter.$(n)'>\n" +
+    		"    	        <beastObject id='HyperPrior.$(n)' spec='Prior' x='@parameter.$(n)'>\n" +
     		"    	            <distr spec='OneOnX'/>\n" +
-    		"    			</plugin>\n" +
+    		"    			</beastObject>\n" +
     		"\n" +
-    		"    	        <plugin id='hyperScaler.$(n)' spec='ScaleOperator' scaleFactor='0.5' weight='0.1' parameter='@parameter.$(n)'/>\n" +
+    		"    	        <beastObject id='hyperScaler.$(n)' spec='ScaleOperator' scaleFactor='0.5' weight='0.1' parameter='@parameter.$(n)'/>\n" +
     		"    	]]>\n" +
     		"    	            <connect srcID='parameter.$(n)'            targetID='state' inputName='stateNode' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
     		"\n" +
@@ -153,9 +153,9 @@ public class BeautiConfig extends BEASTObject {
     }
 
     public void clear() {
-        inlinePlugins = new HashSet<>();
-        collapsedPlugins = new HashSet<>();
-        suppressPlugins = new HashSet<>();
+        inlineBEASTObject = new HashSet<>();
+        collapsedBEASTObjects = new HashSet<>();
+        suppressBEASTObjects = new HashSet<>();
         inputLabelMap = new HashMap<>();
         buttonLabelMap = new HashMap<>();
         sDisabledMenus = new HashSet<>();
@@ -182,10 +182,10 @@ public class BeautiConfig extends BEASTObject {
                 return null;
             }
         }
-        List<BEASTInterface> plugins = selectedProvider.getAlignments(doc);
+        List<BEASTInterface> beastObjects = selectedProvider.getAlignments(doc);
         // create taxon sets, if any
-        if (plugins != null) {
-	        for (BEASTInterface o : plugins) {
+        if (beastObjects != null) {
+	        for (BEASTInterface o : beastObjects) {
 	        	if (o instanceof Alignment) {
 	        		try {
 	        			BeautiDoc.createTaxonSet((Alignment) o, doc);
@@ -195,15 +195,15 @@ public class BeautiConfig extends BEASTObject {
 	        	}
 	        }
         }
-        return plugins;
+        return beastObjects;
     } // selectAlignments
     
-    public List<BeautiSubTemplate> getInputCandidates(BEASTInterface plugin, Input<?> input, Class<?> type) {
+    public List<BeautiSubTemplate> getInputCandidates(BEASTInterface beastObject, Input<?> input, Class<?> type) {
         List<BeautiSubTemplate> candidates = new ArrayList<>();
         for (BeautiSubTemplate template : subTemplates) {
             if (type.isAssignableFrom(template._class)) {
                 try {
-                    if (input.canSetValue(template.instance, plugin)) {
+                    if (input.canSetValue(template.instance, beastObject)) {
                         candidates.add(template);
                     }
                 } catch (Exception e) {
@@ -261,9 +261,9 @@ public class BeautiConfig extends BEASTObject {
         return sStr;
     }
 
-    public String getInputLabel(BEASTInterface plugin, String sName) {
-        if (inputLabelMap.containsKey(plugin.getClass().getName() + "." + sName)) {
-            sName = inputLabelMap.get(plugin.getClass().getName() + "." + sName);
+    public String getInputLabel(BEASTInterface beastObject, String sName) {
+        if (inputLabelMap.containsKey(beastObject.getClass().getName() + "." + sName)) {
+            sName = inputLabelMap.get(beastObject.getClass().getName() + "." + sName);
         }
         return sName;
     }

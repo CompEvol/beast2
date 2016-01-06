@@ -258,7 +258,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 sMsg += "there is no top level runnable item in the model (e.g. an MCMC node).";
                 break;
             case Document.STATUS_ORPHANS_IN_MODEL:
-                sMsg += "there are orphaned items in the model (i.e. plugins that have no parents).";
+                sMsg += "there are orphaned items in the model (i.e. beastObjects that have no parents).";
                 break;
         }
         sMsg += "<br>Do you still want to try to save the model?</html>";
@@ -1332,20 +1332,20 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     } // init
 
-    boolean needsDrawing(BEASTInterface plugin) {
-        if (plugin == null) {
+    boolean needsDrawing(BEASTInterface beastObject) {
+        if (beastObject == null) {
             return true;
         }
-        if (!m_bViewOperators && plugin instanceof beast.core.Operator) {
+        if (!m_bViewOperators && beastObject instanceof beast.core.Operator) {
             return false;
         }
-        if (!m_bViewLoggers && plugin instanceof beast.core.Logger) {
+        if (!m_bViewLoggers && beastObject instanceof beast.core.Logger) {
             return false;
         }
-        if (!m_bViewSequences && plugin instanceof Sequence) {
+        if (!m_bViewSequences && beastObject instanceof Sequence) {
             return false;
         }
-        if (!m_bViewState && plugin instanceof beast.core.State) {
+        if (!m_bViewState && beastObject instanceof beast.core.State) {
             return false;
         }
         return true;
@@ -1359,14 +1359,14 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 shape.m_bNeedsDrawing = true;
             }
             if (shape instanceof BEASTObjectShape) {
-                BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
-                if (needsDrawing(plugin)) {
+                BEASTInterface beastObject = ((BEASTObjectShape) shape).m_beastObject;
+                if (needsDrawing(beastObject)) {
                     shape.m_bNeedsDrawing = true;
                 }
             } else if (shape instanceof InputShape) {
-                BEASTObjectShape pluginShape = ((InputShape) shape).m_pluginShape;
-                if (pluginShape != null) {
-                    if (needsDrawing(pluginShape.m_plugin)) {
+                BEASTObjectShape beastObjectShape = ((InputShape) shape).m_beastObjectShape;
+                if (beastObjectShape != null) {
+                    if (needsDrawing(beastObjectShape.m_beastObject)) {
                         shape.m_bNeedsDrawing = true;
                     }
                 } else {
@@ -1376,14 +1376,14 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 Shape tail = ((Arrow) shape).m_tailShape;
                 boolean bNeedsDrawing = true;
                 if (tail instanceof BEASTObjectShape) {
-                    bNeedsDrawing = needsDrawing(((BEASTObjectShape) tail).m_plugin);
+                    bNeedsDrawing = needsDrawing(((BEASTObjectShape) tail).m_beastObject);
                 }
                 if (bNeedsDrawing) {
                     Shape head = ((Arrow) shape).m_headShape;
                     if (head instanceof InputShape) {
-                        BEASTObjectShape pluginShape = ((InputShape) head).m_pluginShape;
-                        if (pluginShape != null) {
-                            bNeedsDrawing = needsDrawing(pluginShape.m_plugin);
+                        BEASTObjectShape beastObjectShape = ((InputShape) head).m_beastObjectShape;
+                        if (beastObjectShape != null) {
+                            bNeedsDrawing = needsDrawing(beastObjectShape.m_beastObject);
                         }
                     }
                     if (bNeedsDrawing) {
@@ -1573,7 +1573,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 return;
                             }
                             if (shape instanceof InputShape) {
-                                shape = ((InputShape) shape).m_pluginShape;
+                                shape = ((InputShape) shape).m_beastObjectShape;
                             }
                             arrow = new Arrow((BEASTObjectShape) shape, me.getX(), me
                                     .getY());
@@ -1626,10 +1626,10 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     if (shape.m_bNeedsDrawing
                             && shape.intersects(me.getX(), me.getY())) {
                         if (shape instanceof BEASTObjectShape) {
-                            BEASTObjectShape plugin = (BEASTObjectShape) shape;
+                            BEASTObjectShape beastObject = (BEASTObjectShape) shape;
                             try {
                                 String sToolTip = "<html>";
-                                for (InputShape input : plugin.m_inputs) {
+                                for (InputShape input : beastObject.m_inputs) {
                                     sToolTip += input.getLongLabel() + "<br>";
                                 }
                                 sToolTip += "</html>";
@@ -1708,11 +1708,11 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 // resolve the associated input
                                 InputShape ellipse = (InputShape) shape;
                                 String sInput = ellipse.getInputName();
-                                BEASTInterface plugin = ellipse.getPlugin();
-                                if (plugin.isPrimitive(sInput)) {
+                                BEASTInterface beastObject = ellipse.getBEASTObject();
+                                if (beastObject.isPrimitive(sInput)) {
                                     String sValue = "";
-                                    if (plugin.getInputValue(sInput) != null) {
-                                        sValue = plugin.getInputValue(sInput)
+                                    if (beastObject.getInputValue(sInput) != null) {
+                                        sValue = beastObject.getInputValue(sInput)
                                                 .toString();
                                     }
                                     sValue = JOptionPane.showInputDialog(sInput
@@ -1720,7 +1720,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                     if (sValue != null) {
                                         m_doc.setInputValue(ellipse.getPluginShape(), sInput, sValue);
                                         // ellipse.setLabel(sInput + "=" +
-                                        // plugin.getInputValue(sInput).toString());
+                                        // beastObject.getInputValue(sInput).toString());
                                         g_panel.repaint();
                                     }
                                 }
@@ -1797,24 +1797,24 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 propertiesItem.addActionListener(ae -> {
                         Shape shape = m_Selection.getSingleSelectionShape();
                         if (shape instanceof BEASTObjectShape) {
-                            BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
+                            BEASTInterface beastObject = ((BEASTObjectShape) shape).m_beastObject;
 
-                            List<BEASTInterface> plugins = new ArrayList<>();
+                            List<BEASTInterface> beastObjects = new ArrayList<>();
                             for (Shape shape2 : m_doc.m_objects) {
                                 if (shape2 instanceof BEASTObjectShape) {
-                                    plugins.add(((BEASTObjectShape) shape2).m_plugin);
+                                    beastObjects.add(((BEASTObjectShape) shape2).m_beastObject);
                                 }
                             }
-                            BEASTObjectDialog dlg = new BEASTObjectDialog(plugin, plugin.getClass(), plugins, null);
+                            BEASTObjectDialog dlg = new BEASTObjectDialog(beastObject, beastObject.getClass(), beastObjects, null);
                             if (dlg.showDialog()) {
                                 // add newly created Plug-ins
                                 int nNewShapes = 0;
-                                if (plugins.size() < BEASTObjectPanel.g_plugins.size()) {
-                                    for (BEASTInterface plugin2 : BEASTObjectPanel.g_plugins.values()) {
-                                        if (!plugins.contains(plugin2)) {
+                                if (beastObjects.size() < BEASTObjectPanel.g_plugins.size()) {
+                                    for (BEASTInterface beastObject2 : BEASTObjectPanel.g_plugins.values()) {
+                                        if (!beastObjects.contains(beastObject2)) {
                                             try {
                                                 nNewShapes++;
-                                                Shape shape2 = new BEASTObjectShape(plugin2, m_doc);
+                                                Shape shape2 = new BEASTObjectShape(beastObject2, m_doc);
                                                 shape2.m_x = 10;
                                                 shape2.m_y = nNewShapes * 50;
                                                 shape2.m_w = 80;
@@ -1840,10 +1840,10 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 JMenuItem saveAsItem = new JMenuItem("Save as");
                 saveAsItem.addActionListener(ae -> {
                         Shape shape = m_Selection.getSingleSelectionShape();
-                        BEASTInterface plugin = ((BEASTObjectShape) shape).m_plugin;
+                        BEASTInterface beastObject = ((BEASTObjectShape) shape).m_beastObject;
                         JFileChooser fc = new JFileChooser(m_sDir);
                         fc.addChoosableFileFilter(ef1);
-                        fc.setDialogTitle("Save Plugin As");
+                        fc.setDialogTitle("Save BEASTObject As");
                         if (!m_sFileName.equals("")) {
                             // can happen on actionQuit
                             fc.setSelectedFile(new File(m_sFileName));
@@ -1862,7 +1862,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                 sFileName = sFileName.concat(FILE_EXT);
                             try {
                                 FileWriter outfile = new FileWriter(sFileName);
-                                outfile.write(new XMLProducer().modelToXML(plugin));
+                                outfile.write(new XMLProducer().modelToXML(beastObject));
                                 outfile.close();
                             } catch (Exception e) {
                                 JOptionPane.showMessageDialog(null,
@@ -1972,8 +1972,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
                             // check no cycle is introduced
                             InputShape target2 = (InputShape) target;
-                            if (m_doc.isAscendant(arrow.m_tailShape.m_plugin,
-                                    target2.getPlugin())) {
+                            if (m_doc.isAscendant(arrow.m_tailShape.m_beastObject,
+                                    target2.getBEASTObject())) {
                                 JOptionPane
                                         .showMessageDialog(null,
                                                 "Cannot make this connection since this creates a cycle in the model");
@@ -1982,8 +1982,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
                             try {
                                 // try to add connection
-                                // this links the input of the target plugin
-                                // to the source plugin. If types mismatch,
+                                // this links the input of the target beastObject
+                                // to the source beastObject. If types mismatch,
                                 // an exception is thrown and no arrow added.
                                 arrow.setHead(target2, m_doc.m_objects, m_doc);
                                 m_doc.addNewShape(arrow);

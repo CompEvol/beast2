@@ -104,9 +104,9 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 		}
 		StringBuffer bf = new StringBuffer();
 		for (Object o : list) {
-			BEASTObject plugin = (BEASTObject) o;
+			BEASTObject beastObject = (BEASTObject) o;
 			bf.append('"');
-			bf.append(plugin.getID());
+			bf.append(beastObject.getID());
 			bf.append("\", ");
 		}
 		String str = bf.toString();
@@ -124,9 +124,9 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 					found = true;
 				}
 			}
-			assertThat(found).as("Could not find plugin with ID " + id).isEqualTo(true);
+			assertThat(found).as("Could not find beastObject with ID " + id).isEqualTo(true);
 		}
-		assertThat(ids.length).as("list of plugins do not match").isEqualTo(priors.size());;
+		assertThat(ids.length).as("list of beastObjects do not match").isEqualTo(priors.size());;
 	}
 
 	private void asserListsEqual(List<?> list, String[] ids) {
@@ -140,7 +140,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 					break;
 				}
 			}
-			assertThat(found).as("Could not find plugin with ID " + id).isEqualTo(true);
+			assertThat(found).as("Could not find beastObject with ID " + id).isEqualTo(true);
 		}
 		// check all items in list have a unique ie
 		Set<String> idsInList = new HashSet<String>();
@@ -171,7 +171,7 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 					extraIDs.add(id);
 				}
 			}
-			assertThat(ids.length).as("list of plugins do not match: found extra items " + Arrays.toString(extraIDs.toArray())).isEqualTo(list.size());
+			assertThat(ids.length).as("list of beastObjects do not match: found extra items " + Arrays.toString(extraIDs.toArray())).isEqualTo(list.size());
 		}
 	}
 

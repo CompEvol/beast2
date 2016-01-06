@@ -29,11 +29,11 @@ public class CompoundValuable extends CalculationNode implements Function {
     public void initAndValidate() throws Exception {
         // determine dimension
         int nDimension = 0;
-        for (BEASTObject plugin : m_values.get()) {
-            if (!(plugin instanceof Function)) {
+        for (BEASTObject beastObject : m_values.get()) {
+            if (!(beastObject instanceof Function)) {
                 throw new IllegalArgumentException("Input does not implement Valuable");
             }
-            nDimension += ((Function) plugin).getDimension();
+            nDimension += ((Function) beastObject).getDimension();
         }
         m_fValues = new double[nDimension];
     }
@@ -67,10 +67,10 @@ public class CompoundValuable extends CalculationNode implements Function {
      */
     private void recompute() {
         int k = 0;
-        for (BEASTObject plugin : m_values.get()) {
-            Function valuable = (Function) plugin;
-            if (plugin instanceof StateNode) {
-                valuable = ((StateNode) plugin).getCurrent();
+        for (BEASTObject beastObject : m_values.get()) {
+            Function valuable = (Function) beastObject;
+            if (beastObject instanceof StateNode) {
+                valuable = ((StateNode) beastObject).getCurrent();
             }
             int nDimension = valuable.getDimension();
             for (int i = 0; i < nDimension; i++) {

@@ -83,8 +83,8 @@ public class AppStore {
         top.add(packageComboBox);
         mainDialog.getContentPane().add(BorderLayout.NORTH, top);
 
-        Component pluginListBox = createList();
-        mainDialog.getContentPane().add(BorderLayout.CENTER, pluginListBox);
+        Component beastObjectListBox = createList();
+        mainDialog.getContentPane().add(BorderLayout.CENTER, beastObjectListBox);
 
         Box buttonBox = createButtonBox();
         mainDialog.getContentPane().add(buttonBox, BorderLayout.SOUTH);

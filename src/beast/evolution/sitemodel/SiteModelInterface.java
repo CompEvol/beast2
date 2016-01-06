@@ -102,9 +102,9 @@ public interface SiteModelInterface {
             final SubstitutionModel substModel = (SubstitutionModel) o;
             if (m_dataType == null) {
             	// try to find out the data type from the data in a treelikelihood in an output
-            	for (Object plugin : getOutputs()) {
-            		if (plugin instanceof TreeLikelihood) {
-            			TreeLikelihood likelihood = (TreeLikelihood) plugin;
+            	for (Object beastObject : getOutputs()) {
+            		if (beastObject instanceof TreeLikelihood) {
+            			TreeLikelihood likelihood = (TreeLikelihood) beastObject;
             			m_dataType = likelihood.dataInput.get().getDataType();
             			break;
             		}

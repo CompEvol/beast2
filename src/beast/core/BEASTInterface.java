@@ -163,8 +163,8 @@ public interface BEASTInterface {
             //return buf.toString();
         }
         try {
-            for (final BEASTInterface plugin : listActivePlugins()) {
-                buf.append(plugin.getCitations(citations, IDs));
+            for (final BEASTInterface beastObject : listActiveBEASTObjects()) {
+                buf.append(beastObject.getCitations(citations, IDs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -254,7 +254,7 @@ public interface BEASTInterface {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    default public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    default public List<BEASTInterface> listActiveBEASTObjects() throws IllegalArgumentException, IllegalAccessException {
         final List<BEASTInterface> beastObjects = new ArrayList<>();
 
         for (Input<?> input : getInputs().values()) {
@@ -272,6 +272,11 @@ public interface BEASTInterface {
         	}
         }
         return beastObjects;
+    }
+
+    @Deprecated /** use listActiveBEASTObjects instead **/
+    default public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    	return listActiveBEASTObjects();
     } // listActivePlugins
 
     /**
@@ -387,9 +392,9 @@ public interface BEASTInterface {
     default public void getPredecessors(final List<BEASTInterface> predecessors) {
         predecessors.add(this);
         try {
-            for (final BEASTInterface plugin2 : listActivePlugins()) {
-                if (!predecessors.contains(plugin2)) {
-                    plugin2.getPredecessors(predecessors);
+            for (final BEASTInterface beastObject2 : listActiveBEASTObjects()) {
+                if (!predecessors.contains(beastObject2)) {
+                    beastObject2.getPredecessors(predecessors);
                 }
             }
         } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -398,7 +403,7 @@ public interface BEASTInterface {
     }
 
 
-// // This class was formerly called 'Plugin'
+// // This class was formerly called 'BEASTObject'
 //    @Description(
 //            value = "Base class for all BEAST objects, which is pretty much every class " +
 //                    "you want to incorporate in a model.",

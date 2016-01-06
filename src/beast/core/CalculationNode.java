@@ -10,7 +10,7 @@ package beast.core;
  *
  * @author Andrew Rambaut
  */
-@Description("Plugin that performs calculations based on the State.")
+@Description("BEASTObject that performs calculations based on the State.")
 public abstract class CalculationNode extends BEASTObject {
 
     //=================================================================
@@ -45,11 +45,11 @@ public abstract class CalculationNode extends BEASTObject {
     }
 
     /**
-     * @return whether the API for the particular Plugin returns different
+     * @return whether the API for the particular BEASTObject returns different
      *         answers than before the operation was applied.
      *         <p/>
      *         This method is called before the CalculationNode do their calculations.
-     *         Called in order of the partial order defined by Input-Plugin relations.
+     *         Called in order of the partial order defined by Input-BEASTObject relations.
      *         Called only on those CalculationNodes potentially affected by a
      *         StateNode change.
      *         <p/>
@@ -61,22 +61,22 @@ public abstract class CalculationNode extends BEASTObject {
 
 
 //        *         <p/>
-//        *         Default implementation inspects all input plugins
+//        *         Default implementation inspects all input beastObjects
 //        *         and checks if there is any dirt anywhere.
 //        *         Derived classes can provide a more efficient implementation
-//        *         by checking which part of any input StateNode or Plugin has changed.
+//        *         by checking which part of any input StateNode or BEASTObject has changed.
 //        *         <p/>
 //        *         Note this default implementation is relative expensive since it uses
 //        *         introspection, so overrides should be preferred.
 //        *         After the operation has changed the state.state
         // this is a prototypical implementation of requiresRecalculation()
 //        try {
-//            for (Plugin plugin : listActivePlugins()) {
-//                if (plugin instanceof StateNode && ((StateNode)plugin).somethingIsDirty()) {
+//            for (BEASTObject beastObject : listActivePlugins()) {
+//                if (beastObject instanceof StateNode && ((StateNode)beastObject).somethingIsDirty()) {
 //                	return true;
 //                }
 //
-//                if (plugin instanceof CalculationNode && ((CalculationNode)plugin).isDirtyCalculation()) {
+//                if (beastObject instanceof CalculationNode && ((CalculationNode)beastObject).isDirtyCalculation()) {
 //                    return true;
 //                }
 //            }

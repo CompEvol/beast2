@@ -54,7 +54,7 @@ public class CalibratedYuleInitialTree extends Tree implements StateNodeInitiali
 
     @Override
     public void initStateNodes() throws Exception {
-        // Would have been nice to use the MCMC CalibratedYuleModel plugin directly, but at this point
+        // Would have been nice to use the MCMC CalibratedYuleModel beastObject directly, but at this point
         // it does not exist since the tree being initialized is one of its arguments. So, build a temporary
         // one using the initializer tree.
 

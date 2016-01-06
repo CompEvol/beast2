@@ -58,7 +58,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     List<Taxon> taxonsets;
 
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         this.itemNr = itemNr;
         if (itemNr >= 0) {
@@ -73,7 +73,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            m_plugin = tree;
+            m_beastObject = tree;
             traitSet = tree.getDateTrait();
 
             Box box = Box.createVerticalBox();
@@ -201,11 +201,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             Log.warning.println("operator = " + operator);
             operator.m_taxonsetInput.setValue(taxonset, operator);
 
-//            for (Plugin plugin : traitSet.outputs) {
-//                if (plugin instanceof Tree) {
-//                    for (Plugin plugin2 : plugin.outputs) {
-//                        if (plugin2 instanceof TipDatesScaler) {
-//                            TipDatesScaler operator = (TipDatesScaler) plugin2;
+//            for (BEASTObject beastObject : traitSet.outputs) {
+//                if (beastObject instanceof Tree) {
+//                    for (BEASTObject beastObject2 : beastObject.outputs) {
+//                        if (beastObject2 instanceof TipDatesScaler) {
+//                            TipDatesScaler operator = (TipDatesScaler) beastObject2;
 //                            operator.m_taxonsetInput.setValue(taxonset, operator);
 //                        }
 //                    }
@@ -213,11 +213,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 //            }
 //
 //            // TODO: find MRACPriors and set TaxonSet inputs
-//            for (Plugin plugin : traitSet.outputs) {
-//                if (plugin instanceof Tree) {
-//                    for (Plugin plugin2 : plugin.outputs) {
-//                        if (plugin2 instanceof MRCAPrior) {
-//                            MRCAPrior prior = (MRCAPrior) plugin2;
+//            for (BEASTObject beastObject : traitSet.outputs) {
+//                if (beastObject instanceof Tree) {
+//                    for (BEASTObject beastObject2 : beastObject.outputs) {
+//                        if (beastObject2 instanceof MRCAPrior) {
+//                            MRCAPrior prior = (MRCAPrior) beastObject2;
 //                            if (prior.m_bOnlyUseTipsInput.get()) {
 //                                prior.m_taxonset.setValue(taxonset, prior);
 //                            }
@@ -236,11 +236,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         m_iMode = comboBox.getSelectedIndex();
         try {
             // clear
-            for (Object plugin : traitSet.getOutputs()) {
-                if (plugin instanceof Tree) {
-                    for (Object plugin2 : BEASTInterface.getOutputs(plugin)) {
-                        if (plugin2 instanceof TipDatesRandomWalker) {
-                            TipDatesRandomWalker operator = (TipDatesRandomWalker) plugin2;
+            for (Object beastObject : traitSet.getOutputs()) {
+                if (beastObject instanceof Tree) {
+                    for (Object beastObject2 : BEASTInterface.getOutputs(beastObject)) {
+                        if (beastObject2 instanceof TipDatesRandomWalker) {
+                            TipDatesRandomWalker operator = (TipDatesRandomWalker) beastObject2;
                             switch (m_iMode) {
                                 case NO_TIP_SAMPLING:
                                     operator.m_pWeight.setValue(0.0, operator);
@@ -397,7 +397,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         return scrollPane;
     } // createListBox
 
-    /* synchronise table with data from traitSet Plugin */
+    /* synchronise table with data from traitSet BEASTObject */
     private void convertTraitToTableData() {
         for (int i = 0; i < tableData.length; i++) {
             tableData[i][0] = sTaxa.get(i);

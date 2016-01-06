@@ -168,7 +168,7 @@ public interface Parameter<T> extends Function {
          * Change the dimension of a parameter
          * <p/>
          * This should only be called from initAndValidate() when a parent
-         * plugin can easily calculate the dimension of a parameter, but it is
+         * beastObject can easily calculate the dimension of a parameter, but it is
          * awkward to do this by hand.
          * <p/>
          * Values are sourced from the original parameter values.

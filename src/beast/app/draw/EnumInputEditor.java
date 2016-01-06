@@ -35,10 +35,10 @@ public class EnumInputEditor extends InputEditor.Base {
      * o a combo box for selecting another value in the enumeration
      */
     @Override
-    public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
         m_bAddButtons = bAddButtons;
         m_input = input;
-        m_plugin = plugin;
+        m_beastObject = beastObject;
 		this.itemNr = itemNr;
 
         addInputLabel();
@@ -55,7 +55,7 @@ public class EnumInputEditor extends InputEditor.Base {
                     String sSelected = (String) m_selectPluginBox.getSelectedItem();
                     try {
                     	setValue(sSelected);
-                        //lm_input.setValue(sSelected, m_plugin);
+                        //lm_input.setValue(sSelected, m_beastObject);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }

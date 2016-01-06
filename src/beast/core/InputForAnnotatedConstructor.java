@@ -66,11 +66,11 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 	}
 	
 	@Override
-	public void setValue(Object value, BEASTInterface plugin) {
+	public void setValue(Object value, BEASTInterface beastObject) {
         if (value == null) {
             if (this.value != null) {
                 if (this.value instanceof BEASTInterface) {
-                    ((BEASTInterface) this.value).getOutputs().remove(plugin);
+                    ((BEASTInterface) this.value).getOutputs().remove(beastObject);
                 }
             }
             setValue(null);
@@ -81,8 +81,8 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
                 setStringValue((String) value);
             } catch (Exception e) {
                 e.printStackTrace();
-            	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
-                throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + plugin.getID());
+            	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
+                throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
             }
         } else if (this.value != null && this.value instanceof List<?>) {
             if (theClass.isAssignableFrom(value.getClass())) {
@@ -97,14 +97,14 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 //                }
                 setValue(value);
                 if (value instanceof BEASTInterface) {
-                    ((BEASTInterface) value).getOutputs().add(plugin);
+                    ((BEASTInterface) value).getOutputs().add(beastObject);
                 }
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
                 for (Object v : ((List<?>) value)) {
                     setValue(v);
                     if (v instanceof BEASTInterface) {
-                        ((BEASTInterface) v).getOutputs().add(plugin);
+                        ((BEASTInterface) v).getOutputs().add(beastObject);
                     }
                 }
             } else {
@@ -116,9 +116,9 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
             if (theClass.isAssignableFrom(value.getClass())) {
                 if (value instanceof BEASTInterface) {
                     if (this.value != null) {
-                        ((BEASTInterface) this.value).getOutputs().remove(plugin);
+                        ((BEASTInterface) this.value).getOutputs().remove(beastObject);
                     }
-                    ((BEASTInterface) value).getOutputs().add(plugin);
+                    ((BEASTInterface) value).getOutputs().add(beastObject);
                 }
                 setValue(value);
             } else {

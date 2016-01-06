@@ -67,9 +67,9 @@ public class DoubleListInputEditor extends ListInputEditor {
         protected Input<?> m_input;
 
         /**
-         * parent plugin *
+         * parent beastObject *
          */
-        protected BEASTInterface m_plugin;
+        protected BEASTInterface m_beastObject;
 
         /**
          * text field used for primitive input editors *
@@ -150,10 +150,10 @@ public class DoubleListInputEditor extends ListInputEditor {
          * construct an editor consisting of a label and input entry *
          */
         @Override
-		public void init(Input<?> input, BEASTInterface plugin, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+		public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
             m_bAddButtons = bAddButtons;
             m_input = input;
-            m_plugin = plugin;
+            m_beastObject = beastObject;
             this.itemNr= itemNr;
             
             addInputLabel();
@@ -198,18 +198,18 @@ public class DoubleListInputEditor extends ListInputEditor {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
     	protected void setValue(Object o) throws Exception {
         	if (itemNr < 0) {
-        		m_input.setValue(o, m_plugin);
+        		m_input.setValue(o, m_beastObject);
         	} else {
         		// set value of an item in a list
         		List list = (List) m_input.get();
         		Object other = list.get(itemNr);
         		if (other != o) {
         			if (other instanceof BEASTInterface) {
-        				BEASTInterface.getOutputs(other).remove(m_plugin);
+        				BEASTInterface.getOutputs(other).remove(m_beastObject);
         			}
         			list.set(itemNr, o);
         			if (o instanceof BEASTInterface) {
-        				BEASTInterface.getOutputs(o).add(m_plugin);
+        				BEASTInterface.getOutputs(o).add(m_beastObject);
         			}
         		}
         	}
@@ -244,8 +244,8 @@ public class DoubleListInputEditor extends ListInputEditor {
 
         @Override
 		protected String formatName(String sName) {
-    	    if (doc.beautiConfig.inputLabelMap.containsKey(m_plugin.getClass().getName() + "." + sName)) {
-    	        sName = doc.beautiConfig.inputLabelMap.get(m_plugin.getClass().getName() + "." + sName);
+    	    if (doc.beautiConfig.inputLabelMap.containsKey(m_beastObject.getClass().getName() + "." + sName)) {
+    	        sName = doc.beautiConfig.inputLabelMap.get(m_beastObject.getClass().getName() + "." + sName);
     	    } else {
     	        sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
     	        sName = sName.substring(0, 1).toUpperCase() + sName.substring(1);
@@ -296,7 +296,7 @@ public class DoubleListInputEditor extends ListInputEditor {
         public void validateInput() {
             try {
                 m_input.validate();
-                if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_plugin)) {
+                if (m_entry != null && !m_input.canSetValue(m_entry.getText(), m_beastObject)) {
                     throw new IllegalArgumentException("invalid value");
                 }
                 // recurse
@@ -328,7 +328,7 @@ public class DoubleListInputEditor extends ListInputEditor {
             repaint();
         }
 
-        /* Recurse in any of the input plugins
+        /* Recurse in any of the input beastObjects
           * and validate its inputs */
         @Override
 		void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
@@ -340,8 +340,8 @@ public class DoubleListInputEditor extends ListInputEditor {
             }
             if (input.get() != null) {
                 if (input.get() instanceof BEASTInterface) {
-                    BEASTInterface plugin = ((BEASTInterface) input.get());
-                    for (Input<?> input2 : plugin.listInputs()) {
+                    BEASTInterface beastObject = ((BEASTInterface) input.get());
+                    for (Input<?> input2 : beastObject.listInputs()) {
                         try {
                             input2.validate();
                         } catch (Exception e) {
@@ -353,8 +353,8 @@ public class DoubleListInputEditor extends ListInputEditor {
                 if (input.get() instanceof List<?>) {
                     for (Object o : (List<?>) input.get()) {
                         if (o != null && o instanceof BEASTInterface) {
-                            BEASTInterface plugin = (BEASTInterface) o;
-                            for (Input<?> input2 : plugin.listInputs()) {
+                            BEASTInterface beastObject = (BEASTInterface) o;
+                            for (Input<?> input2 : beastObject.listInputs()) {
                                 try {
                                     input2.validate();
                                 } catch (Exception e) {

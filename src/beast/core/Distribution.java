@@ -50,7 +50,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         return logP;
     }
 
-    /** The plugin implements f( arguments | conditionals) **/
+    /** The beastObject implements f( arguments | conditionals) **/
 
     /**
      * @return a list of unique ids for the state nodes that form the argument
