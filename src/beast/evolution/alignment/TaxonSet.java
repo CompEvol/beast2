@@ -169,7 +169,7 @@ public class TaxonSet extends Taxon {
 		final StringBuilder buf = new StringBuilder();
 		buf.append(indent).append(getID()).append("\n");
 		indent += "\t";
-		for (final Taxon taxon : taxonList) {
+		for (final Taxon taxon : taxonsetInput.get()) {
 			buf.append(taxon.toString(indent));
 		}
 		return buf.toString();
