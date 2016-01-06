@@ -205,8 +205,8 @@ public class OperatorSchedule extends BEASTObject {
      */
     public void storeToFile() throws Exception {
         // appends state of operator set to state file
-        File aFile = new File(stateFileName);
-        PrintWriter out = new PrintWriter(new FileWriter(aFile, true));
+        File file = new File(stateFileName);
+        PrintWriter out = new PrintWriter(new FileWriter(file, true));
 
         out.println("<!--");
         out.println("{\"operators\":[");
@@ -229,19 +229,19 @@ public class OperatorSchedule extends BEASTObject {
      */
     public void restoreFromFile() throws Exception {
         // reads state of operator set from state file
-        String sXML = "";
+        String xml = "";
         final BufferedReader fin = new BufferedReader(new FileReader(stateFileName));
         while (fin.ready()) {
-            sXML += fin.readLine() + "\n";
+            xml += fin.readLine() + "\n";
         }
         fin.close();
-        int start = sXML.indexOf("</itsabeastystatewerein>") + 25 + 5;
-        if (start >= sXML.length() - 4) {
+        int start = xml.indexOf("</itsabeastystatewerein>") + 25 + 5;
+        if (start >= xml.length() - 4) {
         	return;
         }
-        sXML = sXML.substring(sXML.indexOf("</itsabeastystatewerein>") + 25 + 5, sXML.length() - 4);
+        xml = xml.substring(xml.indexOf("</itsabeastystatewerein>") + 25 + 5, xml.length() - 4);
         try {
-	        JSONObject o = new JSONObject(sXML);
+	        JSONObject o = new JSONObject(xml);
 	        JSONArray operatorlist = o.getJSONArray("operators");
 	        autoOptimizeDelayCount = 0;
 	        for (int i = 0; i < operatorlist.length(); i++) {
@@ -269,21 +269,21 @@ public class OperatorSchedule extends BEASTObject {
 	    	}    
         } catch (JSONException e) {
         	// it is not a JSON file -- probably a version 2.0.X state file
-	        String[] sStrs = sXML.split("\n");
+	        String[] strs = xml.split("\n");
             autoOptimizeDelayCount = 0;
-	        for (int i = 0; i < operators.size() && i + 2 < sStrs.length; i++) {
-	            String[] sStrs2 = sStrs[i + 1].split(" ");
+	        for (int i = 0; i < operators.size() && i + 2 < strs.length; i++) {
+	            String[] strs2 = strs[i + 1].split(" ");
 	            Operator operator = operators.get(i);
-	            if ((operator.getID() == null && sStrs2[0].equals("null")) || operator.getID().equals(sStrs2[0])) {
-	                cumulativeProbs[i] = Double.parseDouble(sStrs2[1]);
-	                if (!sStrs2[2].equals("NaN")) {
-	                    operator.setCoercableParameterValue(Double.parseDouble(sStrs2[2]));
+	            if ((operator.getID() == null && strs2[0].equals("null")) || operator.getID().equals(strs2[0])) {
+	                cumulativeProbs[i] = Double.parseDouble(strs2[1]);
+	                if (!strs2[2].equals("NaN")) {
+	                    operator.setCoercableParameterValue(Double.parseDouble(strs2[2]));
 	                }
-	                operator.m_nNrAccepted = Integer.parseInt(sStrs2[3]);
-	                operator.m_nNrRejected = Integer.parseInt(sStrs2[4]);
+	                operator.m_nNrAccepted = Integer.parseInt(strs2[3]);
+	                operator.m_nNrRejected = Integer.parseInt(strs2[4]);
 	                autoOptimizeDelayCount += operator.m_nNrAccepted + operator.m_nNrRejected;
-	                operator.m_nNrAcceptedForCorrection = Integer.parseInt(sStrs2[5]);
-	                operator.m_nNrRejectedForCorrection = Integer.parseInt(sStrs2[6]);
+	                operator.m_nNrAcceptedForCorrection = Integer.parseInt(strs2[5]);
+	                operator.m_nNrRejectedForCorrection = Integer.parseInt(strs2[6]);
 	            } else {
 	                throw new RuntimeException("Cannot resume: operator order or set changed from previous run");
 	            }

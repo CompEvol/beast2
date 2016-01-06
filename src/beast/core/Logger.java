@@ -129,25 +129,25 @@ public class Logger extends BEASTObject {
         }
 
         // determine logging mode
-        final LOGMODE sMode = modeInput.get();
-        if (sMode.equals(LOGMODE.autodetect)) {
-            mode = LOGMODE.compound;
+        final LOGMODE mode = modeInput.get();
+        if (mode.equals(LOGMODE.autodetect)) {
+            this.mode = LOGMODE.compound;
             if (nLoggers == 1 && loggerList.get(0) instanceof Tree) {
-                mode = LOGMODE.tree;
+            	this.mode = LOGMODE.tree;
             }
-        } else if (sMode.equals(LOGMODE.tree)) {
-            mode = LOGMODE.tree;
-        } else if (sMode.equals(LOGMODE.compound)) {
-            mode = LOGMODE.compound;
+        } else if (mode.equals(LOGMODE.tree)) {
+        	this.mode = LOGMODE.tree;
+        } else if (mode.equals(LOGMODE.compound)) {
+        	this.mode = LOGMODE.compound;
         } else {
-            throw new IllegalArgumentException("Mode '" + sMode + "' is not supported. Choose one of " + LOGMODE.values());
+            throw new IllegalArgumentException("Mode '" + mode + "' is not supported. Choose one of " + LOGMODE.values());
         }
 
         if (everyInput.get() != null) {
             every = everyInput.get();
         }
         
-        if (mode == LOGMODE.compound) {
+        if (this.mode == LOGMODE.compound) {
         	switch (sortModeInput.get()) {
         	case none:
         		// nothing to do
@@ -211,10 +211,10 @@ public class Logger extends BEASTObject {
         if (needsHeader) {
             if (modelInput.get() != null) {
                 // print model at top of log
-                String sXML = new XMLProducer().modelToXML(modelInput.get());
-                sXML = "#" + sXML.replaceAll("\\n", "\n#");
+                String xml = new XMLProducer().modelToXML(modelInput.get());
+                xml = "#" + xml.replaceAll("\\n", "\n#");
                 m_out.println("#\n#model:\n#");
-                m_out.println(sXML);
+                m_out.println(xml);
                 m_out.println("#");
             }
             ByteArrayOutputStream baos = null;
@@ -373,12 +373,12 @@ public class Logger extends BEASTObject {
                 }
                 case overwrite:// (over)write log file
                 {
-                    String sMsg = "Writing";
+                    String msg = "Writing";
                     if (new File(fileName).exists()) {
-                        sMsg = "Warning: Overwriting";
+                        msg = "Warning: Overwriting";
                     }
                     m_out = new PrintStream(fileName);
-                    Log.warning.println(sMsg + " file " + fileName);
+                    Log.warning.println(msg + " file " + fileName);
                     return true;
                 }
                 case resume:// append log file, pick up SampleOffset by reading existing log
@@ -388,17 +388,17 @@ public class Logger extends BEASTObject {
                         if (mode == LOGMODE.compound) {
                             // first find the sample nr offset
                             final BufferedReader fin = new BufferedReader(new FileReader(fileName));
-                            String sStr = null;
+                            String str = null;
                             while (fin.ready()) {
-                                sStr = fin.readLine();
+                                str = fin.readLine();
                             }
                             fin.close();
-                            assert sStr != null;
-                            final int nSampleOffset = Integer.parseInt(sStr.split("\\s")[0]);
-                            if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
+                            assert str != null;
+                            final int sampleOffset = Integer.parseInt(str.split("\\s")[0]);
+                            if (Logger.sampleOffset > 0 && sampleOffset != Logger.sampleOffset) {
                                 throw new RuntimeException("Error 400: Cannot resume: log files do not end in same sample number");
                             }
-                            sampleOffset = nSampleOffset;
+                            Logger.sampleOffset = sampleOffset;
                             // open the file for appending
                             final FileOutputStream out2 = new FileOutputStream(fileName, true);
                             m_out = new PrintStream(out2);
@@ -417,7 +417,7 @@ public class Logger extends BEASTObject {
                             m_out = new PrintStream(out2);
 
                             //final StringBuilder buf = new StringBuilder();
-                            String sStrLast = null;
+                            String strLast = null;
                             //String sStr = fin.readLine();
                             boolean endSeen = false;
                             while (fin.ready()) {
@@ -425,10 +425,10 @@ public class Logger extends BEASTObject {
                                     m_out.println("End;");
                                     endSeen = false;
                                 }
-                                final String sStr = fin.readLine();
-                                if (!sStr.equals("End;")) {
-                                	m_out.println(sStr);
-                                    sStrLast = sStr;
+                                final String str = fin.readLine();
+                                if (!str.equals("End;")) {
+                                	m_out.println(str);
+                                    strLast = str;
                                 } else {
                                     endSeen = true;
                                 }
@@ -436,18 +436,18 @@ public class Logger extends BEASTObject {
                             fin.close();
 
                             // determine number of the last sample
-                            if( sStrLast == null ) {
+                            if( strLast == null ) {
                                 // empty log file?
                                  throw new RuntimeException("Error 402: empty tree log file " + fileName + "? (check if there is a back up file " + fileName + ".bu)");
                             }
-                            final String sStr = sStrLast.split("\\s+")[1];
-                            final int nSampleOffset = Integer.parseInt(sStr.substring(6));
-                            if (sampleOffset > 0 && nSampleOffset != sampleOffset) {
+                            final String str = strLast.split("\\s+")[1];
+                            final int sampleOffset = Integer.parseInt(str.substring(6));
+                            if (Logger.sampleOffset > 0 && sampleOffset != Logger.sampleOffset) {
                                 //final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
                                 Files.move(treeFileBackup.toPath(), new File(fileName).toPath(), StandardCopyOption.ATOMIC_MOVE);
                                 throw new RuntimeException("Error 401: Cannot resume: log files do not end in same sample number");
                             }
-                            sampleOffset = nSampleOffset;
+                            Logger.sampleOffset = sampleOffset;
                             // it is safe to remove the backup file now
                             new File(fileName + ".bu").delete();
                         }
@@ -471,16 +471,16 @@ public class Logger extends BEASTObject {
      * *
      * * @param nSample
      */
-    public void log(int nSample) {
-        if ((nSample < 0) || (nSample % every > 0)) {
+    public void log(int sampleNr) {
+        if ((sampleNr < 0) || (sampleNr % every > 0)) {
             return;
         }
         if (sampleOffset >= 0) {
-            if (nSample == 0) {
+            if (sampleNr == 0) {
                 // don't need to duplicate the last line in the log
                 return;
             }
-            nSample += sampleOffset;
+            sampleNr += sampleOffset;
         }
         ByteArrayOutputStream baos = null;
         PrintStream tmp = null;
@@ -490,10 +490,10 @@ public class Logger extends BEASTObject {
             m_out = new PrintStream(baos);
         }
         if (mode == LOGMODE.compound) {
-            m_out.print((nSample) + "\t");
+            m_out.print((sampleNr) + "\t");
         }
         for (final Loggable m_logger : loggerList) {
-            m_logger.log(nSample, m_out);
+            m_logger.log(sampleNr, m_out);
         }
         if ( baos != null ) {
             assert tmp == System.out ;
@@ -507,23 +507,23 @@ public class Logger extends BEASTObject {
                 e.printStackTrace();
             }
             if (startLogTime < 0) {
-                if (nSample - sampleOffset > 6000) {
+                if (sampleNr - sampleOffset > 6000) {
                     startLogTime++;
                     if (startLogTime == 0) {
                         startLogTime = System.currentTimeMillis();
-                        startSample = nSample;
+                        startSample = sampleNr;
                     }
                 }
                 m_out.print(" --");
             } else {
 
-                final long nLogTime = System.currentTimeMillis();
-                final int nSecondsPerMSamples = (int) ((nLogTime - startLogTime) * 1000.0 / (nSample - startSample + 1.0));
-                final String sTimePerMSamples =
-                        (nSecondsPerMSamples >= 3600 ? nSecondsPerMSamples / 3600 + "h" : "") +
-                                (nSecondsPerMSamples >= 60 ? (nSecondsPerMSamples % 3600) / 60 + "m" : "") +
-                                (nSecondsPerMSamples % 60 + "s");
-                m_out.print(" " + sTimePerMSamples + "/Msamples");
+                final long logTime = System.currentTimeMillis();
+                final int secondsPerMSamples = (int) ((logTime - startLogTime) * 1000.0 / (sampleNr - startSample + 1.0));
+                final String timePerMSamples =
+                        (secondsPerMSamples >= 3600 ? secondsPerMSamples / 3600 + "h" : "") +
+                                (secondsPerMSamples >= 60 ? (secondsPerMSamples % 3600) / 60 + "m" : "") +
+                                (secondsPerMSamples % 60 + "s");
+                m_out.print(" " + timePerMSamples + "/Msamples");
             }
         }
         m_out.println();
@@ -531,49 +531,49 @@ public class Logger extends BEASTObject {
 
 
     private String prettifyLogLine(String logContent) {
-        final String[] sStrs = logContent.split("\t");
+        final String[] strs = logContent.split("\t");
         logContent = "";
-        for (final String sStr : sStrs) {
-            logContent += prettifyLogEntry(sStr);
+        for (final String str : strs) {
+            logContent += prettifyLogEntry(str);
         }
         return logContent;
     }
 
-    private String prettifyLogEntry(String sStr) {
+    private String prettifyLogEntry(String str) {
         // TODO Q2R intelliJ says \\ can't be used in a range ...
-        if (sStr.matches("[\\d-E]+\\.[\\d-E]+")) {
+        if (str.matches("[\\d-E]+\\.[\\d-E]+")) {
             // format as double
-            if (sStr.contains("E")) {
-                if (sStr.length() > 15) {
-                    final String[] sStrs = sStr.split("E");
-                    return " " + sStrs[0].substring(0, 15 - sStrs[1].length() - 2) + "E" + sStrs[1];
+            if (str.contains("E")) {
+                if (str.length() > 15) {
+                    final String[] strs = str.split("E");
+                    return " " + strs[0].substring(0, 15 - strs[1].length() - 2) + "E" + strs[1];
                 } else {
-                    return "               ".substring(sStr.length()) + sStr;
+                    return "               ".substring(str.length()) + str;
                 }
             }
-            final String s1 = sStr.substring(0, sStr.indexOf("."));
-            String s2 = sStr.substring(sStr.indexOf(".") + 1);
+            final String s1 = str.substring(0, str.indexOf("."));
+            String s2 = str.substring(str.indexOf(".") + 1);
             while (s2.length() < 4) {
                 s2 = s2 + " ";
             }
             s2 = s2.substring(0, 4);
-            sStr = s1 + "." + s2;
-            sStr = "               ".substring(sStr.length()) + sStr;
-        } else if (sStr.length() < 15) {
+            str = s1 + "." + s2;
+            str = "               ".substring(str.length()) + str;
+        } else if (str.length() < 15) {
             // format integer, boolean
-            sStr = "               ".substring(sStr.length()) + sStr;
+            str = "               ".substring(str.length()) + str;
         } else {
-            sStr = " " + sStr;
+            str = " " + str;
         }
-        int nOverShoot = sStr.length() - 15;
-        while (nOverShoot > 0 && sStr.length() > 2 && sStr.charAt(1) == ' ') {
-            sStr = sStr.substring(1);
-            nOverShoot--;
+        int overShoot = str.length() - 15;
+        while (overShoot > 0 && str.length() > 2 && str.charAt(1) == ' ') {
+            str = str.substring(1);
+            overShoot--;
         }
-        if (nOverShoot > 0) {
-            sStr = sStr.substring(0, 8) + "_" + sStr.substring(sStr.length() - 6);
+        if (overShoot > 0) {
+            str = str.substring(0, 8) + "_" + str.substring(str.length() - 6);
         }
-        return sStr;
+        return str;
     }
 
 

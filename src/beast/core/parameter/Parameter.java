@@ -135,11 +135,11 @@ public interface Parameter<T> extends Function {
         protected int m_nLastDirty;
 
         /**
-         * @param iParam dimention to check
+         * @param index dimension to check
          * @return true if the iParam-th element has changed
          */
-        public boolean isDirty(final int iParam) {
-            return m_bIsDirty[iParam];
+        public boolean isDirty(final int index) {
+            return m_bIsDirty[index];
         }
 
         /**
@@ -173,28 +173,28 @@ public interface Parameter<T> extends Function {
          * <p/>
          * Values are sourced from the original parameter values.
          *
-         * @param nDimension
+         * @param dimension
          */
         @SuppressWarnings("unchecked")
-        public void setDimension(final int nDimension) {
-            if (getDimension() != nDimension) {
-                final T[] values2 = (T[]) Array.newInstance(getMax().getClass(), nDimension);
-                for (int i = 0; i < nDimension; i++) {
+        public void setDimension(final int dimension) {
+            if (getDimension() != dimension) {
+                final T[] values2 = (T[]) Array.newInstance(getMax().getClass(), dimension);
+                for (int i = 0; i < dimension; i++) {
                     values2[i] = values[i % getDimension()];
                 }
                 values = values2;
                 //storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
             }
-            m_bIsDirty = new boolean[nDimension];
+            m_bIsDirty = new boolean[dimension];
             try {
-                dimensionInput.setValue(nDimension, this);
+                dimensionInput.setValue(dimension, this);
             } catch (Exception e) {
                 // ignore
             }
         }
 
-        public void setMinorDimension(final int nDimension) throws Exception {
-            minorDimension = nDimension;
+        public void setMinorDimension(final int dimension) throws Exception {
+            minorDimension = dimension;
             if (minorDimension > 0 && dimensionInput.get() % minorDimension > 0) {
                 throw new IllegalArgumentException("Dimension must be divisible by stride");
             }
@@ -342,11 +342,11 @@ public interface Parameter<T> extends Function {
          */
         @Override
         public void init(final PrintStream out) throws Exception {
-            final int nValues = getDimension();
-            if (nValues == 1) {
+            final int valueCount = getDimension();
+            if (valueCount == 1) {
                 out.print(getID() + "\t");
             } else {
-                for (int iValue = 0; iValue < nValues; iValue++) {
+                for (int iValue = 0; iValue < valueCount; iValue++) {
                     out.print(getID() + (iValue + 1) + "\t");
                 }
             }
@@ -364,30 +364,30 @@ public interface Parameter<T> extends Function {
         public void fromXML(final Node node) {
             final NamedNodeMap atts = node.getAttributes();
             setID(atts.getNamedItem("id").getNodeValue());
-            final String sStr = node.getTextContent();
+            final String str = node.getTextContent();
             Pattern pattern = Pattern.compile(".*\\[(.*) (.*)\\].*\\((.*),(.*)\\): (.*) ");
-            Matcher matcher = pattern.matcher(sStr);
+            Matcher matcher = pattern.matcher(str);
 
             if (matcher.matches()) {
-                final String sDimension = matcher.group(1);
-                final String sStride = matcher.group(2);
-                final String sLower = matcher.group(3);
-                final String sUpper = matcher.group(4);
-                final String sValuesAsString = matcher.group(5);
-                final String[] sValues = sValuesAsString.split(" ");
-                minorDimension = Integer.parseInt(sStride);
-                fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
+                final String dimension = matcher.group(1);
+                final String stride = matcher.group(2);
+                final String lower = matcher.group(3);
+                final String upper = matcher.group(4);
+                final String valuesAsString = matcher.group(5);
+                final String[] values = valuesAsString.split(" ");
+                minorDimension = Integer.parseInt(stride);
+                fromXML(Integer.parseInt(dimension), lower, upper, values);
             } else {
                 pattern = Pattern.compile(".*\\[(.*)\\].*\\((.*),(.*)\\): (.*) ");
-                matcher = pattern.matcher(sStr);
+                matcher = pattern.matcher(str);
                 if (matcher.matches()) {
-                    final String sDimension = matcher.group(1);
-                    final String sLower = matcher.group(2);
-                    final String sUpper = matcher.group(3);
-                    final String sValuesAsString = matcher.group(4);
-                    final String[] sValues = sValuesAsString.split(" ");
+                    final String dimension = matcher.group(1);
+                    final String lower = matcher.group(2);
+                    final String upper = matcher.group(3);
+                    final String valuesAsString = matcher.group(4);
+                    final String[] values = valuesAsString.split(" ");
                     minorDimension = 0;
-                    fromXML(Integer.parseInt(sDimension), sLower, sUpper, sValues);
+                    fromXML(Integer.parseInt(dimension), lower, upper, values);
                 } else {
                     throw new RuntimeException("parameter could not be parsed");
                 }
@@ -398,12 +398,12 @@ public interface Parameter<T> extends Function {
          * Restore a saved parameter from string representation. This cannot be
          * a template method since it requires creation of an array of T...
          *
-         * @param nDimension parameter dimension
-         * @param sLower lower bound
-         * @param sUpper upper bound
-         * @param sValues values
+         * @param dimension parameter dimension
+         * @param lower lower bound
+         * @param upper upper bound
+         * @param values values
          */
-        abstract void fromXML(int nDimension, String sLower, String sUpper, String[] sValues);
+        abstract void fromXML(int dimension, String lower, String upper, String[] values);
 
         /**
          * matrix implementation *

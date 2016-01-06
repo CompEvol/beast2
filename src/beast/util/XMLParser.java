@@ -544,7 +544,6 @@ public class XMLParser {
 	            String clazz = child.getTextContent();
 	            // remove spaces
 	            clazz = clazz.replaceAll("\\s", "");
-	            //sClass = sClass.replaceAll("beast", "yabby");
 	            // go through namespaces in order they are declared to find the correct class
 	            boolean isDone = false;
 	            for (final String nameSpace : this.nameSpaces) {

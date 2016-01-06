@@ -99,17 +99,17 @@ public class Sum extends CalculationNode implements Function, Loggable {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sampleNr, PrintStream out) {
         Function valuable = functionInput.get();
-        final int nDimension = valuable.getDimension();
-        double fSum = 0;
-        for (int iValue = 0; iValue < nDimension; iValue++) {
-            fSum += valuable.getArrayValue(iValue);
+        final int dimension = valuable.getDimension();
+        double sum = 0;
+        for (int i = 0; i < dimension; i++) {
+            sum += valuable.getArrayValue(i);
         }
         if (mode == Mode.integer_mode) {
-            out.print((int) fSum + "\t");
+            out.print((int) sum + "\t");
         } else {
-            out.print(fSum + "\t");
+            out.print(sum + "\t");
         }
     }
 

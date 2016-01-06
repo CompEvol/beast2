@@ -21,15 +21,15 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
     public IntegerParameter() {
     }
 
-    public IntegerParameter(Integer[] fValues) {
-        super(fValues);
+    public IntegerParameter(Integer[] values) {
+        super(values);
     }
 
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public IntegerParameter(String sValue) throws Exception {
-        init(0, 0, sValue, 1);
+    public IntegerParameter(String value) throws Exception {
+        init(0, 0, value, 1);
     }
 
     @Override
@@ -85,11 +85,11 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
      * Loggable implementation follows *
      */
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sampleNr, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();
-        int nValues = var.getDimension();
-        for (int iValue = 0; iValue < nValues; iValue++) {
-            out.print(var.getValue(iValue) + "\t");
+        int valueCount = var.getDimension();
+        for (int i = 0; i < valueCount; i++) {
+            out.print(var.getValue(i) + "\t");
         }
     }
 
@@ -97,19 +97,19 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
      * StateNode methods *
      */
     @Override
-    public int scale(double fScale) {
+    public int scale(double scale) {
         // nothing to do
         Log.warning.println("Attempt to scale Integer parameter " + getID() + "  has no effect");
         return 0;
     }
 
     @Override
-    void fromXML(int nDimension, String sLower, String sUpper, String[] sValues) {
-        setLower(Integer.parseInt(sLower));
-        setUpper(Integer.parseInt(sUpper));
-        values = new Integer[nDimension];
-        for (int i = 0; i < sValues.length; i++) {
-            values[i] = Integer.parseInt(sValues[i]);
+    void fromXML(int dimension, String lower, String upper, String[] valueStrings) {
+        setLower(Integer.parseInt(lower));
+        setUpper(Integer.parseInt(upper));
+        values = new Integer[dimension];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = Integer.parseInt(valueStrings[i]);
         }
     }
 }

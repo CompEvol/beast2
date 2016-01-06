@@ -41,16 +41,16 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
         m_fUpper = true;
     }
 
-    public BooleanParameter(Boolean[] fValues) {
-        super(fValues);
+    public BooleanParameter(Boolean[] values) {
+        super(values);
         m_fUpper = true;
     }
 
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public BooleanParameter(String sValue) throws Exception {
-        init(sValue, 1);
+    public BooleanParameter(String value) throws Exception {
+        init(value, 1);
         m_fUpper = true;
     }
 
@@ -89,12 +89,12 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
      * Loggable implementation follows *
      */
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sampleNr, PrintStream out) {
         BooleanParameter var = (BooleanParameter) getCurrent();
-        int nValues = var.getDimension();
-        for (int iValue = 0; iValue < nValues; iValue++) {
+        int valueCount = var.getDimension();
+        for (int i = 0; i < valueCount; i++) {
             // Output 0/1 for tracer
-            out.print((var.getValue(iValue) ? '1' : '0') + "\t");
+            out.print((var.getValue(i) ? '1' : '0') + "\t");
         }
     }
 
@@ -102,17 +102,17 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
      * StateNode methods *
      */
     @Override
-    public int scale(double fScale) {
+    public int scale(double scale) {
         // nothing to do
         Log.warning.println("Attempt to scale Boolean parameter " + getID() + "  has no effect");
         return 0;
     }
 
     @Override
-    void fromXML(int nDimension, String sLower, String sUpper, String[] sValues) {
-        values = new Boolean[nDimension];
-        for (int i = 0; i < sValues.length; i++) {
-            values[i] = Boolean.parseBoolean(sValues[i]);
+    void fromXML(int dimension, String lower, String upper, String[] valueStrings) {
+        values = new Boolean[dimension];
+        for (int i = 0; i < valueStrings.length; i++) {
+            values[i] = Boolean.parseBoolean(valueStrings[i]);
         }
     }
 }

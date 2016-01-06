@@ -117,48 +117,6 @@ public class MCMC extends Runnable {
     public MCMC() {
     }
 
-    /**
-     * Constructor for MCMC chain.
-     *
-     * @param chainLength
-     * @param state
-     * @param storeEvery
-     * @param preBurnin
-     * @param posterior
-     * @param operators
-     * @param loggers
-     * @throws Exception
-     */
-//    public MCMC(
-//            @Param(name = "chainLength", description = "Length of the MCMC chain i.e. number of samples taken in main loop") int chainLength,
-//            @Param(name = "state", description = "elements of the state space") State state,
-//            @Param(name = "init", description = "one or more state node initilisers used for determining the start state of the chain") List<StateNodeInitialiser> initialisers,
-//            @Param(name = "storeEvery", description = "store the state to disk every X number of samples so that we can resume computation later on if the process failed half-way.") int storeEvery,
-//            @Param(name = "preBurnin", description = "Number of burn in samples taken before entering the main loop", defaultValue = "0") int preBurnin,
-//            @Param(name = "distribution", description = "probability distribution to sample over (e.g. a posterior)") Distribution posterior,
-//            @Param(name = "operator", description = "operator for generating proposals in MCMC state space") List<Operator> operators,
-//            @Param(name = "logger", description = "loggers for reporting progress of MCMC chain") List<Logger> loggers,
-//            @Param(name = "sampleFromPrior", description = "whether to ignore the likelihood when sampling (default false). The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", defaultValue = "false") boolean sampleFromPrior,
-//            @Param(name = "operatorSchedule", description = "specify operator selection and optimisation schedule", optional = true) OperatorSchedule operatorSchedule) {
-//
-//        try {
-//            initByName(
-//                    "chainLength", chainLength,
-//                    "state", state,
-//                    "init", initialisers,
-//                    "storeEvery", storeEvery,
-//                    "preBurnin", preBurnin,
-//                    "distribution", posterior,
-//                    "operator", operators,
-//                    "logger", loggers,
-//                    "sampleFromPrior", sampleFromPrior,
-//                    "operatorSchedule", (operatorSchedule != null ? operatorSchedule : new OperatorSchedule())
-//            );
-//        } catch (Exception e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            throw new RuntimeException();
-//        }
-//    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -177,16 +135,16 @@ public class MCMC extends Runnable {
             if (posteriorInput.get() instanceof CompoundDistribution) {
                 final CompoundDistribution posterior = (CompoundDistribution) posteriorInput.get();
                 final List<Distribution> distrs = posterior.pDistributions.get();
-                final int nDistr = distrs.size();
-                for (int i = 0; i < nDistr; i++) {
+                final int distrCount = distrs.size();
+                for (int i = 0; i < distrCount; i++) {
                     final Distribution distr = distrs.get(i);
-                    final String sID = distr.getID();
-                    if (sID != null && sID.equals("likelihood")) {
+                    final String id = distr.getID();
+                    if (id != null && id.equals("likelihood")) {
                         distrs.remove(distr);
                         break;
                     }
                 }
-                if (distrs.size() == nDistr) {
+                if (distrs.size() == distrCount) {
                     throw new RuntimeException("Sample from prior flag is set, but distribution with id 'likelihood' is " +
                             "not an input to posterior.");
                 }
@@ -305,7 +263,7 @@ public class MCMC extends Runnable {
 
         burnIn = burnInInput.get();
         chainLength = chainLengthInput.get();
-        int nInitialisationAttempts = 0;
+        int initialisationAttempts = 0;
         state.setEverythingDirty(true);
         posterior = posteriorInput.get();
 
@@ -320,8 +278,8 @@ public class MCMC extends Runnable {
                     initialiser.initStateNodes();
                 }
                 oldLogLikelihood = state.robustlyCalcPosterior(posterior);
-                nInitialisationAttempts += 1;
-            } while (Double.isInfinite(oldLogLikelihood) && nInitialisationAttempts < numInitializationAttempts.get());
+                initialisationAttempts += 1;
+            } while (Double.isInfinite(oldLogLikelihood) && initialisationAttempts < numInitializationAttempts.get());
         }
         final long startTime = System.currentTimeMillis();
 
@@ -333,7 +291,7 @@ public class MCMC extends Runnable {
 //        System.err.println("Start state:");
 //        System.err.println(state.toString());
 
-        Log.info.println("Start likelihood: " + oldLogLikelihood + " " + (nInitialisationAttempts > 1 ? "after " + nInitialisationAttempts + " initialisation attempts" : ""));
+        Log.info.println("Start likelihood: " + oldLogLikelihood + " " + (initialisationAttempts > 1 ? "after " + initialisationAttempts + " initialisation attempts" : ""));
         if (Double.isInfinite(oldLogLikelihood) || Double.isNaN(oldLogLikelihood)) {
             reportLogLikelihoods(posterior, "");
             throw new RuntimeException("Could not find a proper state to initialise. Perhaps try another seed.");
@@ -490,16 +448,16 @@ public class MCMC extends Runnable {
                 // check that the posterior is correctly calculated at every third
                 // sample, as long as we are in debug mode
             	final double originalLogP = isStochastic ? posterior.getNonStochasticLogP() : oldLogLikelihood;
-                final double fLogLikelihood = isStochastic ? state.robustlyCalcNonStochasticPosterior(posterior) : state.robustlyCalcPosterior(posterior);
-                if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
+                final double logLikelihood = isStochastic ? state.robustlyCalcNonStochasticPosterior(posterior) : state.robustlyCalcPosterior(posterior);
+                if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
                     reportLogLikelihoods(posterior, "");
-                    Log.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + fLogLikelihood
+                    Log.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + logLikelihood
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
-                    if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
+                    if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
                         // incorrect calculation outside debug period.
                         // This happens infrequently enough that it should repair itself after a robust posterior calculation
                         corrections++;
@@ -513,7 +471,7 @@ public class MCMC extends Runnable {
                         oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
                 } else {
-                    if (Math.abs(fLogLikelihood - originalLogP) > 1e-6) {
+                    if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
                         // halt due to incorrect posterior during intial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();
@@ -575,15 +533,5 @@ public class MCMC extends Runnable {
     public double robustlyCalcNonStochasticPosterior(final Distribution posterior) throws Exception {
         return state.robustlyCalcNonStochasticPosterior(posterior);
     }
-    //        state.store(-1);
-//        state.setEverythingDirty(true);
-//        //state.storeCalculationNodes();
-//        state.checkCalculationNodesDirtiness();
-//        double fLogLikelihood = posterior.calculateLogP();
-//        state.setEverythingDirty(false);
-//        state.acceptCalculationNodes();
-//        return fLogLikelihood;
-//    }
-
 } // class MCMC
 

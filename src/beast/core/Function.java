@@ -1,8 +1,8 @@
 package beast.core;
 
 /**
- * Allows a YABBYObject, in particular a StateNode or CalculationNode to present itself as
- * an array of values. This is particular handy for generic calculations on a YABBYObject,
+ * Allows a BEASTObject, in particular a StateNode or CalculationNode to present itself as
+ * an array of values. This is particular handy for generic calculations on a BEASTObject,
  * like calculation of ESS, posterior of a distribution or in the SpreadSheet interface
  * where the possibilities of calculations are limitless.
  * *

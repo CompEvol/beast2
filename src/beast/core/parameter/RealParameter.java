@@ -20,15 +20,15 @@ public class RealParameter extends Parameter.Base<Double> {
     public RealParameter() {
     }
 
-    public RealParameter(final Double[] fValues) {
-        super(fValues);
+    public RealParameter(final Double[] values) {
+        super(values);
     }
 
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public RealParameter(final String sValue) throws Exception {
-        init(0.0, 0.0, sValue, 1);
+    public RealParameter(final String value) throws Exception {
+        init(0.0, 0.0, value, 1);
     }
 
     @Override
@@ -72,8 +72,8 @@ public class RealParameter extends Parameter.Base<Double> {
     }
 
     @Override
-    public double getArrayValue(final int iValue) {
-        return values[iValue];
+    public double getArrayValue(final int index) {
+        return values[index];
     }
 
     /**

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// This class was formerly called 'BEASTObject'
 @Description(
         value = "Base class for all BEAST objects, which is pretty much every class " +
                 "you want to incorporate in a model.",

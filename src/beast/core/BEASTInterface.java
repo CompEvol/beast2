@@ -81,8 +81,8 @@ public interface BEASTInterface {
       }
       for (int i = 0; i < objects.length; i += 2) {
           if (objects[i] instanceof String) {
-              final String sName = (String) objects[i];
-              setInputValue(sName, objects[i + 1]);
+              final String name = (String) objects[i];
+              setInputValue(name, objects[i + 1]);
           } else {
               throw new RuntimeException("Expected a String in " + i + "th argument ");
           }
@@ -101,8 +101,9 @@ public interface BEASTInterface {
     	try {
             Method method = object.getClass().getMethod("getOutputs");
             Object outputs = method.invoke(object);
-            if (outputs instanceof Set<?>)
+            if (outputs instanceof Set<?>) {
             	return (Set) outputs;
+            }
     		throw new RuntimeException("call to getOutputs() on object did not return a java.util.Set");
     	} catch (Exception e) {
     		throw new RuntimeException("could not call getOutputs() on object: " + e.getMessage());
@@ -311,23 +312,11 @@ public interface BEASTInterface {
         }
 
         assert inputType != null;
-        for (final Class<?> c : new Class[]{Integer.class, Double.class, Boolean.class, String.class}) {
+        for (final Class<?> c : new Class[]{Integer.class, Long.class, Double.class, Float.class, Boolean.class, String.class}) {
             if (inputType.isAssignableFrom(c)) {
                 return true;
             }
         }
-//        if (inputType.isAssignableFrom(Integer.class)) {
-//            return true;
-//        }
-//        if (inputType.isAssignableFrom(Double.class)) {
-//            return true;
-//        }
-//        if (inputType.isAssignableFrom(Boolean.class)) {
-//            return true;
-//        }
-//        if (inputType.isAssignableFrom(String.class)) {
-//            return true;
-//        }
         return false;
     } // isPrimitive
 
@@ -402,40 +391,6 @@ public interface BEASTInterface {
         }
     }
 
-
-// // This class was formerly called 'BEASTObject'
-//    @Description(
-//            value = "Base class for all BEAST objects, which is pretty much every class " +
-//                    "you want to incorporate in a model.",
-//            isInheritable = false
-//    )
-//    abstract public class Core implements BEASTInterface {
-//        /**
-//         * set of Objects that have this Object in one of its Inputs *
-//         * @deprecate use getOuputs() or BEASTInterface.getOuputs(object) instead
-//         */
-//    	@Deprecated
-//        public Set<BEASTInterface> outputs = new HashSet<>();
-//    	
-//        /**
-//         * @return set of Objects that have this Object in one of its Inputs
-//         */
-//    	@SuppressWarnings("rawtypes")
-//    	public Set getOutputs() {
-//    		return outputs;
-//    	};
-//
-//        // identifiable
-//        protected String ID;
-//
-//        public String getID() {
-//            return ID;
-//        }
-//
-//        public void setID(final String ID) {
-//            this.ID = ID;
-//        }
-//    }
 }
 
 

@@ -363,17 +363,17 @@ public class State extends BEASTObject {
             final NodeList nodes = doc.getElementsByTagName("*");
             final Node topNode = nodes.item(0);
             final NodeList children = topNode.getChildNodes();
-            for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                final Node child = children.item(iChild);
+            for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+                final Node child = children.item(childIndex);
                 if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    final String sID = child.getAttributes().getNamedItem("id").getNodeValue();
-                    int iStateNode = 0;
-                    while (!stateNode[iStateNode].getID().equals(sID)) {
-                        iStateNode++;
+                    final String id = child.getAttributes().getNamedItem("id").getNodeValue();
+                    int stateNodeIndex = 0;
+                    while (!stateNode[stateNodeIndex].getID().equals(id)) {
+                        stateNodeIndex++;
                     }
-                    final StateNode stateNode2 = stateNode[iStateNode].copy();
+                    final StateNode stateNode2 = stateNode[stateNodeIndex].copy();
                     stateNode2.fromXML(child);
-                    stateNode[iStateNode].assignFromFragile(stateNode2);
+                    stateNode[stateNodeIndex].assignFromFragile(stateNode2);
                 }
             }
         } catch (Exception e) {
@@ -393,26 +393,26 @@ public class State extends BEASTObject {
         final NodeList nodes = doc.getElementsByTagName("*");
         final Node topNode = nodes.item(0);
         final NodeList children = topNode.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            final Node child = children.item(iChild);
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            final Node child = children.item(childIndex);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                final String sID = child.getAttributes().getNamedItem("id").getNodeValue();
-                int iStateNode = 0;
+                final String id = child.getAttributes().getNamedItem("id").getNodeValue();
+                int stateNodeIndex = 0;
 
                 // An init node without ID - should not bring the house down, does it?
                 // I have not checked if the state is restored correctly or not (JH)
-                while (stateNode[iStateNode].getID() != null &&
-                        !stateNode[iStateNode].getID().equals(sID)) {
-                    iStateNode++;
-                    if (iStateNode >= stateNode.length) {
+                while (stateNode[stateNodeIndex].getID() != null &&
+                        !stateNode[stateNodeIndex].getID().equals(id)) {
+                    stateNodeIndex++;
+                    if (stateNodeIndex >= stateNode.length) {
                     	Log.warning.println("Cannot restore statenode sID");
                     	break;
                     }
                 }
-                if (iStateNode < stateNode.length) {
-	                final StateNode stateNode2 = stateNode[iStateNode].copy();
+                if (stateNodeIndex < stateNode.length) {
+	                final StateNode stateNode2 = stateNode[stateNodeIndex].copy();
 	                stateNode2.fromXML(child);
-	                stateNode[iStateNode].assignFromFragile(stateNode2);
+	                stateNode[stateNodeIndex].assignFromFragile(stateNode2);
                 }
             }
         }
@@ -468,11 +468,11 @@ public class State extends BEASTObject {
         // we keep track of the lot.
         outputMap = new HashMap<>();
         outputMap.put(posterior, new ArrayList<>());
-        boolean bProgress = true;
+        boolean progress = true;
         List<BEASTInterface> beastObjects = new ArrayList<>();
         beastObjects.add(posterior);
-        while (bProgress) {
-            bProgress = false;
+        while (progress) {
+            progress = false;
             // loop over plug-ins, till no more plug-ins can be added
             // efficiency is no issue here
             for (int i = 0; i < beastObjects.size(); i++) {
@@ -482,11 +482,11 @@ public class State extends BEASTObject {
                         if (!outputMap.containsKey(inputBEASTObject)) {
                             outputMap.put(inputBEASTObject, new ArrayList<>());
                             beastObjects.add(inputBEASTObject);
-                            bProgress = true;
+                            progress = true;
                         }
                         if (!outputMap.get(inputBEASTObject).contains(beastObject)) {
                             outputMap.get(inputBEASTObject).add(beastObject);
-                            bProgress = true;
+                            progress = true;
                         }
                     }
                 } catch (Exception e) {
@@ -556,27 +556,27 @@ public class State extends BEASTObject {
             int i = changeStateNodes[k];
             // go grab the path to the Runnable
             // first the outputs of the StateNodes that is changed
-            boolean bProgress = false;
+            boolean progress = false;
             for (CalculationNode node : stateNodeOutputs[i]) {
                 if (!calcNodes.contains(node)) {
                     calcNodes.add(node);
-                    bProgress = true;
+                    progress = true;
                 }
             }
             // next the path following the outputs
-            while (bProgress) {
-                bProgress = false;
+            while (progress) {
+                progress = false;
                 // loop over beastObjects till no more beastObjects can be added
                 // efficiency is no issue here, assuming the graph remains 
                 // constant
-                for (int iCalcNode = 0; iCalcNode < calcNodes.size(); iCalcNode++) {
-                    CalculationNode node = calcNodes.get(iCalcNode);
+                for (int calcNodeIndex = 0; calcNodeIndex < calcNodes.size(); calcNodeIndex++) {
+                    CalculationNode node = calcNodes.get(calcNodeIndex);
                     for (BEASTInterface output : outputMap.get(node)) {
                         if (output instanceof CalculationNode) {
                             final CalculationNode calcNode = (CalculationNode) output;
                             if (!calcNodes.contains(calcNode)) {
                                 calcNodes.add(calcNode);
-                                bProgress = true;
+                                progress = true;
                             }
                         } else {
                             throw new RuntimeException("DEVELOPER ERROR: found a"

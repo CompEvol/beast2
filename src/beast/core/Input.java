@@ -97,9 +97,9 @@ public class Input<T> {
     /**
      * simple constructor, requiring only the input name and tiptext
      */
-    public Input(String sName, String sTipText) {
-        name = sName;
-        tipText = sTipText;
+    public Input(String name, String tipText) {
+        this.name = name;
+        this.tipText = tipText;
         value = null;
         checkName();
     } // c'tor
@@ -109,16 +109,16 @@ public class Input<T> {
      * This allows inputs of types that cannot be determined through
      * introspection, such as template class inputs, e.g. Input<Parameter<?>>
      */
-    public Input(String sName, String sTipText, Class<?> theClass) {
-        this(sName, sTipText);
+    public Input(String name, String tipText, Class<?> theClass) {
+        this(name, tipText);
         this.theClass = theClass;
     } // c'tor
 
     /**
      * constructor for List<>
      */
-    public Input(String sName, String sTipText, T startValue) {
-        this(sName, sTipText);
+    public Input(String name, String tipText, T startValue) {
+        this(name, tipText);
         value = startValue;
         defaultValue = startValue;
     } // c'tor
@@ -126,16 +126,16 @@ public class Input<T> {
     /**
      * constructor for List<> with type specified
      */
-    public Input(String sName, String sTipText, T startValue, Class<?> theClass) {
-        this(sName, sTipText, startValue);
+    public Input(String name, String tipText, T startValue, Class<?> theClass) {
+        this(name, tipText, startValue);
         this.theClass = theClass;
     } // c'tor
 
     /**
      * constructor for List<> with XOR rules
      */
-    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other) {
-        this(sName, sTipText, startValue);
+    public Input(String name, String tipText, T startValue, Validate rule, Input<?> other) {
+        this(name, tipText, startValue);
         if (rule != Validate.XOR) {
             Log.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
@@ -149,8 +149,8 @@ public class Input<T> {
     /**
      * constructor for List<> with XOR rules with type specified
      */
-    public Input(String sName, String sTipText, T startValue, Validate rule, Input<?> other, Class<?> theClass) {
-        this(sName, sTipText, startValue, rule, other);
+    public Input(String name, String tipText, T startValue, Validate rule, Input<?> other, Class<?> theClass) {
+        this(name, tipText, startValue, rule, other);
         this.theClass = theClass;
     } // c'tor
 
@@ -160,8 +160,8 @@ public class Input<T> {
      * at least one value to be specified.
      * If optional (i.e. no value need to be specified), leave the rule out
      */
-    public Input(String sName, String sTipText, T startValue, Validate rule) {
-        this(sName, sTipText, startValue);
+    public Input(String name, String tipText, T startValue, Validate rule) {
+        this(name, tipText, startValue);
         /*if (rule != Validate.REQUIRED) {
             Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + sName + ")");
@@ -172,19 +172,19 @@ public class Input<T> {
     /**
      * constructor for REQUIRED rules for List-inputs, with type pre-specified
      */
-    public Input(String sName, String sTipText, T startValue, Validate rule, Class<?> type) {
-        this(sName, sTipText, startValue, rule);
+    public Input(String name, String tipText, T startValue, Validate rule, Class<?> type) {
+        this(name, tipText, startValue, rule);
         theClass = type;
     } // c'tor
 
     /**
      * constructor for REQUIRED rules
      */
-    public Input(String sName, String sTipText, Validate rule) {
-        this(sName, sTipText);
+    public Input(String name, String tipText, Validate rule) {
+        this(name, tipText);
         if (rule != Validate.REQUIRED) {
             Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
-                    + " (" + sName + ")");
+                    + " (" + name + ")");
         }
         this.rule = rule;
     } // c'tor
@@ -192,16 +192,16 @@ public class Input<T> {
     /**
      * constructor for REQUIRED rules, with type pre-specified
      */
-    public Input(String sName, String sTipText, Validate rule, Class<?> type) {
-        this(sName, sTipText, rule);
+    public Input(String name, String tipText, Validate rule, Class<?> type) {
+        this(name, tipText, rule);
         this.theClass = type;
     }
 
     /**
      * constructor for XOR rules *
      */
-    public Input(String sName, String sTipText, Validate rule, Input<?> other) {
-        this(sName, sTipText);
+    public Input(String name, String tipText, Validate rule, Input<?> other) {
+        this(name, tipText);
         if (rule != Validate.XOR) {
             Log.err.println("Programmer error: input rule should be XOR for this Input constructor");
         }
@@ -214,8 +214,8 @@ public class Input<T> {
     /**
      * constructor for XOR rules, with type pre-specified
      */
-    public Input(String sName, String sTipText, Validate rule, Input<?> other, Class<?> type) {
-        this(sName, sTipText, rule, other);
+    public Input(String name, String tipText, Validate rule, Input<?> other, Class<?> type) {
+        this(name, tipText, rule, other);
         this.theClass = type;
     }
 
@@ -226,12 +226,12 @@ public class Input<T> {
      * the value optional? When providing a 'no-input' entry in the list and setting that as the default,
      * that should cover that situation.)
      */
-    public Input(String sName, String sTipText, T startValue, T[] sPossibleValues) {
-        name = sName;
-        tipText = sTipText;
+    public Input(String name, String tipText, T startValue, T[] possibleValues) {
+        this.name = name;
+        this.tipText = tipText;
         value = startValue;
         defaultValue = startValue;
-        possibleValues = sPossibleValues;
+        this.possibleValues = possibleValues;
         checkName();
     } // c'tor
 
@@ -276,6 +276,9 @@ public class Input<T> {
         }
         if (theClass == Double.class) {
             return ("<double>");
+        }
+        if (theClass == Float.class) {
+            return ("<float>");
         }
         if (theClass == String.class) {
             return "<string>";
@@ -568,56 +571,67 @@ public class Input<T> {
      * Try to parse value of string into Integer, Double or Boolean,
      * or it this types differs, just assign as string.
      *
-     * @param sValue value representation
+     * @param stringValue value representation
      * @throws Exception when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(final String sValue, final BEASTInterface beastObject) throws Exception {
+    private void setStringValue(final String stringValue, final BEASTInterface beastObject) throws Exception {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (value instanceof List<?>) {
             List list = (List) value;
             list.clear();
             // remove start and end spaces
-            String sValue2 = sValue.replaceAll("^\\s+", "");
-            sValue2 = sValue2.replaceAll("\\s+$", "");
+            String stringValue2 = stringValue.replaceAll("^\\s+", "");
+            stringValue2 = stringValue2.replaceAll("\\s+$", "");
             // split into space-separated bits
-            String[] sValues = sValue2.split("\\s+");
-            for (int i = 0; i < sValues.length; i++) {
+            String[] stringValues = stringValue2.split("\\s+");
+            for (int i = 0; i < stringValues.length; i++) {
                 if (theClass.equals(Integer.class)) {
-                    list.add(new Integer(sValues[i % sValues.length]));
+                    list.add(new Integer(stringValues[i % stringValues.length]));
                 } else if (theClass.equals(Double.class)) {
-                    list.add(new Double(sValues[i % sValues.length]));
+                    list.add(new Double(stringValues[i % stringValues.length]));
                 } else if (theClass.equals(Boolean.class)) {
-                    String str = sValues[i % sValues.length].toLowerCase();
+                    String str = stringValues[i % stringValues.length].toLowerCase();
                     list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
                 } else if (theClass.equals(String.class)) {
-                    list.add(new String(sValues[i % sValues.length]));
+                    list.add(new String(stringValues[i % stringValues.length]));
                 }
             }
             return;
         }
 
         if (theClass.equals(Integer.class)) {
-            value = (T) new Integer(sValue);
+            value = (T) new Integer(stringValue);
+            return;
+        }
+        if (theClass.equals(Long.class)) {
+            value = (T) new Long(stringValue);
             return;
         }
         if (theClass.equals(Double.class)) {
-            value = (T) new Double(sValue);
+            value = (T) new Double(stringValue);
+            return;
+        }
+        if (theClass.equals(Float.class)) {
+            value = (T) new Float(stringValue);
             return;
         }
         if (theClass.equals(Boolean.class)) {
-            final String sValue2 = sValue.toLowerCase();
-            if (sValue2.equals("yes") || sValue2.equals("true")) {
-                value = (T) Boolean.TRUE;
-                return;
-            } else if (sValue2.equals("no") || sValue2.equals("false")) {
-                value = (T) Boolean.FALSE;
-                return;
-            }
+        	// RRB why the local parsing instead of using the Boolean c'tor?
+//            final String sValue2 = stringValue.toLowerCase();
+//            if (sValue2.equals("yes") || sValue2.equals("true")) {
+//                value = (T) Boolean.TRUE;
+//                return;
+//            } else if (sValue2.equals("no") || sValue2.equals("false")) {
+//                value = (T) Boolean.FALSE;
+//                return;
+//            }
+        	value = (T) new Boolean(stringValue);
+        	return;
         }
         if (theClass.equals(Function.class)) {
             final RealParameter param = new RealParameter();
-            param.initByName("value", sValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
+            param.initByName("value", stringValue, "upper", 0.0, "lower", 0.0, "dimension", 1);
             param.initAndValidate();
             if (value != null && value instanceof List) {
                 ((List) value).add(param);
@@ -633,34 +647,34 @@ public class Input<T> {
         		possibleValues = (T[]) theClass.getDeclaringClass().getEnumConstants();
         	}
             for (final T t : possibleValues) {
-                if (sValue.equals(t.toString())) {
+                if (stringValue.equals(t.toString())) {
                     value = t;
                     return;
                 }
             }
-            throw new IllegalArgumentException("Input 104: value " + sValue + " not found. Select one of " + Arrays.toString(possibleValues));
+            throw new IllegalArgumentException("Input 104: value " + stringValue + " not found. Select one of " + Arrays.toString(possibleValues));
         }
 
         // call a string constructor of theClass
         try {
             Constructor ctor;
-            Object v = sValue;
+            Object v = stringValue;
             try {
             	ctor = theClass.getDeclaredConstructor(String.class);
             } catch (NoSuchMethodException e) {
             	// we get here if there is not String constructor
             	// try integer constructor instead
             	try {
-            		if (sValue.startsWith("0x")) {
-            			v = Integer.parseInt(sValue.substring(2), 16);
+            		if (stringValue.startsWith("0x")) {
+            			v = Integer.parseInt(stringValue.substring(2), 16);
             		} else {
-            			v = Integer.parseInt(sValue);
+            			v = Integer.parseInt(stringValue);
             		}
                 	ctor = theClass.getDeclaredConstructor(int.class);
                 	
             	} catch (NumberFormatException e2) {
                 	// could not parse as integer, try double instead
-            		v = Double.parseDouble(sValue);
+            		v = Double.parseDouble(stringValue);
                 	ctor = theClass.getDeclaredConstructor(double.class);
             	}
             }
@@ -676,7 +690,7 @@ public class Input<T> {
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
-                    "' with value '" + sValue + "'.\nExpected something of type " + getType().getName() +
+                    "' with value '" + stringValue + "'.\nExpected something of type " + getType().getName() +
                     ". " + (e.getMessage() != null ? e.getMessage() : ""));
         }
     } // setStringValue
@@ -689,13 +703,13 @@ public class Input<T> {
     public void validate() throws Exception {
         if (possibleValues != null) {
             // it is an enumeration, check the value is in the list
-            boolean bFound = false;
+            boolean found = false;
             for (final T value : possibleValues) {
                 if (value.equals(this.value)) {
-                    bFound = true;
+                    found = true;
                 }
             }
-            if (!bFound) {
+            if (!found) {
                 throw new IllegalArgumentException("Expected one of " + Arrays.toString(possibleValues) + " but got " + this.value);
             }
         }

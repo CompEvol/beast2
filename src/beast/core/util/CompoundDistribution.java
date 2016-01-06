@@ -145,13 +145,13 @@ public class CompoundDistribution extends Distribution {
     private double calculateLogPUsingThreads() throws Exception {
         try {
 
-            int nrOfDirtyDistrs = 0;
+            int dirtyDistrs = 0;
             for (Distribution dists : pDistributions.get()) {
                 if (dists.isDirtyCalculation()) {
-                    nrOfDirtyDistrs++;
+                    dirtyDistrs++;
                 }
             }
-            countDown = new CountDownLatch(nrOfDirtyDistrs);
+            countDown = new CountDownLatch(dirtyDistrs);
             // kick off the threads
             for (Distribution dists : pDistributions.get()) {
                 if (dists.isDirtyCalculation()) {
