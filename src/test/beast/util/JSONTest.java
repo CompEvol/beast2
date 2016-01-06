@@ -84,6 +84,27 @@ public class JSONTest extends TestCase {
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     	
 
+    	// test that array of doubles comes through in second constructor
+    	String json3 = "{version: \"2.3\",\n" + 
+    			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\",\n" + 
+    			"\n" + 
+    			"beast: [\n" + 
+    			"\n" + 
+    			"\n" + 
+    			"        {id: \"JSONTest\",\n" + 
+    			"         spec: \"test.beast.util.AnnotatedRunnableTestClass\",\n" + 
+    			"         array: [1.0, 2.0, 3.0]\n" + 
+    			"        }\n" + 
+    			"]\n" + 
+    			"}";
+    	
+        outfile = new FileWriter(new File("/tmp/JSONTest3.json"));
+        outfile.write(json3);
+        outfile.close();
+
+        parser = new JSONParser();
+    	b = parser.parseFile(new File("/tmp/JSONTest3.json"));
+    	assertEquals(3, ((AnnotatedRunnableTestClass) b).getArray().size());
     }
 
 }

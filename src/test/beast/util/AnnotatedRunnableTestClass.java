@@ -16,7 +16,23 @@ public class AnnotatedRunnableTestClass extends Runnable {
     
     int param1;
     List<Taxon> taxa;
+    List<Double> array;
     
+	public List<Double> getArray() {
+		return array;
+	}
+
+	public void setArray(List<Double> array) {
+		this.array = array;
+	}
+
+	public void setArray(Double value) {
+		if (this.array == null) {
+			this.array = new ArrayList<>();
+		}
+		this.array.add(value);
+	}
+
 	public Integer getParam1() {
 		return param1;
 	}
@@ -31,13 +47,19 @@ public class AnnotatedRunnableTestClass extends Runnable {
     	this.taxa = new ArrayList<>();
 	}
 
+	// note that if there are different constructors and an argument does not appear in the other constructor it has to be optional
 	public AnnotatedRunnableTestClass(
 			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated constructors", name = "param1", optional=true, defaultValue = "10") Integer param1,
-			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated List", name = "taxon") List<Taxon> taxa) {
+			@Param(description = "test to see whether the JSON/XML parser/producer can handle annotated List", name = "taxon", optional=true) List<Taxon> taxa) {
     	this.param1 = param1;
     	this.taxa = new ArrayList<>();
     	this.taxa.addAll(taxa);
     }
+	
+	public AnnotatedRunnableTestClass(
+			@Param(description = "test to see whether multiple constructors are handled, and list of Doubles", name = "array", optional=true) List<Double> array) {
+		this.array = array;
+	}
     
 	@Override
 	public void initAndValidate() throws Exception {
