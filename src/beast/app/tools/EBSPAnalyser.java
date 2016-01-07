@@ -125,8 +125,7 @@ public class EBSPAnalyser {
             out.print(DiscreteStatistics.mean(popSizeAtTimeT) + "\t");
             out.print(DiscreteStatistics.median(popSizeAtTimeT) + "\t");
             out.print(DiscreteStatistics.quantile(0.025, popSizeAtTimeT) + "\t");
-            out.print(DiscreteStatistics.quantile(0.975, popSizeAtTimeT) + "\t");
-            out.println();
+            out.println(DiscreteStatistics.quantile(0.975, popSizeAtTimeT));
         }
     }
 
