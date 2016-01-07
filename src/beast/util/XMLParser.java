@@ -293,18 +293,18 @@ public class XMLParser {
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti *
      */
-    public List<BEASTInterface> parseTemplate(final String sXML, final HashMap<String, BEASTInterface> sIDMap, final boolean bInitialize) throws Exception {
+    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> iDMap, final boolean bInitialize) throws Exception {
         needsInitialisation = bInitialize;
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
-        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
         
         //XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
 
-        IDMap = sIDMap;//new HashMap<>();
+        IDMap = iDMap;//new HashMap<>();
         likelihoodMap = new HashMap<>();
         IDNodeMap = new HashMap<>();
 
@@ -322,8 +322,8 @@ public class XMLParser {
             return beastObjects;
         }
         // only process templates
-//        String sType = getAttribute(topNode, "type");
-//        if (sType == null || !sType.equals("template")) {
+//        String typeName = getAttribute(topNode, "type");
+//        if (typeName == null || !typeName.equals("template")) {
 //        	return beastObjects;
 //        }
 
@@ -367,11 +367,11 @@ public class XMLParser {
      * Only the run element or if that does not exist the last child element of
      * the top level <beast> element is considered.
      */
-    public BEASTInterface parseFragment(final String sXML, final boolean bInitialize) throws Exception {
+    public BEASTInterface parseFragment(final String xml, final boolean bInitialize) throws Exception {
         needsInitialisation = bInitialize;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
@@ -419,21 +419,21 @@ public class XMLParser {
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
      */
-    public BEASTInterface parseBareFragment(String sXML, final boolean bInitialize) throws Exception {
+    public BEASTInterface parseBareFragment(String xml, final boolean bInitialize) throws Exception {
         // get rid of XML processing instruction
-        sXML = sXML.replaceAll("<\\?xml[^>]*>", "");
-        if (sXML.contains("<beast")) {
-            return parseFragment(sXML, bInitialize);
+        xml = xml.replaceAll("<\\?xml[^>]*>", "");
+        if (xml.contains("<beast")) {
+            return parseFragment(xml, bInitialize);
         } else {
-            return parseFragment("<beast>" + sXML + "</beast>", bInitialize);
+            return parseFragment("<beast>" + xml + "</beast>", bInitialize);
         }
     }
 
-    public List<BEASTInterface> parseBareFragments(final String sXML, final boolean bInitialize) throws Exception {
+    public List<BEASTInterface> parseBareFragments(final String xml, final boolean bInitialize) throws Exception {
         needsInitialisation = bInitialize;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+        doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
@@ -492,12 +492,12 @@ public class XMLParser {
      * @throws Exception
      */
     void initIDNodeMap(final Node node) throws Exception {
-        final String sID = getID(node);
-        if (sID != null) {
-            if (IDNodeMap.containsKey(sID)) {
-                throw new XMLParserException(node, "IDs should be unique. Duplicate id '" + sID + "' found", 104);
+        final String id = getID(node);
+        if (id != null) {
+            if (IDNodeMap.containsKey(id)) {
+                throw new XMLParserException(node, "IDs should be unique. Duplicate id '" + id + "' found", 104);
             }
-            IDNodeMap.put(sID, node);
+            IDNodeMap.put(id, node);
         }
         final NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -518,8 +518,8 @@ public class XMLParser {
     void parseNameSpaceAndMap(final Node topNode) throws XMLParserException {
         // process namespaces
         if (hasAtt(topNode, "namespace")) {
-            final String sNameSpace = getAttribute(topNode, "namespace");
-            setNameSpace(sNameSpace);
+            final String nameSpace = getAttribute(topNode, "namespace");
+            setNameSpace(nameSpace);
         } else {
             // make sure that the default namespace is in there
             if (this.nameSpaces == null) {
@@ -537,7 +537,7 @@ public class XMLParser {
                 throw new XMLParserException(child, "name attribute expected in map element", 300);
             }
             if (!element2ClassMap.containsKey(name)) {
-//                throw new XMLParserException(child, "name '" + sName + "' is already defined as " + m_sElement2ClassMap.get(sName), 301);
+//                throw new XMLParserException(child, "name '" + name + "' is already defined as " + m_sElement2ClassMap.get(name), 301);
 //            }
 
 	            // get class
@@ -601,16 +601,16 @@ public class XMLParser {
     } // parseMCMC
 
     /**
-     * Check that beast object is a class that is assignable to class with name sClass.
+     * Check that beast object is a class that is assignable to class with name className.
      * This involves a parameter clutch to deal with non-real parameters.
      * This needs a bit of work, obviously...
      */
-    boolean checkType(final String sClass, final BEASTInterface beastObject) throws Exception {
-        if (sClass.equals(INPUT_CLASS) || Class.forName(sClass).isInstance(beastObject)) {
+    boolean checkType(final String className, final BEASTInterface beastObject) throws Exception {
+        if (className.equals(INPUT_CLASS) || Class.forName(className).isInstance(beastObject)) {
             return true;
         }
         // parameter clutch
-        if (sClass.equals(RealParameter.class.getName()) && beastObject instanceof Parameter<?>) {
+        if (className.equals(RealParameter.class.getName()) && beastObject instanceof Parameter<?>) {
             return true;
         }
         return false;
@@ -630,42 +630,42 @@ public class XMLParser {
             }
         }
 
-        final String sIDRef = getIDRef(node);
-        if (sIDRef != null) {
+        final String iDRef = getIDRef(node);
+        if (iDRef != null) {
             // produce warning if there are other attributes than idref
             if (node.getAttributes().getLength() > 1) {
                 // check if there are just 2 attributes and other attribute is 'name' and/or 'id'
             	final int offset = (getAttribute(node, "id") == null? 0: 1) + (getAttribute(node, "name") == null? 0: 1);
                 if (node.getAttributes().getLength() > 1 + offset) {
-                    Log.warning.println("Element " + node.getNodeName() + " found with idref='" + sIDRef + "'. All other attributes are ignored.\n");
+                    Log.warning.println("Element " + node.getNodeName() + " found with idref='" + iDRef + "'. All other attributes are ignored.\n");
                 }
             }
-            if (IDMap.containsKey(sIDRef)) {
-                final BEASTInterface beastObject = IDMap.get(sIDRef);
+            if (IDMap.containsKey(iDRef)) {
+                final BEASTInterface beastObject = IDMap.get(iDRef);
                 if (checkType(classname, beastObject)) {
                     return beastObject;
                 }
-                throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
-            } else if (IDNodeMap.containsKey(sIDRef)) {
-                final BEASTInterface beastObject = createObject(IDNodeMap.get(sIDRef), classname);
+                throw new XMLParserException(node, "id=" + iDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
+            } else if (IDNodeMap.containsKey(iDRef)) {
+                final BEASTInterface beastObject = createObject(IDNodeMap.get(iDRef), classname);
                 if (checkType(classname, beastObject)) {
                     return beastObject;
                 }
-                throw new XMLParserException(node, "id=" + sIDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 107);
+                throw new XMLParserException(node, "id=" + iDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 107);
             }
-            throw new XMLParserException(node, "Could not find object associated with idref " + sIDRef, 170);
+            throw new XMLParserException(node, "Could not find object associated with idref " + iDRef, 170);
         }
         // it's not in the ID map yet, so we have to create a new object
         String specClass = classname;
-        final String sElementName = node.getNodeName();
+        final String elementName = node.getNodeName();
 
 
-        if (element2ClassMap.containsKey(sElementName)) {
-            specClass = element2ClassMap.get(sElementName);
+        if (element2ClassMap.containsKey(elementName)) {
+            specClass = element2ClassMap.get(elementName);
         }
-        final String sSpec = getAttribute(node, "spec");
-        if (sSpec != null) {
-            specClass = sSpec;
+        final String spec = getAttribute(node, "spec");
+        if (spec != null) {
+            specClass = spec;
         }
     	
     	//if (specClass.indexOf("BEASTInterface") > 0) {
@@ -673,7 +673,7 @@ public class XMLParser {
     	//}
         
 		String clazzName = null;
-		// determine clazzName from sSpecName, taking name spaces in account
+		// determine clazzName from specName, taking name spaces in account
 		for (String nameSpace : nameSpaces) {
 			if (clazzName == null) {
 				if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
@@ -699,7 +699,7 @@ public class XMLParser {
 		}
 		if (clazzName == null) {
 			throw new XMLParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
-			// throw new ClassNotFoundException(sSpecClass);
+			// throw new ClassNotFoundException(specClass);
 		}
 				
 		// sanity check		
@@ -1092,7 +1092,7 @@ public class XMLParser {
                 throw new XMLParserException(node, e.getMessage(), 130);
             }
         }
-        //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 167);
+        //throw new XMLParserException(node, "no such input '"+name+"' for element <" + node.getNodeName() + ">", 167);
     }
 
     void setInput(final Node node, final BEASTInterface beastObject, final String name, final String value) throws XMLParserException {
@@ -1112,16 +1112,16 @@ public class XMLParser {
 			}
             throw new XMLParserException(node, e.getMessage(), 124);
         }
-        //throw new XMLParserException(node, "no such input '"+sName+"' for element <" + node.getNodeName() + ">", 168);
+        //throw new XMLParserException(node, "no such input '"+name+"' for element <" + node.getNodeName() + ">", 168);
     }
 
     /**
      * records id in IDMap, for ease of retrieving beast objects associated with idrefs *
      */
     void register(final Node node, final BEASTInterface beastObject) {
-        final String sID = getID(node);
-        if (sID != null) {
-            IDMap.put(sID, beastObject);
+        final String id = getID(node);
+        if (id != null) {
+            IDMap.put(id, beastObject);
         }
     }
 
@@ -1180,8 +1180,8 @@ public class XMLParser {
         final NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
             for (int i = 0; i < atts.getLength(); i++) {
-                final String sName = atts.item(i).getNodeName();
-                if (sName.equals(attributeName)) {
+                final String name = atts.item(i).getNodeName();
+                if (name.equals(attributeName)) {
                     return true;
                 }
             }

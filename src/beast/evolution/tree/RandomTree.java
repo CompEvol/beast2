@@ -96,7 +96,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     List<Integer>[] children;
 
-    Set<String> sTaxa;
+    Set<String> taxa;
 
     // number of the next internal node, used when creating new internal nodes
     int nextNodeNr;
@@ -109,14 +109,14 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     @Override
     public void initAndValidate() throws Exception {
 
-        sTaxa = new LinkedHashSet<>();
+        taxa = new LinkedHashSet<>();
         if (taxaInput.get() != null) {
-            sTaxa.addAll(taxaInput.get().getTaxaNames());
+            taxa.addAll(taxaInput.get().getTaxaNames());
         } else {
-            sTaxa.addAll(m_taxonset.get().asStringList());
+            taxa.addAll(m_taxonset.get().asStringList());
         }
 
-        nrOfTaxa = sTaxa.size();
+        nrOfTaxa = taxa.size();
 
         initStateNodes();
         super.initAndValidate();
@@ -159,9 +159,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         lastMonophyletic = 0;
 
         if (taxaInput.get() != null) {
-            sTaxa.addAll(taxaInput.get().getTaxaNames());
+            taxa.addAll(taxaInput.get().getTaxaNames());
         } else {
-            sTaxa.addAll(m_taxonset.get().asStringList());
+            taxa.addAll(m_taxonset.get().asStringList());
         }
 
         // pick up constraints from outputs, m_inititial input tree and output tree, if any
@@ -205,12 +205,12 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	        	if (taxonSet.asStringList() == null) {
 	        		taxonSet.initAndValidate();
 	        	}
-	            for (final String sTaxonID : taxonSet.asStringList()) {
+	            for (final String taxonID : taxonSet.asStringList()) {
 
-	                if (!sTaxa.contains(sTaxonID)) {
-	                    throw new IllegalArgumentException("Taxon <" + sTaxonID + "> could not be found in list of taxa. Choose one of " + sTaxa.toArray(new String[0]));
+	                if (!taxa.contains(taxonID)) {
+	                    throw new IllegalArgumentException("Taxon <" + taxonID + "> could not be found in list of taxa. Choose one of " + taxa.toArray(new String[0]));
 	                }
-	                bTaxa.add(sTaxonID);
+	                bTaxa.add(taxonID);
 	            }
 	            final ParametricDistribution distr = prior.distInput.get();
 	            final Bound bounds = new Bound();
@@ -305,14 +305,14 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         final PopulationFunction popFunction = populationFunctionInput.get();
 
-        simulateTree(sTaxa, popFunction);
+        simulateTree(taxa, popFunction);
         if (rootHeightInput.get() != null) {
         	scaleToFit(rootHeightInput.get() / root.getHeight(), root);
         }
 
-        nodeCount = 2 * sTaxa.size() - 1;
-        internalNodeCount = sTaxa.size() - 1;
-        leafNodeCount = sTaxa.size();
+        nodeCount = 2 * taxa.size() - 1;
+        internalNodeCount = taxa.size() - 1;
+        leafNodeCount = taxa.size();
 
         HashMap<String,Integer> taxonToNR = null;
         // preserve node numbers where possible
@@ -783,13 +783,13 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     @Override
     public String[] getTaxaNames() {
         if (m_sTaxaNames == null) {
-            final List<String> sTaxa;
+            final List<String> taxa;
             if (taxaInput.get() != null) {
-                sTaxa = taxaInput.get().getTaxaNames();
+                taxa = taxaInput.get().getTaxaNames();
             } else {
-                sTaxa = m_taxonset.get().asStringList();
+                taxa = m_taxonset.get().asStringList();
             }
-            m_sTaxaNames = sTaxa.toArray(new String[sTaxa.size()]);
+            m_sTaxaNames = taxa.toArray(new String[taxa.size()]);
         }
         return m_sTaxaNames;
     }

@@ -98,12 +98,12 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 
     void refresh() {
     	if (m_selectBEASTObjectBox != null) {
-	        String sOldID = (String) m_selectBEASTObjectBox.getSelectedItem();
-	        String sID = ((BEASTInterface) m_input.get()).getID();
-	        if (!sID.equals(sOldID)) {
-	            m_selectBEASTObjectBox.addItem(sID);
-	            m_selectBEASTObjectBox.setSelectedItem(sID);
-	            m_selectBEASTObjectBox.removeItem(sOldID);
+	        String oldID = (String) m_selectBEASTObjectBox.getSelectedItem();
+	        String id = ((BEASTInterface) m_input.get()).getID();
+	        if (!id.equals(oldID)) {
+	            m_selectBEASTObjectBox.addItem(id);
+	            m_selectBEASTObjectBox.setSelectedItem(id);
+	            m_selectBEASTObjectBox.removeItem(oldID);
 	        }
     	}
         super.refreshPanel();
@@ -129,8 +129,8 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 
             }
             m_selectBEASTObjectBox.removeAllItems();
-            for (String sStr : availableBEASTObjects.toArray(new String[0])) {
-                m_selectBEASTObjectBox.addItem(sStr);
+            for (String str : availableBEASTObjects.toArray(new String[0])) {
+                m_selectBEASTObjectBox.addItem(str);
             }
             m_selectBEASTObjectBox.setSelectedItem(m_beastObject.getID());
         }
@@ -188,17 +188,17 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
             if (itemNr >= 0) {
             	o = ((List<?>)o).get(itemNr);
             }
-            String sID;
+            String id2;
             if (o == null) {
-                sID = beastObject0.getID();
+                id2 = beastObject0.getID();
             } else {
-                sID = ((BEASTInterface) o).getID();
+                id2 = ((BEASTInterface) o).getID();
             }
-            if (sID.indexOf('.')>=0) {
-            	sID = sID.substring(0, sID.indexOf('.'));
+            if (id2.indexOf('.')>=0) {
+            	id2 = id2.substring(0, id2.indexOf('.'));
             }
             for (BeautiSubTemplate template : availableTemplates) {
-                if (template.matchesName(sID)) {
+                if (template.matchesName(id2)) {
                     m_selectBEASTObjectBox.setSelectedItem(template);
                 }
             }
@@ -211,29 +211,29 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //					public void run() {
 
                 // get a handle of the selected beastObject
-                BeautiSubTemplate sSelected = (BeautiSubTemplate) m_selectBEASTObjectBox.getSelectedItem();
+                BeautiSubTemplate selected = (BeautiSubTemplate) m_selectBEASTObjectBox.getSelectedItem();
                 BEASTInterface beastObject = (BEASTInterface) m_input.get();
                 String id = beastObject.getID();
-                String sPartition = id.substring(id.indexOf('.') + 1);
-                if (sPartition.indexOf(':') >= 0) {
-                	sPartition = id.substring(id.indexOf(':') + 1);
+                String partition = id.substring(id.indexOf('.') + 1);
+                if (partition.indexOf(':') >= 0) {
+                	partition = id.substring(id.indexOf(':') + 1);
                 }
-                //String sNewID = sSelected.getMainID().replaceAll("\\$\\(n\\)", sPartition);
+                //String newID = selected.getMainID().replaceAll("\\$\\(n\\)", partition);
 
-                if (sSelected.equals(NO_VALUE)) {
+                if (selected.equals(NO_VALUE)) {
                     beastObject = null;
-//                } else if (PluginPanel.g_plugins.containsKey(sNewID)) {
-//                	beastObject = PluginPanel.g_plugins.get(sNewID);
+//                } else if (PluginPanel.g_plugins.containsKey(newID)) {
+//                	beastObject = PluginPanel.g_plugins.get(newID);
                 } else {
                     try {
-                        beastObject = sSelected.createSubNet(doc.getContextFor(beastObject), m_beastObject, m_input, true);
+                        beastObject = selected.createSubNet(doc.getContextFor(beastObject), m_beastObject, m_input, true);
                         //PluginPanel.addPluginToMap(beastObject);
                         // tricky: try to connect up new inputs with old inputs of existing name
 //                        beastObject oldPlugin = (beastObject) m_input.get();
 //                        for (Input<?> oldInput: oldPlugin.listInputs()) {
-//                        	String sName = oldInput.getName();
+//                        	String name = oldInput.getName();
 //                        	try {
-//                        		Input<?> newInput = beastObject.getInput(sName);
+//                        		Input<?> newInput = beastObject.getInput(name);
 //                        		if (newInput.get() instanceof List) {
 //                        			List<?> values = (List<?>) oldInput.get();
 //                        			for (Object value: values) {
@@ -347,40 +347,40 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //
 //        	}
 //            m_selectPluginBox = new JComboBox(availableBEASTObjects.toArray(new String[0]));
-//            String sSelectString = NO_VALUE;
+//            String selectString = NO_VALUE;
 //            if (input.get() != null) {
-//                sSelectString = ((BEASTObject) input.get()).getID();
+//                selectString = ((BEASTObject) input.get()).getID();
 //            }
-//            m_selectPluginBox.setSelectedItem(sSelectString);
+//            m_selectPluginBox.setSelectedItem(selectString);
 //
 //            m_selectPluginBox.addActionListener(new ActionListener() {
 //                // implements ActionListener
 //                public void actionPerformed(ActionEvent e) {
 //                	
 //                	// get a handle of the selected beastObject
-//                    String sSelected = (String) m_selectPluginBox.getSelectedItem();
+//                    String selected = (String) m_selectPluginBox.getSelectedItem();
 //                    BEASTObject beastObject = (BEASTObject) m_input.get();
-//                    if (sSelected.equals(NO_VALUE)) {
+//                    if (selected.equals(NO_VALUE)) {
 //                        beastObject = null;
-//                    } else if (!sSelected.startsWith(".")) {
-//                        beastObject = PluginPanel.g_plugins.get(sSelected);
+//                    } else if (!selected.startsWith(".")) {
+//                        beastObject = PluginPanel.g_plugins.get(selected);
 //                    } else {
 //                        List<String> availableBEASTObjects = PluginPanel.getAvailablePlugins(m_input, m_beastObject, null);
 //                        int i = 0;                     
-//                        while (!availableBEASTObjects.get(i).matches(".*\\"+sSelected+"$")) {
+//                        while (!availableBEASTObjects.get(i).matches(".*\\"+selected+"$")) {
 //                        	i++;
 //                        }
-//                    	sSelected = availableBEASTObjects.get(i);                       
+//                    	selected = availableBEASTObjects.get(i);                       
 //                        /* create new beastObject */
 //                        try {
-//                            beastObject = (BEASTObject) Class.forName(sSelected.substring(4)).newInstance();
+//                            beastObject = (BEASTObject) Class.forName(selected.substring(4)).newInstance();
 //                            PluginPanel.addPluginToMap(beastObject);
 //                            // tricky: try to connect up new inputs with old inputs of existing name
 //                            BEASTObject oldPlugin = (BEASTObject) m_input.get();
 //                            for (Input<?> oldInput: oldPlugin.listInputs()) {
-//                            	String sName = oldInput.getName();
+//                            	String name = oldInput.getName();
 //                            	try {
-//                            		Input<?> newInput = beastObject.getInput(sName);
+//                            		Input<?> newInput = beastObject.getInput(name);
 //                            		if (newInput.get() instanceof List) {
 //                            			List<?> values = (List<?>) oldInput.get();
 //                            			for (Object value: values) {
@@ -422,13 +422,13 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //                            	throw new Exception("Cannot set input to this value");
 //                            }
 //                        	// get handle on ID of the beastObject, and add to combobox if necessary
-//                            String sID = beastObject.getID();
+//                            String id = beastObject.getID();
 //                            // TODO RRB: have to remove ID first, then add it
 //                            // The addition is necessary to make the items in the expansionBox scale and show up
 //                            // Is there another way?
-//                            m_selectPluginBox.removeItem(sID);
-//                            m_selectPluginBox.addItem(sID);
-//                            m_selectPluginBox.setSelectedItem(sID);
+//                            m_selectPluginBox.removeItem(id);
+//                            m_selectPluginBox.addItem(id);
+//                            m_selectPluginBox.setSelectedItem(id);
 //                        }
 //                        
 //                        m_input.setValue(beastObject, m_beastObject);
@@ -451,8 +451,8 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //                        }
 //                        
 //                    } catch (Exception ex) {
-//                        String sID = ((BEASTObject)m_input.get()).getID();
-//                        m_selectPluginBox.setSelectedItem(sID);
+//                        String id = ((BEASTObject)m_input.get()).getID();
+//                        m_selectPluginBox.setSelectedItem(id);
 //                    	//ex.printStackTrace();
 //                        JOptionPane.showMessageDialog(null, "Could not change beastObject: " +
 //                                ex.getClass().getName() + " " +

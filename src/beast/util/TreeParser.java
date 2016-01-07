@@ -147,8 +147,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
 //            m_bIsLabelledNewick = false;
         }
-        final String sNewick = newickInput.get();
-        if (sNewick == null || sNewick.equals("")) {
+        final String newick = newickInput.get();
+        if (newick == null || newick.equals("")) {
             // can happen while initalising Beauti
             final Node dummy = new Node();
             setRoot(dummy);
@@ -530,13 +530,13 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         /**
-         * Try to map sStr into an index.
+         * Try to map str into an index.
          */
-        private int getLabelIndex(final String sStr) {
+        private int getLabelIndex(final String str) {
 
             // look it up in list of taxa
             for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
-                if (sStr.equals(labels.get(nIndex))) {
+                if (str.equals(labels.get(nIndex))) {
                     return nIndex;
                 }
             }
@@ -544,11 +544,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             // if createUnrecognizedTaxon==true, then do it now, otherwise labels will not be populated and
             // out of bounds error will occur in m_sLabels later.
             if (createUnrecognizedTaxa) {
-                labels.add(sStr);
+                labels.add(str);
                 return labels.size() - 1;
             }
 
-            throw new ParseCancellationException("Label '" + sStr + "' in Newick beast.tree could " +
+            throw new ParseCancellationException("Label '" + str + "' in Newick beast.tree could " +
                     "not be identified. Perhaps taxa or taxonset is not specified?");
         }
 

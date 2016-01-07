@@ -20,9 +20,9 @@ public class CollectionUtils {
         return intersection(Arrays.asList(array1), Arrays.asList(array2));
     }
 
-    public static <E> int indexof(E sLabel, E[] m_sLabels) {
+    public static <E> int indexof(E label, E[] m_sLabels) {
         for (int i = 0; i < m_sLabels.length ; i++) {
-            if (m_sLabels[i].equals(sLabel)) {
+            if (m_sLabels[i].equals(label)) {
                 return i;
             }
         }

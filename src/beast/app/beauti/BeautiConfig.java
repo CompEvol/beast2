@@ -74,8 +74,8 @@ public class BeautiConfig extends BEASTObject {
 //	public static HashMap<String, String> g_sEditButtonStatus = new HashMap<>();
 
     //	public static Set<String> g_sHidePanels = new HashSet<>();
-    public Set<String> sDisabledMenus = new HashSet<>();
-    public Set<String> sDisabledButtons = new HashSet<>();
+    public Set<String> disabledMenus = new HashSet<>();
+    public Set<String> disabledButtons = new HashSet<>();
 
     public List<BeautiPanelConfig> panels = new ArrayList<>();
 
@@ -91,8 +91,8 @@ public class BeautiConfig extends BEASTObject {
         inlineBEASTObject.addAll(collapsedBEASTObjects);
 //		parseSet(m_hidePanels.get(), "TAXON_SETS_PANEL,TIP_DATES_PANEL,PRIORS_PANEL,OPERATORS_PANEL", g_sHidePanels);
         parseSet(suppressInputs.get(), null, suppressBEASTObjects);
-        parseSet(disableMenus.get(), null, sDisabledMenus);
-        parseSet(disableButtons.get(), null, sDisabledButtons);
+        parseSet(disableMenus.get(), null, disabledMenus);
+        parseSet(disableButtons.get(), null, disabledButtons);
 
         parseMap(inputLabelMapInput.get(), inputLabelMap);
         parseMap(buttonLabelMapInput.get(), buttonLabelMap);
@@ -101,7 +101,7 @@ public class BeautiConfig extends BEASTObject {
             panels.add(panel);
             // check for duplicates
             for (BeautiPanelConfig panel2 : panels) {
-                if (panel2.sNameInput.get().equals(panel.sNameInput.get()) && panel2 != panel) {
+                if (panel2.nameInput.get().equals(panel.nameInput.get()) && panel2 != panel) {
                     panels.remove(panels.size() - 1);
                     break;
                 }
@@ -158,8 +158,8 @@ public class BeautiConfig extends BEASTObject {
         suppressBEASTObjects = new HashSet<>();
         inputLabelMap = new HashMap<>();
         buttonLabelMap = new HashMap<>();
-        sDisabledMenus = new HashSet<>();
-        sDisabledButtons = new HashSet<>();
+        disabledMenus = new HashSet<>();
+        disabledButtons = new HashSet<>();
         panels = new ArrayList<>();
     }
 
@@ -214,62 +214,62 @@ public class BeautiConfig extends BEASTObject {
         return candidates;
     }
 
-    private void parseMap(String sStr, HashMap<String, String> stringMap) {
-        if (sStr != null) {
-            for (String sStr2 : sStr.split(",")) {
-                String[] sStrs = sStr2.split("=");
-                stringMap.put(normalize(sStrs[0]), normalize(sStrs.length == 1 ? "" : sStrs[1]));
+    private void parseMap(String str, HashMap<String, String> stringMap) {
+        if (str != null) {
+            for (String str2 : str.split(",")) {
+                String[] strs = str2.split("=");
+                stringMap.put(normalize(strs[0]), normalize(strs.length == 1 ? "" : strs[1]));
             }
         }
     }
 
-    private void parseSet(String sStr, String sDefault, Set<String> stringSet) {
-        if (sStr == null) {
-            sStr = sDefault;
+    private void parseSet(String str, String defaultValue, Set<String> stringSet) {
+        if (str == null) {
+            str = defaultValue;
         }
-        if (sStr != null) {
-            for (String sStr2 : sStr.split(",")) {
-                stringSet.add(normalize(sStr2));
+        if (str != null) {
+            for (String str2 : str.split(",")) {
+                stringSet.add(normalize(str2));
             }
         }
     }
 
     // remove leading and tailing spaces
-    String normalize(String sStr) {
+    String normalize(String str) {
         int i = 0;
-        int n = sStr.length();
-        while (i < n && Character.isWhitespace(sStr.charAt(i))) {
+        int n = str.length();
+        while (i < n && Character.isWhitespace(str.charAt(i))) {
             i++;
         }
-        while (n > 0 && Character.isWhitespace(sStr.charAt(n - 1))) {
+        while (n > 0 && Character.isWhitespace(str.charAt(n - 1))) {
             n--;
         }
-        return sStr.substring(i, n);
+        return str.substring(i, n);
     }
 
-    public String getButtonLabel(String sClass, String sStr) {
-        if (buttonLabelMap.containsKey(sClass + "." + sStr)) {
-            return buttonLabelMap.get(sClass + "." + sStr);
+    public String getButtonLabel(String className, String str) {
+        if (buttonLabelMap.containsKey(className + "." + str)) {
+            return buttonLabelMap.get(className + "." + str);
         }
-        return sStr;
+        return str;
     }
 
-    public String getButtonLabel(Object o, String sStr) {
-        if (buttonLabelMap.containsKey(o.getClass().getName() + "." + sStr)) {
-            return buttonLabelMap.get(o.getClass().getName() + "." + sStr);
+    public String getButtonLabel(Object o, String str) {
+        if (buttonLabelMap.containsKey(o.getClass().getName() + "." + str)) {
+            return buttonLabelMap.get(o.getClass().getName() + "." + str);
         }
-        return sStr;
+        return str;
     }
 
-    public String getInputLabel(BEASTInterface beastObject, String sName) {
-        if (inputLabelMap.containsKey(beastObject.getClass().getName() + "." + sName)) {
-            sName = inputLabelMap.get(beastObject.getClass().getName() + "." + sName);
+    public String getInputLabel(BEASTInterface beastObject, String name) {
+        if (inputLabelMap.containsKey(beastObject.getClass().getName() + "." + name)) {
+            name = inputLabelMap.get(beastObject.getClass().getName() + "." + name);
         }
-        return sName;
+        return name;
     }
 
-    public boolean menuIsInvisible(String sMenuName) {
-        return sDisabledMenus.contains(sMenuName);
+    public boolean menuIsInvisible(String menuName) {
+        return disabledMenus.contains(menuName);
     }
 
     static BeautiSubTemplate NULL_TEMPLATE = new BeautiSubTemplate();
@@ -281,22 +281,22 @@ public class BeautiConfig extends BEASTObject {
         return NULL_TEMPLATE;
     }
 
-//	public static boolean hasDeleteButton(String sFullInputName) {
-//		if (!g_sEditButtonStatus.containsKey(sFullInputName)) {
+//	public static boolean hasDeleteButton(String fullInputName) {
+//		if (!g_sEditButtonStatus.containsKey(fullInputName)) {
 //			return true;
 //		}
-//		String sStatus = g_sEditButtonStatus.get(sFullInputName);
-//		if (sStatus.equals("none") || sStatus.equals("onlyadd")) {
+//		String status = g_sEditButtonStatus.get(fullInputName);
+//		if (status.equals("none") || status.equals("onlyadd")) {
 //			return false;
 //		}
 //		return true;
 //	}
-//	public static boolean hasAddButton(String sFullInputName) {
-//		if (!g_sEditButtonStatus.containsKey(sFullInputName)) {
+//	public static boolean hasAddButton(String fullInputName) {
+//		if (!g_sEditButtonStatus.containsKey(fullInputName)) {
 //			return true;
 //		}
-//		String sStatus = g_sEditButtonStatus.get(sFullInputName);
-//		if (sStatus.equals("none") || sStatus.equals("onlydel")) {
+//		String status = g_sEditButtonStatus.get(fullInputName);
+//		if (status.equals("none") || status.equals("onlydel")) {
 //			return false;
 //		}
 //		return true;

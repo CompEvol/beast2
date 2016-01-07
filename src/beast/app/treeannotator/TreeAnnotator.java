@@ -182,12 +182,12 @@ public class TreeAnnotator {
             lineNr = 0;
             try {
                 while (fin.ready()) {
-                    final String sStr = nextLine();
-                    if (sStr == null) {
+                    final String str = nextLine();
+                    if (str == null) {
                         return;
                     }
-                    final String sLower = sStr.toLowerCase();
-                    if (sLower.matches("^\\s*begin\\s+trees;\\s*$")) {
+                    final String lower = str.toLowerCase();
+                    if (lower.matches("^\\s*begin\\s+trees;\\s*$")) {
                         parseTreesBlock();
                         return;
                     }
@@ -202,26 +202,26 @@ public class TreeAnnotator {
          * read next line from Nexus file that is not a comment and not empty *
          */
         String nextLine() throws Exception {
-            String sStr = readLine();
-            if (sStr == null) {
+            String str = readLine();
+            if (str == null) {
                 return null;
             }
-            if (sStr.contains("[")) {
-                final int iStart = sStr.indexOf('[');
-                int iEnd = sStr.indexOf(']', iStart);
+            if (str.contains("[")) {
+                final int iStart = str.indexOf('[');
+                int iEnd = str.indexOf(']', iStart);
                 while (iEnd < 0) {
-                    sStr += readLine();
-                    iEnd = sStr.indexOf(']', iStart);
+                    str += readLine();
+                    iEnd = str.indexOf(']', iStart);
                 }
-                sStr = sStr.substring(0, iStart) + sStr.substring(iEnd + 1);
-                if (sStr.matches("^\\s*$")) {
+                str = str.substring(0, iStart) + str.substring(iEnd + 1);
+                if (str.matches("^\\s*$")) {
                     return nextLine();
                 }
             }
-            if (sStr.matches("^\\s*$")) {
+            if (str.matches("^\\s*$")) {
                 return nextLine();
             }
-            return sStr;
+            return str;
         }
 
         /**
@@ -237,13 +237,13 @@ public class TreeAnnotator {
 
         private void parseTreesBlock() throws Exception {
             // read to first non-empty line within trees block
-            String sStr = fin.readLine().trim();
-            while (sStr.equals("")) {
-                sStr = fin.readLine().trim();
+            String str = fin.readLine().trim();
+            while (str.equals("")) {
+                str = fin.readLine().trim();
             }
 
             // if first non-empty line is "translate" then parse translate block
-            if (sStr.toLowerCase().contains("translate")) {
+            if (str.toLowerCase().contains("translate")) {
                 translationMap = parseTranslateBlock();
                 origin = getIndexedTranslationMapOrigin(translationMap);
                 if (origin != -1) {
@@ -254,8 +254,8 @@ public class TreeAnnotator {
             // read bunrinCount trees
             current = 0;
             while (current < burninCount && fin.ready()) {
-    			sStr = nextLine();
-                if (sStr.toLowerCase().startsWith("tree ")) {
+    			str = nextLine();
+                if (str.toLowerCase().startsWith("tree ")) {
                 	current++;
                 }
             }
@@ -330,38 +330,38 @@ public class TreeAnnotator {
     	
     	@Override
 		Tree next() throws Exception {
-			String sStr = nextLine();
+			String str = nextLine();
     		if (!isNexus) {
                 TreeParser treeParser;
 
                 if (origin != -1) {
-                    treeParser = new TreeParser(taxa, sStr, origin, false);
+                    treeParser = new TreeParser(taxa, str, origin, false);
                 } else {
                     try {
-                        treeParser = new TreeParser(taxa, sStr, 0, false);
+                        treeParser = new TreeParser(taxa, str, 0, false);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        treeParser = new TreeParser(taxa, sStr, 1, false);
+                        treeParser = new TreeParser(taxa, str, 1, false);
                     }
                 }
                 return treeParser;
     		}
     		
             // read trees from NEXUS file
-            if (sStr.toLowerCase().startsWith("tree ")) {
+            if (str.toLowerCase().startsWith("tree ")) {
             	current++;
-                final int i = sStr.indexOf('(');
+                final int i = str.indexOf('(');
                 if (i > 0) {
-                    sStr = sStr.substring(i);
+                    str = str.substring(i);
                 }
                 TreeParser treeParser;
 
                 if (origin != -1) {
-                    treeParser = new TreeParser(taxa, sStr, origin, false);
+                    treeParser = new TreeParser(taxa, str, origin, false);
                 } else {
                     try {
-                        treeParser = new TreeParser(taxa, sStr, 0, false);
+                        treeParser = new TreeParser(taxa, str, 0, false);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        treeParser = new TreeParser(taxa, sStr, 1, false);
+                        treeParser = new TreeParser(taxa, str, 1, false);
                     }
                 }
 
@@ -514,16 +514,16 @@ public class TreeAnnotator {
                 if (targetTreeFileName != null) {
                     progressStream.println("Reading user specified target tree, " + targetTreeFileName);
                     
-                    String sTree = BeautiDoc.load(targetTreeFileName);
+                    String tree = BeautiDoc.load(targetTreeFileName);
                     
-                    if (sTree.startsWith("#NEXUS")) {
+                    if (tree.startsWith("#NEXUS")) {
                     	NexusParser parser2 = new NexusParser();
                     	parser2.parseFile(new File(targetTreeFileName));
                     	targetTree = parser2.trees.get(0);
                     } else {
 	                    try {
 		                    TreeParser parser2 = new TreeParser();
-		                    parser2.initByName("IsLabelledNewick", true, "newick", sTree);
+		                    parser2.initByName("IsLabelledNewick", true, "newick", tree);
 		                    targetTree = parser2;
 	                    } catch (Exception e) {
 	                        Log.err.println("Error Parsing Target Tree: " + e.getMessage());
@@ -614,8 +614,8 @@ public class TreeAnnotator {
             
             stream.print("tree TREE1 = ");
             int[] dummy = new int[1];
-            String sNewick = targetTree.getRoot().toSortedNewick(dummy, true);
-            stream.print(sNewick);
+            String newick = targetTree.getRoot().toSortedNewick(dummy, true);
+            stream.print(newick);
             stream.println(";");
 //            stream.println(targetTree.getRoot().toShortNewick(false));
 //            stream.println();

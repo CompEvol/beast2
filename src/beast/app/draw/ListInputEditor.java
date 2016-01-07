@@ -149,11 +149,11 @@ public class ListInputEditor extends InputEditor.Base {
             buttonBox.add(addButton);
             if (!doc.isExpertMode()) {
                 // if nothing can be added, make add button invisible
-                List<String> sTabuList = new ArrayList<>();
+                List<String> tabuList = new ArrayList<>();
                 for (int i = 0; i < m_entries.size(); i++) {
-                    sTabuList.add(m_entries.get(i).getText());
+                    tabuList.add(m_entries.get(i).getText());
                 }
-                List<String> beastObjectNames = doc.getInputEditorFactory().getAvailablePlugins(m_input, m_beastObject, sTabuList, doc);
+                List<String> beastObjectNames = doc.getInputEditorFactory().getAvailablePlugins(m_input, m_beastObject, tabuList, doc);
                 if (beastObjectNames.size() == 0) {
                     addButton.setVisible(false);
                 }
@@ -256,8 +256,8 @@ public class ListInputEditor extends InputEditor.Base {
                     }
                 }
             });
-            String sID = beastObject.getID();
-            expandBox.setVisible(!g_collapsedIDs.contains(sID));
+            String id = beastObject.getID();
+            expandBox.setVisible(!g_collapsedIDs.contains(id));
             try {
             if (expandBox.isVisible()) {
                 editButton.setImg(DOWN_ICON);
@@ -293,12 +293,12 @@ public class ListInputEditor extends InputEditor.Base {
      * @param beastObject  beastObject to add
      */
     protected InputEditor addPluginItem(Box itemBox, BEASTInterface beastObject) {
-        String sName = beastObject.getID();
-        if (sName == null || sName.length() == 0) {
-            sName = beastObject.getClass().getName();
-            sName = sName.substring(sName.lastIndexOf('.') + 1);
+        String name = beastObject.getID();
+        if (name == null || name.length() == 0) {
+            name = beastObject.getClass().getName();
+            name = name.substring(name.lastIndexOf('.') + 1);
         }
-        JLabel label = new JLabel(sName);
+        JLabel label = new JLabel(name);
 
         itemBox.add(Box.createRigidArea(new Dimension(5, 1)));
         itemBox.add(label);
@@ -331,20 +331,20 @@ public class ListInputEditor extends InputEditor.Base {
         }
 
         void processEntry() {
-            String sOldID = m_beastObject.getID();
+            String oldID = m_beastObject.getID();
             m_beastObject.setID(m_entry.getText());
-            BEASTObjectPanel.renamePluginID(m_beastObject, sOldID, m_beastObject.getID(), doc);
+            BEASTObjectPanel.renamePluginID(m_beastObject, oldID, m_beastObject.getID(), doc);
             validateAllEditors();
             m_entry.requestFocusInWindow();
         }
     }
 
     protected void addItem() {
-        List<String> sTabuList = new ArrayList<>();
+        List<String> tabuList = new ArrayList<>();
         for (int i = 0; i < m_entries.size(); i++) {
-            sTabuList.add(m_entries.get(i).getText());
+            tabuList.add(m_entries.get(i).getText());
         }
-        List<BEASTInterface> beastObjects = pluginSelector(m_input, m_beastObject, sTabuList);
+        List<BEASTInterface> beastObjects = pluginSelector(m_input, m_beastObject, tabuList);
         if (beastObjects != null) {
             for (BEASTInterface beastObject : beastObjects) {
                 try {
@@ -414,36 +414,36 @@ public class ListInputEditor extends InputEditor.Base {
         List<BEASTInterface> selectedPlugins = new ArrayList<>();
         List<String> beastObjectNames = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
         /* select a beastObject **/
-        String sClassName = null;
+        String className = null;
         if (beastObjectNames.size() == 1) {
             // if there is only one candidate, select that one
-            sClassName = beastObjectNames.get(0);
+            className = beastObjectNames.get(0);
         } else if (beastObjectNames.size() == 0) {
             // no candidate => we cannot be in expert mode
             // create a new BEASTObject
             doc.setExpertMode(true);
             beastObjectNames = doc.getInputEditorFactory().getAvailablePlugins(input, parent, tabooList, doc);
             doc.setExpertMode(false);
-            sClassName = beastObjectNames.get(0);
+            className = beastObjectNames.get(0);
         } else {
             // otherwise, pop up a list box
-            sClassName = (String) JOptionPane.showInputDialog(null,
+            className = (String) JOptionPane.showInputDialog(null,
                     "Select a constant", "select",
                     JOptionPane.PLAIN_MESSAGE, null,
                     beastObjectNames.toArray(new String[0]),
                     null);
-            if (sClassName == null) {
+            if (className == null) {
                 return null;
             }
         }
-        if (!sClassName.startsWith("new ")) {
+        if (!className.startsWith("new ")) {
             /* return existing beastObject */
-            selectedPlugins.add(doc.pluginmap.get(sClassName));
+            selectedPlugins.add(doc.pluginmap.get(className));
             return selectedPlugins;
         }
         /* create new beastObject */
         try {
-            BEASTInterface beastObject = (BEASTInterface) Class.forName(sClassName.substring(4)).newInstance();
+            BEASTInterface beastObject = (BEASTInterface) Class.forName(className.substring(4)).newInstance();
             BEASTObjectPanel.addPluginToMap(beastObject, doc);
             selectedPlugins.add(beastObject);
             return selectedPlugins;

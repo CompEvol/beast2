@@ -250,7 +250,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             g.setFont(new Font(font.getName(), font.getStyle(), 10));
             try {
                 FontMetrics fontMetrics = g.getFontMetrics();
-                String[] sStrs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
+                String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
                 Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
             	mayBeUnstable = false;
                 for (k = 0; k < 5; k++) {
@@ -262,7 +262,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                     } catch (MathException e) {
                         g.drawString("not available", nGraphWidth / 2 + leftMargin, y);
                     }
-                    g.drawString(sStrs[k], nGraphWidth / 2 - fontMetrics.stringWidth(sStrs[k]) + leftMargin - 10, y);
+                    g.drawString(strs[k], nGraphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - 10, y);
                 }
                 if (mayBeUnstable) {
                 	int x = nGraphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + nGraphHeight + bottomMargin + 10;

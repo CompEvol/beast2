@@ -168,11 +168,11 @@ public class RateStatistic extends BEASTObject implements Loggable, Function {
 
     @Override
     public void init(final PrintStream out) throws Exception {
-        String sID = getID();
-        if (sID == null) {
-            sID = "";
+        String id = getID();
+        if (id == null) {
+            id = "";
         }
-        out.print(sID + ".mean\t" + sID + ".variance\t" + sID + ".coefficientOfVariation\t");
+        out.print(id + ".mean\t" + id + ".variance\t" + id + ".coefficientOfVariation\t");
     }
 
 

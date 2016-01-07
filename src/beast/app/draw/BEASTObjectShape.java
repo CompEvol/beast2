@@ -69,20 +69,20 @@ public class BEASTObjectShape extends Shape {
         parse(node, doc, reconstructBEASTObjects);
     }
 
-    public void init(String sClassName, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void init(String className, Document doc) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
     	m_doc = doc;
         if (m_beastObject == null) {
-            m_beastObject = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
+            m_beastObject = (beast.core.BEASTInterface) Class.forName(className).newInstance();
         }
         m_inputs = new ArrayList<>();
         if (m_beastObject.getID() == null) {
-        	String sID = m_beastObject.getClass().getName();
-        	sID = sID.substring(sID.lastIndexOf('.') + 1);
-        	m_beastObject.setID(sID);
+        	String id = m_beastObject.getClass().getName();
+        	id = id.substring(id.lastIndexOf('.') + 1);
+        	m_beastObject.setID(id);
         }
         //System.err.println("\n>>>>" + m_beastObject.getID());        
-        List<Input<?>> sInputs = m_beastObject.listInputs();
-        for (Input<?> input_ : sInputs) {
+        List<Input<?>> inputs = m_beastObject.listInputs();
+        for (Input<?> input_ : inputs) {
 			String longInputName = m_beastObject.getClass().getName() + "." + input_.getName(); 
 			//System.err.print(longInputName);
         	if (doc.showAllInputs() ||
@@ -105,15 +105,15 @@ public class BEASTObjectShape extends Shape {
         adjustInputs();
     } // setClassName
 
-    // find input shape associated with input with name sLabel
-    InputShape getInputShape(String sLabel) {
+    // find input shape associated with input with name label
+    InputShape getInputShape(String label) {
         for (InputShape shape : m_inputs) {
-            String sLabel2 = shape.getLabel();
-            if (sLabel2 != null) {
-                if (sLabel2.contains("=")) {
-                    sLabel2 = sLabel2.substring(0, sLabel2.indexOf('='));
+            String label2 = shape.getLabel();
+            if (label2 != null) {
+                if (label2.contains("=")) {
+                    label2 = label2.substring(0, label2.indexOf('='));
                 }
-                if (sLabel2.equals(sLabel)) {
+                if (label2.equals(label)) {
                     return shape;
                 }
             }
@@ -173,22 +173,22 @@ public class BEASTObjectShape extends Shape {
         super.parse(node, doc, reconstructBEASTObjects);
         if (reconstructBEASTObjects) {
             if (node.getAttributes().getNamedItem("class") != null) {
-                String sClassName = node.getAttributes().getNamedItem("class").getNodeValue();
+                String className = node.getAttributes().getNamedItem("class").getNodeValue();
                 try {
-                    m_beastObject = (beast.core.BEASTInterface) Class.forName(sClassName).newInstance();
+                    m_beastObject = (beast.core.BEASTInterface) Class.forName(className).newInstance();
                     m_beastObject.setID(m_sID);
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
             }
             if (node.getAttributes().getNamedItem("inputids") != null) {
-                String sInputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
-                String[] sInputID = sInputIDs.split(" ");
+                String inputIDs = node.getAttributes().getNamedItem("inputids").getNodeValue();
+                String[] inputID = inputIDs.split(" ");
                 m_inputs = new ArrayList<>();
                 try {
                     //List<Input<?>> inputs = m_beastObject.listInputs();
-                    for (int i = 0; i < sInputID.length; i++) {
-                        InputShape ellipse = (InputShape) doc.findObjectWithID(sInputID[i]);
+                    for (int i = 0; i < inputID.length; i++) {
+                        InputShape ellipse = (InputShape) doc.findObjectWithID(inputID[i]);
                         m_inputs.add(ellipse);
                         ellipse.setPluginShape(this);
                         //ellipse.m_input = inputs.get(i);

@@ -104,8 +104,8 @@ public class Document {
 
     public Document() {
         // load all parsers
-        List<String> sPlugInNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
-        m_sPlugInNames = sPlugInNames.toArray(new String[0]);
+        List<String> plugInNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
+        m_sPlugInNames = plugInNames.toArray(new String[0]);
         tabulist = new HashSet<>();
         Properties properties = new Properties();
         try {
@@ -227,14 +227,14 @@ public class Document {
         adjustArrows();
     } // movePoint
 
-    boolean containsID(String sID, List<Shape> objects, List<String> tabulist) {
+    boolean containsID(String id, List<Shape> objects, List<String> tabulist) {
         for (Shape shape : m_objects) {
-            if (shape.getID().equals(sID)) {
+            if (shape.getID().equals(id)) {
                 return true;
             }
 //            if (shape instanceof Group) {
 //                Group group = (Group) shape;
-//                if (containsID(sID, group.m_objects, tabulist)) {
+//                if (containsID(id, group.m_objects, tabulist)) {
 //                    return true;
 //                }
 //            }
@@ -242,8 +242,8 @@ public class Document {
         if (tabulist == null) {
             return false;
         }
-        for (String sTabuID : tabulist) {
-            if (sTabuID.equals(sID)) {
+        for (String tabuID : tabulist) {
+            if (tabuID.equals(id)) {
                 return true;
             }
         }
@@ -252,12 +252,12 @@ public class Document {
 
     String getNewID(List<String> tabulist) {
         int nID = m_objects.size();
-        String sID = "id" + nID;
-        while (containsID(sID, m_objects, tabulist)) {
+        String id = "id" + nID;
+        while (containsID(id, m_objects, tabulist)) {
             nID++;
-            sID = "id" + nID;
+            id = "id" + nID;
         }
-        return sID;
+        return id;
     }
 
     void setPluginID(BEASTObjectShape shape) {
@@ -265,17 +265,17 @@ public class Document {
             return;
         }
         BEASTInterface beastObject = shape.m_beastObject;
-        String sBase = beastObject.getClass().getName().replaceAll(".*\\.", "");
+        String base = beastObject.getClass().getName().replaceAll(".*\\.", "");
         int nID = 0;
-        while (containsID(sBase + nID, m_objects, null)) {
+        while (containsID(base + nID, m_objects, null)) {
             nID++;
         }
-        beastObject.setID(sBase + nID);
+        beastObject.setID(base + nID);
     }
 
-    Shape getShapeByID(String sID) {
+    Shape getShapeByID(String id) {
         for (Shape shape : m_objects) {
-            if (shape.getID().equals(sID)) {
+            if (shape.getID().equals(id)) {
                 return shape;
             }
         }
@@ -335,13 +335,13 @@ public class Document {
         }
     }
 
-    List<Integer> getConnectedArrows(List<String> sIDs, List<Integer> selection) {
+    List<Integer> getConnectedArrows(List<String> iDs, List<Integer> selection) {
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = m_objects.get(i);
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
-                for (int j = 0; j < sIDs.size(); j++) {
-                    if (arrow.m_sHeadID.startsWith(sIDs.get(j)) || arrow.m_sTailID.equals(sIDs.get(j))) {
+                for (int j = 0; j < iDs.size(); j++) {
+                    if (arrow.m_sHeadID.startsWith(iDs.get(j)) || arrow.m_sTailID.equals(iDs.get(j))) {
                         if (!selection.contains(new Integer(i))) {
                             selection.add(new Integer(i));
                         }
@@ -352,14 +352,14 @@ public class Document {
         return selection;
     }
 
-    List<String> getIncomingArrows(List<String> sIDs) {
+    List<String> getIncomingArrows(List<String> iDs) {
         List<String> selection = new ArrayList<>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = m_objects.get(i);
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
-                for (int j = 0; j < sIDs.size(); j++) {
-                    if (arrow.m_sHeadID.equals(sIDs.get(j))) {
+                for (int j = 0; j < iDs.size(); j++) {
+                    if (arrow.m_sHeadID.equals(iDs.get(j))) {
                         if (!selection.contains(arrow.m_sTailID)) {
                             selection.add(arrow.m_sTailID);
                         }
@@ -370,14 +370,14 @@ public class Document {
         return selection;
     }
 
-    List<String> getOutgoingArrows(List<String> sIDs) {
+    List<String> getOutgoingArrows(List<String> iDs) {
         List<String> selection = new ArrayList<>();
         for (int i = 0; i < m_objects.size(); i++) {
             Shape shape = m_objects.get(i);
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
-                for (int j = 0; j < sIDs.size(); j++) {
-                    if (arrow.m_sTailID.equals(sIDs.get(j))) {
+                for (int j = 0; j < iDs.size(); j++) {
+                    if (arrow.m_sTailID.equals(iDs.get(j))) {
                         if (!selection.contains(arrow.m_sTailID)) {
                             selection.add(arrow.m_sTailID);
                         }
@@ -389,12 +389,12 @@ public class Document {
     }
 
     public void deleteShapes(List<Integer> selection) {
-        List<String> sIDs = new ArrayList<>();
+        List<String> iDs = new ArrayList<>();
         for (int j = 0; j < selection.size(); j++) {
-            sIDs.add(m_objects.get(selection.get(j).intValue()).getID());
+            iDs.add(m_objects.get(selection.get(j).intValue()).getID());
 
         }
-        selection = getConnectedArrows(sIDs, selection);
+        selection = getConnectedArrows(iDs, selection);
         UndoAction action = new MultiObjectAction(selection, UndoAction.DEL_GROUP_ACTION);
         addUndoAction(action);
         action.redo();
@@ -414,8 +414,8 @@ public class Document {
         tabulist.add(shape.getID());
     } // ensureUniqueID
 
-    public void pasteShape(String sXML) {
-        List<Shape> shapes = XML2Shapes(sXML, true);
+    public void pasteShape(String xml) {
+        List<Shape> shapes = XML2Shapes(xml, true);
         if (shapes.size() == 0) {
             return;
         }
@@ -506,9 +506,9 @@ public class Document {
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
                 if (arrow.m_sHeadID.equals(ellipse.getID())) {
-                    String sTailID = arrow.m_sTailID;
+                    String tailID = arrow.m_sTailID;
                     for (int i = 0; i < m_objects.size(); i++) {
-                        if (m_objects.get(i).getID().equals(sTailID)) {
+                        if (m_objects.get(i).getID().equals(tailID)) {
                             selection.add(i);
                         }
                     }
@@ -598,10 +598,10 @@ public class Document {
         shape.setY2(nY);
     }
 
-    public void setID(String sID, int iObject) {
+    public void setID(String id, int iObject) {
         addUndoAction(new UndoAction(iObject, UndoAction.SET_LABEL_ACTION));
         Shape shape = m_objects.get(iObject);
-        ((BEASTObjectShape) shape).m_beastObject.setID(sID);
+        ((BEASTObjectShape) shape).m_beastObject.setID(id);
     }
 
     public void toggleFilled(int iObject) {
@@ -610,9 +610,9 @@ public class Document {
         shape.toggleFilled();
     }
 
-    void setInputValue(BEASTObjectShape beastObjectShape, String sInput, String sValue) throws Exception {
-        addUndoAction(new SetInputAction(beastObjectShape, sInput, sValue));
-        //beastObjectShape.m_beastObject.setInputValue(sInput, sValue);
+    void setInputValue(BEASTObjectShape beastObjectShape, String input, String valueString) throws Exception {
+        addUndoAction(new SetInputAction(beastObjectShape, input, valueString));
+        //beastObjectShape.m_beastObject.setInputValue(input, valueString);
     }
 
     /**
@@ -623,10 +623,10 @@ public class Document {
         String m_sInput;
         String m_sValue;
 
-        SetInputAction(BEASTObjectShape beastObjectShape, String sInput, String sValue) {
+        SetInputAction(BEASTObjectShape beastObjectShape, String input, String valueString) {
             m_beastObjectShape = beastObjectShape;
-            m_sInput = sInput;
-            m_sValue = sValue;
+            m_sInput = input;
+            m_sValue = valueString;
             doit();
         }
 
@@ -643,9 +643,9 @@ public class Document {
         @Override
 		void doit() {
             try {
-                String sValue = m_beastObjectShape.m_beastObject.getInput(m_sInput).get().toString();
+                String valueString = m_beastObjectShape.m_beastObject.getInput(m_sInput).get().toString();
                 m_beastObjectShape.m_beastObject.setInputValue(m_sInput, m_sValue);
-                m_sValue = sValue;
+                m_sValue = valueString;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1036,13 +1036,13 @@ public class Document {
         }
 
         void doit() {
-            String sXML = "<doc>";
+            String xml = "<doc>";
             for (int i = 0; i < m_nPositions.size(); i++) {
                 int iShape = m_nPositions.get(i).intValue();
                 Shape shape = m_objects.get(iShape);
-                sXML += shape.getXML();
+                xml += shape.getXML();
             }
-            sXML += "</doc>";
+            xml += "</doc>";
             List<Shape> shapes = XML2Shapes(m_sXML, false);
             for (int i = 0; i < m_nPositions.size(); i++) {
                 int iShape = m_nPositions.get(i).intValue();
@@ -1051,7 +1051,7 @@ public class Document {
                 ((BEASTObjectShape) shape).m_beastObject = ((BEASTObjectShape) originalShape).m_beastObject;
                 originalShape.assignFrom(shape);
             }
-            m_sXML = sXML;
+            m_sXML = xml;
         }
     } // class UndoAction
 
@@ -1347,10 +1347,10 @@ public class Document {
     } // redo
 
 
-    BEASTObjectShape getPluginShapeWithLabel(String sLabel) {
+    BEASTObjectShape getPluginShapeWithLabel(String label) {
         for (Shape shape : m_objects) {
             if (shape instanceof BEASTObjectShape) {
-                if (shape.getLabel() != null && shape.getLabel().equals(sLabel)) {
+                if (shape.getLabel() != null && shape.getLabel().equals(label)) {
                     return (BEASTObjectShape) shape;
                 }
             }
@@ -1358,10 +1358,10 @@ public class Document {
         return null;
     }
 
-    InputShape getInputShapeWithID(String sLabel) {
+    InputShape getInputShapeWithID(String label) {
         for (Shape shape : m_objects) {
             if (shape instanceof InputShape) {
-                if (shape.getID() != null && shape.getID().equals(sLabel)) {
+                if (shape.getID() != null && shape.getID().equals(label)) {
                     return (InputShape) shape;
                 }
             }
@@ -1372,7 +1372,7 @@ public class Document {
     final static int DX = 120;
     final static int DY = 80;
 
-    void addInput(BEASTObjectShape shape, Object o2, int nDepth, String sInput) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void addInput(BEASTObjectShape shape, Object o2, int nDepth, String input) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         if (o2 instanceof BEASTInterface) {
             BEASTObjectShape shape2 = getPluginShapeWithLabel(((BEASTInterface) o2).getID());
             if (shape2 == null) {
@@ -1389,8 +1389,8 @@ public class Document {
 
     void process(BEASTObjectShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         BEASTInterface beastObject = shape.m_beastObject;
-        List<Input<?>> sInputs = beastObject.listInputs();
-        for (Input<?> input_ : sInputs) {
+        List<Input<?>> inputs = beastObject.listInputs();
+        for (Input<?> input_ : inputs) {
             Object o = input_.get();
             if (o != null) {
                 if (o instanceof List<?>) {
@@ -1407,22 +1407,22 @@ public class Document {
     }
 
 
-    public void loadFile(String sFileName) {
+    public void loadFile(String fileName) {
         m_objects.clear();
         XMLParser parser = new XMLParser();
         try {
-            //sFileName;
-            StringBuilder sXML = new StringBuilder();
+            //fileName;
+            StringBuilder xml = new StringBuilder();
             String NL = System.getProperty("line.separator");
-            Scanner scanner = new Scanner(new File(sFileName));
+            Scanner scanner = new Scanner(new File(fileName));
             try {
                 while (scanner.hasNextLine()) {
-                    sXML.append(scanner.nextLine() + NL);
+                    xml.append(scanner.nextLine() + NL);
                 }
             } finally {
                 scanner.close();
             }
-            BEASTInterface plugin0 = parser.parseBareFragment(sXML.toString(), false);
+            BEASTInterface plugin0 = parser.parseBareFragment(xml.toString(), false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1431,11 +1431,11 @@ public class Document {
     }
     
     void reinit() {
-    	String sXML = toXML();
+    	String xml = toXML();
         m_objects.clear();
         try {
             XMLParser parser = new XMLParser();
-            BEASTInterface plugin0 = parser.parseBareFragment(sXML, false);
+            BEASTInterface plugin0 = parser.parseBareFragment(xml, false);
             init(plugin0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1487,13 +1487,13 @@ public class Document {
         adjustArrows();
     } // init
 
-    List<Shape> XML2Shapes(String sXML, boolean reconstructBEASTObjects) {
+    List<Shape> XML2Shapes(String xml, boolean reconstructBEASTObjects) {
         List<Shape> shapes = new ArrayList<>();
         m_tmpobjects = shapes;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(false);
-            org.w3c.dom.Document doc = factory.newDocumentBuilder().parse(new org.xml.sax.InputSource(new StringReader(sXML)));
+            org.w3c.dom.Document doc = factory.newDocumentBuilder().parse(new org.xml.sax.InputSource(new StringReader(xml)));
             doc.normalize();
             NodeList nodes = doc.getDocumentElement().getChildNodes();
             for (int iNode = 0; iNode < nodes.getLength(); iNode++) {
@@ -1581,16 +1581,16 @@ public class Document {
         return ascendants.contains(source);
     }
 
-    Shape findObjectWithID(String sID) {
+    Shape findObjectWithID(String id) {
         if (m_tmpobjects != null) {
             for (int i = 0; i < m_tmpobjects.size(); i++) {
-                if (m_tmpobjects.get(i).getID().equals(sID)) {
+                if (m_tmpobjects.get(i).getID().equals(id)) {
                     return m_tmpobjects.get(i);
                 }
             }
         }
         for (int i = 0; i < m_objects.size(); i++) {
-            if (m_objects.get(i).getID().equals(sID)) {
+            if (m_objects.get(i).getID().equals(id)) {
                 return m_objects.get(i);
             }
         }
@@ -1750,18 +1750,18 @@ public class Document {
 
             if (shape instanceof Arrow) {
                 Arrow arrow = (Arrow) shape;
-                String sID = arrow.m_tailShape.getID();
+                String id = arrow.m_tailShape.getID();
                 if (arrow.m_headShape instanceof InputShape) {
-                    String sID2 = arrow.m_headShape.m_beastObjectShape.getID();
-                    if (degreeMap.containsKey(sID)) {
-                        degreeMap.put(sID, degreeMap.get(sID) + 1);
+                    String id2 = arrow.m_headShape.m_beastObjectShape.getID();
+                    if (degreeMap.containsKey(id)) {
+                        degreeMap.put(id, degreeMap.get(id) + 1);
                     } else {
-                        degreeMap.put(sID, 1);
+                        degreeMap.put(id, 1);
                     }
-                    if (degreeMap.containsKey(sID2)) {
-                        degreeMap.put(sID2, degreeMap.get(sID2) + 1);
+                    if (degreeMap.containsKey(id2)) {
+                        degreeMap.put(id2, degreeMap.get(id2) + 1);
                     } else {
-                        degreeMap.put(sID2, 1);
+                        degreeMap.put(id2, 1);
                     }
                 }
             }

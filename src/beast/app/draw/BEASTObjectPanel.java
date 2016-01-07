@@ -74,13 +74,13 @@ public class BEASTObjectPanel extends JPanel {
 //        g_inputEditorMap = new HashMap<>, String>();
 //        g_listInputEditorMap = new HashMap<>, String>();
 //
-////        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
+////        String [] knownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
 ////        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
-////        registerInputEditors(sKnownEditors);
+////        registerInputEditors(knownEditors);
 //        String[] PACKAGE_DIRS = {"beast.app",};
-//        for (String sPackage : PACKAGE_DIRS) {
-//            List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
-//            registerInputEditors(sInputEditors.toArray(new String[0]));
+//        for (String packageName : PACKAGE_DIRS) {
+//            List<String> inputEditors = AddOnManager.find("beast.app.draw.InputEditor", packageName);
+//            registerInputEditors(inputEditors.toArray(new String[0]));
 //        }
 
         m_position = new Point(0, 0);
@@ -95,11 +95,11 @@ public class BEASTObjectPanel extends JPanel {
     public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, List<BEASTInterface> beastObjects, BeautiDoc doc) {
         //g_plugins = new HashMap<>();
         for (BEASTInterface beastObject2 : beastObjects) {
-            String sID = getID(beastObject2);
+            String id = getID(beastObject2);
             // ensure IDs are unique
-            if (g_plugins.containsKey(sID)) {
+            if (g_plugins.containsKey(id)) {
                 beastObject2.setID(null);
-                sID = getID(beastObject2);
+                id = getID(beastObject2);
             }
             registerPlugin(getID(beastObject2), beastObject2, doc);
         }
@@ -111,7 +111,7 @@ public class BEASTObjectPanel extends JPanel {
      *
      * @return true if it was already registered *
      */
-    static public boolean registerPlugin(String sID, BEASTInterface beastObject, BeautiDoc doc) {
+    static public boolean registerPlugin(String id, BEASTInterface beastObject, BeautiDoc doc) {
         if (doc != null) {
             doc.registerPlugin(beastObject);
         }
@@ -127,23 +127,23 @@ public class BEASTObjectPanel extends JPanel {
 //    	if (beastObject instanceof Distribution) {
 //    		g_distributions.add((Distribution)beastObject);
 //    	}
-        if (g_plugins.containsKey(sID) && g_plugins.get(sID) == beastObject) {
+        if (g_plugins.containsKey(id) && g_plugins.get(id) == beastObject) {
             return true;
         }
-        g_plugins.put(sID, beastObject);
+        g_plugins.put(id, beastObject);
         return false;
     }
 
-    public static void renamePluginID(BEASTInterface beastObject, String sOldID, String sID, BeautiDoc doc) {
+    public static void renamePluginID(BEASTInterface beastObject, String oldID, String id, BeautiDoc doc) {
         if (doc != null) {
             doc.unregisterPlugin(beastObject);
         }
-        g_plugins.remove(sOldID);
-//		g_operators.remove(sOldID);
-//		g_stateNodes.remove(sOldID);
-//		g_loggers.remove(sOldID);
-//		g_distributions.remove(sOldID);
-        registerPlugin(sID, beastObject, doc);
+        g_plugins.remove(oldID);
+//		g_operators.remove(oldID);
+//		g_stateNodes.remove(oldID);
+//		g_loggers.remove(oldID);
+//		g_distributions.remove(oldID);
+        registerPlugin(id, beastObject, doc);
     }
 
     public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, BeautiDoc doc) {
@@ -214,8 +214,8 @@ public class BEASTObjectPanel extends JPanel {
         try {
             List<Input<?>> inputs = beastObject.listInputs();
             for (Input<?> input : inputs) {
-                String sFullInputName = beastObject.getClass().getName() + "." + input.getName();
-                if (!doc.beautiConfig.suppressBEASTObjects.contains(sFullInputName)) {
+                String fullInputName = beastObject.getClass().getName() + "." + input.getName();
+                if (!doc.beautiConfig.suppressBEASTObjects.contains(fullInputName)) {
                     nInputs++;
                 }
             }
@@ -232,7 +232,7 @@ public class BEASTObjectPanel extends JPanel {
      */
     Box createPluginBox() {
         Box box = Box.createHorizontalBox();
-        //sJLabel icon = new JLabel();
+        //jLabel icon = new JLabel();
         box.add(Box.createHorizontalGlue());
 
         JLabel label = new JLabel(m_beastObjectClass.getName().replaceAll(".*\\.", "") + ":");
@@ -245,19 +245,19 @@ public class BEASTObjectPanel extends JPanel {
 //		m_pluginButton.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
-//				List<String> sClasses = ClassDiscovery.find(m_pluginClass, "beast"); 
-//				String sClassName = (String) JOptionPane.showInputDialog(null,
+//				List<String> classes = ClassDiscovery.find(m_pluginClass, "beast"); 
+//				String className = (String) JOptionPane.showInputDialog(null,
 //						"Select another type of " + m_pluginClass.getName().replaceAll(".*\\.", ""), 
 //						"Select",
 //						JOptionPane.PLAIN_MESSAGE, null,
-//						sClasses.toArray(new String[0]),
+//						classes.toArray(new String[0]),
 //						null);
-//				if (sClassName.equals(m_beastObject.getClass().getName())) {
+//				if (className.equals(m_beastObject.getClass().getName())) {
 //					return;
 //				}
 //				try {
-//					m_beastObject = (BEASTObject) Class.forName(sClassName).newInstance();
-//					m_pluginButton.setText(sClassName.replaceAll(".*\\.", ""));
+//					m_beastObject = (BEASTObject) Class.forName(className).newInstance();
+//					m_pluginButton.setText(className.replaceAll(".*\\.", ""));
 //					// TODO: replace InputEditors where appropriate.
 //					
 //				} catch (Exception ex) {
@@ -418,12 +418,12 @@ public class BEASTObjectPanel extends JPanel {
      */
     public static String getID(BEASTInterface beastObject) {
         if (beastObject.getID() == null || beastObject.getID().length() == 0) {
-            String sID = beastObject.getClass().getName().replaceAll(".*\\.", "");
+            String id = beastObject.getClass().getName().replaceAll(".*\\.", "");
             int i = 0;
-            while (g_plugins.containsKey(sID + i)) {
+            while (g_plugins.containsKey(id + i)) {
                 i++;
             }
-            beastObject.setID(sID + "." + i);
+            beastObject.setID(id + "." + i);
         }
         return beastObject.getID();
     }
@@ -469,8 +469,8 @@ public class BEASTObjectPanel extends JPanel {
         pluginPanel.setVisible(true);
         if (pluginPanel.m_bOK) {
             BEASTInterface beastObject = pluginPanel.m_beastObject;
-            String sXML = new XMLProducer().modelToXML(beastObject);
-            System.out.println(sXML);
+            String xml = new XMLProducer().modelToXML(beastObject);
+            System.out.println(xml);
         }
     } // main
 

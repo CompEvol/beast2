@@ -42,16 +42,16 @@ public class ExampleXmlParsingTest extends TestCase {
             Randomizer.setSeed(127);
             Logger.FILE_MODE = Logger.LogFileMode.overwrite;
             System.out.println("Test XML Examples in " + dir);
-            File sExampleDir = new File(dir);
-            String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
+            File exampleDir = new File(dir);
+            String[] exampleFiles = exampleDir.list(new FilenameFilter() {
                 @Override
 				public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
                 }
             });
 
-            List<String> sFailedFiles = new ArrayList<String>();
-            for (String fileName : sExampleFiles) {
+            List<String> failedFiles = new ArrayList<String>();
+            for (String fileName : exampleFiles) {
                 System.out.println("Processing " + fileName);
                 XMLParser parser = new XMLParser();
                 try {
@@ -59,16 +59,16 @@ public class ExampleXmlParsingTest extends TestCase {
                 } catch (Exception e) {
                     System.out.println("ExampleXmlParsing::Failed for " + fileName
                             + ": " + e.getMessage());
-                    sFailedFiles.add(fileName);
+                    failedFiles.add(fileName);
                 }
                 System.out.println("Done " + fileName);
             }
-            if (sFailedFiles.size() > 0) {
-                System.out.println("\ntest_ThatXmlExamplesParse::Failed for : " + sFailedFiles.toString());
+            if (failedFiles.size() > 0) {
+                System.out.println("\ntest_ThatXmlExamplesParse::Failed for : " + failedFiles.toString());
             } else {
                 System.out.println("\ntest_ThatXmlExamplesParse::Success");
             }
-            assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
+            assertTrue(failedFiles.toString(), failedFiles.size() == 0);
         } catch (Exception e) {
             System.out.println("exception thrown ");
             System.out.println(e.getMessage());
@@ -85,17 +85,17 @@ public class ExampleXmlParsingTest extends TestCase {
         try {
             Logger.FILE_MODE = Logger.LogFileMode.overwrite;
             System.out.println("Test that XML Examples run in " + dir);
-            File sExampleDir = new File(dir);
-            String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
+            File exampleDir = new File(dir);
+            String[] exampleFiles = exampleDir.list(new FilenameFilter() {
                 @Override
 				public boolean accept(File dir, String name) {
                     return name.endsWith(".xml");
                 }
             });
 
-            List<String> sFailedFiles = new ArrayList<String>();
+            List<String> failedFiles = new ArrayList<String>();
             int nSeed = 127;
-            for (String fileName : sExampleFiles) {
+            for (String fileName : exampleFiles) {
                 Randomizer.setSeed(nSeed);
                 nSeed += 10; // need more than one to prevent trouble with multiMCMC logs
                 System.out.println("Processing " + fileName);
@@ -111,16 +111,16 @@ public class ExampleXmlParsingTest extends TestCase {
                 } catch (Exception e) {
                     System.out.println("ExampleXmlParsing::Failed for " + fileName
                             + ": " + e.getMessage());
-                    sFailedFiles.add(fileName);
+                    failedFiles.add(fileName);
                 }
                 System.out.println("Done " + fileName);
             }
-            if (sFailedFiles.size() > 0) {
-                System.out.println("\ntest_ThatXmlExamplesRun::Failed for : " + sFailedFiles.toString());
+            if (failedFiles.size() > 0) {
+                System.out.println("\ntest_ThatXmlExamplesRun::Failed for : " + failedFiles.toString());
             } else {
                 System.out.println("SUCCESS!!!");
             }
-            assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
+            assertTrue(failedFiles.toString(), failedFiles.size() == 0);
         } catch (Exception e) {
             System.out.println("exception thrown ");
             System.out.println(e.getMessage());

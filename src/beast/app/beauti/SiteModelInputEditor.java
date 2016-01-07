@@ -165,9 +165,9 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     }
 
     void processEntry2() {
-        String sCategories = categoryCountEntry.getText();
+        String categories = categoryCountEntry.getText();
         try {
-            int nCategories = Integer.parseInt(sCategories);
+            int nCategories = Integer.parseInt(categories);
             gammaShapeEditor.getComponent().setVisible(nCategories >= 2);
             repaint();
         } catch (java.lang.NumberFormatException e) {

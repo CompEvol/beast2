@@ -247,8 +247,8 @@ public class AppStore {
     List<PackageApp> getPackageApps() {
         List<PackageApp> packageApps = new ArrayList<>();
         List<String> dirs = AddOnManager.getBeastDirectories();
-        for (String sJarDir : dirs) {
-            File versionFile = new File(sJarDir + "/version.xml");
+        for (String jarDirName : dirs) {
+            File versionFile = new File(jarDirName + "/version.xml");
             if (versionFile.exists() && versionFile.isFile()) {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 Document doc;
@@ -262,7 +262,7 @@ public class AppStore {
                         Element addOnAppElement = (Element) nodes.item(j);
                         PackageApp packageApp = new PackageApp();
                         packageApp.packageName = addon.getAttribute("name");
-                        packageApp.jarDir = sJarDir;
+                        packageApp.jarDir = jarDirName;
                         packageApp.className = addOnAppElement.getAttribute("class");
                         packageApp.description = addOnAppElement.getAttribute("description");
                         packageApp.argumentsString = addOnAppElement.getAttribute("args");

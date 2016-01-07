@@ -44,19 +44,19 @@ public class PackageDependency implements Comparable<Object> {
     Double atLeast;
     Double atMost;
 
-    public void setAtLest(String sAtLeast) {
-        if (sAtLeast == null || sAtLeast.length() == 0) {
+    public void setAtLest(String atLeastString) {
+        if (atLeastString == null || atLeastString.length() == 0) {
             atLeast = 0.0;
         } else {
-            atLeast = beastVersion.parseVersion(sAtLeast);
+            atLeast = beastVersion.parseVersion(atLeastString);
         }
     }
 
-    public void setAtMost(String sAtMost) {
-        if (sAtMost == null || sAtMost.length() == 0) {
+    public void setAtMost(String atMostString) {
+        if (atMostString == null || atMostString.length() == 0) {
             atMost = Double.POSITIVE_INFINITY;
         } else {
-            atMost = beastVersion.parseVersion(sAtMost);
+            atMost = beastVersion.parseVersion(atMostString);
         }
     }
 

@@ -115,38 +115,38 @@ public class LogCombiner extends LogAnalyser {
     Double[][] m_fCombinedTraces;
 
     private void combineParticleLogs() {
-        List<String> sLogs = new ArrayList<>();
+        List<String> logs = new ArrayList<>();
         for (int i = 0; i < m_nParticles; i++) {
-            String sDir = m_sParticleDir + "/particle" + i;
-            File dir = new File(sDir);
+            String dirName = m_sParticleDir + "/particle" + i;
+            File dir = new File(dirName);
             if (!dir.exists() || !dir.isDirectory()) {
-                throw new IllegalArgumentException("Could not process particle " + i + ". Expected " + sDir + " to be a directory, but it is not.");
+                throw new IllegalArgumentException("Could not process particle " + i + ". Expected " + dirName + " to be a directory, but it is not.");
             }
-            sLogs.add(sDir + "/" + m_sLogFileName.get(0));
+            logs.add(dirName + "/" + m_sLogFileName.get(0));
         }
-        int[] nBurnIns = new int[sLogs.size()];
+        int[] nBurnIns = new int[logs.size()];
         Arrays.fill(nBurnIns, m_nBurninPercentage);
         try {
-			combineLogs(sLogs.toArray(new String[0]), nBurnIns);
+			combineLogs(logs.toArray(new String[0]), nBurnIns);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e.getMessage());
 		}
     }
 
-    private void combineLogs(String[] sLogs, int[] nBurbIns) throws IOException {
+    private void combineLogs(String[] logs, int[] nBurbIns) throws IOException {
         m_fCombinedTraces = null;
         // read logs
         int nColumns = 0;
         int k = 0;
-        for (String sFile : sLogs) {
-            BufferedReader fin = new BufferedReader(new FileReader(sFile));
-            String sStr = fin.readLine();
-            if (sStr.toUpperCase().startsWith("#NEXUS")) {
+        for (String fileName : logs) {
+            BufferedReader fin = new BufferedReader(new FileReader(fileName));
+            String str = fin.readLine();
+            if (str.toUpperCase().startsWith("#NEXUS")) {
                 m_bIsTreeLog = true;
-                readTreeLogFile(sFile, nBurbIns[k]);
+                readTreeLogFile(fileName, nBurbIns[k]);
             } else {
-                readLogFile(sFile, nBurbIns[k]);
+                readLogFile(fileName, nBurbIns[k]);
             }
 
             if (m_fCombinedTraces == null) {
@@ -157,7 +157,7 @@ public class LogCombiner extends LogAnalyser {
             } else {
                 if (nColumns != m_sLabels.length) {
                     fin.close();
-                    throw new IllegalArgumentException("ERROR: The number of columns in file " + sFile + " does not match that of the first file");
+                    throw new IllegalArgumentException("ERROR: The number of columns in file " + fileName + " does not match that of the first file");
                 }
                 for (int i = 0; i < m_fTraces.length; i++) {
                     Double[] logLine = m_fTraces[i];
@@ -185,20 +185,20 @@ public class LogCombiner extends LogAnalyser {
         }
     }
 
-    protected void readTreeLogFile(String sFile, int nBurnInPercentage) throws IOException {
-        log("\nLoading " + sFile);
-        BufferedReader fin = new BufferedReader(new FileReader(sFile));
-        String sStr = null;
+    protected void readTreeLogFile(String fileName, int nBurnInPercentage) throws IOException {
+        log("\nLoading " + fileName);
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
+        String str = null;
         m_sPreAmble = "";
         int nData = 0;
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
-            sStr = fin.readLine();
-            if (sStr.matches("^tree STATE.*")) {
+            str = fin.readLine();
+            if (str.matches("^tree STATE.*")) {
                 nData++;
             } else {
                 if (nData == 0) {
-                    m_sPreAmble += sStr + "\n";
+                    m_sPreAmble += str + "\n";
                 }
             }
         }
@@ -210,27 +210,27 @@ public class LogCombiner extends LogAnalyser {
             m_sTrees = new ArrayList<>();
         }
         fin.close();
-        fin = new BufferedReader(new FileReader(sFile));
+        fin = new BufferedReader(new FileReader(fileName));
         nData = -nBurnIn - 1;
         // grab data from the log, ignoring burn in samples
         int nSample0 = -1;
 
         while (fin.ready()) {
-            sStr = fin.readLine();
-            if (sStr.matches("^tree STATE_.*")) {
+            str = fin.readLine();
+            if (str.matches("^tree STATE_.*")) {
                 if (++nData >= 0) {
                     if (m_nSampleInterval < 0) {
-                        String sStr2 = sStr.substring(11, sStr.indexOf("=")).trim();
-                        sStr2 = sStr2.split("\\s")[0];
+                        String str2 = str.substring(11, str.indexOf("=")).trim();
+                        str2 = str2.split("\\s")[0];
                         if (nSample0 < 0) {
-                            nSample0 = Integer.parseInt(sStr2);
+                            nSample0 = Integer.parseInt(str2);
                         } else {
-                            m_nSampleInterval = Integer.parseInt(sStr2) - nSample0;
+                            m_nSampleInterval = Integer.parseInt(str2) - nSample0;
                         }
 
                     }
-                    sStr = sStr.replaceAll("^tree STATE_[^\\s=]*", "");
-                    m_sTrees.add(sStr);
+                    str = str.replaceAll("^tree STATE_[^\\s=]*", "");
+                    m_sTrees.add(str);
                 }
             }
             if (nData % nLines == 0) {
@@ -260,9 +260,9 @@ public class LogCombiner extends LogAnalyser {
         if (m_bIsTreeLog) {
             for (int i = 0; i < m_sTrees.size(); i++) {
                 if ((m_nSampleInterval * i) % m_nResample == 0) {
-                    String sTree = m_sTrees.get(i);
-                    sTree = format(sTree);
-                    m_out.println("tree STATE_" + (m_nSampleInterval * i) + (Character.isSpaceChar(sTree.charAt(0)) ? "" : " ") + sTree);
+                    String tree = m_sTrees.get(i);
+                    tree = format(tree);
+                    m_out.println("tree STATE_" + (m_nSampleInterval * i) + (Character.isSpaceChar(tree.charAt(0)) ? "" : " ") + tree);
                     nLines++;
                 }
                 if (i % (nData / 80) == 0) {
@@ -303,34 +303,34 @@ public class LogCombiner extends LogAnalyser {
         logln("\n" + nLines + " lines in combined log");
     }
 
-    protected String format(String sTree) {
+    protected String format(String tree) {
         if (m_bUseDecimalFormat) {
             // convert scientific to decimal format
-            if (sTree.matches(".*[0-9]+\\.[0-9]+[0-9-]+E[0-9-]+.*")) {
+            if (tree.matches(".*[0-9]+\\.[0-9]+[0-9-]+E[0-9-]+.*")) {
                 int k = 0;
-                while (k < sTree.length()) {
-                    char c = sTree.charAt(k);
+                while (k < tree.length()) {
+                    char c = tree.charAt(k);
                     if (Character.isDigit(c)) {
                         int iStart = k;
-                        while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+                        while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                         }
-                        if (k < sTree.length() && sTree.charAt(k) == '.') {
-                            while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+                        if (k < tree.length() && tree.charAt(k) == '.') {
+                            while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                             }
-                            if (k < sTree.length() && (sTree.charAt(k) == 'E' || sTree.charAt(k) == 'e')) {
+                            if (k < tree.length() && (tree.charAt(k) == 'E' || tree.charAt(k) == 'e')) {
                                 k++;
-                                if (k < sTree.length() && sTree.charAt(k) == '-') {
+                                if (k < tree.length() && tree.charAt(k) == '-') {
                                     k++;
                                 }
-                                if (k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
-                                    while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+                                if (k < tree.length() && Character.isDigit(tree.charAt(k))) {
+                                    while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                                     }
                                     int iEnd = k;
-                                    String sNumber = sTree.substring(iStart, iEnd);
-                                    double d = Double.parseDouble(sNumber);
-                                    sNumber = format.format(d);
-                                    sTree = sTree.substring(0, iStart) + sNumber + sTree.substring(iEnd);
-                                    k = iStart + sNumber.length();
+                                    String number = tree.substring(iStart, iEnd);
+                                    double d = Double.parseDouble(number);
+                                    number = format.format(d);
+                                    tree = tree.substring(0, iStart) + number + tree.substring(iEnd);
+                                    k = iStart + number.length();
                                 }
                             }
                         }
@@ -341,24 +341,24 @@ public class LogCombiner extends LogAnalyser {
             }
         } else {
             // convert decimal to scientific format
-            if (sTree.matches(".*[0-9]+\\.[0-9]+[^E-].*")) {
+            if (tree.matches(".*[0-9]+\\.[0-9]+[^E-].*")) {
                 int k = 0;
-                while (k < sTree.length()) {
-                    char c = sTree.charAt(k);
+                while (k < tree.length()) {
+                    char c = tree.charAt(k);
                     if (Character.isDigit(c)) {
                         int iStart = k;
-                        while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+                        while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                         }
-                        if (k < sTree.length() && sTree.charAt(k) == '.') {
-                            while (++k < sTree.length() && Character.isDigit(sTree.charAt(k))) {
+                        if (k < tree.length() && tree.charAt(k) == '.') {
+                            while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                             }
-                            if (k < sTree.length() && sTree.charAt(k) != '-' && sTree.charAt(k) != 'E' && sTree.charAt(k) != 'e') {
+                            if (k < tree.length() && tree.charAt(k) != '-' && tree.charAt(k) != 'E' && tree.charAt(k) != 'e') {
                                 int iEnd = k;
-                                String sNumber = sTree.substring(iStart, iEnd);
-                                double d = Double.parseDouble(sNumber);
-                                sNumber = format.format(d);
-                                sTree = sTree.substring(0, iStart) + sNumber + sTree.substring(iEnd);
-                                k = iStart + sNumber.length();
+                                String number = tree.substring(iStart, iEnd);
+                                double d = Double.parseDouble(number);
+                                number = format.format(d);
+                                tree = tree.substring(0, iStart) + number + tree.substring(iEnd);
+                                k = iStart + number.length();
                             }
                         }
                     } else {
@@ -367,7 +367,7 @@ public class LogCombiner extends LogAnalyser {
                 }
             }
         }
-        return sTree;
+        return tree;
     }
 
     private static String getUsage() {
@@ -389,14 +389,14 @@ public class LogCombiner extends LogAnalyser {
         aboutString = "LogCombiner" + aboutString.replaceAll("</p>", "\n\n");
         aboutString = aboutString.replaceAll("<br>", "\n");
         aboutString = aboutString.replaceAll("<[^>]*>", " ");
-        String[] sStrs = aboutString.split("\n");
-        for (String sStr : sStrs) {
-            int n = 80 - sStr.length();
+        String[] strs = aboutString.split("\n");
+        for (String str : strs) {
+            int n = 80 - str.length();
             int n1 = n / 2;
             for (int i = 0; i < n1; i++) {
                 log(" ");
             }
-            logln(sStr);
+            logln(str);
         }
     }
 
@@ -500,10 +500,10 @@ public class LogCombiner extends LogAnalyser {
                 combiner.parseArgs(args);
                 if (combiner.m_sParticleDir == null) {
                     // classical log combiner
-                    String[] sLogFiles = combiner.m_sLogFileName.toArray(new String[0]);
-                    int[] nBurnIns = new int[sLogFiles.length];
+                    String[] logFiles = combiner.m_sLogFileName.toArray(new String[0]);
+                    int[] nBurnIns = new int[logFiles.length];
                     Arrays.fill(nBurnIns, combiner.m_nBurninPercentage);
-                    combiner.combineLogs(sLogFiles, nBurnIns);
+                    combiner.combineLogs(logFiles, nBurnIns);
 
                 } else {
                     // particle log combiner

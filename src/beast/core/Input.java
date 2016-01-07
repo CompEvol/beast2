@@ -164,7 +164,7 @@ public class Input<T> {
         this(name, tipText, startValue);
         /*if (rule != Validate.REQUIRED) {
             Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
-                    + " (" + sName + ")");
+                    + " (" + name + ")");
         }*/
         this.rule = rule;
     } // c'tor
@@ -618,11 +618,11 @@ public class Input<T> {
         }
         if (theClass.equals(Boolean.class)) {
         	// RRB why the local parsing instead of using the Boolean c'tor?
-//            final String sValue2 = stringValue.toLowerCase();
-//            if (sValue2.equals("yes") || sValue2.equals("true")) {
+//            final String valueString2 = stringValue.toLowerCase();
+//            if (valueString2.equals("yes") || valueString2.equals("true")) {
 //                value = (T) Boolean.TRUE;
 //                return;
-//            } else if (sValue2.equals("no") || sValue2.equals("false")) {
+//            } else if (valueString2.equals("no") || valueString2.equals("false")) {
 //                value = (T) Boolean.FALSE;
 //                return;
 //            }

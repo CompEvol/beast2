@@ -58,8 +58,8 @@ public class MergeDataWith extends BEASTObject {
 		FileWriter outfile = new FileWriter(outputFile);
 		
 		Set<BEASTInterface> beastObjects = new HashSet<>();
-		String sXML = new XMLProducer().toXML(b, beastObjects);
-        outfile.write(sXML);
+		String xml = new XMLProducer().toXML(b, beastObjects);
+        outfile.write(xml);
         outfile.close();
 	} // process
 

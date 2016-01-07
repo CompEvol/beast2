@@ -20,7 +20,7 @@ import beast.core.util.Log;
 public class LogAnalyser {
     public static final int BURN_IN_PERCENTAGE = 10; // default
 
-    protected final String sFile;
+    protected final String fileName;
 
     /**
      * column labels in log file *
@@ -63,7 +63,7 @@ public class LogAnalyser {
     final protected static String BAR = "|---------|---------|---------|---------|---------|---------|---------|---------|";
 
     public LogAnalyser() {
-        sFile = null;
+        fileName = null;
     }
 
     /**
@@ -73,8 +73,8 @@ public class LogAnalyser {
      * @throws Exception
      */
     public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
-        sFile = args[args.length - 1];
-        readLogFile(sFile, nBurnInPercentage);
+        fileName = args[args.length - 1];
+        readLogFile(fileName, nBurnInPercentage);
         calcStats();
     }
 
@@ -82,41 +82,41 @@ public class LogAnalyser {
         this(args, BURN_IN_PERCENTAGE);
     }
 
-    public LogAnalyser(String sFile, int nBurnInPercentage) throws Exception {
-        this.sFile = sFile;
-        readLogFile(sFile, nBurnInPercentage);
+    public LogAnalyser(String fileName, int nBurnInPercentage) throws Exception {
+        this.fileName = fileName;
+        readLogFile(fileName, nBurnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String sFile, int nBurnInPercentage, boolean quiet) throws Exception {
-        this.sFile = sFile;
+    public LogAnalyser(String fileName, int nBurnInPercentage, boolean quiet) throws Exception {
+        this.fileName = fileName;
         this.quiet = quiet;
-        readLogFile(sFile, nBurnInPercentage);
+        readLogFile(fileName, nBurnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String sFile) throws Exception {
-        this(sFile, BURN_IN_PERCENTAGE);
+    public LogAnalyser(String fileName) throws Exception {
+        this(fileName, BURN_IN_PERCENTAGE);
     }
 
     @SuppressWarnings("unchecked")
-	protected void readLogFile(String sFile, int nBurnInPercentage) throws IOException {
-        log("\nLoading " + sFile);
-        BufferedReader fin = new BufferedReader(new FileReader(sFile));
-        String sStr;
+	protected void readLogFile(String fileName, int nBurnInPercentage) throws IOException {
+        log("\nLoading " + fileName);
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
+        String str;
         m_sPreAmble = "";
         m_sLabels = null;
         int nData = 0;
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
-            sStr = fin.readLine();
-            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
+            str = fin.readLine();
+            if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
                 if (m_sLabels == null)
-                    m_sLabels = sStr.split("\\s");
+                    m_sLabels = str.split("\\s");
                 else
                     nData++;
             } else {
-                m_sPreAmble += sStr + "\n";
+                m_sPreAmble += str + "\n";
             }
         }
         int nLines = Math.max(1, nData / 80);
@@ -126,32 +126,32 @@ public class LogAnalyser {
         int nBurnIn = nData * nBurnInPercentage / 100;
         m_fTraces = new Double[nItems][nData - nBurnIn];
         fin.close();
-        fin = new BufferedReader(new FileReader(sFile));
+        fin = new BufferedReader(new FileReader(fileName));
         nData = -nBurnIn - 1;
         logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
         // grab data from the log, ignoring burn in samples
         m_types = new type[nItems];
         Arrays.fill(m_types, type.INTEGER);
         while (fin.ready()) {
-            sStr = fin.readLine();
+            str = fin.readLine();
             int i = 0;
-            if (sStr.indexOf('#') < 0 && sStr.matches("[0-9].*")) // {
+            if (str.indexOf('#') < 0 && str.matches("[0-9].*")) // {
                 //nData++;
                 if (++nData >= 0) //{
-                    for (String sStr2 : sStr.split("\\s")) {
+                    for (String str2 : str.split("\\s")) {
                         try {
-                            if (sStr2.indexOf('.') >= 0) {
+                            if (str2.indexOf('.') >= 0) {
                                 m_types[i] = type.REAL;
                             }
-                            m_fTraces[i][nData] = Double.parseDouble(sStr2);
+                            m_fTraces[i][nData] = Double.parseDouble(str2);
                         } catch (Exception e) {
                             if (m_ranges[i] == null) {
                                 m_ranges[i] = new ArrayList<>();
                             }
-                            if (!m_ranges[i].contains(sStr2)) {
-                                m_ranges[i].add(sStr2);
+                            if (!m_ranges[i].contains(str2)) {
+                                m_ranges[i].add(str2);
                             }
-                            m_fTraces[i][nData] = 1.0 * m_ranges[i].indexOf(sStr2);
+                            m_fTraces[i][nData] = 1.0 * m_ranges[i].indexOf(str2);
                         }
                         i++;
                     }
@@ -257,9 +257,9 @@ public class LogAnalyser {
         logln("\n");
     } // calcStats
 
-    public void setData(Double[][] fTraces, String[] sLabels, type[] types) {
+    public void setData(Double[][] fTraces, String[] labels, type[] types) {
         m_fTraces = fTraces.clone();
-        m_sLabels = sLabels.clone();
+        m_sLabels = labels.clone();
         m_types = types.clone();
         calcStats();
     }
@@ -274,8 +274,8 @@ public class LogAnalyser {
         setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
     }
 
-    public int indexof(String sLabel) {
-        return CollectionUtils.indexof(sLabel, m_sLabels);
+    public int indexof(String label) {
+        return CollectionUtils.indexof(label, m_sLabels);
 	}
 
     /**
@@ -292,44 +292,44 @@ public class LogAnalyser {
     	return m_fTraces[index].clone();
     }
 
-    public Double [] getTrace(String sLabel) {
-    	return m_fTraces[indexof(sLabel)].clone();
+    public Double [] getTrace(String label) {
+    	return m_fTraces[indexof(label)].clone();
     }
 
-    public double getMean(String sLabel) {
-        return getMean(indexof(sLabel));
+    public double getMean(String label) {
+        return getMean(indexof(label));
     }
 
-    public double getStdError(String sLabel) {
-        return getStdError(indexof(sLabel));
+    public double getStdError(String label) {
+        return getStdError(indexof(label));
     }
 
-    public double getStdDev(String sLabel) {
-        return getStdDev(indexof(sLabel));
+    public double getStdDev(String label) {
+        return getStdDev(indexof(label));
     }
 
-    public double getMedian(String sLabel) {
-        return getMedian(indexof(sLabel));
+    public double getMedian(String label) {
+        return getMedian(indexof(label));
     }
 
-    public double get95HPDup(String sLabel) {
-        return get95HPDup(indexof(sLabel));
+    public double get95HPDup(String label) {
+        return get95HPDup(indexof(label));
     }
 
-    public double get95HPDlow(String sLabel) {
-        return get95HPDlow(indexof(sLabel));
+    public double get95HPDlow(String label) {
+        return get95HPDlow(indexof(label));
     }
 
-    public double getESS(String sLabel) {
-        return getESS(indexof(sLabel));
+    public double getESS(String label) {
+        return getESS(indexof(label));
     }
 
-    public double getACT(String sLabel) {
-        return getACT(indexof(sLabel));
+    public double getACT(String label) {
+        return getACT(indexof(label));
     }
 
-    public double getGeometricMean(String sLabel) {
-        return getGeometricMean(indexof(sLabel));
+    public double getGeometricMean(String label) {
+        return getGeometricMean(indexof(label));
     }
 
     public double getMean(int iColumn) {
@@ -409,7 +409,7 @@ public class LogAnalyser {
     }
 
     public String getLogFile() {
-        return sFile;
+        return fileName;
     }
 
     /**
@@ -438,14 +438,14 @@ public class LogAnalyser {
         int nMax = 0;
         for (int i = 1; i < m_sLabels.length; i++)
             nMax = Math.max(m_sLabels[i].length(), nMax);
-        String sSpace = "";
+        String space = "";
         for (int i = 0; i < nMax; i++)
-            sSpace += " ";
+            space += " ";
 
-        out.println("item" + sSpace.substring(4) + " " + prefixHead +
+        out.println("item" + space.substring(4) + " " + prefixHead +
         		format("mean") + format("stderr")  + format("stddev")  + format("median")  + format("95%HPDlo")  + format("95%HPDup")  + format("ACT")  + format("ESS")  + format("geometric-mean"));
         for (int i = 1; i < m_sLabels.length; i++) {
-            out.println(m_sLabels[i] + sSpace.substring(m_sLabels[i].length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
+            out.println(m_sLabels[i] + space.substring(m_sLabels[i].length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
                     format(m_fMean[i]) + SPACE + format(m_fStdError[i]) + SPACE + format(m_fStdDev[i]) +
                     SPACE + format(m_fMedian[i]) + SPACE + format(m_f95HPDlow[i]) + SPACE + format(m_f95HPDup[i]) +
                     SPACE + format(m_fACT[i]) + SPACE + format(m_fESS[i]) + SPACE + format(m_fGeometricMean[i]));

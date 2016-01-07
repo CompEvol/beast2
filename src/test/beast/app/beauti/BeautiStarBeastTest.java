@@ -138,8 +138,8 @@ public class BeautiStarBeastTest extends BeautiBase {
 		StarBEASTRunner(File file) {
 			super();
 			setUp(new String[]{"/x.xml"});
-			sDir = file.getPath();
-			sLogDir = "";
+			dirName = file.getPath();
+			logDir = "";
 			testFile = "beast_";
 			checkESS = false;
 		}

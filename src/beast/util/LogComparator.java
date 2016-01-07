@@ -42,10 +42,10 @@ public class LogComparator {
         compareLogs();
     }
 
-    public double getZScore(String sLabel) {
-        int index = matchedLabels.indexOf(sLabel);
+    public double getZScore(String label) {
+        int index = matchedLabels.indexOf(label);
         if (index < 0)
-            throw new IllegalArgumentException("Cannot find " + sLabel + " from matched parameter list !");
+            throw new IllegalArgumentException("Cannot find " + label + " from matched parameter list !");
 
         return zScore[index];
     }
@@ -93,15 +93,15 @@ public class LogComparator {
         int nMax = 0;
         for (int i = 1; i < matchedLabels.size(); i++)
             nMax = Math.max(matchedLabels.get(i).length(), nMax);
-        String sSpace = "";
+        String space = "";
         for (int i = 0; i < nMax; i++)
-            sSpace += " ";
+            space += " ";
 
         out.println("Comparing log " + analyser1.getLogFile() + " and " + analyser2.getLogFile() + "\n");
 
         List<String> significantLabels = new ArrayList<>();
         if (verbose) {
-            out.println("item" + sSpace.substring(4) + " " + prefixHead + "   " + format("ZScore") +
+            out.println("item" + space.substring(4) + " " + prefixHead + "   " + format("ZScore") +
                     format("mean1") + format("stderr1") + format("mean2") + format("stderr2"));
 
             for (int i = 1; i < matchedLabels.size(); i++) {
@@ -115,7 +115,7 @@ public class LogComparator {
                 double m2 = analyser2.getMean(index2);
                 double se2 = analyser2.getStdError(index2);
 
-                out.println(mLabel + sSpace.substring(mLabel.length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
+                out.println(mLabel + space.substring(mLabel.length()) + SPACE + (prefix == null ? "" : prefix + SPACE) +
                         (zScore[i] > 2 ? STAR : NON_STAR) + SPACE + format(zScore[i]) + SPACE +
                         format(m1) + SPACE + format(se1) + SPACE + format(m2) + SPACE + format(se2));
 

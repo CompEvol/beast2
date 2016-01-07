@@ -61,9 +61,9 @@ public class MRCAPrior extends Distribution {
     public void initAndValidate() throws Exception {
         dist = distInput.get();
         tree = treeInput.get();
-        final List<String> sTaxaNames = new ArrayList<>();
-        for (final String sTaxon : tree.getTaxaNames()) {
-            sTaxaNames.add(sTaxon);
+        final List<String> taxaNames = new ArrayList<>();
+        for (final String taxon : tree.getTaxaNames()) {
+            taxaNames.add(taxon);
         }
         // determine nr of taxa in taxon set
         List<String> set = null;
@@ -72,7 +72,7 @@ public class MRCAPrior extends Distribution {
             nrOfTaxa = set.size();
         } else {
             // assume all taxa
-            nrOfTaxa = sTaxaNames.size();
+            nrOfTaxa = taxaNames.size();
         }
 
         onlyUseTips = onlyUseTipsInput.get();
@@ -239,24 +239,24 @@ public class MRCAPrior extends Distribution {
         if (taxonsetInput.get() != null) {
             set = taxonsetInput.get().asStringList();
         }
-        final List<String> sTaxaNames = new ArrayList<>();
-        for (final String sTaxon : tree.getTaxaNames()) {
-            sTaxaNames.add(sTaxon);
+        final List<String> taxaNames = new ArrayList<>();
+        for (final String taxon : tree.getTaxaNames()) {
+            taxaNames.add(taxon);
         }
 
         taxonIndex = new int[nrOfTaxa];
         if ( set != null )  {  // m_taxonset.get() != null) {
             isInTaxaSet.clear();
             int k = 0;
-            for (final String sTaxon : set) {
-                final int iTaxon = sTaxaNames.indexOf(sTaxon);
+            for (final String taxon : set) {
+                final int iTaxon = taxaNames.indexOf(taxon);
                 if (iTaxon < 0) {
-                    throw new RuntimeException("Cannot find taxon " + sTaxon + " in data");
+                    throw new RuntimeException("Cannot find taxon " + taxon + " in data");
                 }
-                if (isInTaxaSet.contains(sTaxon)) {
-                    throw new RuntimeException("Taxon " + sTaxon + " is defined multiple times, while they should be unique");
+                if (isInTaxaSet.contains(taxon)) {
+                    throw new RuntimeException("Taxon " + taxon + " is defined multiple times, while they should be unique");
                 }
-                isInTaxaSet.add(sTaxon);
+                isInTaxaSet.add(taxon);
                 taxonIndex[k++] = iTaxon;
             }
         } else {

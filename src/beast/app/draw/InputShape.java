@@ -69,11 +69,11 @@ public class InputShape extends Shape {
     }
 
     String getInputName() throws Exception {
-        String sName = getLabel();
-        if (sName.indexOf('=') >= 0) {
-            sName = sName.substring(0, sName.indexOf('='));
+        String name = getLabel();
+        if (name.indexOf('=') >= 0) {
+            name = name.substring(0, name.indexOf('='));
         }
-        return sName;
+        return name;
     }
 
 
@@ -90,9 +90,9 @@ public class InputShape extends Shape {
             g.setFont(g_InputFont);
             if (getLabel() != null) {
                 FontMetrics fm = g.getFontMetrics(g.getFont());
-                String sLabel = getLabel();
+                String label = getLabel();
                 int i = 0;
-                g.drawString(sLabel, m_x + m_w / 2 - fm.stringWidth(sLabel), m_y + m_h / 2 + i * fm.getHeight());
+                g.drawString(label, m_x + m_w / 2 - fm.stringWidth(label), m_y + m_h / 2 + i * fm.getHeight());
             }
         }
     }
@@ -117,17 +117,17 @@ public class InputShape extends Shape {
         if (m_input == null) {
             return "XXX";
         }
-        String sLabel = m_input.getName();
+        String label = m_input.getName();
         if (m_input.get() != null) {
             Object o = m_input.get();
             if (o instanceof String ||
                     o instanceof Integer ||
                     o instanceof Double ||
                     o instanceof Boolean) {
-                sLabel += "=" + o.toString();
+                label += "=" + o.toString();
             }
         }
-        return sLabel;
+        return label;
     }
 
     String toString(Object o) {
@@ -143,30 +143,30 @@ public class InputShape extends Shape {
     }
 
     String getLongLabel() {
-        String sLabel = m_input.getName();
+        String label = m_input.getName();
         if (m_input.get() != null) {
             Object o = m_input.get();
             if (o instanceof String ||
                     o instanceof Integer ||
                     o instanceof Double ||
                     o instanceof Boolean) {
-                sLabel += "=" + o.toString();
+                label += "=" + o.toString();
             } else if (o instanceof BEASTInterface) {
-                sLabel += "=" + ((BEASTInterface) o).getID();
+                label += "=" + ((BEASTInterface) o).getID();
             } else if (o instanceof List<?>) {
-                sLabel += "=[";
+                label += "=[";
                 boolean bNeedsComma = false;
                 for (Object o2 : (List<?>) o) {
                     if (bNeedsComma) {
-                        sLabel += ",";
+                        label += ",";
                     }
-                    sLabel += toString(o2);
+                    label += toString(o2);
                     bNeedsComma = true;
                 }
-                sLabel += "]";
+                label += "]";
             }
         }
-        return sLabel;
+        return label;
     }
 
     @Override

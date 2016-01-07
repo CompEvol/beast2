@@ -67,8 +67,8 @@ public class TreeSetParser {
 		m_bAllowSingleChild = bAllowSingleChild;
 	} // c'tor
 	
-	public TreeSetParser(List<String> sLabels, List<Float> fLongitude, List<Float> fLatitude, int nBurnInPercentage) {
-		m_sLabels = sLabels;
+	public TreeSetParser(List<String> labels, List<Float> fLongitude, List<Float> fLatitude, int nBurnInPercentage) {
+		m_sLabels = labels;
 		if (m_sLabels != null) {
 			m_bIsLabelledNewick = true;
 			m_nNrOfLabels = m_sLabels.size();
@@ -85,17 +85,17 @@ public class TreeSetParser {
 	long fileMarked = 0;
 
 	
-	public Node [] parseFile(String sFile) throws Exception {
-		//List<String> sNewickTrees = new List<>();
+	public Node [] parseFile(String fileName) throws Exception {
+		//List<String> newickTrees = new List<>();
 		List<Node> trees = new ArrayList<>();
 		m_nOffset = 0;
 		// parse Newick tree file
-		File file = new File(sFile);
+		File file = new File(fileName);
 		fileStep = Math.max(file.length() / 61, 1);
 		fileRead = 0;
 		fileMarked = 0;
 		
-		BufferedReader fin = new BufferedReader(new FileReader(sFile));
+		BufferedReader fin = new BufferedReader(new FileReader(fileName));
 		
         int nrOfTrees = 0;
         // first, sweep through the log file to determine the number of trees
@@ -106,97 +106,97 @@ public class TreeSetParser {
         }
         fin.close();
         
-        fin = new BufferedReader(new FileReader(sFile));
-		String sStr = readLine(fin);
+        fin = new BufferedReader(new FileReader(fileName));
+		String str = readLine(fin);
 		// grab translate block
-		while (fin.ready() && sStr.toLowerCase().indexOf("translate") < 0) {
-			sStr = readLine(fin);
+		while (fin.ready() && str.toLowerCase().indexOf("translate") < 0) {
+			str = readLine(fin);
 		}
 		m_bIsLabelledNewick = false;
 		m_nNrOfLabels = m_sLabels.size();
 		boolean bAddLabels = (m_nNrOfLabels == 0);
-		if (sStr.toLowerCase().indexOf("translate") < 0) {
+		if (str.toLowerCase().indexOf("translate") < 0) {
 			m_bIsLabelledNewick = true;
 			// could not find translate block, assume it is a list of Newick trees instead of Nexus file
 			fin.close();
 			fileRead = 0;
 			fileMarked = 0;
-			fin = new BufferedReader(new FileReader(sFile));
+			fin = new BufferedReader(new FileReader(fileName));
 			while (fin.ready() && m_nNrOfLabels == 0) {
-				sStr = readLine(fin);
-				fileRead += sStr.length();
-				if (sStr.length() > 2 && sStr.indexOf("(") >= 0) {
-					String sStr2 = sStr;
-					sStr2 = sStr2.substring(sStr2.indexOf("("));
-					while (sStr2.indexOf('[') >= 0) {
-						int i0 = sStr2.indexOf('[');
-						int i1 = sStr2.indexOf(']');
-						sStr2 = sStr2.substring(0, i0) + sStr2.substring(i1 + 1);
+				str = readLine(fin);
+				fileRead += str.length();
+				if (str.length() > 2 && str.indexOf("(") >= 0) {
+					String str2 = str;
+					str2 = str2.substring(str2.indexOf("("));
+					while (str2.indexOf('[') >= 0) {
+						int i0 = str2.indexOf('[');
+						int i1 = str2.indexOf(']');
+						str2 = str2.substring(0, i0) + str2.substring(i1 + 1);
 					}
-					sStr2 = sStr2.replaceAll("[;\\(\\),]"," ");
-					sStr2 = sStr2.replaceAll(":[0-9\\.Ee-]+"," ");
-					String [] sLabels = sStr2.split("\\s+");
+					str2 = str2.replaceAll("[;\\(\\),]"," ");
+					str2 = str2.replaceAll(":[0-9\\.Ee-]+"," ");
+					String [] labels = str2.split("\\s+");
 					if (bAddLabels) {
 						m_nNrOfLabels = 0;
-						for (int i = 0; i < sLabels.length; i++) {
-							if (sLabels[i].length() > 0) {
-									m_sLabels.add(sLabels[i]);
+						for (int i = 0; i < labels.length; i++) {
+							if (labels[i].length() > 0) {
+									m_sLabels.add(labels[i]);
 								m_nNrOfLabels++;
 							}
 						}
 					}
-					Node tree = parseNewick(sStr);
+					Node tree = parseNewick(str);
 					tree.sort();
 					tree.labelInternalNodes(m_nNrOfLabels);
 					trees.add(tree);
-//					sNewickTrees.add(sStr);
+//					newickTrees.add(str);
 				}
 			}
 
 			while (fin.ready()) {
-				sStr = readLine(fin);
-				if (sStr.length() > 2 && sStr.indexOf("(") >= 0) {
-					Node tree = parseNewick(sStr);
+				str = readLine(fin);
+				if (str.length() > 2 && str.indexOf("(") >= 0) {
+					Node tree = parseNewick(str);
 					tree.sort();
 					tree.labelInternalNodes(m_nNrOfLabels);
 					trees.add(tree);
 					if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {Log.warning.print(trees.size() + " ");}}
-//					sNewickTrees.add(sStr);
+//					newickTrees.add(str);
 				}
 			}
 			
 		} else {
 			// read tree set from file, and store in individual strings
-			sStr = readLine(fin);
+			str = readLine(fin);
 			//m_nNrOfLabels = 0;
 			boolean bLastLabel = false;
 			while (fin.ready() && !bLastLabel) {
-				if (sStr.indexOf(";") >= 0) {
-					sStr = sStr.replace(';',' ');
-					sStr = sStr.trim();
-					if (sStr.isEmpty()) {
+				if (str.indexOf(";") >= 0) {
+					str = str.replace(';',' ');
+					str = str.trim();
+					if (str.isEmpty()) {
 						break;
 					}
 					bLastLabel = true;
 				}
-				sStr = sStr.replaceAll(",", "");
-				sStr = sStr.replaceAll("^\\s+", "");
-				String[] sStrs = sStr.split("\\s+");
-				int iLabel = new Integer(sStrs[0]).intValue();
-				String sLabel = sStrs[1];
+				str = str.replaceAll(",", "");
+				str = str.replaceAll("^\\s+", "");
+				String[] strs = str.split("\\s+");
+				int iLabel = new Integer(strs[0]).intValue();
+				String label = strs[1];
 				if (m_sLabels.size() < iLabel) {
 					//m_sLabels.add("__dummy__");
 					m_nOffset = 1;
 				}
 				// check if there is geographic info in the name
-				if (sLabel.contains("(")) {
-					int iStr = sLabel.indexOf('(');
-					int iStr2 = sLabel.indexOf('x', iStr);
+				if (label.contains("(")) {
+					int iStr = label.indexOf('(');
+					int iStr2 = label.indexOf('x', iStr);
 					if (iStr2 >= 0) {
-						int iStr3 = sLabel.indexOf(')', iStr2);
+						int iStr3 = label.indexOf(')', iStr2);
 						if (iStr3 >= 0) {
-							float fLat = Float.parseFloat(sLabel.substring(iStr+1, iStr2));// + 180;
-							float fLong = Float.parseFloat(sLabel.substring(iStr2+1, iStr3));// + 360)%360;
+							float fLat = Float.parseFloat(label.substring(iStr+1, iStr2));// + 180;
+							float fLong = Float.parseFloat(label.substring(iStr2+1, iStr3));// + 360)%360;
 							if (fLat!=0 || fLong!=0) {
 								m_fMinLat = Math.min(m_fMinLat, fLat);
 								m_fMaxLat = Math.max(m_fMaxLat, fLat);
@@ -211,14 +211,14 @@ public class TreeSetParser {
 							m_fLongitude.add(fLong);
 						}
 					}
-					sLabel = sLabel.substring(0, sLabel.indexOf("("));
+					label = label.substring(0, label.indexOf("("));
 				}
 				if (bAddLabels) {
-					m_sLabels.add(sLabel);
+					m_sLabels.add(label);
 					m_nNrOfLabels++;
 				}
 				if (!bLastLabel) {
-					sStr = readLine(fin);
+					str = readLine(fin);
 				}
 			}
 			
@@ -227,21 +227,21 @@ public class TreeSetParser {
             int nBurnIn = m_nBurnInPercentage * nrOfTrees / 100;
             //int k = 0;                    
             while (fin.ready()) {
-                    sStr = readLine(fin);
-                    sStr = sStr.trim();
-                    if (sStr.length() > 5) {
-                            String sTree = sStr.substring(0,5);
-                            if (sTree.toLowerCase().startsWith("tree ")) {
+                    str = readLine(fin);
+                    str = str.trim();
+                    if (str.length() > 5) {
+                            String tree = str.substring(0,5);
+                            if (tree.toLowerCase().startsWith("tree ")) {
                                     //k++;
                                     if (nBurnIn <= 0) {
-                                            int i = sStr.indexOf('(');
+                                            int i = str.indexOf('(');
                                             if (i > 0) {
-                                                    sStr = sStr.substring(i);
+                                                    str = str.substring(i);
                                             }
-                                            Node tree = parseNewick(sStr);
-                                            tree.sort();
-                                            tree.labelInternalNodes(m_nNrOfLabels);
-                                            trees.add(tree);
+                                            Node treeRoot = parseNewick(str);
+                                            treeRoot.sort();
+                                            treeRoot.labelInternalNodes(m_nNrOfLabels);
+                                            trees.add(treeRoot);
                                             //if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {Log.warning.print(trees.size() + " ");}}
                                     } else {
                                             nBurnIn--;
@@ -320,39 +320,39 @@ public class TreeSetParser {
 		}
 	}
 
-	/** Try to map sStr into an index. First, assume it is a number.
+	/** Try to map str into an index. First, assume it is a number.
 	 * If that does not work, look in list of labels to see whether it is there.
 	 */
-	private int getLabelIndex(String sStr) throws Exception {
+	private int getLabelIndex(String str) throws Exception {
 		if (!m_bIsLabelledNewick) {
 			try {
-				return Integer.parseInt(sStr) - m_nOffset;
+				return Integer.parseInt(str) - m_nOffset;
 			} catch (Exception e) {
 			}
 		}
 		for (int i = 0; i < m_nNrOfLabels; i++) {
-			if (sStr.equals(m_sLabels.get(i))) {
+			if (str.equals(m_sLabels.get(i))) {
 				return i;
 			}
 		}
-		// sStr may have (double) qoutes missing
+		// str may have (double) qoutes missing
 		for (int i = 0; i < m_nNrOfLabels; i++) {
-			String sLabel = m_sLabels.get(i);
-			if (sLabel.startsWith("'") && sLabel.endsWith("'") ||
-					sLabel.startsWith("\"") && sLabel.endsWith("\"")) {
-				sLabel = sLabel.substring(1, sLabel.length()-1);
-				if (sStr.equals(sLabel)) {
+			String label = m_sLabels.get(i);
+			if (label.startsWith("'") && label.endsWith("'") ||
+					label.startsWith("\"") && label.endsWith("\"")) {
+				label = label.substring(1, label.length()-1);
+				if (str.equals(label)) {
 					return i;
 				}
 			}
 		}
-		// sStr may have extra (double) qoutes
-		if (sStr.startsWith("'") && sStr.endsWith("'") ||
-				sStr.startsWith("\"") && sStr.endsWith("\"")) {
-			sStr = sStr.substring(1, sStr.length()-1);
-			return getLabelIndex(sStr);
+		// str may have extra (double) qoutes
+		if (str.startsWith("'") && str.endsWith("'") ||
+				str.startsWith("\"") && str.endsWith("\"")) {
+			str = str.substring(1, str.length()-1);
+			return getLabelIndex(str);
 		}
-		throw new IllegalArgumentException("Label '" + sStr + "' in Newick tree could not be identified");
+		throw new IllegalArgumentException("Label '" + str + "' in Newick tree could not be identified");
 	}
 	
 
@@ -421,25 +421,25 @@ public class TreeSetParser {
 		 return UNKNOWN;
 	 }
 
-	 public Node parseNewick(String sStr) throws Exception {
+	 public Node parseNewick(String str) throws Exception {
 		 try {
-		if (sStr == null || sStr.length() == 0) {
+		if (str == null || str.length() == 0) {
 			return null;
 		}
 		
-		m_chars = sStr.toCharArray();
-		m_iTokenStart = sStr.indexOf('(');
+		m_chars = str.toCharArray();
+		m_iTokenStart = str.indexOf('(');
 		if (m_iTokenStart < 0) {
 			return null;
 		}
 		m_iTokenEnd = m_iTokenStart;
 		Vector<Node> stack = new Vector<>();
 		Vector<Boolean> isFirstChild =  new Vector<>();
-		Vector<String> sMetaData =  new Vector<>();
+		Vector<String> metaDataString =  new Vector<>();
 		stack.add(new Node());
 		isFirstChild.add(true);
 		stack.lastElement().setHeight(DEFAULT_LENGTH);
-		sMetaData.add(null);
+		metaDataString.add(null);
 		boolean bIsLabel = true;
 		while (m_iTokenEnd < m_chars.length) {
 			switch (nextToken()) {
@@ -449,7 +449,7 @@ public class TreeSetParser {
 				node2.setHeight(DEFAULT_LENGTH);
 				stack.add(node2);
 				isFirstChild.add(true);
-				sMetaData.add(null);
+				metaDataString.add(null);
 				bIsLabel = true;
 			}
 				break;
@@ -469,7 +469,7 @@ public class TreeSetParser {
 						Node parent = stack.lastElement();
 						parent.setLeft(left);
 						left.setParent(parent);
-						String metaData = sMetaData.remove(sMetaData.size() - 1);
+						String metaData = metaDataString.remove(metaDataString.size() - 1);
 						left.metaDataString = metaData;
 						parseMetaData(left, metaData);
 						break;
@@ -494,20 +494,20 @@ public class TreeSetParser {
 					right.setParent(dummyparent);
 					stack.add(dummyparent);
 					isFirstChild.add(false);
-					String metaData = sMetaData.remove(sMetaData.size() - 1);
+					String metaData = metaDataString.remove(metaDataString.size() - 1);
 					parseMetaData(left, metaData);
 				}
 				// last two nodes on stack merged into single parent node 
 				Node right = stack.lastElement();
 				stack.remove(stack.size()-1);
 				isFirstChild.remove(isFirstChild.size()-1);
-				String metaData = sMetaData.remove(sMetaData.size() - 1);
+				String metaData = metaDataString.remove(metaDataString.size() - 1);
 				parseMetaData(right, metaData);
 
 				Node left = stack.lastElement();
 				stack.remove(stack.size()-1);
 				isFirstChild.remove(isFirstChild.size()-1);
-				metaData = sMetaData.remove(sMetaData.size() - 1);
+				metaData = metaDataString.remove(metaDataString.size() - 1);
 				parseMetaData(left, metaData);
 
 				Node parent = stack.lastElement();
@@ -515,7 +515,7 @@ public class TreeSetParser {
 				left.setParent(parent);
 				parent.setRight(right);
 				right.setParent(parent);
-				metaData = sMetaData.lastElement();
+				metaData = metaDataString.lastElement();
 				parseMetaData(parent, metaData);
 			}
 				break;
@@ -525,7 +525,7 @@ public class TreeSetParser {
 				node2.setHeight(DEFAULT_LENGTH);
 				stack.add(node2);
 				isFirstChild.add(false);
-				sMetaData.add(null);
+				metaDataString.add(null);
 				bIsLabel = true;
 			}
 				break;
@@ -534,24 +534,24 @@ public class TreeSetParser {
 				break;
 			case TEXT:
 				if (bIsLabel) {
-					String sLabel = sStr.substring(m_iTokenStart, m_iTokenEnd);
-					stack.lastElement().setNr(getLabelIndex(sLabel)); 
+					String label = str.substring(m_iTokenStart, m_iTokenEnd);
+					stack.lastElement().setNr(getLabelIndex(label)); 
 				} else {
-					String sLength = sStr.substring(m_iTokenStart, m_iTokenEnd);
-					stack.lastElement().setHeight(Float.parseFloat(sLength)); 
+					String length = str.substring(m_iTokenStart, m_iTokenEnd);
+					stack.lastElement().setHeight(Float.parseFloat(length)); 
 				}
 				break;
 			case META_DATA:
-				if (sMetaData.lastElement() == null) {
-					sMetaData.set(sMetaData.size()-1, sStr.substring(m_iTokenStart+1, m_iTokenEnd-1));
+				if (metaDataString.lastElement() == null) {
+					metaDataString.set(metaDataString.size()-1, str.substring(m_iTokenStart+1, m_iTokenEnd-1));
 				} else {
-					sMetaData.set(sMetaData.size()-1, sMetaData.lastElement() 
-					 + ("," +sStr.substring(m_iTokenStart+1, m_iTokenEnd-1)));
+					metaDataString.set(metaDataString.size()-1, metaDataString.lastElement() 
+					 + ("," +str.substring(m_iTokenStart+1, m_iTokenEnd-1)));
 				}
 				break;
 			case SEMI_COLON:
 				//System.err.println(stack.lastElement().toString());
-				parseMetaData(stack.lastElement(), sMetaData.lastElement());
+				parseMetaData(stack.lastElement(), metaDataString.lastElement());
 				return stack.lastElement();
 			default:
 				throw new IllegalArgumentException("parseNewick: unknown token");	
@@ -560,31 +560,31 @@ public class TreeSetParser {
 		return stack.lastElement();
 		 } catch (Exception e) {
 			 e.printStackTrace();
-			 throw new IllegalArgumentException(e.getMessage() + ": " + sStr.substring(Math.max(0, m_iTokenStart-100), m_iTokenStart) + " >>>" + sStr.substring(m_iTokenStart, m_iTokenEnd) + " <<< ..."); 
+			 throw new IllegalArgumentException(e.getMessage() + ": " + str.substring(Math.max(0, m_iTokenStart-100), m_iTokenStart) + " >>>" + str.substring(m_iTokenStart, m_iTokenEnd) + " <<< ..."); 
 		 }
 		//return node;
 	 }
 	 
 	 
-		public void parseMetaData(Node node, String sMetaData) {
-			node.metaDataString = sMetaData;
-			if (sMetaData == null) {
+		public void parseMetaData(Node node, String metaDataString) {
+			node.metaDataString = metaDataString;
+			if (metaDataString == null) {
 				return;
 			}
 			// parse by key=value pairs
 			int i = 0;
 			int start = 1;
 			try {
-				while ((i = sMetaData.indexOf('=', i)) >= 0) {
-					String key = sMetaData.substring(start, i).trim();
+				while ((i = metaDataString.indexOf('=', i)) >= 0) {
+					String key = metaDataString.substring(start, i).trim();
 					String value = null;
 					int k = 0;
-					if ((k = sMetaData.indexOf('=', i+1)) >= 0) {
-						int j = sMetaData.lastIndexOf(',', k);
-						value = sMetaData.substring(i + 1, j);
+					if ((k = metaDataString.indexOf('=', i+1)) >= 0) {
+						int j = metaDataString.lastIndexOf(',', k);
+						value = metaDataString.substring(i + 1, j);
 						start = j + 1;
 					} else {
-						value = sMetaData.substring(i+1);
+						value = metaDataString.substring(i+1);
 					}
 					if (value.length() > 0 && value.charAt(0) != '{') {
 						try {

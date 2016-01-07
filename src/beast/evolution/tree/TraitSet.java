@@ -78,16 +78,16 @@ public class TraitSet extends BEASTObject {
         values = new double[labels.size()];
         for (String trait : traits) {
             trait = trait.replaceAll("\\s+", " ");
-            String[] sStrs = trait.split("=");
-            if (sStrs.length != 2) {
+            String[] strs = trait.split("=");
+            if (strs.length != 2) {
                 throw new IllegalArgumentException("could not parse trait: " + trait);
             }
-            String taxonID = normalize(sStrs[0]);
+            String taxonID = normalize(strs[0]);
             int taxonNr = labels.indexOf(taxonID);
             if (taxonNr < 0) {
                 throw new IllegalArgumentException("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
             }
-            taxonValues[taxonNr] = normalize(sStrs[1]);
+            taxonValues[taxonNr] = normalize(strs[1]);
             values[taxonNr] = parseDouble(taxonValues[taxonNr]);
             map.put(taxonID, taxonNr);
             
@@ -166,10 +166,10 @@ public class TraitSet extends BEASTObject {
     /**
      * see if we can convert the string to a double value *
      */
-    private double parseDouble(String sStr) throws Exception {
+    private double parseDouble(String str) throws Exception {
         // default, try to interpret the string as a number
         try {
-            return Double.parseDouble(sStr);
+            return Double.parseDouble(str);
         } catch (NumberFormatException e) {
             // does not look like a number
                 if (traitNameInput.get().equals(DATE_TRAIT) ||
@@ -179,19 +179,19 @@ public class TraitSet extends BEASTObject {
                         try {
                             double year;
                             if (dateTimeFormatInput.get() == null) {
-                                if (sStr.matches(".*[a-zA-Z].*")) {
-                                        sStr = sStr.replace('/', '-');
+                                if (str.matches(".*[a-zA-Z].*")) {
+                                        str = str.replace('/', '-');
                                 }
                                 // following is deprecated, but the best thing around at the moment
                                 // see also comments in TipDatesInputEditor
-                                long date = Date.parse(sStr);
+                                long date = Date.parse(str);
                                 year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
-                                Log.warning.println("No date/time format provided, using default parsing: '" + sStr + "' parsed as '" + year + "'");
+                                Log.warning.println("No date/time format provided, using default parsing: '" + str + "' parsed as '" + year + "'");
                             } else {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
-                                LocalDate date = LocalDate.parse(sStr, formatter);
+                                LocalDate date = LocalDate.parse(str, formatter);
 
-                                Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + sStr +
+                                Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
                                         "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
 
                                 year = date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
@@ -206,7 +206,7 @@ public class TraitSet extends BEASTObject {
                                     return year;
                             }
                         } catch (DateTimeParseException e2) {
-                            Log.err.println("Failed to parse date '" + sStr + "' using format '" + dateTimeFormatInput.get() + "'");
+                            Log.err.println("Failed to parse date '" + str + "' using format '" + dateTimeFormatInput.get() + "'");
                             System.exit(1);
                         }
                     }
@@ -218,14 +218,14 @@ public class TraitSet extends BEASTObject {
     /**
      * remove start and end spaces
      */
-    String normalize(String sStr) {
-        if (sStr.charAt(0) == ' ') {
-            sStr = sStr.substring(1);
+    String normalize(String str) {
+        if (str.charAt(0) == ' ') {
+            str = str.substring(1);
         }
-        if (sStr.endsWith(" ")) {
-            sStr = sStr.substring(0, sStr.length() - 1);
+        if (str.endsWith(" ")) {
+            str = str.substring(0, str.length() - 1);
         }
-        return sStr;
+        return str;
     }
 
     public double getDate(double fHeight) {

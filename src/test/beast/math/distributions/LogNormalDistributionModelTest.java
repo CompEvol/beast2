@@ -56,14 +56,14 @@ public class LogNormalDistributionModelTest extends TestCase {
     @Test
     public void testCalcLogP2() throws Exception {
         // does the same as testCalcLogP(), but with by constructing object through XML
-        String sXML = "<input spec='beast.math.distributions.LogNormalDistributionModel' " +
+        String xml = "<input spec='beast.math.distributions.LogNormalDistributionModel' " +
                 "offset='1200' " +
                 "M='2000' " +
                 "S='0.6' " +
                 "meanInRealSpace='true'/>";
         RealParameter p = new RealParameter(new Double[]{2952.6747000000014});
         XMLParser parser = new XMLParser();
-        LogNormalDistributionModel logNormal = (LogNormalDistributionModel) parser.parseBareFragment(sXML, true);
+        LogNormalDistributionModel logNormal = (LogNormalDistributionModel) parser.parseBareFragment(xml, true);
 
         double f0 = logNormal.calcLogP(p);
         assertEquals(-7.880210654973873, f0, 1e-10);

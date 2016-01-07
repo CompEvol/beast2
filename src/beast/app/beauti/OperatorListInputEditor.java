@@ -141,26 +141,26 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 
     String getLabel(Operator operator) {
-        String sName = operator.getClass().getName();
-        sName = sName.substring(sName.lastIndexOf('.') + 1);
-        sName = sName.replaceAll("Operator", "");
-        if (sName.matches(".*[A-Z].*")) {
-            sName = sName.replaceAll("(.)([A-Z])", "$1 $2");
+        String name = operator.getClass().getName();
+        name = name.substring(name.lastIndexOf('.') + 1);
+        name = name.replaceAll("Operator", "");
+        if (name.matches(".*[A-Z].*")) {
+            name = name.replaceAll("(.)([A-Z])", "$1 $2");
         }
-        sName += ": ";
+        name += ": ";
         try {
             for (BEASTInterface beastObject2 : operator.listActiveBEASTObjects()) {
                 if (beastObject2 instanceof StateNode && ((StateNode) beastObject2).isEstimatedInput.get()) {
-                    sName += beastObject2.getID() + " ";
+                    name += beastObject2.getID() + " ";
                 }
             }
         } catch (Exception e) {
             // ignore
         }
-        String sTipText = getDoc().tipTextMap.get(operator.getID());
-        if (sTipText != null) {
-            sName += " " + sTipText;
+        String tipText = getDoc().tipTextMap.get(operator.getID());
+        if (tipText != null) {
+            name += " " + tipText;
         }
-        return sName;
+        return name;
     }
 } // OperatorListInputEditor

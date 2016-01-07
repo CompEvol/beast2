@@ -94,8 +94,8 @@ public class BeastLauncher {
 					throw new IOException("Error, could not add URL to system classloader");
 				}
 		        String classpath = System.getProperty("java.class.path");
-		        String sJar = url + "";
-		        classpath += System.getProperty("path.separator") + sJar.substring(5);
+		        String jar = url + "";
+		        classpath += System.getProperty("path.separator") + jar.substring(5);
 		        System.setProperty("java.class.path", classpath);
 			}
 		}

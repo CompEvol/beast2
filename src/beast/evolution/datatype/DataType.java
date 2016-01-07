@@ -26,7 +26,7 @@ public interface DataType {
      * Ambiguous states should be represented by integer numbers higher than getStateCount()
      * throws exception when parsing error occur *
      */
-    List<Integer> string2state(String sSequence) throws Exception;
+    List<Integer> string2state(String sequence) throws Exception;
 
     /**
      * Convert an array of states into a sequence represented by a string.
@@ -134,10 +134,10 @@ public interface DataType {
             if (codeMap == null) {
                 if (data.contains(",")) {
                     // assume it is a comma separated string of integers
-                    String[] sStrs = data.split(",");
-                    for (String sStr : sStrs) {
+                    String[] strs = data.split(",");
+                    for (String str : strs) {
                     	try {
-                    		sequence.add(Integer.parseInt(sStr));
+                    		sequence.add(Integer.parseInt(str));
                     	} catch (NumberFormatException e) {
                     		sequence.add(-1);
                     	}
@@ -223,8 +223,8 @@ public interface DataType {
             StringBuffer buf = new StringBuffer();
             if (codeMap != null) {
                 for (int iState : nrOfStates) {
-                    String sCode = codeMap.substring(iState * codeLength, iState * codeLength + codeLength);
-                    buf.append(sCode);
+                    String code = codeMap.substring(iState * codeLength, iState * codeLength + codeLength);
+                    buf.append(code);
                 }
             } else {
                 // produce a comma separated string of integers

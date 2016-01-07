@@ -18,8 +18,8 @@ public class BeautiSubTemplateTest extends TestCase {
 				"value", "<parameter id='kappa' value='1.0'/>"
 				);
 		assertEquals(0, t.connectorsInput.get().size());
-		String sXML = t.sXMLInput.get().replaceAll("\\s+", " ");
-		assertEquals("<![CDATA[ <parameter id=\"kappa\" value=\"1.0\"/> ]]>", sXML);
+		String xml = t.xMLInput.get().replaceAll("\\s+", " ");
+		assertEquals("<![CDATA[ <parameter id=\"kappa\" value=\"1.0\"/> ]]>", xml);
 
 		// minimal template + connector
 		t = new BeautiSubTemplate();
@@ -29,12 +29,12 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(1, t.connectorsInput.get().size());
 		BeautiConnector c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals(null, c.sConditionInput.get());
-		sXML = t.sXMLInput.get().replaceAll("\\s+", " ");
-		assertEquals("<![CDATA[ <parameter id=\"kappa\" value=\"1.0\"/> ]]>", sXML);
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals(null, c.conditionInput.get());
+		xml = t.xMLInput.get().replaceAll("\\s+", " ");
+		assertEquals("<![CDATA[ <parameter id=\"kappa\" value=\"1.0\"/> ]]>", xml);
 
 		// minimal template + connector + name
 		t = new BeautiSubTemplate();
@@ -44,12 +44,12 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(1, t.connectorsInput.get().size());
 		c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals(null, c.sConditionInput.get());
-		sXML = t.sXMLInput.get().replaceAll("\\s+", " ");
-		assertEquals("<![CDATA[ <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/> ]]>", sXML);
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals(null, c.conditionInput.get());
+		xml = t.xMLInput.get().replaceAll("\\s+", " ");
+		assertEquals("<![CDATA[ <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/> ]]>", xml);
 
 		// minimal template + connector + name + condition
 		t = new BeautiSubTemplate();
@@ -59,12 +59,12 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(1, t.connectorsInput.get().size());
 		c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
-		sXML = t.sXMLInput.get().replaceAll("\\s+", " ");
-		assertEquals("<![CDATA[ <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/> ]]>", sXML);
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
+		xml = t.xMLInput.get().replaceAll("\\s+", " ");
+		assertEquals("<![CDATA[ <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/> ]]>", xml);
 	}
 
 	@Test
@@ -79,12 +79,12 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(1, t.connectorsInput.get().size());
 		BeautiConnector c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
-		String sXML = t.sXMLInput.get();
-		assertEquals("<![CDATA[\n<parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>\n]]>", sXML);
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
+		String xml = t.xMLInput.get();
+		assertEquals("<![CDATA[\n<parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>\n]]>", xml);
 	}
 	
 	@Test
@@ -101,20 +101,20 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(2, t.connectorsInput.get().size());
 		BeautiConnector c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(1);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
-		String sXML = t.sXMLInput.get();
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
+		String xml = t.xMLInput.get();
 		assertEquals("<![CDATA[\n"+
 "<parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>\n"+
 "<parameter id=\"gamma\" value=\"3.0\"/>\n"+
-"]]>", sXML);
+"]]>", xml);
 
 		t = new BeautiSubTemplate();
 		// minimal template + connector + name + condition for 2 entries
@@ -128,19 +128,19 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(2, t.connectorsInput.get().size());
 		c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(1);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
-		sXML = t.sXMLInput.get();
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
+		xml = t.xMLInput.get();
 		assertEquals("<![CDATA[\n"+
 "<parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>\n"+
-"]]>", sXML);
+"]]>", xml);
 
 		t = new BeautiSubTemplate();
 		// minimal template + connector + name + condition for 2 entries
@@ -154,19 +154,19 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(2, t.connectorsInput.get().size());
 		c = t.connectorsInput.get().get(1);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(0);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
-		sXML = t.sXMLInput.get();
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
+		xml = t.xMLInput.get();
 		assertEquals("<![CDATA[\n"+
 "<parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>\n"+
-"]]>", sXML);
+"]]>", xml);
 	}
 	
 	@Test
@@ -190,28 +190,28 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(4, t.connectorsInput.get().size());
 		BeautiConnector c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(1);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(2);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("tracer", c.sTargetIDInput.get());
-		assertEquals("log", c.sInputNameInput.get());
-		assertEquals("gamma/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("tracer", c.targetIDInput.get());
+		assertEquals("log", c.inputNameInput.get());
+		assertEquals("gamma/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(3);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("tracer", c.sTargetIDInput.get());
-		assertEquals("log", c.sInputNameInput.get());
-		assertEquals("gamma/estimate=true", c.sConditionInput.get());
-		String sXML = t.sXMLInput.get();
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("tracer", c.targetIDInput.get());
+		assertEquals("log", c.inputNameInput.get());
+		assertEquals("gamma/estimate=true", c.conditionInput.get());
+		String xml = t.xMLInput.get();
 		assertEquals("<![CDATA[      <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/>    <parameter id=\"gamma\" value=\"3.0\"/>              ]]>"
-, sXML);
+, xml);
 	}
 
 	@Test
@@ -231,27 +231,27 @@ public class BeautiSubTemplateTest extends TestCase {
 				);
 		assertEquals(4, t.connectorsInput.get().size());
 		BeautiConnector c = t.connectorsInput.get().get(0);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("stateNode", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("stateNode", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(1);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("thestate", c.sTargetIDInput.get());
-		assertEquals("parameter", c.sInputNameInput.get());
-		assertEquals("gamma/estimate=true", c.sConditionInput.get());
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("thestate", c.targetIDInput.get());
+		assertEquals("parameter", c.inputNameInput.get());
+		assertEquals("gamma/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(2);
-		assertEquals("kappa", c.sSourceIDInput.get());
-		assertEquals("tracer", c.sTargetIDInput.get());
-		assertEquals("log", c.sInputNameInput.get());
-		assertEquals("kappa/estimate=true", c.sConditionInput.get());
+		assertEquals("kappa", c.sourceIDInput.get());
+		assertEquals("tracer", c.targetIDInput.get());
+		assertEquals("log", c.inputNameInput.get());
+		assertEquals("kappa/estimate=true", c.conditionInput.get());
 		c = t.connectorsInput.get().get(3);
-		assertEquals("gamma", c.sSourceIDInput.get());
-		assertEquals("tracer", c.sTargetIDInput.get());
-		assertEquals("log", c.sInputNameInput.get());
-		assertEquals("gamma/estimate=true", c.sConditionInput.get());
-		String sXML = t.sXMLInput.get().replaceAll("\\s+", " ");
+		assertEquals("gamma", c.sourceIDInput.get());
+		assertEquals("tracer", c.targetIDInput.get());
+		assertEquals("log", c.inputNameInput.get());
+		assertEquals("gamma/estimate=true", c.conditionInput.get());
+		String xml = t.xMLInput.get().replaceAll("\\s+", " ");
 		assertEquals("<![CDATA[ <parameter id=\"kappa\" name=\"stateNode\" value=\"1.0\"/> <parameter id=\"gamma\" value=\"3.0\"/> ]]>"
-, sXML);
+, xml);
 	}
 }

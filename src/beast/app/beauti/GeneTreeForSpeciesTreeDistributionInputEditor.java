@@ -29,16 +29,16 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
         m_input = input;
         m_beastObject = beastObject;
         this.itemNr= itemNr;
-        String sID = beastObject.getID();
-        if (sID.contains(".t:")) {
-        	sID = sID.substring(sID.indexOf(".t:") + 3);
+        String id = beastObject.getID();
+        if (id.contains(".t:")) {
+        	id = id.substring(id.indexOf(".t:") + 3);
         }
-        add(new JLabel("Gene Tree " + sID));
+        add(new JLabel("Gene Tree " + id));
         add(Box.createGlue());
 	}
 	
 	static final int OTHER = 3;
-	String [] sValues = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
+	String [] valuesString = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
 	Double [] fValues = new Double[]{2.0, 1.5, 0.5, -1.0};
 	JComboBox<String> m_selectBeastObjectBox;
 	
@@ -59,10 +59,10 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 				this.itemNr = itemNr;
 				addInputLabel();
 				
-	            m_selectBeastObjectBox = new JComboBox<>(sValues);
+	            m_selectBeastObjectBox = new JComboBox<>(valuesString);
 	            setSelection();
-	            String sSelectString = input.get().toString();
-	            m_selectBeastObjectBox.setSelectedItem(sSelectString);
+	            String selectString = input.get().toString();
+	            m_selectBeastObjectBox.setSelectedItem(selectString);
 
 	            m_selectBeastObjectBox.addActionListener(e -> {
 	                    int i = m_selectBeastObjectBox.getSelectedIndex();
@@ -72,7 +72,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	                    }
 	                    try {
 	                    	setValue(fValues[i]);
-	                        //lm_input.setValue(sSelected, m_beastObject);
+	                        //lm_input.setValue(selected, m_beastObject);
 	                    } catch (Exception e1) {
 	                        e1.printStackTrace();
 	                    }

@@ -108,21 +108,21 @@ public class SimulatedAlignment extends Alignment {
      */
     Sequence intArray2Sequence(int[] seq, Node node) throws Exception {
         DataType dataType = m_data.get().getDataType();
-        String sSeq = dataType.state2string(seq);
-//    	StringBuilder sSeq = new StringBuilder();
-//    	String sMap = m_data.get().getMap();
-//    	if (sMap != null) {
+        String seqString = dataType.state2string(seq);
+//    	StringBuilder seq = new StringBuilder();
+//    	String map = m_data.get().getMap();
+//    	if (map != null) {
 //    		for (int i  = 0; i < m_sequenceLength; i++) {
-//    			sSeq.append(sMap.charAt(seq[i]));
+//    			seq.append(map.charAt(seq[i]));
 //    		}
 //    	} else {
 //    		for (int i  = 0; i < m_sequenceLength-1; i++) {
-//    			sSeq.append(seq[i] + ",");
+//    			seq.append(seq[i] + ",");
 //    		}
-//			sSeq.append(seq[m_sequenceLength-1] + "");
+//			seq.append(seq[m_sequenceLength-1] + "");
 //    	}
-        String sTaxon = m_data.get().getTaxaNames().get(node.getNr());
-        return new Sequence(sTaxon, sSeq.toString());
+        String taxon = m_data.get().getTaxaNames().get(node.getNr());
+        return new Sequence(taxon, seqString);
     } // intArray2Sequence
 
     /**

@@ -70,14 +70,14 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
         int[] nOrder = getEncodingOrder();
         int nStates = freqs.length;
         Frequencies freqsParam = new Frequencies();
-        String sValues = "";
+        String valuesString = "";
 
         for (int i = 0; i < nStates; i++) {
-            sValues += freqs[nOrder[i]] + " ";
+            valuesString += freqs[nOrder[i]] + " ";
         }
         RealParameter freqsRParam = new RealParameter();
         freqsRParam.initByName(
-                "value", sValues,
+                "value", valuesString,
                 "lower", 0.0,
                 "upper", 1.0,
                 "dimension", nStates

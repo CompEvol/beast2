@@ -44,26 +44,26 @@ public class EBSPAnalyser {
         parse(m_sInputFile, m_nBurninPercentage, m_type, m_out);
     }
 
-    void parse(String sFile, int nBurnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws Exception {
-        logln("Processing " + sFile);
-        BufferedReader fin = new BufferedReader(new FileReader(sFile));
-        String sStr;
+    void parse(String fileName, int nBurnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws Exception {
+        logln("Processing " + fileName);
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
+        String str;
         int nData = 0;
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
-            sStr = fin.readLine();
+            str = fin.readLine();
             // terrible hackish code, must improve later
-            if( sStr.charAt(0) == '#' ) {
-                int i = sStr.indexOf("spec=");
+            if( str.charAt(0) == '#' ) {
+                int i = str.indexOf("spec=");
                 if( i > 0 ) {
-                   if( sStr.indexOf("type=\"stepwise\"") > 0 ) {
+                   if( str.indexOf("type=\"stepwise\"") > 0 ) {
                       m_type = Type.STEPWISE;
-                   }  else if( sStr.indexOf("type=\"linear\"") > 0 ) {
+                   }  else if( str.indexOf("type=\"linear\"") > 0 ) {
                       m_type = Type.LINEAR;
                    }
                 }
             }
-            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
+            if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
                 nData++;
             }
         }
@@ -71,29 +71,29 @@ public class EBSPAnalyser {
         logln(" skipping " + nBurnIn + " line\n\n");
         nData = -nBurnIn - 1;
         fin.close();
-        fin = new BufferedReader(new FileReader(sFile));
+        fin = new BufferedReader(new FileReader(fileName));
 
         // process log
         final List<List<Double>> times = new ArrayList<>();
         final List<List<Double>> popSizes = new ArrayList<>();
         double[] alltimes = null;
         while (fin.ready()) {
-            sStr = fin.readLine();
-            if (sStr.indexOf('#') < 0 && sStr.matches(".*[0-9a-zA-Z].*")) {
+            str = fin.readLine();
+            if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
                 if (++nData > 0) {
-                    final String[] sStrs = sStr.split("\t");
+                    final String[] strs = str.split("\t");
                     final List<Double> times2 = new ArrayList<>();
                     final List<Double> popSizes2 = new ArrayList<>();
                     if (alltimes == null) {
-                        alltimes = new double[sStrs.length - 1];
+                        alltimes = new double[strs.length - 1];
                     }
-                    for (int i = 1; i < sStrs.length; i++) {
-                        final String[] sStrs2 = sStrs[i].split(":");
-                        final Double time = Double.parseDouble(sStrs2[0]);
+                    for (int i = 1; i < strs.length; i++) {
+                        final String[] strs2 = strs[i].split(":");
+                        final Double time = Double.parseDouble(strs2[0]);
                         alltimes[i - 1] += time;
-                        if (sStrs2.length > 1) {
+                        if (strs2.length > 1) {
                             times2.add(time);
-                            popSizes2.add(Double.parseDouble(sStrs2[1]));
+                            popSizes2.add(Double.parseDouble(strs2[1]));
                         }
                     }
                     times.add(times2);
@@ -133,7 +133,7 @@ public class EBSPAnalyser {
     private double calcPopSize(CompoundPopulationFunction.Type type, List<Double> xs, List<Double> ys, double d) {
         // TODO completely untested
         // assume linear
-        //assert sType.equals("Linear");
+        //assert typeName.equals("Linear");
 
         final int n = xs.size();
         final double xn = xs.get(n - 1);
@@ -236,14 +236,14 @@ public class EBSPAnalyser {
         aboutString = "LogCombiner" + aboutString.replaceAll("</p>", "\n\n");
         aboutString = aboutString.replaceAll("<br>", "\n");
         aboutString = aboutString.replaceAll("<[^>]*>", " ");
-        String[] sStrs = aboutString.split("\n");
-        for (String sStr : sStrs) {
-            int n = 80 - sStr.length();
+        String[] strs = aboutString.split("\n");
+        for (String str : strs) {
+            int n = 80 - str.length();
             int n1 = n / 2;
             for (int i = 0; i < n1; i++) {
                 log(" ");
             }
-            logln(sStr);
+            logln(str);
         }
     }
 

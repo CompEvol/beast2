@@ -93,9 +93,9 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      * NB: Should only be used for initialisation!
      */
     public void assignFromWithoutID(StateNode other) {
-        final String sID = getID();
+        final String id = getID();
         assignFrom(other);
-        setID(sID);
+        setID(id);
     }
 
     /**

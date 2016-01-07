@@ -114,13 +114,13 @@ public class DocMaker {
             try {
                 Class<?> _class = Class.forName(beastObjectName);
                 BEASTObject beastObject = (BEASTObject) _class.newInstance();
-                String sDescription = getInheritableDescription(beastObject.getClass());
-                Log.warning.println(beastObjectName + " => " + sDescription);
-                m_descriptions.put(beastObjectName, sDescription);
-                String[] sImplementations = getImplementations(beastObject);
-                m_isa.put(beastObjectName, sImplementations);
-                for (String sImp : sImplementations) {
-                    m_ancestors.get(sImp).add(beastObjectName);
+                String description = getInheritableDescription(beastObject.getClass());
+                Log.warning.println(beastObjectName + " => " + description);
+                m_descriptions.put(beastObjectName, description);
+                String[] implementations = getImplementations(beastObject);
+                m_isa.put(beastObjectName, implementations);
+                for (String imp : implementations) {
+                    m_ancestors.get(imp).add(beastObjectName);
                 }
                 if (beastObject instanceof Loggable) {
                     m_sLoggables.add(beastObjectName);
@@ -295,28 +295,28 @@ public class DocMaker {
                 "</head>\n");
         out.println("<body>\n");
         out.println("<h1>BEAST " + version.getVersionString() + " Documentation index</h1>\n");
-        String sPrev = null;
-        String sPrevPackage = null;
+        String prev = null;
+        String prevPackage = null;
         for (String beastObjectName : m_beastObjectNames) {
-            String sNext = beastObjectName.substring(0, beastObjectName.indexOf('.'));
-            if (sPrev != null && !sNext.equals(sPrev)) {
+            String next = beastObjectName.substring(0, beastObjectName.indexOf('.'));
+            if (prev != null && !next.equals(prev)) {
                 out.println("<hr/>");
             }
-            sPrev = sNext;
-            String sName = beastObjectName.substring(beastObjectName.lastIndexOf('.') + 1);
-            String sPackage = beastObjectName.substring(0, beastObjectName.lastIndexOf('.'));
+            prev = next;
+            String name = beastObjectName.substring(beastObjectName.lastIndexOf('.') + 1);
+            String packageName = beastObjectName.substring(0, beastObjectName.lastIndexOf('.'));
             // count nr of packages
             int i = 0;
             while (beastObjectName.indexOf('.', i) > 0) {
-                sName = "." + sName;
+                name = "." + name;
                 i = beastObjectName.indexOf('.', i) + 1;
             }
-            Log.warning.println(sName + " <= " + beastObjectName);
-            if (sPrevPackage == null || !sPackage.equals(sPrevPackage)) {
-                out.println("<span style='color:grey'>" + sPackage + "</span><br/>");
+            Log.warning.println(name + " <= " + beastObjectName);
+            if (prevPackage == null || !packageName.equals(prevPackage)) {
+                out.println("<span style='color:grey'>" + packageName + "</span><br/>");
             }
-            out.println("<a href='" + beastObjectName + ".html' target='display'>" + sName + "</a><br/>");
-            sPrevPackage = sPackage;
+            out.println("<a href='" + beastObjectName + ".html' target='display'>" + name + "</a><br/>");
+            prevPackage = packageName;
         }
         out.println("</body>\n");
         out.println("</html>\n");
@@ -327,17 +327,17 @@ public class DocMaker {
      * Find all beastObjects that are derived from given beastObject *
      */
     String[] getImplementations(BEASTObject beastObject) {
-        String sName = beastObject.getClass().getName();
-        List<String> sImplementations = new ArrayList<>();
+        String name = beastObject.getClass().getName();
+        List<String> implementations = new ArrayList<>();
         for (String beastObjectName : m_beastObjectNames) {
             try {
-                if (!beastObjectName.equals(sName) && beastObject.getClass().isAssignableFrom(Class.forName(beastObjectName))) {
-                    sImplementations.add(beastObjectName);
+                if (!beastObjectName.equals(name) && beastObject.getClass().isAssignableFrom(Class.forName(beastObjectName))) {
+                    implementations.add(beastObjectName);
                 }
             } catch (ClassNotFoundException e) {
             }
         }
-        return sImplementations.toArray(new String[0]);
+        return implementations.toArray(new String[0]);
     }
 
     /**
@@ -345,12 +345,12 @@ public class DocMaker {
      * but only if the description is inheritable *
      */
     String getInheritableDescription(Class<?> beastObjectClass) {
-        String sStr = "";
+        String str = "";
         Class<?> superClass = beastObjectClass.getSuperclass();
         if (superClass != null) {
-            String sSuper = getInheritableDescription(superClass);
-            if (sSuper != null) {
-                sStr += sSuper + "<br/>";
+            String superName = getInheritableDescription(superClass);
+            if (superName != null) {
+                str += superName + "<br/>";
             }
         }
         Annotation[] classAnnotations = beastObjectClass.getAnnotations();
@@ -358,13 +358,13 @@ public class DocMaker {
             if (annotation instanceof Description) {
                 Description description = (Description) annotation;
                 if (description.isInheritable()) {
-                    sStr += description.value();
+                    str += description.value();
                 } else {
                     return null;
                 }
             }
         }
-        return sStr;
+        return str;
     }
 
     /**
@@ -397,8 +397,8 @@ public class DocMaker {
         BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
 
         // show all implementation of this plug-in
-        String[] sImplementations = m_isa.get(beastObjectName);
-        if (sImplementations == null) {
+        String[] implementations = m_isa.get(beastObjectName);
+        if (implementations == null) {
             // this class is not documented, perhaps outside ClassDiscover path?
             buf.append("No documentation available for " + beastObjectName + ". Perhaps it is not in the ClassDiscovery path\n");
             buf.append("</body>\n");
@@ -406,11 +406,11 @@ public class DocMaker {
             return buf.toString();
         }
 
-        if (sImplementations.length > 0) {
+        if (implementations.length > 0) {
             buf.append("<table border='1px'>\n");
             buf.append("<thead><tr><td>implemented by the following</td></tr></thead>\n");
-            for (String sImp : sImplementations) {
-                buf.append("<tr><td><a href='" + sImp + ".html'>" + sImp + "</a></td></tr>\n");
+            for (String imp : implementations) {
+                buf.append("<tr><td><a href='" + imp + ".html'>" + imp + "</a></td></tr>\n");
             }
             buf.append("</table>\n");
         }
@@ -488,15 +488,15 @@ public class DocMaker {
     } // getHTML
 
     /**
-     * determine type of input of a plug in with name sName
+     * determine type of input of a plug in with name name
      */
-    String getType(BEASTObject beastObject, String sName) {
+    String getType(BEASTObject beastObject, String name) {
         try {
             Field[] fields = beastObject.getClass().getFields();
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getType().isAssignableFrom(Input.class)) {
                     final Input<?> input = (Input<?>) fields[i].get(beastObject);
-                    if (input.getName().equals(sName)) {
+                    if (input.getName().equals(name)) {
                         Type t = fields[i].getGenericType();
                         Type[] genericTypes = ((ParameterizedType) t).getActualTypeArguments();
                         if (input.getType() != null) {

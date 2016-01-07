@@ -84,17 +84,17 @@ public class Utils6 {
     }
 
 
-	public static ImageIcon getIcon(String sIconLocation) {
+	public static ImageIcon getIcon(String iconLocation) {
 	    try {
-	        URL url = ClassLoader.getSystemResource(sIconLocation);
+	        URL url = ClassLoader.getSystemResource(iconLocation);
 	        if (url == null) {
-	        	Log.warning.println("Cannot find icon " + sIconLocation);
+	        	Log.warning.println("Cannot find icon " + iconLocation);
 	            return null;
 	        }
 	        ImageIcon icon = new ImageIcon(url);
 	        return icon;
 	    } catch (Exception e) {
-	    	Log.warning.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+	    	Log.warning.println("Cannot load icon " + iconLocation + " " + e.getMessage());
 	        return null;
 	    }
 	}

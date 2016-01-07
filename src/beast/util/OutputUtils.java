@@ -31,25 +31,25 @@ public class OutputUtils {
         }
         if (Math.abs(d) > 1e-4 || d == 0) {
             DecimalFormat f = new DecimalFormat("#0.######", new DecimalFormatSymbols(Locale.US));
-            String sStr = f.format(d);
-            if (sStr.length() > 8) {
-                sStr = sStr.substring(0, 8);
+            String str = f.format(d);
+            if (str.length() > 8) {
+                str = str.substring(0, 8);
             }
-            while (sStr.length() < 8) {
-                sStr += " ";
+            while (str.length() < 8) {
+                str += " ";
             }
-            return sStr;
+            return str;
         } else {
             DecimalFormat f = new DecimalFormat("0.##E0", new DecimalFormatSymbols(Locale.US));
-            String sStr = f.format(d);
-            if (sStr.length() > 8) {
-                String [] sStrs = sStr.split("E");
-                sStr =  sStrs[0].substring(0, 8 - sStrs[1].length() - 1) + "E" + sStrs[1];
+            String str = f.format(d);
+            if (str.length() > 8) {
+                String [] strs = str.split("E");
+                str =  strs[0].substring(0, 8 - strs[1].length() - 1) + "E" + strs[1];
             }
-            while (sStr.length() < 8) {
-                sStr += " ";
+            while (str.length() < 8) {
+                str += " ";
             }
-            return sStr;
+            return str;
         }
     }
 

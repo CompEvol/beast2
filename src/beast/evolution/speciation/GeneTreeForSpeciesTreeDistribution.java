@@ -101,19 +101,19 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
         Arrays.fill(nrOfLineageToSpeciesMap, -1);
         for (int i = 0; i < nGtLineages; i++) {
-            final String sSpeciesID = getSetID(gtNodes[i].getID());
+            final String speciesID = getSetID(gtNodes[i].getID());
             // ??? can this be a startup check? can this happen during run due to tree change?
-            if (sSpeciesID == null) {
+            if (speciesID == null) {
                 throw new IllegalArgumentException("Cannot find species for lineage " + gtNodes[i].getID());
             }
             for (int iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
-                if (sSpeciesID.equals(sptNodes[iSpecies].getID())) {
+                if (speciesID.equals(sptNodes[iSpecies].getID())) {
                     nrOfLineageToSpeciesMap[i] = iSpecies;
                     break;
                 }
             }
             if (nrOfLineageToSpeciesMap[i] < 0) {
-                throw new IllegalArgumentException("Cannot find species with name " + sSpeciesID + " in species tree");
+                throw new IllegalArgumentException("Cannot find species with name " + speciesID + " in species tree");
             }
         }
 
@@ -135,16 +135,16 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     }
 
     /**
-     * @param sLineageID
+     * @param lineageID
      * @return species ID to which the lineage ID belongs according to the TaxonSets
      */
-    String getSetID(final String sLineageID) {
+    String getSetID(final String lineageID) {
         final TaxonSet taxonSuperset = speciesTreePriorInput.get().taxonSetInput.get();
         final List<Taxon> taxonSets = taxonSuperset.taxonsetInput.get();
         for (final Taxon taxonSet : taxonSets) {
             final List<Taxon> taxa = ((TaxonSet) taxonSet).taxonsetInput.get();
             for (final Taxon aTaxa : taxa) {
-                if (aTaxa.getID().equals(sLineageID)) {
+                if (aTaxa.getID().equals(lineageID)) {
                     return taxonSet.getID();
                 }
             }

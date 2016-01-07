@@ -65,8 +65,8 @@ public class PriorListInputEditor extends ListInputEditor {
     	List<?> list = (List<?>) input.get();
     	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
-					String sID1 = ((BEASTInterface)o1).getID();
-					String sID2 = ((BEASTInterface)o2).getID();
+					String iD1 = ((BEASTInterface)o1).getID();
+					String id2 = ((BEASTInterface)o2).getID();
 					// first the tree priors
 					if (o1 instanceof TreeDistribution) {
 						if (o2 instanceof TreeDistribution) {
@@ -78,14 +78,14 @@ public class PriorListInputEditor extends ListInputEditor {
 							if (tree2 == null) {
 								tree2 = ((TreeDistribution)o2).treeIntervalsInput.get().treeInput.get();
 							}
-							return sID1.compareTo(sID2);
+							return iD1.compareTo(id2);
 						} else {
 							return -1;
 						}
 					} else if (o1 instanceof MRCAPrior) {
 						// last MRCA priors
 						if (o2 instanceof MRCAPrior) {
-							return sID1.compareTo(sID2);
+							return iD1.compareTo(id2);
 						} else {
 							return 1;
 						}
@@ -97,12 +97,12 @@ public class PriorListInputEditor extends ListInputEditor {
 							return -1;
 						}
 						if (o1 instanceof Prior) {
-							sID1 = ((Prior) o1).getParameterName(); 
+							iD1 = ((Prior) o1).getParameterName(); 
 						}
 						if (o2 instanceof Prior) {
-							sID2 = ((Prior) o2).getParameterName(); 
+							id2 = ((Prior) o2).getParameterName(); 
 						}
-						return sID1.compareTo(sID2);
+						return iD1.compareTo(id2);
 					}
 				}
 				return 0;
@@ -176,8 +176,8 @@ public class PriorListInputEditor extends ListInputEditor {
         	taxa = prior.treeInput.get().getTaxaNames();
         }
         
-        for (String sTaxon : taxa) {
-            candidates.add(doc.getTaxon(sTaxon));
+        for (String taxon : taxa) {
+            candidates.add(doc.getTaxon(taxon));
         }
         return candidates;
     }
@@ -225,13 +225,13 @@ public class PriorListInputEditor extends ListInputEditor {
             }
             int iTree = 0;
             if (trees.size() > 1) {
-                String[] sTreeIDs = new String[trees.size()];
-                for (int j = 0; j < sTreeIDs.length; j++) {
-                    sTreeIDs[j] = trees.get(j).getID();
+                String[] treeIDs = new String[trees.size()];
+                for (int j = 0; j < treeIDs.length; j++) {
+                    treeIDs[j] = trees.get(j).getID();
                 }
                 iTree = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                        sTreeIDs, trees.get(0));
+                        treeIDs, trees.get(0));
             }
             if (iTree < 0) {
                 return null;

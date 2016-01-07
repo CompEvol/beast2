@@ -162,8 +162,8 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
     void updateState() {
         String beastObjectName = m_sPlugins.get(m_iCurrentPlugin);
         try {
-            String sHTML = m_docMaker.getHTML(beastObjectName, false);
-            m_editorPane.setText(sHTML);
+            String hTML = m_docMaker.getHTML(beastObjectName, false);
+            m_editorPane.setText(hTML);
         } catch (Exception e) {
             // ignore
             Log.err.println("HelpBrowser: Something is wrong: " + e.getClass().getName() + " " + e.getMessage());

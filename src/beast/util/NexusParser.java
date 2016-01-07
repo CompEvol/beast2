@@ -99,23 +99,23 @@ public class NexusParser {
         }
         try {
             while (fin.ready()) {
-                final String sStr = nextLine(fin);
-                if (sStr == null) {
+                final String str = nextLine(fin);
+                if (str == null) {
                     return;
                 }
-                final String sLower = sStr.toLowerCase();
-                if (sLower.matches("^\\s*begin\\s+data;\\s*$") || sLower.matches("^\\s*begin\\s+characters;\\s*$")) {
+                final String lower = str.toLowerCase();
+                if (lower.matches("^\\s*begin\\s+data;\\s*$") || lower.matches("^\\s*begin\\s+characters;\\s*$")) {
                     m_alignment = parseDataBlock(fin);
                     m_alignment.setID(id);
-                } else if (sLower.matches("^\\s*begin\\s+calibration;\\s*$")) {
+                } else if (lower.matches("^\\s*begin\\s+calibration;\\s*$")) {
                     traitSet = parseCalibrationsBlock(fin);
-                } else if (sLower.matches("^\\s*begin\\s+assumptions;\\s*$") ||
-                        sLower.matches("^\\s*begin\\s+sets;\\s*$") ||
-                        sLower.matches("^\\s*begin\\s+mrbayes;\\s*$")) {
+                } else if (lower.matches("^\\s*begin\\s+assumptions;\\s*$") ||
+                        lower.matches("^\\s*begin\\s+sets;\\s*$") ||
+                        lower.matches("^\\s*begin\\s+mrbayes;\\s*$")) {
                     parseAssumptionsBlock(fin);
-                } else if (sLower.matches("^\\s*begin\\s+taxa;\\s*$")) {
+                } else if (lower.matches("^\\s*begin\\s+taxa;\\s*$")) {
                     parseTaxaBlock(fin);
-                } else if (sLower.matches("^\\s*begin\\s+trees;\\s*$")) {
+                } else if (lower.matches("^\\s*begin\\s+trees;\\s*$")) {
                     parseTreesBlock(fin);
                 }
             }
@@ -128,15 +128,15 @@ public class NexusParser {
     private void parseTreesBlock(final BufferedReader fin) throws Exception {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
-        String sStr = fin.readLine().trim();
-        while (sStr.equals("")) {
-            sStr = fin.readLine().trim();
+        String str = fin.readLine().trim();
+        while (str.equals("")) {
+            str = fin.readLine().trim();
         }
 
         int origin = -1;
 
         // if first non-empty line is "translate" then parse translate block
-        if (sStr.toLowerCase().contains("translate")) {
+        if (str.toLowerCase().contains("translate")) {
             translationMap = parseTranslateBlock(fin);
             origin = getIndexedTranslationMapOrigin(translationMap);
             if (origin != -1) {
@@ -145,25 +145,25 @@ public class NexusParser {
         }
 
         // read trees
-        while (sStr != null) {
-            if (sStr.toLowerCase().startsWith("tree ")) {
-                final int i = sStr.indexOf('(');
+        while (str != null) {
+            if (str.toLowerCase().startsWith("tree ")) {
+                final int i = str.indexOf('(');
                 if (i > 0) {
-                    sStr = sStr.substring(i);
+                    str = str.substring(i);
                 }
                 TreeParser treeParser;
 
                 if (origin != -1) {
-                    treeParser = new TreeParser(taxa, sStr, origin, false);
+                    treeParser = new TreeParser(taxa, str, origin, false);
                 } else {
                     try {
-                        treeParser = new TreeParser(taxa, sStr, 0, false);
+                        treeParser = new TreeParser(taxa, str, 0, false);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        treeParser = new TreeParser(taxa, sStr, 1, false);
+                        treeParser = new TreeParser(taxa, str, 1, false);
                     }
                 }
 //                catch (NullPointerException e) {
-//                    treeParser = new TreeParser(m_taxa, sStr, 1);
+//                    treeParser = new TreeParser(m_taxa, str, 1);
 //                }
 
                 for (final NexusParserListener listener : listeners) {
@@ -178,8 +178,8 @@ public class NexusParser {
 //				tree.sort();
 //				tree.labelInternalNodes(nNrOfLabels);
             }
-            sStr = fin.readLine();
-            if (sStr != null) sStr = sStr.trim();
+            str = fin.readLine();
+            if (str != null) str = str.trim();
         }
     }
 
@@ -247,38 +247,38 @@ public class NexusParser {
     private void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
         int nTaxaExpected = -1;
-        String sStr;
+        String str;
         do {
-            sStr = nextLine(fin);
-            if (sStr.toLowerCase().matches("\\s*dimensions\\s.*")) {
-                sStr = sStr.substring(sStr.toLowerCase().indexOf("ntax=") + 5);
-                sStr = sStr.replaceAll(";", "");
-                nTaxaExpected = Integer.parseInt(sStr.trim());
-            } else if (sStr.toLowerCase().trim().equals("taxlabels")) {
+            str = nextLine(fin);
+            if (str.toLowerCase().matches("\\s*dimensions\\s.*")) {
+                str = str.substring(str.toLowerCase().indexOf("ntax=") + 5);
+                str = str.replaceAll(";", "");
+                nTaxaExpected = Integer.parseInt(str.trim());
+            } else if (str.toLowerCase().trim().equals("taxlabels")) {
                 do {
-                    sStr = nextLine(fin);
-                    sStr = sStr.replaceAll(";", "");
-                    sStr = sStr.trim();
-                    if (sStr.length() > 0 && !sStr.toLowerCase().equals("end")) {
-                    	String [] sStrs = sStr.split("\\s+");
-                    	for (int i = 0; i < sStrs.length; i++) {
-                        	String taxon = sStrs[i];
+                    str = nextLine(fin);
+                    str = str.replaceAll(";", "");
+                    str = str.trim();
+                    if (str.length() > 0 && !str.toLowerCase().equals("end")) {
+                    	String [] strs = str.split("\\s+");
+                    	for (int i = 0; i < strs.length; i++) {
+                        	String taxon = strs[i];
                             if (taxon.charAt(0) == '\'' || taxon.charAt(0) == '\"') {
-                            	while (i < sStrs.length && taxon.charAt(0) != taxon.charAt(taxon.length() - 1)) {
+                            	while (i < strs.length && taxon.charAt(0) != taxon.charAt(taxon.length() - 1)) {
                             		i++;
-                            		if (i == sStrs.length) {
+                            		if (i == strs.length) {
                             			throw new IOException("Unclosed quote starting with " + taxon);
                             		}
-                            		taxon += " " + sStrs[i];
+                            		taxon += " " + strs[i];
                             	}
                             	taxon = taxon.substring(1, taxon.length() - 1);
                             }
                             taxa.add(taxon);
                     	}
                     }
-                } while (!sStr.toLowerCase().equals("end"));
+                } while (!str.toLowerCase().equals("end"));
             }
-        } while (!sStr.toLowerCase().equals("end"));
+        } while (!str.toLowerCase().equals("end"));
         if (nTaxaExpected >= 0 && taxa.size() != nTaxaExpected) {
             throw new IOException("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
             		"field (" + nTaxaExpected + ") specified in 'taxa' block");
@@ -291,40 +291,40 @@ public class NexusParser {
     TraitSet parseCalibrationsBlock(final BufferedReader fin) throws Exception {
         final TraitSet traitSet = new TraitSet();
         traitSet.traitNameInput.setValue("date", traitSet);
-        String sStr;
+        String str;
         do {
-            sStr = nextLine(fin);
-            if (sStr.toLowerCase().contains("options")) {
-                String sScale = getAttValue("scale", sStr);
-                if (sScale.endsWith("s")) {
-                    sScale = sScale.substring(0, sScale.length() - 1);
+            str = nextLine(fin);
+            if (str.toLowerCase().contains("options")) {
+                String scale = getAttValue("scale", str);
+                if (scale.endsWith("s")) {
+                    scale = scale.substring(0, scale.length() - 1);
                 }
-                traitSet.unitsInput.setValue(sScale, traitSet);
+                traitSet.unitsInput.setValue(scale, traitSet);
             }
-        } while (sStr.toLowerCase().contains("tipcalibration"));
+        } while (str.toLowerCase().contains("tipcalibration"));
 
-        String sText = "";
+        String text = "";
         while (true) {
-            sStr = nextLine(fin);
-            if (sStr.contains(";")) {
+            str = nextLine(fin);
+            if (str.contains(";")) {
                 break;
             }
-            sText += sStr;
+            text += str;
         }
-        final String[] sStrs = sText.split(",");
-        sText = "";
-        for (final String sStr2 : sStrs) {
-            final String[] sParts = sStr2.split(":");
-            final String sDate = sParts[0].replaceAll(".*=\\s*", "");
-            final String[] sTaxa = sParts[1].split("\\s+");
-            for (final String sTaxon : sTaxa) {
-                if (!sTaxon.matches("^\\s*$")) {
-                    sText += sTaxon + "=" + sDate + ",\n";
+        final String[] strs = text.split(",");
+        text = "";
+        for (final String str2 : strs) {
+            final String[] parts = str2.split(":");
+            final String date = parts[0].replaceAll(".*=\\s*", "");
+            final String[] taxa = parts[1].split("\\s+");
+            for (final String taxon : taxa) {
+                if (!taxon.matches("^\\s*$")) {
+                    text += taxon + "=" + date + ",\n";
                 }
             }
         }
-        sText = sText.substring(0, sText.length() - 2);
-        traitSet.traitsInput.setValue(sText, traitSet);
+        text = text.substring(0, text.length() - 2);
+        traitSet.traitsInput.setValue(text, traitSet);
         final TaxonSet taxa = new TaxonSet();
         taxa.initByName("alignment", m_alignment);
         traitSet.taxaInput.setValue(taxa, traitSet);
@@ -341,89 +341,89 @@ public class NexusParser {
 
         final Alignment alignment = new Alignment();
 
-        String sStr;
+        String str;
         int nTaxa = -1;
         int nChar = -1;
         int nTotalCount = 4;
-        String sMissing = "?";
-        String sGap = "-";
+        String missing = "?";
+        String gap = "-";
         // indicates character matches the one in the first sequence
-        String sMatchChar = null;
+        String matchChar = null;
         do {
-            sStr = nextLine(fin);
+            str = nextLine(fin);
 
             //dimensions ntax=12 nchar=898;
-            if (sStr.toLowerCase().contains("dimensions")) {
-                while (sStr.indexOf(';') < 0) {
-                    sStr += nextLine(fin);
+            if (str.toLowerCase().contains("dimensions")) {
+                while (str.indexOf(';') < 0) {
+                    str += nextLine(fin);
                 }
-                sStr = sStr.replace(";", " ");
+                str = str.replace(";", " ");
 
-                final String sChar = getAttValue("nchar", sStr);
-                if (sChar == null) {
-                    throw new IOException("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + sStr);
+                final String character = getAttValue("nchar", str);
+                if (character == null) {
+                    throw new IOException("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + str);
                 }
-                nChar = Integer.parseInt(sChar);
-                final String sTaxa = getAttValue("ntax", sStr);
-                if (sTaxa != null) {
-                    nTaxa = Integer.parseInt(sTaxa);
+                nChar = Integer.parseInt(character);
+                final String taxa = getAttValue("ntax", str);
+                if (taxa != null) {
+                    nTaxa = Integer.parseInt(taxa);
                 }
-            } else if (sStr.toLowerCase().contains("format")) {
-                while (sStr.indexOf(';') < 0) {
-                    sStr += nextLine(fin);
+            } else if (str.toLowerCase().contains("format")) {
+                while (str.indexOf(';') < 0) {
+                    str += nextLine(fin);
                 }
-                sStr = sStr.replace(";", " ");
+                str = str.replace(";", " ");
 
                 //format datatype=dna interleave=no gap=-;
-                final String sDataType = getAttValue("datatype", sStr);
-                final String sSymbols;
-                if (getAttValue("symbols", sStr) == null) {
-                    sSymbols = getAttValue("symbols", sStr);
+                final String dataTypeName = getAttValue("datatype", str);
+                final String symbols;
+                if (getAttValue("symbols", str) == null) {
+                    symbols = getAttValue("symbols", str);
                 } else {
-                    sSymbols = getAttValue("symbols", sStr).replaceAll("\\s", "");
+                    symbols = getAttValue("symbols", str).replaceAll("\\s", "");
                 }
-                if (sDataType == null) {
-                    Log.warning.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + sStr + "' Assuming integer dataType");
+                if (dataTypeName == null) {
+                    Log.warning.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + str + "' Assuming integer dataType");
                     alignment.dataTypeInput.setValue("integer", alignment);
-                    if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
-                        nTotalCount = sSymbols.length();
+                    if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
+                        nTotalCount = symbols.length();
                     }
-                } else if (sDataType.toLowerCase().equals("rna") || sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+                } else if (dataTypeName.toLowerCase().equals("rna") || dataTypeName.toLowerCase().equals("dna") || dataTypeName.toLowerCase().equals("nucleotide")) {
                     alignment.dataTypeInput.setValue("nucleotide", alignment);
                     nTotalCount = 4;
-                } else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+                } else if (dataTypeName.toLowerCase().equals("aminoacid") || dataTypeName.toLowerCase().equals("protein")) {
                     alignment.dataTypeInput.setValue("aminoacid", alignment);
                     nTotalCount = 20;
-                } else if (sDataType.toLowerCase().equals("standard")) {
+                } else if (dataTypeName.toLowerCase().equals("standard")) {
                     alignment.dataTypeInput.setValue("standard", alignment);
-                    nTotalCount = sSymbols.length();
-//                    if (sSymbols == null || sSymbols.equals("01")) {
+                    nTotalCount = symbols.length();
+//                    if (symbols == null || symbols.equals("01")) {
 //                        alignment.dataTypeInput.setValue("binary", alignment);
 //                        nTotalCount = 2;
 //                    }  else {
 //                        alignment.dataTypeInput.setValue("standard", alignment);
-//                        nTotalCount = sSymbols.length();
+//                        nTotalCount = symbols.length();
 //                    }
-                } else if (sDataType.toLowerCase().equals("binary")) {
+                } else if (dataTypeName.toLowerCase().equals("binary")) {
                     alignment.dataTypeInput.setValue("binary", alignment);
                     nTotalCount = 2;
                 } else {
                     alignment.dataTypeInput.setValue("integer", alignment);
-                    if (sSymbols != null && (sSymbols.equals("01") || sSymbols.equals("012"))) {
-                        nTotalCount = sSymbols.length();
+                    if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
+                        nTotalCount = symbols.length();
                     }
                 }
-                final String sMissingChar = getAttValue("missing", sStr);
-                if (sMissingChar != null) {
-                    sMissing = sMissingChar;
+                final String missingChar = getAttValue("missing", str);
+                if (missingChar != null) {
+                    missing = missingChar;
                 }
-                final String sGapChar = getAttValue("gap", sStr);
-                if (sGapChar != null) {
-                    sGap = sGapChar;
+                final String gapChar = getAttValue("gap", str);
+                if (gapChar != null) {
+                    gap = gapChar;
                 }
-                sMatchChar = getAttValue("matchchar", sStr);
+                matchChar = getAttValue("matchchar", str);
             }
-        } while (!sStr.trim().toLowerCase().startsWith("matrix") && !sStr.toLowerCase().contains("charstatelabels"));
+        } while (!str.trim().toLowerCase().startsWith("matrix") && !str.toLowerCase().contains("charstatelabels"));
 
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
@@ -433,7 +433,7 @@ public class NexusParser {
         }
 
         //reading CHARSTATELABELS block
-        if (sStr.toLowerCase().contains("charstatelabels")) {
+        if (str.toLowerCase().contains("charstatelabels")) {
             if (!alignment.dataTypeInput.get().equals("standard")) {
                 new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
             }
@@ -443,19 +443,19 @@ public class NexusParser {
             ArrayList<UserDataType> charDescriptions = processCharstatelabelsTokens(tokens, maxNumberOfStates);
 
 //            while (true) {
-//                sStr = nextLine(fin);
-//                if (sStr.contains(";")) {
+//                str = nextLine(fin);
+//                if (str.contains(";")) {
 //                    break;
 //                }
-//                String[] sStrSplit = sStr.split("/");
+//                String[] strSplit = str.split("/");
 //                ArrayList<String> states = new ArrayList<>();
 //
-//                if (sStrSplit.length < 2) {
-//                    charDescriptions.add(new UserDataType(sStrSplit[0], states));
+//                if (strSplit.length < 2) {
+//                    charDescriptions.add(new UserDataType(strSplit[0], states));
 //                    continue;
 //                }
 //
-//                String stateStr = sStrSplit[1];
+//                String stateStr = strSplit[1];
 //
 //                //add a comma at the end of the string if the last non-whitespace character is not a comma or all the
 //                // characters are whitespaces in the string. Also remove whitespaces at the end of the string.
@@ -510,8 +510,8 @@ public class NexusParser {
 //                            break;
 //                    }
 //                }
-//                // oldTODO make sStrSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
-//                charDescriptions.add(new UserDataType(sStrSplit[0], states));
+//                // oldTODO make strSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
+//                charDescriptions.add(new UserDataType(strSplit[0], states));
 //                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
 //            }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
@@ -523,102 +523,102 @@ public class NexusParser {
         }
 
         //skipping before MATRIX block
-        while (!sStr.toLowerCase().contains(("matrix"))) {
-            sStr = nextLine(fin);
+        while (!str.toLowerCase().contains(("matrix"))) {
+            str = nextLine(fin);
         }
 
         // read character data
         // Use string builder for efficiency
         final Map<String, StringBuilder> seqMap = new HashMap<>();
-        final List<String> sTaxa = new ArrayList<>();
-        String sPrevTaxon = null;
+        final List<String> taxa = new ArrayList<>();
+        String prevTaxon = null;
         int seqLen = 0;
         while (true) {
-            sStr = nextLine(fin);
-            if (sStr.contains(";")) {
+            str = nextLine(fin);
+            if (str.contains(";")) {
                 break;
             }
 
             int iStart = 0, iEnd;
-            final String sTaxon;
-            while (Character.isWhitespace(sStr.charAt(iStart))) {
+            final String taxon;
+            while (Character.isWhitespace(str.charAt(iStart))) {
                 iStart++;
             }
-            if (sStr.charAt(iStart) == '\'' || sStr.charAt(iStart) == '\"') {
-                final char c = sStr.charAt(iStart);
+            if (str.charAt(iStart) == '\'' || str.charAt(iStart) == '\"') {
+                final char c = str.charAt(iStart);
                 iStart++;
                 iEnd = iStart;
-                while (sStr.charAt(iEnd) != c) {
+                while (str.charAt(iEnd) != c) {
                     iEnd++;
                 }
-                sTaxon = sStr.substring(iStart, iEnd);
+                taxon = str.substring(iStart, iEnd);
                 seqLen = 0;
                 iEnd++;
             } else {
                 iEnd = iStart;
-                while (iEnd < sStr.length() && !Character.isWhitespace(sStr.charAt(iEnd))) {
+                while (iEnd < str.length() && !Character.isWhitespace(str.charAt(iEnd))) {
                     iEnd++;
                 }
-                if (iEnd < sStr.length()) {
-                    sTaxon = sStr.substring(iStart, iEnd);
+                if (iEnd < str.length()) {
+                    taxon = str.substring(iStart, iEnd);
                     seqLen = 0;
-                } else if ((sPrevTaxon == null || seqLen == nChar) && iEnd == sStr.length()) {
-                    sTaxon = sStr.substring(iStart, iEnd);
+                } else if ((prevTaxon == null || seqLen == nChar) && iEnd == str.length()) {
+                    taxon = str.substring(iStart, iEnd);
                     seqLen = 0;
                 } else {
-                    sTaxon = sPrevTaxon;
-                    if (sTaxon == null) {
+                    taxon = prevTaxon;
+                    if (taxon == null) {
                         throw new IOException("Could not recognise taxon");
                     }
                     iEnd = iStart;
                 }
             }
-            sPrevTaxon = sTaxon;
-            final String sData = sStr.substring(iEnd);
-            for (int k = 0; k < sData.length(); k++) {
-            	if (!Character.isWhitespace(sData.charAt(k))) {
+            prevTaxon = taxon;
+            final String data = str.substring(iEnd);
+            for (int k = 0; k < data.length(); k++) {
+            	if (!Character.isWhitespace(data.charAt(k))) {
             		seqLen++;
             	}
             }
             // Do this once outside loop- save on multiple regex compilations
-            //sData = sData.replaceAll("\\s", "");
+            //data = data.replaceAll("\\s", "");
 
-//			String [] sStrs = sStr.split("\\s+");
-//			String sTaxon = sStrs[0];
-//			for (int k = 1; k < sStrs.length - 1; k++) {
-//				sTaxon += sStrs[k];
+//			String [] strs = str.split("\\s+");
+//			String taxon = strs[0];
+//			for (int k = 1; k < strs.length - 1; k++) {
+//				taxon += strs[k];
 //			}
-//			sTaxon = sTaxon.replaceAll("'", "");
-//			Log.warning.println(sTaxon);
-//			String sData = sStrs[sStrs.length - 1];
+//			taxon = taxon.replaceAll("'", "");
+//			Log.warning.println(taxon);
+//			String data = strs[strs.length - 1];
 
-            if (seqMap.containsKey(sTaxon)) {
-                seqMap.put(sTaxon, seqMap.get(sTaxon).append(sData));
+            if (seqMap.containsKey(taxon)) {
+                seqMap.put(taxon, seqMap.get(taxon).append(data));
             } else {
-                seqMap.put(sTaxon, new StringBuilder(sData));
-                sTaxa.add(sTaxon);
+                seqMap.put(taxon, new StringBuilder(data));
+                taxa.add(taxon);
             }
         }
-        if (nTaxa > 0 && sTaxa.size() > nTaxa) {
-            throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + sTaxa);
+        if (nTaxa > 0 && taxa.size() > nTaxa) {
+            throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + taxa);
         }
 
         HashSet<String> sortedAmbiguities = new HashSet<>();
-        for (final String sTaxon : sTaxa) {
-            final StringBuilder bsData = seqMap.get(sTaxon);
-            String sData = bsData.toString().replaceAll("\\s", "");
-            seqMap.put(sTaxon, new StringBuilder(sData));
+        for (final String taxon : taxa) {
+            final StringBuilder bsData = seqMap.get(taxon);
+            String data = bsData.toString().replaceAll("\\s", "");
+            seqMap.put(taxon, new StringBuilder(data));
 
             //collect all ambiguities in the sequence
             List<String> ambiguities = new ArrayList<>();
-            Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(sData);
+            Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(data);
             while (m.find()) {
                 int mLength = m.group().length();
                 ambiguities.add(m.group().substring(1, mLength-1));
             }
 
             //sort elements of ambiguity sets
-            String sData_without_ambiguities = sData.replaceAll("\\{(.*?)\\}", "?");
+            String data_without_ambiguities = data.replaceAll("\\{(.*?)\\}", "?");
             for (String amb : ambiguities) {
                 List<Integer> ambInt = new ArrayList<>();
                 for (int i=0; i<amb.length(); i++) {
@@ -627,10 +627,10 @@ public class NexusParser {
                 		ambInt.add(Integer.parseInt(amb.charAt(i) + ""));
                 	} else {
                 		// ignore
-                		if (sData != sData_without_ambiguities) {
-                			Log.warning.println("Ambiguity found in " + sTaxon + " that is treated as missing value");
+                		if (data != data_without_ambiguities) {
+                			Log.warning.println("Ambiguity found in " + taxon + " that is treated as missing value");
                 		}
-                		sData = sData_without_ambiguities; 
+                		data = data_without_ambiguities; 
                 	}
                 }
                 Collections.sort(ambInt);
@@ -642,22 +642,22 @@ public class NexusParser {
             }
 
             //check the length of the sequence (treat ambiguity sets as single characters)
-            if (sData_without_ambiguities.length() != nChar) {
-                throw new IOException(sStr + "\nExpected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+            if (data_without_ambiguities.length() != nChar) {
+                throw new IOException(str + "\nExpected sequence of length " + nChar + " instead of " + data.length() + " for taxon " + taxon);
             }
 
             // map to standard missing and gap chars
-            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
-            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
+            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
+            data = data.replace(gap.charAt(0), DataType.GAP_CHAR);
 
             // resolve matching char, if any
-            if (sMatchChar != null && sData.contains(sMatchChar)) {
-                final char cMatchChar = sMatchChar.charAt(0);
-                final String sBaseData = seqMap.get(sTaxa.get(0)).toString();
-                for (int i = 0; i < sData.length(); i++) {
-                    if (sData.charAt(i) == cMatchChar) {
-                        final char cReplaceChar = sBaseData.charAt(i);
-                        sData = sData.substring(0, i) + cReplaceChar + (i + 1 < sData.length() ? sData.substring(i + 1) : "");
+            if (matchChar != null && data.contains(matchChar)) {
+                final char cMatchChar = matchChar.charAt(0);
+                final String baseData = seqMap.get(taxa.get(0)).toString();
+                for (int i = 0; i < data.length(); i++) {
+                    if (data.charAt(i) == cMatchChar) {
+                        final char cReplaceChar = baseData.charAt(i);
+                        data = data.substring(0, i) + cReplaceChar + (i + 1 < data.length() ? data.substring(i + 1) : "");
                     }
                 }
             }
@@ -665,11 +665,11 @@ public class NexusParser {
             if (alignment.dataTypeInput.get().equals("nucleotide") || 
             	alignment.dataTypeInput.get().equals("binary")  ||
             	alignment.dataTypeInput.get().equals("aminoacid") ) {
-            	alignment.setInputValue(sTaxon, sData);
+            	alignment.setInputValue(taxon, data);
             } else {
 	            final Sequence sequence = new Sequence();
-	            sequence.init(nTotalCount, sTaxon, sData);
-	            sequence.setID(generateSequenceID(sTaxon));
+	            sequence.init(nTotalCount, taxon, data);
+	            sequence.setID(generateSequenceID(taxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);
             }
         }
@@ -678,8 +678,8 @@ public class NexusParser {
         if (alignment.dataTypeInput.get().equals("standard")) {
             //convert sortedAmbiguities to a whitespace separated string of ambiguities
             String ambiguitiesStr = "";
-            for (String sAmb: sortedAmbiguities) {
-                ambiguitiesStr += sAmb + " ";
+            for (String amb: sortedAmbiguities) {
+                ambiguitiesStr += amb + " ";
             }
             if (ambiguitiesStr.length() > 0) {
             	ambiguitiesStr = ambiguitiesStr.substring(0, ambiguitiesStr.length()-1);
@@ -709,35 +709,35 @@ public class NexusParser {
      * 
      */
     void parseAssumptionsBlock(final BufferedReader fin) throws Exception {
-        String sStr;
+        String str;
         do {
-            sStr = nextLine(fin);
-            if (sStr.toLowerCase().matches("\\s*charset\\s.*")) {
+            str = nextLine(fin);
+            if (str.toLowerCase().matches("\\s*charset\\s.*")) {
             	// remove text in brackets (as TreeBase files are wont to contain)
-                sStr = sStr.replaceAll("\\(.*\\)", "");
+                str = str.replaceAll("\\(.*\\)", "");
                 // clean up spaces
-                sStr = sStr.replaceAll("^\\s+", "");
-                sStr = sStr.replaceAll("\\s*-\\s*", "-");
-                sStr = sStr.replaceAll("\\s*\\\\\\s*", "\\\\");
-                sStr = sStr.replaceAll("\\s*;", "");
-                final String[] sStrs = sStr.trim().split("\\s+");
-                final String sID = sStrs[1];
-                String sRange = "";
-                for (int i = 3; i < sStrs.length; i++) {
-                    sRange += sStrs[i] + " ";
+                str = str.replaceAll("^\\s+", "");
+                str = str.replaceAll("\\s*-\\s*", "-");
+                str = str.replaceAll("\\s*\\\\\\s*", "\\\\");
+                str = str.replaceAll("\\s*;", "");
+                final String[] strs = str.trim().split("\\s+");
+                final String id = strs[1];
+                String rangeString = "";
+                for (int i = 3; i < strs.length; i++) {
+                    rangeString += strs[i] + " ";
                 }
-                sRange = sRange.trim().replace(' ', ',');
+                rangeString = rangeString.trim().replace(' ', ',');
                 final FilteredAlignment alignment = new FilteredAlignment();
-                alignment.setID(sID);
+                alignment.setID(id);
                 alignment.alignmentInput.setValue(m_alignment, alignment);
-                alignment.filterInput.setValue(sRange, alignment);
+                alignment.filterInput.setValue(rangeString, alignment);
                 alignment.initAndValidate();
                 filteredAlignments.add(alignment);
-            } else if (sStr.toLowerCase().matches("\\s*wtset\\s.*")) {
-            	String [] strs = sStr.split("=");
+            } else if (str.toLowerCase().matches("\\s*wtset\\s.*")) {
+            	String [] strs = str.split("=");
             	if (strs.length > 1) {
-            		sStr = strs[strs.length - 1].trim();
-            		strs = sStr.split("\\s+");
+            		str = strs[strs.length - 1].trim();
+            		strs = str.split("\\s+");
             		int [] weights = new int[strs.length];
             		for (int i = 0; i< strs.length; i++) {
             			weights[i] = Integer.parseInt(strs[i]);
@@ -748,8 +748,8 @@ public class NexusParser {
             						"does not match number of sites in alignment(" + m_alignment.getSiteCount()+ ")");
             			}
             			StringBuilder weightStr = new StringBuilder();
-            			for (String str : strs) {
-            				weightStr.append(str);
+            			for (String str2 : strs) {
+            				weightStr.append(str2);
             				weightStr.append(',');
             			}
             			weightStr.delete(weightStr.length() - 1, weightStr.length());
@@ -761,7 +761,7 @@ public class NexusParser {
             	}
             }
 
-        } while (!sStr.toLowerCase().contains("end;"));
+        } while (!str.toLowerCase().contains("end;"));
     }
 
     /**
@@ -772,38 +772,38 @@ public class NexusParser {
      * END; [Sets]
      */
     void parseSetsBlock(final BufferedReader fin) throws IOException {
-        String sStr;
+        String str;
         do {
-            sStr = nextLine(fin);
-            if (sStr.toLowerCase().matches("\\s*taxset\\s.*")) {
-                sStr = sStr.replaceAll("^\\s+", "");
-                sStr = sStr.replaceAll(";", "");
-                final String[] sStrs = sStr.split("\\s+");
-                String sID = sStrs[1];
-                sID = sID.replaceAll("'\"", "");
+            str = nextLine(fin);
+            if (str.toLowerCase().matches("\\s*taxset\\s.*")) {
+                str = str.replaceAll("^\\s+", "");
+                str = str.replaceAll(";", "");
+                final String[] strs = str.split("\\s+");
+                String id = strs[1];
+                id = id.replaceAll("'\"", "");
                 final TaxonSet set = new TaxonSet();
-                set.setID(sID);
-                for (int i = 3; i < sStrs.length; i++) {
-                    sID = sStrs[i];
-                    sID = sID.replaceAll("'\"", "");
+                set.setID(id);
+                for (int i = 3; i < strs.length; i++) {
+                    id = strs[i];
+                    id = id.replaceAll("'\"", "");
                     final Taxon taxon = new Taxon();
-                    taxon.setID(sID);
+                    taxon.setID(id);
                     set.taxonsetInput.setValue(taxon, set);
                 }
                 taxonsets.add(set);
             }
-        } while (!sStr.toLowerCase().contains("end;"));
+        } while (!str.toLowerCase().contains("end;"));
     }
 
-    public static String generateSequenceID(final String sTaxon) {
-        String sID = "seq_" + sTaxon;
+    public static String generateSequenceID(final String taxon) {
+        String id = "seq_" + taxon;
         int i = 0;
-        while (g_sequenceIDs.contains(sID + (i > 0 ? i : ""))) {
+        while (g_sequenceIDs.contains(id + (i > 0 ? i : ""))) {
             i++;
         }
-        sID = sID + (i > 0 ? i : "");
-        g_sequenceIDs.add(sID);
-        return sID;
+        id = id + (i > 0 ? i : "");
+        g_sequenceIDs.add(id);
+        return id;
     }
 
     /**
@@ -821,43 +821,43 @@ public class NexusParser {
      * read next line from nexus file that is not a comment and not empty *
      */
     String nextLine(final BufferedReader fin) throws IOException {
-        String sStr = readLine(fin);
-        if (sStr == null) {
+        String str = readLine(fin);
+        if (str == null) {
             return null;
         }
-        if (sStr.contains("[")) {
-            final int iStart = sStr.indexOf('[');
-            int iEnd = sStr.indexOf(']', iStart);
+        if (str.contains("[")) {
+            final int iStart = str.indexOf('[');
+            int iEnd = str.indexOf(']', iStart);
             while (iEnd < 0) {
-                sStr += readLine(fin);
-                iEnd = sStr.indexOf(']', iStart);
+                str += readLine(fin);
+                iEnd = str.indexOf(']', iStart);
             }
-            sStr = sStr.substring(0, iStart) + sStr.substring(iEnd + 1);
-            if (sStr.matches("^\\s*$")) {
+            str = str.substring(0, iStart) + str.substring(iEnd + 1);
+            if (str.matches("^\\s*$")) {
                 return nextLine(fin);
             }
         }
-        if (sStr.matches("^\\s*$")) {
+        if (str.matches("^\\s*$")) {
             return nextLine(fin);
         }
-        return sStr;
+        return str;
     }
 
     /**
      * return attribute value as a string *
      */
-    String getAttValue(final String sAttribute, final String sStr) {
-        final Pattern pattern = Pattern.compile(".*" + sAttribute + "\\s*=\\s*([^\\s;]+).*");
-        final Matcher matcher = pattern.matcher(sStr.toLowerCase());
+    String getAttValue(final String attribute, final String str) {
+        final Pattern pattern = Pattern.compile(".*" + attribute + "\\s*=\\s*([^\\s;]+).*");
+        final Matcher matcher = pattern.matcher(str.toLowerCase());
         if (!matcher.find()) {
             return null;
         }
-        String sAtt = matcher.group(1);
-        if (sAtt.startsWith("\"") && sAtt.endsWith("\"")) {
+        String att = matcher.group(1);
+        if (att.startsWith("\"") && att.endsWith("\"")) {
             final int iStart = matcher.start(1);
-            sAtt = sStr.substring(iStart + 1, sStr.indexOf('"', iStart + 1));
+            att = str.substring(iStart + 1, str.indexOf('"', iStart + 1));
         }
-        return sAtt;
+        return att;
     }
 
     private ArrayList<String> readInCharstatelablesTokens(final BufferedReader fin) throws IOException {
@@ -868,13 +868,13 @@ public class NexusParser {
         int mode = WAITING;
         int numberOfQuotes=0;
         boolean endOfBlock=false;
-        String sStr;
+        String str;
 
         while (!endOfBlock) {
-            sStr = nextLine(fin);
+            str = nextLine(fin);
             Character nextChar;
-            for (int i=0; i< sStr.length(); i++) {
-                nextChar=sStr.charAt(i);
+            for (int i=0; i< str.length(); i++) {
+                nextChar=str.charAt(i);
                 switch (mode) {
                     case WAITING:
                         if (!Character.isWhitespace(nextChar)) {
@@ -1025,12 +1025,12 @@ public class NexusParser {
                 System.out.println(parser.trees.size() + " trees");
             }
             if (parser.m_alignment != null) {
-                final String sXML = new XMLProducer().toXML(parser.m_alignment);
-                System.out.println(sXML);
+                final String xml = new XMLProducer().toXML(parser.m_alignment);
+                System.out.println(xml);
             }
             if (parser.traitSet != null) {
-                final String sXML = new XMLProducer().toXML(parser.traitSet);
-                System.out.println(sXML);
+                final String xml = new XMLProducer().toXML(parser.traitSet);
+                System.out.println(xml);
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block

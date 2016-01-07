@@ -35,7 +35,7 @@ public class DeltaExchangeOperator extends Operator {
     public final Input<Double> deltaInput = new Input<>("delta", "Magnitude of change for two randomly picked values.", 1.0);
     public final Input<Boolean> autoOptimizeiInput =
             new Input<>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
-    public final Input<Boolean> sIntegerOperatorInput = new Input<>("integer", "if true, changes are all integers.", false);
+    public final Input<Boolean> integerOperatorInput = new Input<>("integer", "if true, changes are all integers.", false);
     public final Input<IntegerParameter> parameterWeightsInput = new Input<>("weightvector", "weights on a vector parameter");
 
     private boolean autoOptimize;
@@ -50,7 +50,7 @@ public class DeltaExchangeOperator extends Operator {
 
         autoOptimize = autoOptimizeiInput.get();
         delta = deltaInput.get();
-        isIntegerOperator = sIntegerOperatorInput.get();
+        isIntegerOperator = integerOperatorInput.get();
 
         if (parameterInput.get().isEmpty()) {
             if (intparameterInput.get().size() > 1) {

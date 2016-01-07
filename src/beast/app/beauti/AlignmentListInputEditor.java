@@ -256,14 +256,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	/**
      * This method just adds the two buttons (with add()) and does not add any glue or struts before or after.
      * @param box
-     * @param sLabel
+     * @param label
      */
-	private void addLinkUnlinkPair(Box box, String sLabel) {
+	private void addLinkUnlinkPair(Box box, String label) {
 
-        //JLabel label = new JLabel(sLabel+":");
+        //JLabel label = new JLabel(label+":");
         //box.add(label);
-        JButton linkSModelButton = new JButton("Link " + sLabel);
-		linkSModelButton.setName("Link " + sLabel);
+        JButton linkSModelButton = new JButton("Link " + label);
+		linkSModelButton.setName("Link " + label);
 		linkSModelButton.addActionListener(e -> {
             JButton button = (JButton) e.getSource();
             link(columnLabelToNr(button.getText()));
@@ -271,8 +271,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
         });
 		box.add(linkSModelButton);
 		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
-		JButton unlinkSModelButton = new JButton("Unlink " + sLabel);
-		unlinkSModelButton.setName("Unlink " + sLabel);
+		JButton unlinkSModelButton = new JButton("Unlink " + label);
+		unlinkSModelButton.setName("Unlink " + label);
 		unlinkSModelButton.addActionListener(e -> {
             JButton button = (JButton) e.getSource();
             unlink(columnLabelToNr(button.getText()));
@@ -285,11 +285,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		unlinkButtons.add(unlinkSModelButton);
 	}
 
-	private int columnLabelToNr(String sColumn) {
+	private int columnLabelToNr(String column) {
 		int nColumn;
-		if (sColumn.contains("Tree")) {
+		if (column.contains("Tree")) {
 			nColumn = TREE_COLUMN;
-		} else if (sColumn.contains("Clock")) {
+		} else if (column.contains("Clock")) {
 			nColumn = CLOCKMODEL_COLUMN;
 		} else {
 			nColumn = SITEMODEL_COLUMN;
@@ -323,7 +323,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int[] nSelected = getTableRowSelection();
 		for (int i = 1; i < nSelected.length; i++) {
 			int iRow = nSelected[i];
-			tableData[iRow][nColumn] = getDoc().sPartitionNames.get(iRow).partition;
+			tableData[iRow][nColumn] = getDoc().partitionNames.get(iRow).partition;
 			try {
 				updateModel(nColumn, iRow);
 			} catch (Exception ex) {
@@ -348,7 +348,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 
 		getDoc();
-		String sPartition = (String) tableData[iRow][nColumn];
+		String partition = (String) tableData[iRow][nColumn];
 
 		// check if partition needs renaming
 		String oldName = null;
@@ -356,28 +356,28 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		try {
 			switch (nColumn) {
 			case SITEMODEL_COLUMN:
-				if (!doc.pluginmap.containsKey("SiteModel.s:" + sPartition)) {
-					String sID = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
-					oldName = BeautiDoc.parsePartition(sID);
-					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, sPartition);
+				if (!doc.pluginmap.containsKey("SiteModel.s:" + partition)) {
+					String id = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
+					oldName = BeautiDoc.parsePartition(id);
+					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, partition);
 					isRenaming = true;
 				}
 				break;
 			case CLOCKMODEL_COLUMN: {
-				String sID = likelihoods[iRow].branchRateModelInput.get().getID();
-				String sClockModelName = sID.substring(0, sID.indexOf('.')) + ".c:" + sPartition;
-				if (!doc.pluginmap.containsKey(sClockModelName)) {
-					oldName = BeautiDoc.parsePartition(sID);
-					doc.renamePartition(BeautiDoc.CLOCKMODEL_PARTITION, oldName, sPartition);
+				String id = likelihoods[iRow].branchRateModelInput.get().getID();
+				String clockModelName = id.substring(0, id.indexOf('.')) + ".c:" + partition;
+				if (!doc.pluginmap.containsKey(clockModelName)) {
+					oldName = BeautiDoc.parsePartition(id);
+					doc.renamePartition(BeautiDoc.CLOCKMODEL_PARTITION, oldName, partition);
 					isRenaming = true;
 				}
 			}
 				break;
 			case TREE_COLUMN:
-				if (!doc.pluginmap.containsKey("Tree.t:" + sPartition)) {
-					String sID = likelihoods[iRow].treeInput.get().getID();
-					oldName = BeautiDoc.parsePartition(sID);
-					doc.renamePartition(BeautiDoc.TREEMODEL_PARTITION, oldName, sPartition);
+				if (!doc.pluginmap.containsKey("Tree.t:" + partition)) {
+					String id = likelihoods[iRow].treeInput.get().getID();
+					oldName = BeautiDoc.parsePartition(id);
+					doc.renamePartition(BeautiDoc.TREEMODEL_PARTITION, oldName, partition);
 					isRenaming = true;
 				}
 				break;
@@ -407,7 +407,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			partitionID = BeautiDoc.TREEMODEL_PARTITION;
 			break;
 		}
-		int nPartition = doc.getPartitionNr(sPartition, partitionID);
+		int nPartition = doc.getPartitionNr(partition, partitionID);
 		GenericTreeLikelihood treeLikelihood = null;
 		if (nPartition >= 0) {
 			// we ar linking
@@ -423,12 +423,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		switch (nColumn) {
 		case SITEMODEL_COLUMN: {
 			SiteModelInterface siteModel = null;
-			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
+			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.SITEMODEL_PARTITION) !=
 											// iRow) {
 				siteModel = treeLikelihood.siteModelInput.get();
 			} else {
-				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + sPartition);
+				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + partition);
 				if (siteModel != likelihoods[iRow].siteModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].siteModelInput.get(),
@@ -446,19 +446,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			needsRePartition = (this.likelihoods[iRow].siteModelInput.get() != siteModel);
 			this.likelihoods[iRow].siteModelInput.setValue(siteModel, this.likelihoods[iRow]);
 
-			sPartition = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
-			sPartition = BeautiDoc.parsePartition(sPartition);
-			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, sPartition);
+			partition = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
+			partition = BeautiDoc.parsePartition(partition);
+			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, partition);
 		}
 			break;
 		case CLOCKMODEL_COLUMN: {
 			BranchRateModel clockModel = null;
-			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
+			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.CLOCKMODEL_PARTITION)
 											// != iRow) {
 				clockModel = treeLikelihood.branchRateModelInput.get();
 			} else {
-				clockModel = getDoc().getClockModel(sPartition);
+				clockModel = getDoc().getClockModel(partition);
 				if (clockModel != likelihoods[iRow].branchRateModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].branchRateModelInput.get(),
@@ -481,19 +481,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 			needsRePartition = (this.likelihoods[iRow].branchRateModelInput.get() != clockModel);
 			this.likelihoods[iRow].branchRateModelInput.setValue(clockModel, this.likelihoods[iRow]);
-			sPartition = likelihoods[iRow].branchRateModelInput.get().getID();
-			sPartition = BeautiDoc.parsePartition(sPartition);
-			getDoc().setCurrentPartition(BeautiDoc.CLOCKMODEL_PARTITION, iRow, sPartition);
+			partition = likelihoods[iRow].branchRateModelInput.get().getID();
+			partition = BeautiDoc.parsePartition(partition);
+			getDoc().setCurrentPartition(BeautiDoc.CLOCKMODEL_PARTITION, iRow, partition);
 		}
 			break;
 		case TREE_COLUMN: {
 			TreeInterface tree = null;
-			if (treeLikelihood != null) { // getDoc().getPartitionNr(sPartition,
+			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.TREEMODEL_PARTITION) !=
 											// iRow) {
 				tree = treeLikelihood.treeInput.get();
 			} else {
-				tree = (TreeInterface) doc.pluginmap.get("Tree.t:" + sPartition);
+				tree = (TreeInterface) doc.pluginmap.get("Tree.t:" + partition);
 				if (tree != likelihoods[iRow].treeInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
@@ -555,18 +555,18 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 			}
 			likelihoods[iRow].treeInput.setValue(tree, likelihoods[iRow]);
-			// TreeDistribution d = getDoc().getTreePrior(sPartition);
+			// TreeDistribution d = getDoc().getTreePrior(partition);
 			// CompoundDistribution prior = (CompoundDistribution)
 			// doc.pluginmap.get("prior");
 			// if (!getDoc().posteriorPredecessors.contains(d)) {
 			// prior.pDistributions.setValue(d, prior);
 			// }
-			sPartition = likelihoods[iRow].treeInput.get().getID();
-			sPartition = BeautiDoc.parsePartition(sPartition);
-			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, iRow, sPartition);
+			partition = likelihoods[iRow].treeInput.get().getID();
+			partition = BeautiDoc.parsePartition(partition);
+			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, iRow, partition);
 		}
 		}
-		tableData[iRow][nColumn] = sPartition;
+		tableData[iRow][nColumn] = partition;
 		if (needsRePartition) {
 			List<BeautiSubTemplate> templates = new ArrayList<>();
 			templates.add(doc.beautiConfig.partitionTemplate.get());
@@ -662,9 +662,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	private String getPartition(Input<?> input) {
 		BEASTInterface beastObject = (BEASTInterface) input.get();
-		String sID = beastObject.getID();
-		String sPartition = BeautiDoc.parsePartition(sID);
-		return sPartition;
+		String id = beastObject.getID();
+		String partition = BeautiDoc.parsePartition(id);
+		return partition;
 	}
 
 	protected Component createListBox() {
@@ -760,13 +760,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			public boolean stopCellEditing() {
 				//Log.warning.println("stopCellEditing()");
 				table.removeEditor();
-				String sText = m_textField.getText();
+				String text = m_textField.getText();
 				try {
-					Double.parseDouble(sText);
+					Double.parseDouble(text);
 				} catch (Exception e) {
 					return false;
 				}
-				tableData[m_iRow][m_iCol] = sText;
+				tableData[m_iRow][m_iCol] = text;
 				return true;
 			}
 
@@ -871,39 +871,39 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			partitionNames[1].add(likelihoods[i].branchRateModelInput.get().getID());
 			partitionNames[2].add(likelihoods[i].treeInput.get().getID());
 		}
-		String[][] sPartitionNames = new String[3][];
+		String[][] partitionNameStrings = new String[3][];
 		for (int i = 0; i < 3; i++) {
-			sPartitionNames[i] = partitionNames[i].toArray(new String[0]);
+			partitionNameStrings[i] = partitionNames[i].toArray(new String[0]);
 		}
 		for (int j = 0; j < 3; j++) {
-			for (int i = 0; i < sPartitionNames[j].length; i++) {
-				sPartitionNames[j][i] = BeautiDoc.parsePartition(sPartitionNames[j][i]);
+			for (int i = 0; i < partitionNameStrings[j].length; i++) {
+				partitionNameStrings[j][i] = BeautiDoc.parsePartition(partitionNameStrings[j][i]);
 			}
 		}
 		TableColumn col = table.getColumnModel().getColumn(SITEMODEL_COLUMN);
-		JComboBox<String> siteModelComboBox = new JComboBox<>(sPartitionNames[0]);
+		JComboBox<String> siteModelComboBox = new JComboBox<>(partitionNameStrings[0]);
 		siteModelComboBox.setEditable(true);
 		siteModelComboBox.addActionListener(new ComboActionListener(SITEMODEL_COLUMN));
 
 		col.setCellEditor(new DefaultCellEditor(siteModelComboBox));
 		// If the cell should appear like a combobox in its
 		// non-editing state, also set the combobox renderer
-		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames[0]));
+		col.setCellRenderer(new MyComboBoxRenderer(partitionNameStrings[0]));
 		col = table.getColumnModel().getColumn(CLOCKMODEL_COLUMN);
 
-		JComboBox<String> clockModelComboBox = new JComboBox<>(sPartitionNames[1]);
+		JComboBox<String> clockModelComboBox = new JComboBox<>(partitionNameStrings[1]);
 		clockModelComboBox.setEditable(true);
 		clockModelComboBox.addActionListener(new ComboActionListener(CLOCKMODEL_COLUMN));
 
 		col.setCellEditor(new DefaultCellEditor(clockModelComboBox));
-		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames[1]));
+		col.setCellRenderer(new MyComboBoxRenderer(partitionNameStrings[1]));
 		col = table.getColumnModel().getColumn(TREE_COLUMN);
 
-		JComboBox<String> treeComboBox = new JComboBox<>(sPartitionNames[2]);
+		JComboBox<String> treeComboBox = new JComboBox<>(partitionNameStrings[2]);
 		treeComboBox.setEditable(true);
 		treeComboBox.addActionListener(new ComboActionListener(TREE_COLUMN));
 		col.setCellEditor(new DefaultCellEditor(treeComboBox));
-		col.setCellRenderer(new MyComboBoxRenderer(sPartitionNames[2]));
+		col.setCellRenderer(new MyComboBoxRenderer(partitionNameStrings[2]));
 		col = table.getColumnModel().getColumn(TAXA_COLUMN);
 		col.setPreferredWidth(30);
 		col = table.getColumnModel().getColumn(SITES_COLUMN);
@@ -1092,7 +1092,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			SiteModelInterface siteModel = likelihoods[iRow].siteModelInput.get();
 			TreeInterface tree = likelihoods[iRow].treeInput.get();
 			List<GenericTreeLikelihood> cModels = new ArrayList<>();
-			List<GenericTreeLikelihood> sModels = new ArrayList<>();
+			List<GenericTreeLikelihood> models = new ArrayList<>();
 			List<GenericTreeLikelihood> tModels = new ArrayList<>();
 			for (GenericTreeLikelihood likelihood : likelihoods) {
 				if (likelihood != likelihoods[iRow]) {
@@ -1100,7 +1100,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					cModels.add(likelihood);
 				}
 				if (likelihood.siteModelInput.get() == siteModel) {
-					sModels.add(likelihood);
+					models.add(likelihood);
 				}
 				if (likelihood.treeInput.get() == tree) {
 					tModels.add(likelihood);
@@ -1112,21 +1112,21 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (cModels.size() > 0) {
 					// clock model is linked, so we need to unlink
 					if (doc.getPartitionNr(clockModel) != iRow) {
-						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(cModels.get(0));
-						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
 					}
 					updateModel(CLOCKMODEL_COLUMN, iRow);
 				}
 				
-				if (sModels.size() > 0) {
+				if (models.size() > 0) {
 					// site model is linked, so we need to unlink
 					if (doc.getPartitionNr((BEASTInterface) siteModel) != iRow) {
-						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+						tableData[iRow][SITEMODEL_COLUMN] = getDoc().partitionNames.get(iRow).partition;
 					} else {
-						int iFreePartition = doc.getPartitionNr(sModels.get(0));
-						tableData[iRow][SITEMODEL_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+						int iFreePartition = doc.getPartitionNr(models.get(0));
+						tableData[iRow][SITEMODEL_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
 					}
 					updateModel(SITEMODEL_COLUMN, iRow);
 				}
@@ -1134,10 +1134,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (tModels.size() > 0) {
 					// tree is linked, so we need to unlink
 					if (doc.getPartitionNr((BEASTInterface) tree) != iRow) {
-						tableData[iRow][TREE_COLUMN] = getDoc().sPartitionNames.get(iRow).partition;
+						tableData[iRow][TREE_COLUMN] = getDoc().partitionNames.get(iRow).partition;
 					} else {
 						int iFreePartition = doc.getPartitionNr(tModels.get(0));
-						tableData[iRow][TREE_COLUMN] = getDoc().sPartitionNames.get(iFreePartition).partition;
+						tableData[iRow][TREE_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
 					}
 					updateModel(TREE_COLUMN, iRow);
 				}

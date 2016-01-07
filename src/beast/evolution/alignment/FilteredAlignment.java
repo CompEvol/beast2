@@ -74,8 +74,8 @@ public class FilteredAlignment extends Alignment {
         }
 
         if (alignmentInput.get().siteWeightsInput.get() != null) {
-    		String sStr = alignmentInput.get().siteWeightsInput.get().trim();
-    		String [] strs = sStr.split(",");
+    		String str = alignmentInput.get().siteWeightsInput.get().trim();
+    		String [] strs = str.split(",");
     		siteWeights = new int[strs.length];
     		for (int i = 0; i< strs.length; i++) {
     			siteWeights[i] = Integer.parseInt(strs[i].trim());

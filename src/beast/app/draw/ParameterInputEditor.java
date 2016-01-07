@@ -76,14 +76,14 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     @Override
     protected void processEntry() {
         try {
-            String sValue = m_entry.getText();
+            String valueString = m_entry.getText();
             Parameter.Base<?> parameter = (Parameter.Base<?>) m_input.get();
         	String oldValue = "";
     		for (Object d : parameter.valuesInput.get()) {
     			oldValue += d + " ";
     		}
             int oldDim = parameter.getDimension();
-            parameter.valuesInput.setValue(sValue, parameter);
+            parameter.valuesInput.setValue(valueString, parameter);
             parameter.initAndValidate();
             int newDim = parameter.getDimension();
             if (oldDim != newDim) {
@@ -179,10 +179,10 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                         Parameter.Base<?> parameter2 = (Parameter.Base<?>) m_input.get();
                         parameter2.isEstimatedInput.setValue(m_isEstimatedBox.isSelected(), parameter2);
                         if (isParametricDistributionParameter) {
-                        	String sID = parameter2.getID();
+                        	String id = parameter2.getID();
                         	
 
-                        	if (sID.startsWith("RealParameter")) {
+                        	if (id.startsWith("RealParameter")) {
                             	ParametricDistribution parent = null; 
                 	            for (Object beastObject2 : parameter2.getOutputs()) {
                 	                if (beastObject2 instanceof ParametricDistribution) {
@@ -197,16 +197,16 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
                 	                    break;
                 	                }
                 	            }
-                        		sID = "parameter.hyper" + parent.getClass().getSimpleName() + "-" + 
+                        		id = "parameter.hyper" + parent.getClass().getSimpleName() + "-" + 
                         				m_input.getName() + "-" + grandparent.getID();
                         		doc.pluginmap.remove(parameter2.getID());
-                        		parameter2.setID(sID);
+                        		parameter2.setID(id);
                         		doc.addPlugin(parameter2);
                         	}
                         	
                         	
-                        	PartitionContext context = new PartitionContext(sID.substring("parameter.".length()));
-                        	Log.warning.println(context + " " + sID);
+                        	PartitionContext context = new PartitionContext(id.substring("parameter.".length()));
+                        	Log.warning.println(context + " " + id);
                         	doc.beautiConfig.hyperPriorTemplate.createSubNet(context, true);
                         }
                         refreshPanel();

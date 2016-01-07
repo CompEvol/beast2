@@ -22,20 +22,20 @@ public class XMLElementNameTest extends TestCase {
      */
     @Test
     public void test_NameUniqueness() {
-        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        List<String> sImproperInputs = new ArrayList<String>();
-        for (String beastObjectName : sPluginNames) {
+        List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> improperInputs = new ArrayList<String>();
+        for (String beastObjectName : pluginNames) {
             try {
                 BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
                 List<Input<?>> inputs = beastObject.listInputs();
-                Set<String> sNames = new HashSet<String>();
+                Set<String> names = new HashSet<String>();
                 for (Input<?> input : inputs) {
-                    String sName = input.getName();
-                    if (sNames.contains(sName)) {
-                        sImproperInputs.add(beastObjectName + "." + sName);
+                    String name = input.getName();
+                    if (names.contains(name)) {
+                        improperInputs.add(beastObjectName + "." + name);
                         break;
                     }
-                    sNames.add(sName);
+                    names.add(name);
 
                 }
             } catch (InstantiationException e) {
@@ -44,13 +44,13 @@ public class XMLElementNameTest extends TestCase {
                 // ignore
             }
         }
-        if (sImproperInputs.size() > 0) {
-            String sStr = sImproperInputs.toString();
-            sStr = sStr.replaceAll(",", "\n");
-            System.err.println("Input names are not unique:\n" + sStr);
+        if (improperInputs.size() > 0) {
+            String str = improperInputs.toString();
+            str = str.replaceAll(",", "\n");
+            System.err.println("Input names are not unique:\n" + str);
         }
         // not activated till problem with naming is solved
-        assertTrue("Input names are not unique: " + sImproperInputs.toString(), sImproperInputs.size() == 0);
+        assertTrue("Input names are not unique: " + improperInputs.toString(), improperInputs.size() == 0);
     }
 
     /**
@@ -60,28 +60,28 @@ public class XMLElementNameTest extends TestCase {
     public void test_ReservedElementNames() {
         // retrieve list of reserved names and their classes
         XMLParser parser = new XMLParser();
-        HashMap<String, String> sElement2ClassMap = parser.getElement2ClassMap();
+        HashMap<String, String> element2ClassMap = parser.getElement2ClassMap();
 
         // allow 'parameter' for any of the various parameter derivatives, not just RealParameter
-        sElement2ClassMap.put("parameter", "beast.core.parameter.Parameter");
+        element2ClassMap.put("parameter", "beast.core.parameter.Parameter");
 
         // check each beastObject
-        List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        List<String> sImproperInputs = new ArrayList<String>();
-        for (String beastObjectName : sPluginNames) {
+        List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> improperInputs = new ArrayList<String>();
+        for (String beastObjectName : pluginNames) {
             try {
                 BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
                 // check each input
                 List<Input<?>> inputs = beastObject.listInputs();
                 for (Input<?> input : inputs) {
-                    if (sElement2ClassMap.containsKey(input.getName())) {
+                    if (element2ClassMap.containsKey(input.getName())) {
                         if (beastObject.getClass() == null) {
                             input.determineClass(beastObject);
                         }
                         Class<?> type = input.getType();
-                        String sBaseType = sElement2ClassMap.get(input.getName());
-                        if (!isDerivedType(type, sBaseType)) {
-                            sImproperInputs.add(beastObjectName + "." + input.getName());
+                        String baseType = element2ClassMap.get(input.getName());
+                        if (!isDerivedType(type, baseType)) {
+                            improperInputs.add(beastObjectName + "." + input.getName());
                         }
                     }
                 }
@@ -91,25 +91,25 @@ public class XMLElementNameTest extends TestCase {
                 // ignore
             }
         }
-        if (sImproperInputs.size() > 0) {
-            String sStr = sImproperInputs.toString();
-            sStr = sStr.replaceAll(",", "\n");
-            System.err.println("Reserved element names used for wrong types in:\n" + sStr);
+        if (improperInputs.size() > 0) {
+            String str = improperInputs.toString();
+            str = str.replaceAll(",", "\n");
+            System.err.println("Reserved element names used for wrong types in:\n" + str);
         }
         // not activated till problem with naming is solved
-        assertTrue("Reserved element names used for wrong types in: " + sImproperInputs.toString(), sImproperInputs.size() == 0);
+        assertTrue("Reserved element names used for wrong types in: " + improperInputs.toString(), improperInputs.size() == 0);
     }
 
     /**
-     * true if type is a class equal to or derived from sBaseType *
+     * true if type is a class equal to or derived from baseType *
      */
-    boolean isDerivedType(Class<?> type, String sBaseType) {
-        if (sBaseType.equals(type.getName())) {
+    boolean isDerivedType(Class<?> type, String baseType) {
+        if (baseType.equals(type.getName())) {
             return true;
         }
         Class<?> superType = type.getSuperclass();
         if (!superType.equals(Object.class)) {
-            return isDerivedType(superType, sBaseType);
+            return isDerivedType(superType, baseType);
         }
 
         return false;

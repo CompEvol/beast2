@@ -19,35 +19,35 @@ public class NexusParserTest extends TestCase {
     @Test
     public void testThatNexusExamplesParse() {
         try {
-            String sDir = System.getProperty("user.dir") + "/examples/nexus";
-            System.out.println("Test Nexus Examples in " + sDir);
-            File sExampleDir = new File(sDir);
-            String[] sExampleFiles = sExampleDir.list(new FilenameFilter() {
+            String dirName = System.getProperty("user.dir") + "/examples/nexus";
+            System.out.println("Test Nexus Examples in " + dirName);
+            File exampleDir = new File(dirName);
+            String[] exampleFiles = exampleDir.list(new FilenameFilter() {
                 @Override
 				public boolean accept(File dir, String name) {
                     return name.endsWith(".nex") || name.endsWith(".nxs") ;
                 }
             });
 
-            List<String> sFailedFiles = new ArrayList<>();
-            for (String sFileName : sExampleFiles) {
-                System.out.println("Processing " + sFileName);
+            List<String> failedFiles = new ArrayList<>();
+            for (String fileName : exampleFiles) {
+                System.out.println("Processing " + fileName);
                 NexusParser parser = new NexusParser();
                 try {
-                    parser.parseFile(new File(sDir + "/" + sFileName));
+                    parser.parseFile(new File(dirName + "/" + fileName));
                 } catch (Exception e) {
-                    System.out.println("ExampleNexusParsing::Failed for " + sFileName
+                    System.out.println("ExampleNexusParsing::Failed for " + fileName
                             + ": " + e.getMessage());
-                    sFailedFiles.add(sFileName);
+                    failedFiles.add(fileName);
                 }
-                System.out.println("Done " + sFileName);
+                System.out.println("Done " + fileName);
             }
-            if (sFailedFiles.size() > 0) {
-                System.out.println("\ntest_ThatNexusExamplesParse::Failed for : " + sFailedFiles.toString());
+            if (failedFiles.size() > 0) {
+                System.out.println("\ntest_ThatNexusExamplesParse::Failed for : " + failedFiles.toString());
             } else {
                 System.out.println("\ntest_ThatNexusExamplesParse::Success");
             }
-            assertTrue(sFailedFiles.toString(), sFailedFiles.size() == 0);
+            assertTrue(failedFiles.toString(), failedFiles.size() == 0);
         } catch (Exception e) {
             System.out.println("exception thrown ");
             System.out.println(e.getMessage());
@@ -154,9 +154,9 @@ public class NexusParserTest extends TestCase {
     @Test
     public void testAssumptionsParse() {
         try {
-            String sFile = System.getProperty("user.dir") + "/examples/nexus/Primates.nex";
+            String fileName = System.getProperty("user.dir") + "/examples/nexus/Primates.nex";
             NexusParser parser = new NexusParser();
-            parser.parseFile(new File(sFile));
+            parser.parseFile(new File(fileName));
             assertEquals(2, parser.filteredAlignments.size());
         } catch (Exception e) {
             System.out.println("exception thrown ");

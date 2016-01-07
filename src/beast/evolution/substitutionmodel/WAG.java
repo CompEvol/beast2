@@ -642,11 +642,11 @@ public class WAG extends EmpiricalSubstitutionModel {
     @Override
     public int[] getEncodingOrder() {
         Aminoacid dataType = new Aminoacid();
-        String sCodeMap = dataType.getCodeMap();
+        String codeMap = dataType.getCodeMap();
         int[] nCodeMap = new int[dataType.getStateCount()];
-        String sEncoding = "ARNDCQEGHILKMFPSTWYV";
+        String encoding = "ARNDCQEGHILKMFPSTWYV";
         for (int i = 0; i < dataType.getStateCount(); i++) {
-            nCodeMap[i] = sEncoding.indexOf(sCodeMap.charAt(i));
+            nCodeMap[i] = encoding.indexOf(codeMap.charAt(i));
         }
         return nCodeMap;
     }

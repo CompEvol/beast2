@@ -154,8 +154,8 @@ public class BEASTObjectDialog extends JDialog {
         //PluginDialog.m_position.x -= 30;
         //PluginDialog.m_position.y -= 30;
         if (m_bOK) {
-            String sOldID = m_panel.m_beastObject.getID();
-            BEASTObjectPanel.g_plugins.remove(sOldID);
+            String oldID = m_panel.m_beastObject.getID();
+            BEASTObjectPanel.g_plugins.remove(oldID);
             m_panel.m_beastObject.setID(m_panel.m_identry.getText());
             BEASTObjectPanel.registerPlugin(m_panel.m_beastObject.getID(), m_panel.m_beastObject, doc);
         }
@@ -202,8 +202,8 @@ public class BEASTObjectDialog extends JDialog {
         dlg.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         if (dlg.showDialog()) {
             BEASTInterface beastObject = dlg.m_panel.m_beastObject;
-            String sXML = new XMLProducer().modelToXML(beastObject);
-            System.out.println(sXML);
+            String xml = new XMLProducer().modelToXML(beastObject);
+            System.out.println(xml);
         }
     } // main
 } // class PluginDialog

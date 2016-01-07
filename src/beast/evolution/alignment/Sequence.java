@@ -78,8 +78,8 @@ public class Sequence extends BEASTObject {
         // remove spaces
         data = data.replaceAll("\\s", "");
         
-        String sStr = data.trim();		
-		String[] strs = sStr.split(";");		
+        String str = data.trim();		
+		String[] strs = str.split(";");		
 		for (int i=0; i<strs.length; i++) {
 			String[] pr = strs[i].split(",");
 			//double total = 0;

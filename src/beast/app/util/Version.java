@@ -18,17 +18,17 @@ public abstract class Version {
     public abstract String[] getCredits();
 
     public String getHTMLCredits() {
-        String sStr = "";
+        String str = "";
         for (String s : getCredits()) {
             if (s.contains("@")) {
-                sStr += "<a href=\"mailto:" + s + "\">" + s + "</a><br>";
+                str += "<a href=\"mailto:" + s + "\">" + s + "</a><br>";
             }
             if (s.contains("http")) {
-                sStr += "<a href=\"" + s + "\">" + s + "</a><br>";
+                str += "<a href=\"" + s + "\">" + s + "</a><br>";
             } else {
-                sStr += "<p>" + s + "</p>";
+                str += "<p>" + s + "</p>";
             }
         }
-        return sStr;
+        return str;
     }
 }

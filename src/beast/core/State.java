@@ -308,9 +308,9 @@ public class State extends BEASTObject {
     /**
      * set name of state file, used when storing/restoring the state to disk *
      */
-    public void setStateFileName(final String sFileName) {
-        if (sFileName != null) {
-            stateFileName = sFileName;
+    public void setStateFileName(final String fileName) {
+        if (fileName != null) {
+            stateFileName = fileName;
         }
     }
 
@@ -355,10 +355,10 @@ public class State extends BEASTObject {
     /**
      * Restore state from an XML fragment *
      */
-    public void fromXML(final String sXML) {
+    public void fromXML(final String xml) {
         try {
             final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(sXML.getBytes()));
+            final Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
             doc.normalize();
             final NodeList nodes = doc.getElementsByTagName("*");
             final Node topNode = nodes.item(0);
@@ -405,7 +405,7 @@ public class State extends BEASTObject {
                         !stateNode[stateNodeIndex].getID().equals(id)) {
                     stateNodeIndex++;
                     if (stateNodeIndex >= stateNode.length) {
-                    	Log.warning.println("Cannot restore statenode sID");
+                    	Log.warning.println("Cannot restore statenode id");
                     	break;
                     }
                 }

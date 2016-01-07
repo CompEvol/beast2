@@ -170,13 +170,13 @@ public class LogCombinerDialog {
                     return;
                 }
                 outputFile = file;
-                String sFileName = file.getAbsolutePath();
+                String fileName = file.getAbsolutePath();
                 String fileSep = System.getProperty("file.separator");
                 if (fileSep.equals("\\")) {
                 	fileSep = "\\\\";
                 }
-                if (sFileName.lastIndexOf(fileSep) > 0) {
-                    Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf(fileSep));
+                if (fileName.lastIndexOf(fileSep) > 0) {
+                    Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf(fileSep));
                 }
                 fileNameText.setText(outputFile.getName());
 
@@ -288,14 +288,14 @@ public class LogCombinerDialog {
 
             files.add(fileInfo);
 
-            String sFileName = file.getAbsolutePath();
+            String fileName = file.getAbsolutePath();
             String fileSep = System.getProperty("file.separator");
             if (fileSep.equals("\\")) {
             	fileSep = "\\\\";
             }
 
-            if (sFileName.lastIndexOf(fileSep) > 0) {
-                Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf(fileSep));
+            if (fileName.lastIndexOf(fileSep) > 0) {
+                Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf(fileSep));
             }
         }
 

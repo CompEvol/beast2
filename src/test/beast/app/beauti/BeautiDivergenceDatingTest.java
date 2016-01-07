@@ -299,8 +299,8 @@ public class BeautiDivergenceDatingTest extends BeautiBase {
 		DivergenceDatingRunner(File file) {
 			super();
 			setUp(new String[]{"/x.xml"});
-			sDir = file.getPath();
-			sLogDir = "";
+			dirName = file.getPath();
+			logDir = "";
 			useSeed = false;
 			checkESS = false;
 			testFile = "primate-mtDNA";

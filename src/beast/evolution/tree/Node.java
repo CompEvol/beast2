@@ -376,23 +376,23 @@ public class Node extends BEASTObject {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            String sChild1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
+            String child1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
             int iChild1 = iMaxNodeInClade[0];
             if (getRight() != null) {
-                String sChild2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
+                String child2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
                 int iChild2 = iMaxNodeInClade[0];
                 if (iChild1 > iChild2) {
-                    buf.append(sChild2);
+                    buf.append(child2);
                     buf.append(",");
-                    buf.append(sChild1);
+                    buf.append(child1);
                 } else {
-                    buf.append(sChild1);
+                    buf.append(child1);
                     buf.append(",");
-                    buf.append(sChild2);
+                    buf.append(child2);
                     iMaxNodeInClade[0] = iChild1;
                 }
             } else {
-                buf.append(sChild1);
+                buf.append(child1);
             }
             buf.append(")");
             if (getID() != null) {
@@ -465,22 +465,22 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @param sLabels
+     * @param labels
      * @return beast.tree in long Newick format, with all length and meta data
      *         information, but with leafs labelled with their names
      */
-    public String toString(final List<String> sLabels) {
+    public String toString(final List<String> labels) {
         final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            buf.append(getLeft().toString(sLabels));
+            buf.append(getLeft().toString(labels));
             if (getRight() != null) {
                 buf.append(',');
-                buf.append(getRight().toString(sLabels));
+                buf.append(getRight().toString(labels));
             }
             buf.append(")");
         } else {
-            buf.append(sLabels.get(labelNr));
+            buf.append(labels.get(labelNr));
         }
         if (metaDataString != null) {
             buf.append('[');
@@ -616,26 +616,26 @@ public class Node extends BEASTObject {
      * Only heights are recognised, but derived classes could deal with
      * richer meta data pattersn.
      */
-    public void setMetaData(final String sPattern, final Object fValue) {
+    public void setMetaData(final String pattern, final Object fValue) {
         startEditing();
-        if (sPattern.equals(TraitSet.DATE_TRAIT) ||
-                sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
-                sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+        if (pattern.equals(TraitSet.DATE_TRAIT) ||
+                pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
+                pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             height = (Double) fValue;
             isDirty |= Tree.IS_DIRTY;
         } else {
-            metaData.put(sPattern, fValue);
+            metaData.put(pattern, fValue);
         }
 
     }
 
-    public Object getMetaData(final String sPattern) {
-        if (sPattern.equals(TraitSet.DATE_TRAIT) ||
-                sPattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
-                sPattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+    public Object getMetaData(final String pattern) {
+        if (pattern.equals(TraitSet.DATE_TRAIT) ||
+                pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
+                pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return height;
         } else {
-            final Object d = metaData.get(sPattern);
+            final Object d = metaData.get(pattern);
             if (d != null) return d;
         }
         return 0;

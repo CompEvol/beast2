@@ -177,29 +177,29 @@ public class JSONProducer {
         } else {
             // see whether a reasonable id can be generated
             if (beastObject.getID() != null && !beastObject.getID().equals("")) {
-                String sID = beastObject.getID();
+                String id = beastObject.getID();
                 // ensure ID is unique
-                if (IDs.contains(sID)) {
+                if (IDs.contains(id)) {
                     int k = 1;
-                    while (IDs.contains(sID + k)) {
+                    while (IDs.contains(id + k)) {
                         k++;
                     }
-                    sID = sID + k;
+                    id = id + k;
                 }
             	buf.append((needsComma == true) ? ",\n" + indent + " " : ""); 
-                buf.append("id: \"" + normalise(null, sID) + "\"");
+                buf.append("id: \"" + normalise(null, id) + "\"");
                 needsComma = true;
-                IDs.add(sID);
+                IDs.add(id);
             }
             isDone.add(beastObject);
         }
-        String sClassName = beastObject.getClass().getName();
+        String className = beastObject.getClass().getName();
         if (skipInputs == false) {
             // only add spec element if it cannot be deduced otherwise (i.e., by idref)
-        	if (defaultType != null && !defaultType.getName().equals(sClassName)) {
+        	if (defaultType != null && !defaultType.getName().equals(className)) {
 	        	buf.append((needsComma == true) ? ",\n" + indent + " " : ""); 
-	            //buf.append("\"spec\": \"" + sClassName + "\"");
-	            buf.append("spec: \"" + sClassName + "\"");
+	            //buf.append("\"spec\": \"" + className + "\"");
+	            buf.append("spec: \"" + className + "\"");
 	            needsComma = true;
         	}
         }

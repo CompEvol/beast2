@@ -42,20 +42,20 @@ public class EnumInputEditor extends InputEditor.Base {
 		this.itemNr = itemNr;
 
         addInputLabel();
-        List<String> sAvailableValues = new ArrayList<>();
+        List<String> availableValues = new ArrayList<>();
         for (int i = 0; i < input.possibleValues.length; i++) {
-            sAvailableValues.add(input.possibleValues[i].toString());
+            availableValues.add(input.possibleValues[i].toString());
         }
-        if (sAvailableValues.size() > 1) {
-            m_selectPluginBox = new JComboBox<>(sAvailableValues.toArray(new String[0]));
-            String sSelectString = input.get().toString();
-            m_selectPluginBox.setSelectedItem(sSelectString);
+        if (availableValues.size() > 1) {
+            m_selectPluginBox = new JComboBox<>(availableValues.toArray(new String[0]));
+            String selectString = input.get().toString();
+            m_selectPluginBox.setSelectedItem(selectString);
 
             m_selectPluginBox.addActionListener(e -> {
-                    String sSelected = (String) m_selectPluginBox.getSelectedItem();
+                    String selected = (String) m_selectPluginBox.getSelectedItem();
                     try {
-                    	setValue(sSelected);
-                        //lm_input.setValue(sSelected, m_beastObject);
+                    	setValue(selected);
+                        //lm_input.setValue(selected, m_beastObject);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }

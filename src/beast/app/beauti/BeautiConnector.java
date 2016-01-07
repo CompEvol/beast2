@@ -16,15 +16,15 @@ import beast.core.Operator;
 
 @Description("Specifies which part of the template get connected to the main network")
 public class BeautiConnector extends BEASTObject {
-    final public Input<String> sMethodnput = new Input<>("method", "name of static method that should be called with BeautiDoc as " +
+    final public Input<String> methodnput = new Input<>("method", "name of static method that should be called with BeautiDoc as " +
     		"argument. For example beast.app.beauti.SiteModelInputEditor.custmoConnector");
 
-    final public Input<String> sSourceIDInput = new Input<>("srcID", "ID of the beastObject to be connected", Validate.XOR, sMethodnput);
-    final public Input<String> sTargetIDInput = new Input<>("targetID", "ID of beastObject to connect to", Validate.XOR, sMethodnput);
-    final public Input<String> sInputNameInput = new Input<>("inputName", "name of the input of the beastObject to connect to", Validate.XOR, sMethodnput);
-    final public Input<String> sTipText = new Input<>("value", "associate some tip text with the srcID beastObject, useful for displaying prior and operator specific information");
+    final public Input<String> sourceIDInput = new Input<>("srcID", "ID of the beastObject to be connected", Validate.XOR, methodnput);
+    final public Input<String> targetIDInput = new Input<>("targetID", "ID of beastObject to connect to", Validate.XOR, methodnput);
+    final public Input<String> inputNameInput = new Input<>("inputName", "name of the input of the beastObject to connect to", Validate.XOR, methodnput);
+    final public Input<String> tipText = new Input<>("value", "associate some tip text with the srcID beastObject, useful for displaying prior and operator specific information");
 
-    final public Input<String> sConditionInput = new Input<>("if", "condition under which this connector should be executed." +
+    final public Input<String> conditionInput = new Input<>("if", "condition under which this connector should be executed." +
             "These should be of the form " +
             "inposterior(id) or id/input=value, e.g. inposterior(kappa), kappa/estimate=true. " +
             "inlikelihood(id) to check there is a beastObject with suplied id that is predecessor of likelihood. " +
@@ -43,14 +43,14 @@ public class BeautiConnector extends BEASTObject {
 //	final static String IS_IN_POSTERIOR = "x";
 //	final static String AT_INITIALISATION_ONLY = "y";
 
-    String sSourceID;
-    String sTargetID;
-    String sTargetInput;
+    String sourceID;
+    String targetID;
+    String targetInput;
 
-    String[] sConditionIDs;
-    String[] sConditionInputs;
+    String[] conditionIDs;
+    String[] conditionInputs;
     Operation[] conditionOperations;
-    String[] sConditionValues;
+    String[] conditionValues;
     
     boolean isRegularConnector = true;
     
@@ -66,57 +66,57 @@ public class BeautiConnector extends BEASTObject {
 
 	@Override
     public void initAndValidate() throws Exception {
-        sSourceID = sSourceIDInput.get();
-        sTargetID = sTargetIDInput.get();
-        sTargetInput = sInputNameInput.get();
+        sourceID = sourceIDInput.get();
+        targetID = targetIDInput.get();
+        targetInput = inputNameInput.get();
 
-        if (sConditionInput.get() != null) {
-            String[] sConditions = sConditionInput.get().split("\\s+and\\s+");
-            sConditionIDs = new String[sConditions.length];
-            sConditionInputs = new String[sConditions.length];
-            sConditionValues = new String[sConditions.length];
-            conditionOperations = new Operation[sConditions.length];
-            for (int i = 0; i < sConditions.length; i++) {
-                String s = sConditions[i];
+        if (conditionInput.get() != null) {
+            String[] conditions = conditionInput.get().split("\\s+and\\s+");
+            conditionIDs = new String[conditions.length];
+            conditionInputs = new String[conditions.length];
+            conditionValues = new String[conditions.length];
+            conditionOperations = new Operation[conditions.length];
+            for (int i = 0; i < conditions.length; i++) {
+                String s = conditions[i];
                 if (s.startsWith("inposterior(")) {
-                    sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
-                    sConditionInputs[i] = null;
+                    conditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
+                    conditionInputs[i] = null;
                     conditionOperations[i] = Operation.IS_IN_POSTERIOR;
-                    sConditionValues[i] = null;
+                    conditionValues[i] = null;
                 } else if (s.startsWith("inlikelihood(")) {
-                    sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
-                    sConditionInputs[i] = null;
+                    conditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
+                    conditionInputs[i] = null;
                     conditionOperations[i] = Operation.IS_IN_LIKELIHOOD;
-                    sConditionValues[i] = null;
+                    conditionValues[i] = null;
                 } else if (s.startsWith("nooperator")) {
-                    sConditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
+                    conditionIDs[i] = s.substring(s.indexOf("(") + 1, s.lastIndexOf(")"));
                     conditionOperations[i] = Operation.IS_NOT_AN_OPERTOR;
-                    sConditionInputs[i] = null;
-                    sConditionValues[i] = null;
+                    conditionInputs[i] = null;
+                    conditionValues[i] = null;
                 } else if (s.startsWith("isInitializing")) {
-                    sConditionIDs[i] = null;
+                    conditionIDs[i] = null;
                     conditionOperations[i] = Operation.AT_INITIALISATION_ONLY;
-                    sConditionInputs[i] = null;
-                    sConditionValues[i] = null;
+                    conditionInputs[i] = null;
+                    conditionValues[i] = null;
                 } else {
-                    sConditionIDs[i] = s.substring(0, s.indexOf("/"));
-                    sConditionInputs[i] = s.substring(s.indexOf("/") + 1, s.indexOf("="));
-                    sConditionValues[i] = s.substring(s.indexOf("=") + 1);
+                    conditionIDs[i] = s.substring(0, s.indexOf("/"));
+                    conditionInputs[i] = s.substring(s.indexOf("/") + 1, s.indexOf("="));
+                    conditionValues[i] = s.substring(s.indexOf("=") + 1);
                     conditionOperations[i] = Operation.EQUALS;
-                    if (sConditionInputs[i].endsWith("!")) {
-                        sConditionInputs[i] = sConditionInputs[i].substring(0, sConditionInputs[i].length() - 1);
+                    if (conditionInputs[i].endsWith("!")) {
+                        conditionInputs[i] = conditionInputs[i].substring(0, conditionInputs[i].length() - 1);
                         conditionOperations[i] = Operation.NOT_EQUALS;
                     }
                 }
             }
         } else {
-            sConditionIDs = new String[0];
-            sConditionInputs = new String[0];
+            conditionIDs = new String[0];
+            conditionInputs = new String[0];
             conditionOperations = new Operation[0];
-            sConditionValues = new String[0];
+            conditionValues = new String[0];
         }
-        if (sMethodnput.get() != null) {
-        	String fullMethod = sMethodnput.get();
+        if (methodnput.get() != null) {
+        	String fullMethod = methodnput.get();
         	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
         	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
         	Class<?> class_ = Class.forName(className);
@@ -143,10 +143,10 @@ public class BeautiConnector extends BEASTObject {
         if (atInitialisationOnly()) {
             return false;
         }
-        if (sMethodnput.get() != null) {
+        if (methodnput.get() != null) {
 //        if (method != null) {
 	    	try {
-            	String fullMethod = sMethodnput.get();
+            	String fullMethod = methodnput.get();
             	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
             	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
             	Class<?> class_ = Class.forName(className);
@@ -158,10 +158,10 @@ public class BeautiConnector extends BEASTObject {
         }
 
         boolean bIsActive = true;
-        for (int i = 0; i < sConditionIDs.length; i++) {
-        	//String sID = sConditionIDs[i].replaceAll("\\$\\(n\\)", sPartition);
-        	String sID = BeautiDoc.translatePartitionNames(sConditionIDs[i], partitionContext);
-            BEASTInterface beastObject = doc.pluginmap.get(sID);
+        for (int i = 0; i < conditionIDs.length; i++) {
+        	//String id = conditionIDs[i].replaceAll("\\$\\(n\\)", partition);
+        	String id = BeautiDoc.translatePartitionNames(conditionIDs[i], partitionContext);
+            BEASTInterface beastObject = doc.pluginmap.get(id);
             if (beastObject == null) {
             	if (conditionOperations[i] != Operation.IS_NOT_AN_OPERTOR) {
                     return false;
@@ -169,7 +169,7 @@ public class BeautiConnector extends BEASTObject {
             	}
                 //System.err.println("isActivated::no beastObject found");
             }
-            //System.err.println("isActivated::found " + sID);
+            //System.err.println("isActivated::found " + id);
             try {
                 switch (conditionOperations[i]) {
                     case IS_IN_POSTERIOR:
@@ -194,25 +194,25 @@ public class BeautiConnector extends BEASTObject {
         				}
                     	break;
                     case EQUALS:
-                        final Input<?> input = beastObject.getInput(sConditionInputs[i]);
-                        //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
+                        final Input<?> input = beastObject.getInput(conditionInputs[i]);
+                        //System.err.println("isActivated::input " + input.get().toString() + " expected " + conditionValues[i]);
                         if (input.get() == null) {
-                        	if (!sConditionValues[i].equals("null")) {
+                        	if (!conditionValues[i].equals("null")) {
                         		return false;
                         	}
-                        } else if (!input.get().toString().equals(sConditionValues[i])) {
+                        } else if (!input.get().toString().equals(conditionValues[i])) {
                             //System.err.println("isActivated::return false");
                             return false;
                         }
                         break;
                     case NOT_EQUALS:
-                        final Input<?> input2 = beastObject.getInput(sConditionInputs[i]);
-                        //System.err.println("isActivated::input " + input.get().toString() + " expected " + sConditionValues[i]);
+                        final Input<?> input2 = beastObject.getInput(conditionInputs[i]);
+                        //System.err.println("isActivated::input " + input.get().toString() + " expected " + conditionValues[i]);
                         if (input2.get() == null) {
-                        	if (sConditionValues[i].equals("null")) {
+                        	if (conditionValues[i].equals("null")) {
                         		return false;
                         	}
-                        } else if (input2.get().toString().equals(sConditionValues[i])) {
+                        } else if (input2.get().toString().equals(conditionValues[i])) {
                             //System.err.println("isActivated::return false");
                             return false;
                         }
@@ -225,29 +225,29 @@ public class BeautiConnector extends BEASTObject {
                 return false;
             }
         }
-        //if (sConditionIDs.length > 0) {
+        //if (conditionIDs.length > 0) {
         //	System.err.println("isActivated::return true");
         //}
         return bIsActive;
     }
 
     public String getTipText() {
-        return sTipText.get();
+        return tipText.get();
     }
 
     @Override
 	public String toString() {
-    	if (sMethodnput.get() != null) {
-    		return "call " + sMethodnput.get();
+    	if (methodnput.get() != null) {
+    		return "call " + methodnput.get();
     	}
-        return "@" + sSourceID + " -> @" + sTargetID + "/" + sTargetInput;
+        return "@" + sourceID + " -> @" + targetID + "/" + targetInput;
     }
 
 
     public String toString(PartitionContext context) {
-    	if (sMethodnput.get() != null) {
+    	if (methodnput.get() != null) {
     		return toString();
     	}
-        return "@" + BeautiDoc.translatePartitionNames(sSourceID, context) + " -> @" + sTargetID + "/" + BeautiDoc.translatePartitionNames(sTargetInput, context);
+        return "@" + BeautiDoc.translatePartitionNames(sourceID, context) + " -> @" + targetID + "/" + BeautiDoc.translatePartitionNames(targetInput, context);
     }
 }

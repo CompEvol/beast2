@@ -53,8 +53,8 @@ public class XMLParserUtils {
         // created when they are nested
         if (nodes.getLength() > 0) {
             Node node = nodes.item(0);
-            final String sVar = node.getAttributes().getNamedItem("var").getNodeValue();
-            final String sRange = node.getAttributes().getNamedItem("range").getNodeValue();
+            final String var = node.getAttributes().getNamedItem("var").getNodeValue();
+            final String rangeString = node.getAttributes().getNamedItem("range").getNodeValue();
             
             if (node.getAttributes().getNamedItem("fragment") != null) {
             	final String fragmentID = node.getAttributes().getNamedItem("fragment").getNodeValue();
@@ -67,20 +67,20 @@ public class XMLParserUtils {
             	node = fragment;
            }
 	
-            final String[] sValues = sRange.split(",");
+            final String[] valuesString = rangeString.split(",");
 
             // interpret values in the range of form x:y as all numbers between x and y inclusive
             List<String> vals = new ArrayList<>();
-            for (final String sValue : sValues) {
-                if (sValue.indexOf(":") > 0) {
-                    String[] range = sValue.split(":");
+            for (final String valueString : valuesString) {
+                if (valueString.indexOf(":") > 0) {
+                    String[] range = valueString.split(":");
                     int min = Integer.parseInt(range[0]);
                     int max = Integer.parseInt(range[1]);
                     for (int i = min; i <= max; i++) {
                         vals.add(String.valueOf(i));
                     }
                 } else {
-                    vals.add(sValue);
+                    vals.add(valueString);
                 }
             }
 
@@ -90,7 +90,7 @@ public class XMLParserUtils {
                 for (int iChild = 0; iChild < children.getLength(); iChild++) {
                     final Node child = children.item(iChild);
                     final Node newChild = child.cloneNode(true);
-                    replaceVariable(newChild, sVar, val);
+                    replaceVariable(newChild, var, val);
                     node.getParentNode().insertBefore(newChild, node);
                 }
             }
@@ -134,27 +134,27 @@ public class XMLParserUtils {
     
     /**
      * @param node the node to do variable replacement in
-     * @param sVar the variable name to replace
-     * @param sValue the value to replace the variable name with
+     * @param var the variable name to replace
+     * @param valueString the value to replace the variable name with
      */
-    public static void replaceVariable(final Node node, final String sVar, final String sValue) {
+    public static void replaceVariable(final Node node, final String var, final String valueString) {
         switch (node.getNodeType()) {
 	        case Node.ELEMENT_NODE:  {
 	            final Element element = (Element) node;
 	            final NamedNodeMap atts = element.getAttributes();
 	            for (int i = 0; i < atts.getLength(); i++) {
 	                final Attr attr = (Attr) atts.item(i);
-	                if (attr.getValue().contains("$(" + sVar + ")")) {
-	                    String sAtt = attr.getValue();
-	                    sAtt = sAtt.replaceAll("\\$\\(" + sVar + "\\)", sValue);
-	                    attr.setNodeValue(sAtt);
+	                if (attr.getValue().contains("$(" + var + ")")) {
+	                    String att = attr.getValue();
+	                    att = att.replaceAll("\\$\\(" + var + "\\)", valueString);
+	                    attr.setNodeValue(att);
 	                }
 	            }
 	        }
 	        case Node.CDATA_SECTION_NODE: {
 	        	String content = node.getTextContent();
-	        	if (content.contains("$(" + sVar + ")")) {
-	        		content = content.replaceAll("\\$\\(" + sVar + "\\)", sValue);
+	        	if (content.contains("$(" + var + ")")) {
+	        		content = content.replaceAll("\\$\\(" + var + "\\)", valueString);
 	        		node.setNodeValue(content);
 	        	}
 	        }
@@ -164,7 +164,7 @@ public class XMLParserUtils {
         final NodeList children = node.getChildNodes();
         for (int iChild = 0; iChild < children.getLength(); iChild++) {
             final Node child = children.item(iChild);
-            replaceVariable(child, sVar, sValue);
+            replaceVariable(child, var, valueString);
         }
     } // replace
 

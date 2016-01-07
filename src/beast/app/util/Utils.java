@@ -292,30 +292,30 @@ public class Utils {
         return out.toString();
     }
 	public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
-	    String sIconLocation = BeautiPanel.ICONPATH + iPanel + ".png";
+	    String iconLocation = BeautiPanel.ICONPATH + iPanel + ".png";
 	    if (config != null) {
-	        sIconLocation = BeautiPanel.ICONPATH + config.getIcon();
+	        iconLocation = BeautiPanel.ICONPATH + config.getIcon();
 	    }
-	    return Utils.getIcon(sIconLocation);
+	    return Utils.getIcon(iconLocation);
 	}
 
     /**
      * Retrieve icon.
      *
-     * @param sIconLocation location of icon
+     * @param iconLocation location of icon
      * @return icon or null if no icon found
      */
-	public static ImageIcon getIcon(String sIconLocation) {
+	public static ImageIcon getIcon(String iconLocation) {
 	    try {
-	        URL url = ClassLoader.getSystemResource(sIconLocation);
+	        URL url = ClassLoader.getSystemResource(iconLocation);
 	        if (url == null) {
-//	            System.err.println("Cannot find icon " + sIconLocation);
+//	            System.err.println("Cannot find icon " + iconLocation);
 	            return null;
 	        }
 	        ImageIcon icon = new ImageIcon(url);
 	        return icon;
 	    } catch (Exception e) {
-	    	Log.warning.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+	    	Log.warning.println("Cannot load icon " + iconLocation + " " + e.getMessage());
 	        return null;
 	    }
 	

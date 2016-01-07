@@ -59,13 +59,13 @@ public class Package {
     }
 
     public String getVersionDependencyFromLocal(String packageName, Set<PackageDependency> dependencies) {
-        List<String> sBeastDirs = getBeastDirectories();
+        List<String> beastDirs = getBeastDirectories();
 
         // gather dependency info for this package
-        for (String sDir : sBeastDirs) {
-            File f = new File(sDir + "/" + packageName);
+        for (String dirName : beastDirs) {
+            File f = new File(dirName + "/" + packageName);
             if (f.exists()) {
-                File vf = new File(sDir + "/" + packageName + "/version.xml");
+                File vf = new File(dirName + "/" + packageName + "/version.xml");
 
                 if (vf.exists()) {
                     try {
@@ -103,10 +103,10 @@ public class Package {
         dep.packageName = packageName;
         dep.dependson = depend_on.getAttribute("on");
 
-        String sAtLeast = depend_on.getAttribute("atleast");
-        dep.setAtLest(sAtLeast);
-        String sAtMost = depend_on.getAttribute("atmost");
-        dep.setAtMost(sAtMost);
+        String atLeastString = depend_on.getAttribute("atleast");
+        dep.setAtLest(atLeastString);
+        String atMostString = depend_on.getAttribute("atmost");
+        dep.setAtMost(atMostString);
         return dep;
     }
 

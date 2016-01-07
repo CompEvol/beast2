@@ -121,22 +121,22 @@ public class SequenceSimulator extends beast.core.Runnable {
      */
     Sequence intArray2Sequence(int[] seq, Node node) throws Exception {
         DataType dataType = m_data.get().getDataType();
-        String sSeq = dataType.state2string(seq);
-//    	StringBuilder sSeq = new StringBuilder();
-//    	String sMap = m_data.get().getMap();
-//    	if (sMap != null) {
+        String seqString = dataType.state2string(seq);
+//    	StringBuilder seq = new StringBuilder();
+//    	String map = m_data.get().getMap();
+//    	if (map != null) {
 //    		for (int i  = 0; i < m_sequenceLength; i++) {
-//    			sSeq.append(sMap.charAt(seq[i]));
+//    			seq.append(map.charAt(seq[i]));
 //    		}
 //    	} else {
 //    		for (int i  = 0; i < m_sequenceLength-1; i++) {
-//    			sSeq.append(seq[i] + ",");
+//    			seq.append(seq[i] + ",");
 //    		}
-//			sSeq.append(seq[m_sequenceLength-1] + "");
+//			seq.append(seq[m_sequenceLength-1] + "");
 //    	}
         List<Sequence> taxa = m_data.get().sequenceInput.get();
-        String sTaxon = taxa.get(node.getNr()).taxonInput.get();
-        return new Sequence(sTaxon, sSeq.toString());
+        String taxon = taxa.get(node.getNr()).taxonInput.get();
+        return new Sequence(taxon, seqString);
     } // intArray2Sequence
 
     /**
@@ -272,7 +272,7 @@ public class SequenceSimulator extends beast.core.Runnable {
             if (args.length < 2) {
                 printUsageAndExit();
             }
-            String sFile = args[0];
+            String fileName = args[0];
             int nReplications = Integer.parseInt(args[1]);
             PrintStream out = System.out;
             if (args.length == 3) {
@@ -281,16 +281,16 @@ public class SequenceSimulator extends beast.core.Runnable {
             }
 
             // grab the file
-            String sXML = "";
-            BufferedReader fin = new BufferedReader(new FileReader(sFile));
+            String xml = "";
+            BufferedReader fin = new BufferedReader(new FileReader(fileName));
             while (fin.ready()) {
-                sXML += fin.readLine();
+                xml += fin.readLine();
             }
             fin.close();
 
             // parse the xml
             XMLParser parser = new XMLParser();
-            BEASTInterface beastObject = parser.parseFragment(sXML, true);
+            BEASTInterface beastObject = parser.parseFragment(xml, true);
 
             // find relevant objects from the model
             TreeLikelihood treeLikelihood = getTreeLikelihood(beastObject);
@@ -308,9 +308,9 @@ public class SequenceSimulator extends beast.core.Runnable {
             treeSimulator.init(data, tree, pSiteModel, pBranchRateModel, nReplications);
             XMLProducer producer = new XMLProducer();
             Alignment alignment = treeSimulator.simulate();
-            sXML = producer.toRawXML(alignment);
+            xml = producer.toRawXML(alignment);
             out.println("<beast version='2.0'>");
-            out.println(sXML);
+            out.println(xml);
             out.println("</beast>");
         } catch (Exception e) {
             e.printStackTrace();

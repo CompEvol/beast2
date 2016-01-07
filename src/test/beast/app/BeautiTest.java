@@ -15,8 +15,8 @@ public class BeautiTest extends TestCase {
 		ExampleXmlParsingTest.setUpTestDir();
 	}
 	
-    String sFile = "test/tmp123x666.xml";
-    String sTemplateFile = "test/template123x666.xml";
+    String fileName = "test/tmp123x666.xml";
+    String templateFile = "test/template123x666.xml";
 
     @Test
     // test that beauti can merge an alignment with a template and write out a file
@@ -31,12 +31,12 @@ public class BeautiTest extends TestCase {
 
         // ignore test if no X11 display available
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
-            File f = new File(sFile);
+            File f = new File(fileName);
             if (f.exists()) {
                 f.delete();
             }
-            Beauti.main(("-template templates/Standard.xml -nex examples/nexus/dna.nex -out " + sFile + " -exitaction writexml").split(" "));
-            f = new File(sFile);
+            Beauti.main(("-template templates/Standard.xml -nex examples/nexus/dna.nex -out " + fileName + " -exitaction writexml").split(" "));
+            f = new File(fileName);
             assertEquals(f.exists() && f.length() > 0, true);
         }
     }
@@ -52,12 +52,12 @@ public class BeautiTest extends TestCase {
         }
         // ignore test if no X11 display available
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
-            File f = new File(sFile);
+            File f = new File(fileName);
             if (f.exists()) {
                 f.delete();
             }
-            Beauti.main(("-template templates/StarBeast.xml -nex examples/nexus/26.nex -nex examples/nexus/29.nex -out " + sFile + " -exitaction writexml").split(" "));
-            f = new File(sFile);
+            Beauti.main(("-template templates/StarBeast.xml -nex examples/nexus/26.nex -nex examples/nexus/29.nex -out " + fileName + " -exitaction writexml").split(" "));
+            f = new File(fileName);
             assertEquals(f.exists() && f.length() > 0, true);
         }
     }
@@ -126,21 +126,21 @@ public class BeautiTest extends TestCase {
     public void testCustomBatchMode() {
         BeautiDoc doc = new BeautiDoc();
         try {
-        	PrintStream out = new PrintStream(sTemplateFile);
+        	PrintStream out = new PrintStream(templateFile);
         	out.print(template);
         	out.close();
-            doc.processTemplate(sTemplateFile);
+            doc.processTemplate(templateFile);
         } catch (Exception e) {
             assertEquals(true, false);
         }
         // ignore test if no X11 display available
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
-            File f = new File(sFile);
+            File f = new File(fileName);
             if (f.exists()) {
                 f.delete();
             }
-            Beauti.main(("-template " + sTemplateFile + " -nex examples/nexus/anolis.nex -out " + sFile + " -exitaction writexml").split(" "));
-            f = new File(sFile);
+            Beauti.main(("-template " + templateFile + " -nex examples/nexus/anolis.nex -out " + fileName + " -exitaction writexml").split(" "));
+            f = new File(fileName);
             assertEquals(f.exists() && f.length() > 0, true);
         }
     }

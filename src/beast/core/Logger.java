@@ -361,8 +361,8 @@ public class Logger extends BEASTObject {
                         Log.info.println("Overwrite (Y/N)?:");
                         Log.info.flush();
                         final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-                        final String sMsg = stdin.readLine();
-                        if (!sMsg.toLowerCase().equals("y")) {
+                        final String msg = stdin.readLine();
+                        if (!msg.toLowerCase().equals("y")) {
                         	Log.info.println("Exiting now.");
                             System.exit(0);
                         }
@@ -418,7 +418,7 @@ public class Logger extends BEASTObject {
 
                             //final StringBuilder buf = new StringBuilder();
                             String strLast = null;
-                            //String sStr = fin.readLine();
+                            //String str = fin.readLine();
                             boolean endSeen = false;
                             while (fin.ready()) {
                                 if( endSeen ) {

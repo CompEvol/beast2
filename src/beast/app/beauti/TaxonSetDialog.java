@@ -34,7 +34,7 @@ public class TaxonSetDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     public boolean isOK = false;
     TaxonSet taxonSet;
-    String sID;
+    String id;
     List<Taxon> _candidates;
 
     JTextField idEntry;
@@ -54,7 +54,7 @@ public class TaxonSetDialog extends JDialog {
         // initialize state
         this.taxonSet = taxonSet;
         this.doc = doc;
-        sID = taxonSet.getID();
+        id = taxonSet.getID();
         // create components
         box = Box.createVerticalBox();
         box.add(createIDBox());
@@ -108,7 +108,7 @@ public class TaxonSetDialog extends JDialog {
         }
         isOK =  (result != JOptionPane.CANCEL_OPTION);
         if (isOK) {
-            taxonSet.setID(sID);
+            taxonSet.setID(id);
             List<Taxon> taxa = taxonSet.taxonsetInput.get();
             while (taxa.size() > 0) {
                 taxa.remove(0);
@@ -159,11 +159,11 @@ public class TaxonSetDialog extends JDialog {
     }
 
     private void processEntry() {
-        String sFilter = ".*" + filterEntry.getText() + ".*";
+        String filter = ".*" + filterEntry.getText() + ".*";
 
         listModel1.clear();
         for (Taxon taxon : _candidates) {
-            if (taxon.getID().matches(sFilter)) {
+            if (taxon.getID().matches(filter)) {
                 listModel1.addElement(taxon);
             }
         }
@@ -177,22 +177,22 @@ public class TaxonSetDialog extends JDialog {
         box.add(new JLabel("Taxon set label:"));
         idEntry = new JTextField();
         idEntry.setName("idEntry");
-        idEntry.setText(sID);
+        idEntry.setText(id);
         box.add(idEntry);
         idEntry.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
-                sID = idEntry.getText();
+                id = idEntry.getText();
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                sID = idEntry.getText();
+                id = idEntry.getText();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                sID = idEntry.getText();
+                id = idEntry.getText();
             }
         });
 
@@ -272,7 +272,7 @@ public class TaxonSetDialog extends JDialog {
         JButton okButton = new JButton("Ok");
         okButton.setName("OK");
         okButton.addActionListener(e -> {
-                taxonSet.setID(sID);
+                taxonSet.setID(id);
                 List<Taxon> taxa = taxonSet.taxonsetInput.get();
                 while (taxa.size() > 0) {
                     taxa.remove(0);

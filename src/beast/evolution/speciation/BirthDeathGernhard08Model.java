@@ -69,17 +69,17 @@ public class BirthDeathGernhard08Model extends YuleModel {
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-        final String sType = typeInput.get().toLowerCase();
-        if (sType.equals("unscaled")) {
+        final String typeName = typeInput.get().toLowerCase();
+        if (typeName.equals("unscaled")) {
             type = TreeType.UNSCALED;
-        } else if (sType.equals("timesonly")) {
+        } else if (typeName.equals("timesonly")) {
             type = TreeType.TIMESONLY;
-        } else if (sType.equals("oriented")) {
+        } else if (typeName.equals("oriented")) {
             type = TreeType.ORIENTED;
-        } else if (sType.equals("labeled")) {
+        } else if (typeName.equals("labeled")) {
             type = TreeType.LABELED;
         } else {
-            throw new IllegalArgumentException("type '" + sType + "' is not recognized. Should be one of unscaled, timesonly, oriented and labeled.");
+            throw new IllegalArgumentException("type '" + typeName + "' is not recognized. Should be one of unscaled, timesonly, oriented and labeled.");
         }
     }
 

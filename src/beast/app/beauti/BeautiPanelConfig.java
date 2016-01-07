@@ -23,10 +23,10 @@ public class BeautiPanelConfig extends BEASTObject {
         none, Partition, SiteModel, ClockModel, Tree
     }
 
-    final public Input<String> sNameInput = new Input<>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
-    final public Input<String> sTipTextInput = new Input<>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
+    final public Input<String> nameInput = new Input<>("panelname", "name of the panel, used to label the panel and in the visibility menu", Validate.REQUIRED);
+    final public Input<String> tipTextInput = new Input<>("tiptext", "tiptext shown when hovering over the tab", Validate.REQUIRED);
 
-    final public Input<String> sPathInput = new Input<>("path", "path of the BEASTObject to be shown in this panel, in xpath-like format. " +
+    final public Input<String> pathInput = new Input<>("path", "path of the BEASTObject to be shown in this panel, in xpath-like format. " +
             "For example operator to edit the operator input of the top level run element. " +
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
@@ -38,11 +38,11 @@ public class BeautiPanelConfig extends BEASTObject {
     final public Input<Boolean> bIsVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);
 
 
-    final public Input<String> sIconInput = new Input<>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
+    final public Input<String> iconInput = new Input<>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
 
     final public Input<InputEditor.ExpandOption> forceExpansionInput = new Input<>("forceExpansion", "whether to expand the input(s)" +
             "This can be " + Arrays.toString(InputEditor.ExpandOption.values()) + " (default 'FALSE')", InputEditor.ExpandOption.FALSE, InputEditor.ExpandOption.values());
-    final public Input<String> sTypeInput = new Input<>("type", "type used for finding the appropriate beastObject editor. By default, type is determined " +
+    final public Input<String> typeInput = new Input<>("type", "type used for finding the appropriate beastObject editor. By default, type is determined " +
             "by the input type of the last component of the path");
 
     final public Input<Integer> nLabelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
@@ -50,9 +50,9 @@ public class BeautiPanelConfig extends BEASTObject {
     final public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<>("buttonStatus", "whether to show add and delete buttons. " +
             "This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
 
-    String[] sPathComponents;
-    String[] sConditionalAttribute;
-    String[] sConditionalValue;
+    String[] pathComponents;
+    String[] conditionalAttribute;
+    String[] conditionalValue;
     Class<?> type;
 
     /**
@@ -94,20 +94,20 @@ public class BeautiPanelConfig extends BEASTObject {
 
     @Override
     public void initAndValidate() throws Exception {
-        sPathComponents = sPathInput.get().split("/");
-        if (sPathComponents[0].equals("")) {
-            sPathComponents = new String[0];
+        pathComponents = pathInput.get().split("/");
+        if (pathComponents[0].equals("")) {
+            pathComponents = new String[0];
         }
-        sConditionalAttribute = new String[sPathComponents.length];
-        sConditionalValue = new String[sPathComponents.length];
-        for (int i = 0; i < sPathComponents.length; i++) {
-            int j = sPathComponents[i].indexOf('[');
+        conditionalAttribute = new String[pathComponents.length];
+        conditionalValue = new String[pathComponents.length];
+        for (int i = 0; i < pathComponents.length; i++) {
+            int j = pathComponents[i].indexOf('[');
             if (j >= 0) {
-                String sConditionalComponents = sPathComponents[i].substring(j + 1, sPathComponents[i].lastIndexOf(']'));
-                String[] sStrs = sConditionalComponents.split("=");
-                sConditionalAttribute[i] = sStrs[0];
-                sConditionalValue[i] = sStrs[1].substring(1, sStrs[1].length() - 1);
-                sPathComponents[i] = sPathComponents[i].substring(0, j);
+                String conditionalComponents = pathComponents[i].substring(j + 1, pathComponents[i].lastIndexOf(']'));
+                String[] strs = conditionalComponents.split("=");
+                conditionalAttribute[i] = strs[0];
+                conditionalValue[i] = strs[1].substring(1, strs[1].length() - 1);
+                pathComponents[i] = pathComponents[i].substring(0, j);
             }
         }
         inputs = new ArrayList<>();
@@ -119,7 +119,7 @@ public class BeautiPanelConfig extends BEASTObject {
      * more elegant getters for resolving Input values*
      */
     public String getName() {
-        return sNameInput.get();
+        return nameInput.get();
     }
 
     public Partition hasPartition() {
@@ -131,11 +131,11 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     public String getIcon() {
-        return sIconInput.get();
+        return iconInput.get();
     }
 
     public String getTipText() {
-        return sTipTextInput.get();
+        return tipTextInput.get();
     }
 
     public InputEditor.ExpandOption forceExpansion() {
@@ -166,18 +166,18 @@ public class BeautiPanelConfig extends BEASTObject {
             parentInputs.add(doc.mcmc);
             type = doc.mcmc.getType();
             bIsList = false;
-            for (int i = 0; i < sPathComponents.length; i++) {
+            for (int i = 0; i < pathComponents.length; i++) {
                 List<BEASTInterface> oldPlugins = beastObjects;
                 beastObjects = new ArrayList<>();
                 parentBEASTObjects = new ArrayList<>();
                 parentInputs = new ArrayList<>();
                 for (BEASTInterface beastObject : oldPlugins) {
-                    final Input<?> namedInput = beastObject.getInput(sPathComponents[i]);
+                    final Input<?> namedInput = beastObject.getInput(pathComponents[i]);
                     type = namedInput.getType();
                     if (namedInput.get() instanceof List<?>) {
                         bIsList = true;
                         List<?> list = (List<?>) namedInput.get();
-                        if (sConditionalAttribute[i] == null) {
+                        if (conditionalAttribute[i] == null) {
                             for (Object o : list) {
                                 BEASTInterface beastObject2 = (BEASTInterface) o;
                                 beastObjects.add(beastObject2);
@@ -189,7 +189,7 @@ public class BeautiPanelConfig extends BEASTObject {
                             int nMatches = 0;
                             for (int j = 0; j < list.size(); j++) {
                                 BEASTInterface beastObject2 = (BEASTInterface) list.get(j);
-                                if (matches(beastObject2, sConditionalAttribute[i], sConditionalValue[i])) {
+                                if (matches(beastObject2, conditionalAttribute[i], conditionalValue[i])) {
                                     beastObjects.add(beastObject2);
                                     parentBEASTObjects.add(beastObject);
                                     parentInputs.add(namedInput);
@@ -204,12 +204,12 @@ public class BeautiPanelConfig extends BEASTObject {
                         }
                     } else if (namedInput.get() instanceof BEASTInterface) {
                         bIsList = false;
-                        if (sConditionalAttribute[i] == null) {
+                        if (conditionalAttribute[i] == null) {
                             beastObjects.add((BEASTInterface) namedInput.get());
                             parentBEASTObjects.add(beastObject);
                             parentInputs.add(namedInput);
                         } else {
-                            if (matches(beastObject, sConditionalAttribute[i], sConditionalValue[i])) {
+                            if (matches(beastObject, conditionalAttribute[i], conditionalValue[i])) {
 //							if ((m_sConditionalAttribute[i].equals("id") && beastObject.getID().equals(m_sConditionalValue[i])) ||
 //							    (m_sConditionalAttribute[i].equals("type") && beastObject.getClass().getName().equals(m_sConditionalValue[i]))) {
                                 beastObjects.add(beastObject);
@@ -218,12 +218,12 @@ public class BeautiPanelConfig extends BEASTObject {
                             }
                         }
                     } else {
-                        throw new IllegalArgumentException("input " + sPathComponents[i] + "  is not a beastObject or list");
+                        throw new IllegalArgumentException("input " + pathComponents[i] + "  is not a beastObject or list");
                     }
                 }
             }
-            if (sTypeInput.get() != null) {
-                type = Class.forName(sTypeInput.get());
+            if (typeInput.get() != null) {
+                type = Class.forName(typeInput.get());
             }
             // sanity check
             if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && beastObjects.size() > 1) {
@@ -257,7 +257,7 @@ public class BeautiPanelConfig extends BEASTObject {
 
             return _input;
         } catch (Exception e) {
-            Log.err.println("Warning: could not find objects in path " + Arrays.toString(sPathComponents));
+            Log.err.println("Warning: could not find objects in path " + Arrays.toString(pathComponents));
         }
         return null;
     } // resolveInputs
@@ -273,10 +273,10 @@ public class BeautiPanelConfig extends BEASTObject {
 
     }
 
-    private boolean matches(BEASTInterface beastObject2, String sConditionalAttribute, String sConditionalValue) {
-        if (sConditionalAttribute.equals("id") && beastObject2.getID().equals(sConditionalValue)) return true;
-        if (sConditionalAttribute.equals("type") && beastObject2.getClass().getName().equals(sConditionalValue)) return true;
-        if (sConditionalAttribute.equals("type!") && !beastObject2.getClass().getName().equals(sConditionalValue))
+    private boolean matches(BEASTInterface beastObject2, String conditionalAttribute, String conditionalValue) {
+        if (conditionalAttribute.equals("id") && beastObject2.getID().equals(conditionalValue)) return true;
+        if (conditionalAttribute.equals("type") && beastObject2.getClass().getName().equals(conditionalValue)) return true;
+        if (conditionalAttribute.equals("type!") && !beastObject2.getClass().getName().equals(conditionalValue))
             return true;
         return false;
     }

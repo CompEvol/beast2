@@ -118,18 +118,18 @@ public class Tree extends StateNode implements TreeInterface {
 
     public void makeCaterpillar(final double minInternalHeight, final double step, final boolean finalize) {
         // make a caterpillar
-        final List<String> sTaxa = m_taxonset.get().asStringList();
+        final List<String> taxa = m_taxonset.get().asStringList();
         Node left = newNode();
         left.labelNr = 0;
         left.height = 0;
-        left.setID(sTaxa.get(0));
-        for (int i = 1; i < sTaxa.size(); i++) {
+        left.setID(taxa.get(0));
+        for (int i = 1; i < taxa.size(); i++) {
             final Node right = newNode();
             right.labelNr = i;
             right.height = 0;
-            right.setID(sTaxa.get(i));
+            right.setID(taxa.get(i));
             final Node parent = newNode();
-            parent.labelNr = sTaxa.size() + i - 1;
+            parent.labelNr = taxa.size() + i - 1;
             parent.height = minInternalHeight + i * step;
             left.parent = parent;
             parent.setLeft(left);
@@ -138,7 +138,7 @@ public class Tree extends StateNode implements TreeInterface {
             left = parent;
         }
         root = left;
-        leafNodeCount = sTaxa.size();
+        leafNodeCount = taxa.size();
         nodeCount = leafNodeCount * 2 - 1;
         internalNodeCount = leafNodeCount - 1;
 
@@ -203,8 +203,8 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * Construct a tree from newick string -- will not automatically adjust tips to zero.
      */
-    public Tree(final String sNewick) throws Exception {
-        this(new TreeParser(sNewick).getRoot());
+    public Tree(final String newick) throws Exception {
+        this(new TreeParser(newick).getRoot());
     }
 
     /**
@@ -373,36 +373,36 @@ public class Tree extends StateNode implements TreeInterface {
 
 
     /**
-     * copy meta data matching sPattern to double array
+     * copy meta data matching pattern to double array
      *
      * @param node     the node
      * @param fT       the double array to be filled with meta data
-     * @param sPattern the name of the meta data
+     * @param pattern the name of the meta data
      */
     @Override
-	public void getMetaData(final Node node, final Double[] fT, final String sPattern) {
-        fT[Math.abs(node.getNr())] = (Double) node.getMetaData(sPattern);
+	public void getMetaData(final Node node, final Double[] fT, final String pattern) {
+        fT[Math.abs(node.getNr())] = (Double) node.getMetaData(pattern);
         if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), fT, sPattern);
+            getMetaData(node.getLeft(), fT, pattern);
             if (node.getRight() != null) {
-                getMetaData(node.getRight(), fT, sPattern);
+                getMetaData(node.getRight(), fT, pattern);
             }
         }
     }
 
     /**
-     * copy meta data matching sPattern to double array
+     * copy meta data matching pattern to double array
      *
      * @param node     the node
      * @param fT       the integer array to be filled with meta data
-     * @param sPattern the name of the meta data
+     * @param pattern the name of the meta data
      */
-    public void getMetaData(final Node node, final Integer[] fT, final String sPattern) {
-        fT[Math.abs(node.getNr())] = (Integer) node.getMetaData(sPattern);
+    public void getMetaData(final Node node, final Integer[] fT, final String pattern) {
+        fT[Math.abs(node.getNr())] = (Integer) node.getMetaData(pattern);
         if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), fT, sPattern);
+            getMetaData(node.getLeft(), fT, pattern);
             if (node.getRight() != null) {
-                getMetaData(node.getRight(), fT, sPattern);
+                getMetaData(node.getRight(), fT, pattern);
             }
         }
     }
@@ -415,12 +415,12 @@ public class Tree extends StateNode implements TreeInterface {
      * of Node know how to process such value.
      */
     @Override
-	public void setMetaData(final Node node, final Double[] fT, final String sPattern) {
-        node.setMetaData(sPattern, fT[Math.abs(node.getNr())]);
+	public void setMetaData(final Node node, final Double[] fT, final String pattern) {
+        node.setMetaData(pattern, fT[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
-            setMetaData(node.getLeft(), fT, sPattern);
+            setMetaData(node.getLeft(), fT, pattern);
             if (node.getRight() != null) {
-                setMetaData(node.getRight(), fT, sPattern);
+                setMetaData(node.getRight(), fT, pattern);
             }
         }
     }
@@ -649,8 +649,8 @@ public class Tree extends StateNode implements TreeInterface {
         final List<String> translateLines = new ArrayList<>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
-        for (final String sLine : translateLines) {
-            out.println(sLine);
+        for (final String line : translateLines) {
+            out.println(line);
         }
     }
 
@@ -661,12 +661,12 @@ public class Tree extends StateNode implements TreeInterface {
      */
     static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
         if (node.isLeaf()) {
-            final String sNr = (node.getNr() + taxaTranslationOffset) + "";
-            String sLine = "\t\t" + "    ".substring(sNr.length()) + sNr + " " + node.getID();
+            final String nr = (node.getNr() + taxaTranslationOffset) + "";
+            String line = "\t\t" + "    ".substring(nr.length()) + nr + " " + node.getID();
             if (node.getNr() < nNodeCount) {
-                sLine += ",";
+                line += ",";
             }
-            translateLines.add(sLine);
+            translateLines.add(line);
         } else {
             printTranslate(node.getLeft(), translateLines, nNodeCount);
             if (node.getRight() != null) {
@@ -679,9 +679,9 @@ public class Tree extends StateNode implements TreeInterface {
         final List<String> translateLines = new ArrayList<>();
         printTranslate(node, translateLines, nNodeCount);
         Collections.sort(translateLines);
-        for (String sLine : translateLines) {
-            sLine = sLine.split("\\s+")[2];
-            out.println("\t\t\t" + sLine.replace(',', ' '));
+        for (String line : translateLines) {
+            line = line.split("\\s+")[2];
+            out.println("\t\t\t" + line.replace(',', ' '));
         }
     }
 
@@ -709,8 +709,8 @@ public class Tree extends StateNode implements TreeInterface {
         // Don't sort, this can confuse CalculationNodes relying on the tree
         //tree.getRoot().sort();
         final int[] dummy = new int[1];
-        final String sNewick = tree.getRoot().toSortedNewick(dummy);
-        out.print(sNewick);
+        final String newick = tree.getRoot().toSortedNewick(dummy);
+        out.print(newick);
         out.print(";");
     }
 
@@ -727,7 +727,7 @@ public class Tree extends StateNode implements TreeInterface {
      */
     @Override
     public void fromXML(final org.w3c.dom.Node node) {
-        final String sNewick = node.getTextContent();
+        final String newick = node.getTextContent();
         final TreeParser parser = new TreeParser();
         try {
             parser.thresholdInput.setValue(1e-10, parser);
@@ -736,7 +736,7 @@ public class Tree extends StateNode implements TreeInterface {
         }
         try {
             parser.offsetInput.setValue(0, parser);
-            setRoot(parser.parseNewick(sNewick));
+            setRoot(parser.parseNewick(newick));
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

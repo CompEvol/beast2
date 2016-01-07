@@ -18,15 +18,15 @@ public abstract class TestFramework extends TestCase {
 
     protected abstract List<Expectation> giveExpectations(int index_XML) throws Exception;
 
-    public String sDir;
-    public String sLogDir;
+    public String dirName;
+    public String logDir;
     public String testFile = "/test.";
     public boolean useSeed = true;
     public boolean checkESS = true;
     
     public TestFramework() {
-    	sDir = System.getProperty("user.dir") + "/examples/beast2vs1/";
-    	sLogDir = System.getProperty("user.dir");
+    	dirName = System.getProperty("user.dir") + "/examples/beast2vs1/";
+    	logDir = System.getProperty("user.dir");
     }
     
     protected void setUp(String[] xmls) { // throws Exception {
@@ -47,17 +47,17 @@ public abstract class TestFramework extends TestCase {
         System.setProperty("beagle.preferred.flags", Long.toString(beagleFlags));
 
 
-        String sFileName = sDir + xmls[index_XML];
+        String fileName = dirName + xmls[index_XML];
 
-        System.out.println("Processing " + sFileName);
+        System.out.println("Processing " + fileName);
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runable = parser.parseFile(new File(sFileName));
+        beast.core.Runnable runable = parser.parseFile(new File(fileName));
         runable.setStateFile("tmp.state", false);
 //		   runable.setInputValue("preBurnin", 0);
 //		   runable.setInputValue("chainLength", 1000);
         runable.run();
 
-        String logFile = sLogDir + testFile + (useSeed ? SEED : "") + ".log";
+        String logFile = logDir + testFile + (useSeed ? SEED : "") + ".log";
         System.out.println("\nAnalysing log " + logFile);
         LogAnalyser logAnalyser = new LogAnalyser(logFile, giveExpectations(index_XML)); // burnIn = 0.1 * maxState
 
@@ -72,7 +72,7 @@ public abstract class TestFramework extends TestCase {
                     + expectation.getTraceStatistics().getESS(), expectation.isValid());
         }
 
-        System.out.println("\nSucceed " + sFileName);
+        System.out.println("\nSucceed " + fileName);
         System.out.println("\n***************************************\n");
 //            }
 //        }

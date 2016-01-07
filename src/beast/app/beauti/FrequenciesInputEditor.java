@@ -89,9 +89,9 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
 
     private BEASTInterface getCandidate(Input<?> input, Frequencies freqs) {
         return getDoc().getPartition(freqs);
-//		List<String> sCandidates = PluginPanel.getAvailablePlugins(input, freqs, null);
-//		String sID = sCandidates.get(0);
-//		BEASTObject beastObject = PluginPanel.g_plugins.get(sID);
+//		List<String> candidates = PluginPanel.getAvailablePlugins(input, freqs, null);
+//		String id = candidates.get(0);
+//		BEASTObject beastObject = PluginPanel.g_plugins.get(id);
 //		return beastObject;
     }
 

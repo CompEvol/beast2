@@ -39,10 +39,10 @@ import beast.util.XMLParser;
 @Description("Template that specifies which sub-net needs to be created when " +
         "a beastObject of a paricular class is created.")
 public class BeautiSubTemplate extends BEASTObject {
-    final public Input<String> sClassInput = new Input<>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
-    final public Input<String> sMainInput = new Input<>("mainid", "specifies id of the main beastObject to be created by the template", Validate.REQUIRED);
-    //public Input<XML> sXMLInput = new Input<>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
-    final public Input<String> sXMLInput = new Input<>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+    final public Input<String> classInput = new Input<>("class", "name of the class (with full class path) to be created", Validate.REQUIRED);
+    final public Input<String> mainInput = new Input<>("mainid", "specifies id of the main beastObject to be created by the template", Validate.REQUIRED);
+    //public Input<XML> xMLInput = new Input<>("value","collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
+    final public Input<String> xMLInput = new Input<>("value", "collection of objects to be created in Beast2 xml format", Validate.REQUIRED);
     final public Input<List<BeautiConnector>> connectorsInput = new Input<>("connect", "Specifies which part of the template get connected to the main network", new ArrayList<>());
     final public Input<String> suppressedInputs = new Input<>("suppressInputs", "comma separated list of inputs that should not be shown");
     final public Input<String> inlineInput = new Input<>("inlineInputs", "comma separated list of inputs that should " +
@@ -52,54 +52,54 @@ public class BeautiSubTemplate extends BEASTObject {
 
     Class<?> _class = null;
     Object instance;
-    String sXML = null;
+    String xml = null;
     List<BeautiConnector> connectors;
 
     BeautiDoc doc;
 
-    //	String [] sSrcIDs;
-//	String [] sTargetIDs;
-//	String [] sTargetInputs;
+    //	String [] srcIDs;
+//	String [] targetIDs;
+//	String [] targetInputs;
 //	ConnectCondition [] conditions;
-    String sMainID = "";
-    String sShortClassName;
+    String mainID = "";
+    String shortClassName;
 
     @Override
     public void initAndValidate() throws Exception {
-        _class = Class.forName(sClassInput.get());
-        sShortClassName = sClassInput.get().substring(sClassInput.get().lastIndexOf('.') + 1);
+        _class = Class.forName(classInput.get());
+        shortClassName = classInput.get().substring(classInput.get().lastIndexOf('.') + 1);
         instance = _class.newInstance();
-        sXML = sXMLInput.get();//.m_sValue.get();
-        sMainID = sMainInput.get();
+        xml = xMLInput.get();//.m_sValue.get();
+        mainID = mainInput.get();
         // sanity check: make sure the XML is parseable
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast xmlns:beauti='http://beast2.org'>" + sXML + "</beast>")));
-        sXML = processDoc(doc);
+        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast xmlns:beauti='http://beast2.org'>" + xml + "</beast>")));
+        xml = processDoc(doc);
         
         // make sure there are no comments in the XML: this screws up any XML when saved to file
-        if (sXML.contains("<!--")) {
-            while (sXML.contains("<!--")) {
-                int iStart = sXML.indexOf("<!--");
+        if (xml.contains("<!--")) {
+            while (xml.contains("<!--")) {
+                int iStart = xml.indexOf("<!--");
                 // next line is guaranteed to find something, things we already checked this is valid XML
-                int iEnd = sXML.indexOf("-->", iStart);
-                sXML = sXML.substring(0, iStart) + sXML.substring(iEnd + 3);
+                int iEnd = xml.indexOf("-->", iStart);
+                xml = xml.substring(0, iStart) + xml.substring(iEnd + 3);
             }
         }
         //m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
-        sXMLInput.setValue("<![CDATA[" + sXML + "]]>", this);
+        xMLInput.setValue("<![CDATA[" + xml + "]]>", this);
 
         connectors = connectorsInput.get();
 //		int nConnectors = connections.get().size();
-//		sSrcIDs = new String[nConnectors];
-//		sTargetIDs = new String[nConnectors];
-//		sTargetInputs = new String[nConnectors];
+//		srcIDs = new String[nConnectors];
+//		targetIDs = new String[nConnectors];
+//		targetInputs = new String[nConnectors];
 ////		conditions = new ConnectCondition[nConnectors];
 //
 //		for (int i = 0; i < nConnectors; i++) {
 //			BeautiConnector connector = connections.get().get(i);
-//			sSrcIDs[i] = connector.sSourceID.get();
-//			sTargetIDs[i] = connector.sTargetID.get();
-//			sTargetInputs[i] = connector.sInputName.get();
+//			srcIDs[i] = connector.sourceID.get();
+//			targetIDs[i] = connector.targetID.get();
+//			targetInputs[i] = connector.inputName.get();
 ////			conditions[i] = connector.connectCondition.get(); 
 //		}
     }
@@ -230,9 +230,9 @@ public class BeautiSubTemplate extends BEASTObject {
 	    Transformer transformer = tf.newTransformer();
 	    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 	    transformer.transform(domSource, result);
-	    String sXML = writer.toString();
-	    sXML = sXML.substring(sXML.indexOf("<beast xmlns:beauti=\"http://beast2.org\">") + 40, sXML.lastIndexOf("</beast>"));
-	    return sXML;
+	    String xml = writer.toString();
+	    xml = xml.substring(xml.indexOf("<beast xmlns:beauti=\"http://beast2.org\">") + 40, xml.lastIndexOf("</beast>"));
+	    return xml;
 	}
 
     public void setDoc(BeautiDoc doc) {
@@ -257,12 +257,12 @@ public class BeautiSubTemplate extends BEASTObject {
         }
 
         // find template that created this beastObject
-        String sID = beastObject.getID();
-        //String sPartition = BeautiDoc.parsePartition(sID);
-        sID = sID.substring(0, sID.indexOf("."));
+        String id = beastObject.getID();
+        //String partition = BeautiDoc.parsePartition(id);
+        id = id.substring(0, id.indexOf("."));
         BeautiSubTemplate template = null;
         for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInput.get()) {
-            if (template2.matchesName(sID)) {
+            if (template2.matchesName(id)) {
                 template = template2;
                 break;
             }
@@ -276,7 +276,7 @@ public class BeautiSubTemplate extends BEASTObject {
 
     public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface beastObject, Input<?> input, boolean init) throws Exception {
         removeSubNet(input.get());
-        if (sXML == null) {
+        if (xml == null) {
             // this is the NULL_TEMPLATE
             input.setValue(null, beastObject);
             return null;
@@ -288,7 +288,7 @@ public class BeautiSubTemplate extends BEASTObject {
 
     public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int iItem, boolean init) throws Exception {
         removeSubNet(list.get(iItem));
-        if (sXML == null) {
+        if (xml == null) {
             // this is the NULL_TEMPLATE
             list.set(iItem, null);
             return null;
@@ -299,7 +299,7 @@ public class BeautiSubTemplate extends BEASTObject {
     }
 
     public BEASTInterface createSubNet(PartitionContext partition, boolean init) throws Exception {
-        if (sXML == null) {
+        if (xml == null) {
             // this is the NULL_TEMPLATE
             return null;
         }
@@ -309,30 +309,30 @@ public class BeautiSubTemplate extends BEASTObject {
 
 
     BEASTInterface createSubNet(Alignment data, BeautiDoc doc, boolean init) {
-        String sPartition = data.getID();
-        HashMap<String, BEASTInterface> sIDMap = doc.pluginmap;//new HashMap<>();
-        sIDMap.put(sPartition, data);
-        return createSubNet(new PartitionContext(sPartition), sIDMap, init);
+        String partition = data.getID();
+        HashMap<String, BEASTInterface> iDMap = doc.pluginmap;//new HashMap<>();
+        iDMap.put(partition, data);
+        return createSubNet(new PartitionContext(partition), iDMap, init);
     }
 
-    private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> sIDMap, boolean init) {
+    private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> iDMap, boolean init) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
-                sXML +
+                xml +
                 "</beast>\n";
 
         // resolve alignment references
         _sXML = _sXML.replaceAll("idref=[\"']data['\"]", "idref='" + context.partition + "'");
         _sXML = _sXML.replaceAll("[\"']@data['\"]", "'@" + context.partition + "'");
         // ensure uniqueness of IDs
-        _sXML = BeautiDoc.translatePartitionNames(_sXML, context);//_sXML.replaceAll("\\$\\(n\\)", sPartition);
+        _sXML = BeautiDoc.translatePartitionNames(_sXML, context);//_sXML.replaceAll("\\$\\(n\\)", partition);
 
         XMLParser parser = new XMLParser();
         parser.setRequiredInputProvider(doc, context);
         List<BEASTInterface> beastObjects = null;
         try {
-            beastObjects = parser.parseTemplate(_sXML, sIDMap, true);
+            beastObjects = parser.parseTemplate(_sXML, iDMap, true);
             for (BEASTInterface beastObject : beastObjects) {
                 doc.addPlugin(beastObject);
                 try {
@@ -346,12 +346,12 @@ public class BeautiSubTemplate extends BEASTObject {
                 if (init && connector.atInitialisationOnly()) {// ||
                     doc.connect(connector, context);
                 }
-                //System.out.println(connector.sSourceID + " == " + connector.sTargetID);
-                if (connector.sTargetID != null && connector.sTargetID.equals("prior")) {
-                	Log.warning.println(">>> No description for connector " + connector.sSourceID + " == " + connector.sTargetID);
+                //System.out.println(connector.sourceID + " == " + connector.targetID);
+                if (connector.targetID != null && connector.targetID.equals("prior")) {
+                	Log.warning.println(">>> No description for connector " + connector.sourceID + " == " + connector.targetID);
                 }
                 if (connector.getTipText() != null) {
-                	String ID = BeautiDoc.translatePartitionNames(connector.sSourceID, context);
+                	String ID = BeautiDoc.translatePartitionNames(connector.sourceID, context);
                 	String tipText = BeautiDoc.translatePartitionNames(connector.getTipText(), context).trim().replaceAll("\\s+", " ");
                 	//System.out.println(ID + " -> " + tipText);
                     doc.tipTextMap.put(ID, tipText);
@@ -387,13 +387,13 @@ public class BeautiSubTemplate extends BEASTObject {
             e.printStackTrace();
         }
 
-        if (sMainID.equals("[top]")) {
+        if (mainID.equals("[top]")) {
             return beastObjects.get(0);
         }
 
-        String sID = sMainID;
-        sID = BeautiDoc.translatePartitionNames(sID, context); //sID.replaceAll("\\$\\(n\\)", sPartition);
-        BEASTInterface beastObject = doc.pluginmap.get(sID);
+        String id = mainID;
+        id = BeautiDoc.translatePartitionNames(id, context); //id.replaceAll("\\$\\(n\\)", partition);
+        BEASTInterface beastObject = doc.pluginmap.get(id);
 
         if (this == doc.beautiConfig.partitionTemplate.get()) {
             // HACK: need to make sure the subst model is of the correct type
@@ -437,26 +437,26 @@ public class BeautiSubTemplate extends BEASTObject {
     }
 
     public String getMainID() {
-        return sMainID;
+        return mainID;
     }
 
 
     @Override
     public String toString() {
-        String sID = getID();
-        sID = sID.replaceAll("([a-z])([A-Z])", "$1 $2");
-        return sID;
+        String id = getID();
+        id = id.replaceAll("([a-z])([A-Z])", "$1 $2");
+        return id;
     }
 
 
-    public boolean matchesName(String sID) {
-        if (getMainID().replaceAll(".\\$\\(n\\)", "").equals(sID)) {
+    public boolean matchesName(String id) {
+        if (getMainID().replaceAll(".\\$\\(n\\)", "").equals(id)) {
             return true;
         }
-        if (getMainID().replaceAll("..:\\$\\(n\\)", "").equals(sID)) {
+        if (getMainID().replaceAll("..:\\$\\(n\\)", "").equals(id)) {
             return true;
         }
-        if (sShortClassName != null && sShortClassName.equals(sID)) {
+        if (shortClassName != null && shortClassName.equals(id)) {
             return true;
         }
         return false;

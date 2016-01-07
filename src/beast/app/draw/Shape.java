@@ -74,20 +74,20 @@ abstract public class Shape {
     void drawLabel(Graphics2D g) {
         if (getLabel() != null) {
             FontMetrics fm = g.getFontMetrics(g.getFont());
-            String sLabel = getLabel();
+            String label = getLabel();
             if (m_doc != null && m_doc.sanitiseIDs()) {
-            	if (sLabel.contains(".")) {
-            		sLabel = sLabel.substring(0, sLabel.indexOf('.'));
+            	if (label.contains(".")) {
+            		label = label.substring(0, label.indexOf('.'));
             	}
             }
             int i = 0;
-            while (sLabel.indexOf('\n') >= 0) {
-                String sStr = sLabel.substring(0, sLabel.indexOf('\n'));
-                g.drawString(sStr, m_x + m_w / 2 - fm.stringWidth(sStr) / 2, m_y + m_h / 2 + i * fm.getHeight());
-                sLabel = sLabel.substring(sStr.length() + 1);
+            while (label.indexOf('\n') >= 0) {
+                String str = label.substring(0, label.indexOf('\n'));
+                g.drawString(str, m_x + m_w / 2 - fm.stringWidth(str) / 2, m_y + m_h / 2 + i * fm.getHeight());
+                label = label.substring(str.length() + 1);
                 i++;
             }
-            g.drawString(sLabel, m_x + m_w / 2 - fm.stringWidth(sLabel) / 2, m_y + m_h / 2 + i * fm.getHeight());
+            g.drawString(label, m_x + m_w / 2 - fm.stringWidth(label) / 2, m_y + m_h / 2 + i * fm.getHeight());
         }
     } // drawLabel
 
@@ -137,35 +137,35 @@ abstract public class Shape {
         }
     }
 
-    String XMLnormalizeAtt(String sStr) {
-        StringBuffer sStr2 = new StringBuffer();
-        for (int iStr = 0; iStr < sStr.length(); iStr++) {
-            switch (sStr.charAt(iStr)) {
+    String XMLnormalizeAtt(String str) {
+        StringBuffer str2 = new StringBuffer();
+        for (int iStr = 0; iStr < str.length(); iStr++) {
+            switch (str.charAt(iStr)) {
                 case '<':
-                    sStr2.append("&lt;");
+                    str2.append("&lt;");
                     break;
                 case '>':
-                    sStr2.append("&gt;");
+                    str2.append("&gt;");
                     break;
                 case '\"':
-                    sStr2.append("&quot;");
+                    str2.append("&quot;");
                     break;
                 case '\'':
-                    sStr2.append("&apos;");
+                    str2.append("&apos;");
                     break;
                 case '&':
-                    sStr2.append("&amp;");
+                    str2.append("&amp;");
                     break;
                 case 13:
                     break;
                 case '\n':
-                    sStr2.append("&#xD;&#xA;");
+                    str2.append("&#xD;&#xA;");
                     break;
                 default:
-                    sStr2.append(sStr.charAt(iStr));
+                    str2.append(str.charAt(iStr));
             }
         }
-        return sStr2.toString();
+        return str2.toString();
     } // XMLnormalizeAtt
 
     String getAtts() {
@@ -192,28 +192,28 @@ abstract public class Shape {
         m_pencolor = other.m_pencolor;
     }
 
-    Color string2Color(String sColor) {
-        int iSpace = sColor.indexOf(' ');
+    Color string2Color(String color) {
+        int iSpace = color.indexOf(' ');
         if (iSpace < 0) {
             return new Color(128, 128, 128);
         }
         int iStart = 0;
-        String sR = sColor.substring(iStart, iSpace);
-        int r = (new Integer(sR)).intValue();
+        String rStr = color.substring(iStart, iSpace);
+        int r = (new Integer(rStr)).intValue();
         iStart = iSpace + 1;
-        iSpace = sColor.indexOf(' ', iStart);
+        iSpace = color.indexOf(' ', iStart);
         if (iSpace < 0) {
             return new Color(128, 128, 128);
         }
-        String sG = sColor.substring(iStart, iSpace);
-        int g = (new Integer(sG)).intValue();
+        String gStr = color.substring(iStart, iSpace);
+        int g = (new Integer(gStr)).intValue();
         iStart = iSpace + 1;
-        iSpace = sColor.indexOf(' ', iStart);
+        iSpace = color.indexOf(' ', iStart);
         if (iSpace < 0) {
-            iSpace = sColor.length();
+            iSpace = color.length();
         }
-        String sB = sColor.substring(iStart, iSpace);
-        int b = (new Integer(sB)).intValue();
+        String bStr = color.substring(iStart, iSpace);
+        int b = (new Integer(bStr)).intValue();
         return new Color(r, g, b);
     } // string2Color
 
@@ -351,7 +351,7 @@ abstract public class Shape {
         m_h = nY2 - m_y;
     }
 
-    //void setLabel(String sLabel) {}
+    //void setLabel(String label) {}
     String getLabel() {
         return "";
     }
@@ -374,13 +374,13 @@ abstract public class Shape {
 
     abstract void toSVG(PrintStream out);
 
-    void drawSVGString(PrintStream out, Font font, Color color, String sTextAnchor) {
+    void drawSVGString(PrintStream out, Font font, Color color, String textAnchor) {
         if (getLabel() != null) {
 
-            String sLabel = getLabel();
+            String label = getLabel();
             //int i = 0;
-            while (sLabel.indexOf('\n') >= 0) {
-                String sStr = sLabel.substring(0, sLabel.indexOf('\n'));
+            while (label.indexOf('\n') >= 0) {
+                String str = label.substring(0, label.indexOf('\n'));
                 out.println("<text x='"
                         + (m_x + m_w / 2)
                         + "' y='"
@@ -390,8 +390,8 @@ abstract public class Shape {
                         + (font.isBold() ? "oblique" : "") + (font.isItalic() ? "italic" : "") + "' "
                         +
                         "stroke='rgb(" + color.getRed() + "," + color.getGreen()
-                        + "," + color.getBlue() + ")' text-anchor='" + sTextAnchor + "'>" + sStr + "</text>\n");
-                sLabel = sLabel.substring(sStr.length() + 1);
+                        + "," + color.getBlue() + ")' text-anchor='" + textAnchor + "'>" + str + "</text>\n");
+                label = label.substring(str.length() + 1);
                 //i++;
             }
             out.println("<text x='"
@@ -403,7 +403,7 @@ abstract public class Shape {
                     + (font.isBold() ? "oblique" : "") + (font.isItalic() ? "italic" : "") + "' "
                     +
                     "stroke='rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ")' " +
-                    "text-anchor='" + sTextAnchor + "'>" + sLabel + "</text>\n");
+                    "text-anchor='" + textAnchor + "'>" + label + "</text>\n");
         }
     }
 }

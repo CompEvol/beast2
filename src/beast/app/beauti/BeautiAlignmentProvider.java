@@ -205,16 +205,16 @@ public class BeautiAlignmentProvider extends BEASTObject {
     }
 
 	static public BEASTInterface getXMLData(File file) {
-		String sXML = "";
+		String xml = "";
 		try {
 			// parse as BEAST 2 xml fragment
 			XMLParser parser = new XMLParser();
 			BufferedReader fin = new BufferedReader(new FileReader(file));
 			while (fin.ready()) {
-				sXML += fin.readLine() + "\n";
+				xml += fin.readLine() + "\n";
 			}
 			fin.close();
-			BEASTInterface runnable = parser.parseBareFragment(sXML, false);
+			BEASTInterface runnable = parser.parseBareFragment(xml, false);
 			BEASTInterface alignment = getAlignment(runnable);
             alignment.initAndValidate();
             return alignment;
@@ -223,7 +223,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			try {
 				String ID = file.getName();
 				ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
-				BEASTInterface alignment = parseBeast1XML(ID, sXML);
+				BEASTInterface alignment = parseBeast1XML(ID, xml);
 				if (alignment != null) {
 					alignment.setID(file.getName().substring(0, file.getName().length() - 4).replaceAll("\\..*", ""));
 				}
@@ -241,11 +241,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
     	try {
     		// grab alignment data
         	Map<String, StringBuilder> seqMap = new HashMap<>();
-        	List<String> sTaxa = new ArrayList<>();
+        	List<String> taxa = new ArrayList<>();
         	String currentTaxon = null;
 			BufferedReader fin = new BufferedReader(new FileReader(file));
-	        String sMissing = "?";
-	        String sGap = "-";
+	        String missing = "?";
+	        String gap = "-";
 	        int nTotalCount = 4;
 	        String datatype = "nucleotide";
 	        // According to http://en.wikipedia.org/wiki/FASTA_format lists file formats and their data content
@@ -277,7 +277,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 						StringBuilder sb = new StringBuilder();
 						seqMap.put(currentTaxon, sb);
 						sb.append(line);
-						sTaxa.add(currentTaxon);
+						taxa.add(currentTaxon);
 					}
 				}
 			}
@@ -285,21 +285,21 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			
 			int nChar = -1;
 			Alignment alignment = new Alignment();
-	        for (final String sTaxon : sTaxa) {
-	            final StringBuilder bsData = seqMap.get(sTaxon);
-	            String sData = bsData.toString();
-	            sData = sData.replaceAll("\\s", "");
-	            seqMap.put(sTaxon, new StringBuilder(sData));
+	        for (final String taxon : taxa) {
+	            final StringBuilder bsData = seqMap.get(taxon);
+	            String data = bsData.toString();
+	            data = data.replaceAll("\\s", "");
+	            seqMap.put(taxon, new StringBuilder(data));
 
-	            if (nChar < 0) {nChar = sData.length();}
-	            if (sData.length() != nChar) {
-	                throw new IllegalArgumentException("Expected sequence of length " + nChar + " instead of " + sData.length() + " for taxon " + sTaxon);
+	            if (nChar < 0) {nChar = data.length();}
+	            if (data.length() != nChar) {
+	                throw new IllegalArgumentException("Expected sequence of length " + nChar + " instead of " + data.length() + " for taxon " + taxon);
 	            }
 	            // map to standard missing and gap chars
-	            sData = sData.replace(sMissing.charAt(0), DataType.MISSING_CHAR);
-	            sData = sData.replace(sGap.charAt(0), DataType.GAP_CHAR);
+	            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
+	            data = data.replace(gap.charAt(0), DataType.GAP_CHAR);
 
-	            if (mayBeAminoacid && datatype.equals("nucleotide") && !sData.matches("[ACGTUXNacgtuxn?_-]+")) {
+	            if (mayBeAminoacid && datatype.equals("nucleotide") && !data.matches("[ACGTUXNacgtuxn?_-]+")) {
 	            	datatype = "aminoacid";
 	            	nTotalCount = 20;
 	            	for (Sequence seq : alignment.sequenceInput.get()) {
@@ -308,9 +308,9 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            }
 	            
 	            final Sequence sequence = new Sequence();
-	            sData = sData.replaceAll("[Xx]", "?");
-	            sequence.init(nTotalCount, sTaxon, sData);
-	            sequence.setID(NexusParser.generateSequenceID(sTaxon));
+	            data = data.replaceAll("[Xx]", "?");
+	            sequence.init(nTotalCount, taxon, data);
+	            sequence.setID(NexusParser.generateSequenceID(taxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);
 	        }
 	        String ID = file.getName();
@@ -326,9 +326,9 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return null;
 	}
 
-	private static BEASTInterface parseBeast1XML(String ID, String sXML) throws Exception {
+	private static BEASTInterface parseBeast1XML(String ID, String xml) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(sXML)));
+		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
 		doc.normalize();
 
 		NodeList alignments = doc.getElementsByTagName("alignment");
@@ -338,14 +338,14 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		// parse first alignment
 		org.w3c.dom.Node node = alignments.item(0);
 
-		String sDataType = node.getAttributes().getNamedItem("dataType").getNodeValue();
+		String dataTypeName = node.getAttributes().getNamedItem("dataType").getNodeValue();
 		int nTotalCount = 4;
-		if (sDataType == null) {
+		if (dataTypeName == null) {
 			alignment.dataTypeInput.setValue("integer", alignment);
-		} else if (sDataType.toLowerCase().equals("dna") || sDataType.toLowerCase().equals("nucleotide")) {
+		} else if (dataTypeName.toLowerCase().equals("dna") || dataTypeName.toLowerCase().equals("nucleotide")) {
 			alignment.dataTypeInput.setValue("nucleotide", alignment);
 			nTotalCount = 4;
-		} else if (sDataType.toLowerCase().equals("aminoacid") || sDataType.toLowerCase().equals("protein")) {
+		} else if (dataTypeName.toLowerCase().equals("aminoacid") || dataTypeName.toLowerCase().equals("protein")) {
 			alignment.dataTypeInput.setValue("aminoacid", alignment);
 			nTotalCount = 20;
 		} else {

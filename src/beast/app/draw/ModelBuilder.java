@@ -226,8 +226,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             return m_sText;
         }
 
-        public void setText(String sText) {
-            m_sText = sText;
+        public void setText(String text) {
+            m_sText = text;
             a_pastenode.setEnabled(true);
         }
     } // class ClipBoard
@@ -246,23 +246,23 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         if (nStatus == Document.STATUS_OK) {
             return true;
         }
-        String sMsg = "<html>Document is not valid: ";
+        String msg = "<html>Document is not valid: ";
         switch (nStatus) {
             case Document.STATUS_CYCLE:
-                sMsg += "there is a cycle in the model.";
+                msg += "there is a cycle in the model.";
                 break;
             case Document.STATUS_EMPTY_MODEL:
-                sMsg += "The model is empty, there is nothing to save.";
+                msg += "The model is empty, there is nothing to save.";
                 break;
             case Document.STATUS_NOT_RUNNABLE:
-                sMsg += "there is no top level runnable item in the model (e.g. an MCMC node).";
+                msg += "there is no top level runnable item in the model (e.g. an MCMC node).";
                 break;
             case Document.STATUS_ORPHANS_IN_MODEL:
-                sMsg += "there are orphaned items in the model (i.e. beastObjects that have no parents).";
+                msg += "there are orphaned items in the model (i.e. beastObjects that have no parents).";
                 break;
         }
-        sMsg += "<br>Do you still want to try to save the model?</html>";
-        if (JOptionPane.showConfirmDialog(this, sMsg, "Model not valid",
+        msg += "<br>Do you still want to try to save the model?</html>";
+        if (JOptionPane.showConfirmDialog(this, msg, "Model not valid",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             return true;
         }
@@ -279,9 +279,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             super("Save", "Save Graph", "save", KeyEvent.VK_S);
         } // c'tor
 
-        public ActionSave(String sName, String sToolTipText, String sIcon,
+        public ActionSave(String name, String toolTipText, String icon,
                           int acceleratorKey) {
-            super(sName, sToolTipText, sIcon, acceleratorKey);
+            super(name, toolTipText, icon, acceleratorKey);
         } // c'tor
 
         @Override
@@ -315,24 +315,24 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             if (rval == JFileChooser.APPROVE_OPTION) {
                 // System.out.println("Saving to file \""+
                 // f.getAbsoluteFile().toString()+"\"");
-                String sFileName = fc.getSelectedFile().toString();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                String fileName = fc.getSelectedFile().toString();
+                if (fileName.lastIndexOf('/') > 0) {
+                    m_sDir = fileName.substring(0, fileName.lastIndexOf('/'));
                 }
-                if (!sFileName.endsWith(FILE_EXT))
-                    sFileName = sFileName.concat(FILE_EXT);
-                saveFile(sFileName);
+                if (!fileName.endsWith(FILE_EXT))
+                    fileName = fileName.concat(FILE_EXT);
+                saveFile(fileName);
                 return true;
             }
             return false;
         } // saveAs
 
-        protected void saveFile(String sFileName) {
+        protected void saveFile(String fileName) {
             try {
-                FileWriter outfile = new FileWriter(sFileName);
+                FileWriter outfile = new FileWriter(fileName);
                 outfile.write(m_doc.toXML());
                 outfile.close();
-                m_sFileName = sFileName;
+                m_sFileName = fileName;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -442,29 +442,29 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 //            fc.setDialogTitle("Export Image As");
 //            int rval = fc.showSaveDialog(g_panel);
 //            if (rval == JFileChooser.APPROVE_OPTION) {
-//	            String sFileName = fc.getSelectedFile().toString();
+//	            String fileName = fc.getSelectedFile().toString();
             try {
 
                 File file = Utils.getSaveFile("Export image (type determined by extention)", new File(m_sDir), "Image files", "png", "bmp", "jpg", "svg", "pdf");
 
                 if (file != null) {
-                    String sFileName = file.getAbsolutePath();
-                    if (sFileName.lastIndexOf('/') > 0) {
-                        m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                    String fileName = file.getAbsolutePath();
+                    if (fileName.lastIndexOf('/') > 0) {
+                        m_sDir = fileName.substring(0, fileName.lastIndexOf('/'));
                     }
-                    if (sFileName != null && !sFileName.equals("")) {
-//                    if (!sFileName.toLowerCase().endsWith(".png")
-//                            && sFileName.toLowerCase().endsWith(".jpg")
-//                            && sFileName.toLowerCase().endsWith(".bmp")
-//                            && sFileName.toLowerCase().endsWith(".svg")) {
-//                        sFileName += ((MyFileFilter) fc.getFileFilter())
+                    if (fileName != null && !fileName.equals("")) {
+//                    if (!fileName.toLowerCase().endsWith(".png")
+//                            && fileName.toLowerCase().endsWith(".jpg")
+//                            && fileName.toLowerCase().endsWith(".bmp")
+//                            && fileName.toLowerCase().endsWith(".svg")) {
+//                        fileName += ((MyFileFilter) fc.getFileFilter())
 //                                .getExtention();
 //                    }
 
-                        if (sFileName.toLowerCase().endsWith(".pdf")) {
+                        if (fileName.toLowerCase().endsWith(".pdf")) {
                         	JOptionPane.showMessageDialog(null, "Not implemented yet");
 //                        	com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
-//                        	PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(sFileName));
+//                        	PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(fileName));
 //                        	doc.setPageSize(new com.itextpdf.text.Rectangle(g_panel.getWidth(), g_panel.getHeight()));
 //                        	doc.open();
 //                        	PdfContentByte cb = writer.getDirectContent();
@@ -477,9 +477,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             m_bIsExporting = false;
                             repaint();
                         	return;
-                        } else if (sFileName.toLowerCase().endsWith(".png")
-                                || sFileName.toLowerCase().endsWith(".jpg")
-                                || sFileName.toLowerCase().endsWith(".bmp")) {
+                        } else if (fileName.toLowerCase().endsWith(".png")
+                                || fileName.toLowerCase().endsWith(".jpg")
+                                || fileName.toLowerCase().endsWith(".bmp")) {
                             BufferedImage bi;
                             Graphics g;
                             bi = new BufferedImage(g_panel.getWidth(), g_panel
@@ -491,15 +491,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                     .getHeight());
                             g_panel.printAll(g);
                             try {
-                                if (sFileName.toLowerCase().endsWith(".png")) {
-                                    ImageIO.write(bi, "png", new File(sFileName));
-                                } else if (sFileName.toLowerCase().endsWith(".jpg")) {
-                                    ImageIO.write(bi, "jpg", new File(sFileName));
-                                } else if (sFileName.toLowerCase().endsWith(".bmp")) {
-                                    ImageIO.write(bi, "bmp", new File(sFileName));
+                                if (fileName.toLowerCase().endsWith(".png")) {
+                                    ImageIO.write(bi, "png", new File(fileName));
+                                } else if (fileName.toLowerCase().endsWith(".jpg")) {
+                                    ImageIO.write(bi, "jpg", new File(fileName));
+                                } else if (fileName.toLowerCase().endsWith(".bmp")) {
+                                    ImageIO.write(bi, "bmp", new File(fileName));
                                 }
                             } catch (Exception e) {
-                                JOptionPane.showMessageDialog(null, sFileName
+                                JOptionPane.showMessageDialog(null, fileName
                                         + " was not written properly: "
                                         + e.getMessage());
                                 e.printStackTrace();
@@ -507,14 +507,14 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             m_bIsExporting = false;
                             repaint();
                             return;
-                        } else if (sFileName.toLowerCase().endsWith(".svg")) {
-                            writeSVG(sFileName);
+                        } else if (fileName.toLowerCase().endsWith(".svg")) {
+                            writeSVG(fileName);
                             m_bIsExporting = false;
                             repaint();
                             return;
                         }
                         JOptionPane.showMessageDialog(null, "Extention of file "
-                                + sFileName
+                                + fileName
                                 + " not recognized as png,bmp,jpg or svg file");
                     }
                 }
@@ -526,8 +526,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             repaint();
         }
 
-        private void writeSVG(String sFileName) throws Exception {
-            PrintStream out = new PrintStream(sFileName);
+        private void writeSVG(String fileName) throws Exception {
+            PrintStream out = new PrintStream(fileName);
             out.println("<?xml version='1.0'?>\n" + "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
                     + "  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n"
                     + "<svg xmlns='http://www.w3.org/2000/svg' version='1.1'\n" + "      width='" + getWidth()
@@ -614,13 +614,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             int rval = fc.showOpenDialog(g_panel);
 
             if (rval == JFileChooser.APPROVE_OPTION) {
-                String sFileName = fc.getSelectedFile().toString();
-                if (sFileName.lastIndexOf('/') > 0) {
-                    m_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                String fileName = fc.getSelectedFile().toString();
+                if (fileName.lastIndexOf('/') > 0) {
+                    m_sDir = fileName.substring(0, fileName.lastIndexOf('/'));
                 }
                 g_panel.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                m_doc.loadFile(sFileName);
-                m_sFileName = sFileName;
+                m_doc.loadFile(fileName);
+                m_sFileName = fileName;
                 g_panel.repaint();
                 try {
                     Thread.sleep(1000);
@@ -736,9 +736,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             setEnabled(false);
         } // c'tor
 
-        public ActionCopyNode(String sName, String sToolTipText, String sIcon,
+        public ActionCopyNode(String name, String toolTipText, String icon,
                               int acceleratorKey) {
-            super(sName, sToolTipText, sIcon, acceleratorKey);
+            super(name, toolTipText, icon, acceleratorKey);
         } // c'rot
 
         @Override
@@ -748,12 +748,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
         public void copy() {
             if (m_Selection.hasSelection()) {
-                String sXML = "<doc>\n";
+                String xml = "<doc>\n";
                 for (int i : m_Selection.m_Selection) {
-                    sXML += m_doc.m_objects.get(i).getXML() + "\n";
+                    xml += m_doc.m_objects.get(i).getXML() + "\n";
                 }
-                sXML += "</doc>\n";
-                m_clipboard.setText(sXML);
+                xml += "</doc>\n";
+                m_clipboard.setText(xml);
             }
         } // copy
     } // class ActionCopyNode
@@ -1628,12 +1628,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         if (shape instanceof BEASTObjectShape) {
                             BEASTObjectShape beastObject = (BEASTObjectShape) shape;
                             try {
-                                String sToolTip = "<html>";
+                                String toolTip = "<html>";
                                 for (InputShape input : beastObject.m_inputs) {
-                                    sToolTip += input.getLongLabel() + "<br>";
+                                    toolTip += input.getLongLabel() + "<br>";
                                 }
-                                sToolTip += "</html>";
-                                setToolTipText(sToolTip);
+                                toolTip += "</html>";
+                                setToolTipText(toolTip);
                             } catch (IllegalArgumentException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -1707,20 +1707,20 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             if (shape instanceof InputShape) {
                                 // resolve the associated input
                                 InputShape ellipse = (InputShape) shape;
-                                String sInput = ellipse.getInputName();
+                                String input = ellipse.getInputName();
                                 BEASTInterface beastObject = ellipse.getBEASTObject();
-                                if (beastObject.isPrimitive(sInput)) {
-                                    String sValue = "";
-                                    if (beastObject.getInputValue(sInput) != null) {
-                                        sValue = beastObject.getInputValue(sInput)
+                                if (beastObject.isPrimitive(input)) {
+                                    String valueString = "";
+                                    if (beastObject.getInputValue(input) != null) {
+                                        valueString = beastObject.getInputValue(input)
                                                 .toString();
                                     }
-                                    sValue = JOptionPane.showInputDialog(sInput
-                                            + ":", sValue);
-                                    if (sValue != null) {
-                                        m_doc.setInputValue(ellipse.getPluginShape(), sInput, sValue);
-                                        // ellipse.setLabel(sInput + "=" +
-                                        // beastObject.getInputValue(sInput).toString());
+                                    valueString = JOptionPane.showInputDialog(input
+                                            + ":", valueString);
+                                    if (valueString != null) {
+                                        m_doc.setInputValue(ellipse.getPluginShape(), input, valueString);
+                                        // ellipse.setLabel(input + "=" +
+                                        // beastObject.getInputValue(input).toString());
                                         g_panel.repaint();
                                     }
                                 }
@@ -1759,19 +1759,19 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     @Override
 					public void actionPerformed(ActionEvent ae) {
                         Shape shape = m_Selection.getSingleSelectionShape();
-                        String sName = (String) JOptionPane.showInputDialog(
+                        String name = (String) JOptionPane.showInputDialog(
                                 null, shape.getID(), "New label",
                                 JOptionPane.OK_CANCEL_OPTION, null, null, shape
                                 .getID());
-                        if (sName == null || sName.equals("")) {
+                        if (name == null || name.equals("")) {
                             return;
                         }
-                        while (sName.contains("\\n")) {
-                            int i = sName.indexOf("\\n");
-                            sName = sName.substring(0, i - 1) + '\n'
-                                    + sName.substring(i + 2);
+                        while (name.contains("\\n")) {
+                            int i = name.indexOf("\\n");
+                            name = name.substring(0, i - 1) + '\n'
+                                    + name.substring(i + 2);
                         }
-                        m_doc.setID(sName, m_Selection.getSingleSelection());
+                        m_doc.setID(name, m_Selection.getSingleSelection());
                         repaint();
                     }
                 };
@@ -1853,15 +1853,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                         if (rval == JFileChooser.APPROVE_OPTION) {
                             // System.out.println("Saving to file \""+
                             // f.getAbsoluteFile().toString()+"\"");
-                            String sFileName = fc.getSelectedFile().toString();
-                            if (sFileName.lastIndexOf('/') > 0) {
-                                m_sDir = sFileName.substring(0, sFileName
+                            String fileName = fc.getSelectedFile().toString();
+                            if (fileName.lastIndexOf('/') > 0) {
+                                m_sDir = fileName.substring(0, fileName
                                         .lastIndexOf('/'));
                             }
-                            if (!sFileName.endsWith(FILE_EXT))
-                                sFileName = sFileName.concat(FILE_EXT);
+                            if (!fileName.endsWith(FILE_EXT))
+                                fileName = fileName.concat(FILE_EXT);
                             try {
-                                FileWriter outfile = new FileWriter(sFileName);
+                                FileWriter outfile = new FileWriter(fileName);
                                 outfile.write(new XMLProducer().modelToXML(beastObject));
                                 outfile.close();
                             } catch (Exception e) {
@@ -1870,7 +1870,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                                 + e.getClass().getName() + " "
                                                 + e.getMessage());
                             }
-                            m_sFileName = sFileName;
+                            m_sFileName = fileName;
                         }
                         repaint();
                     });
@@ -1923,13 +1923,13 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             return;
                         }
                         if (function.m_w > 0 && function.m_h > 0) {
-                            String sFunctionClassName = (String) JOptionPane
+                            String functionClassName = (String) JOptionPane
                                     .showInputDialog(g_panel, "Select a constant",
                                             "select", JOptionPane.PLAIN_MESSAGE,
                                             null, m_doc.m_sPlugInNames, null);
-                            if (sFunctionClassName != null) {
+                            if (functionClassName != null) {
                                 try {
-                                    function.init(sFunctionClassName, m_doc);
+                                    function.init(functionClassName, m_doc);
                                     m_doc.addNewShape(function);
                                     updateStatus();
                                 } catch (Exception e) {

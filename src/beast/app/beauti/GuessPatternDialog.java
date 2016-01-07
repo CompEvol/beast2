@@ -480,57 +480,57 @@ public class GuessPatternDialog extends JDialog {
         }
 
         if (bUseEverything.getModel() == group.getSelection()) {
-            String sDelimiter = normalise(textSplitChar.getText());
+            String delimiter = normalise(textSplitChar.getText());
             switch (m_location) {
                 case 0: // "after first",
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "(.*)$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "(.*)$";
                     break;
                 case 1: // "after last",
-                    pattern = "^.*" + sDelimiter + "(.*)$";
+                    pattern = "^.*" + delimiter + "(.*)$";
                     break;
                 case 2: // "before first",
-                    pattern = "^([^" + sDelimiter + "]+)" + sDelimiter + ".*$";
+                    pattern = "^([^" + delimiter + "]+)" + delimiter + ".*$";
                     break;
                 case 3: // "before last"
-                    pattern = "^(.*)" + sDelimiter + ".*$";
+                    pattern = "^(.*)" + delimiter + ".*$";
                     break;
             }
         }
         if (bSplitOnChar.getModel() == group.getSelection()) {
-            String sDelimiter = normalise(textSplitChar2.getText());
+            String delimiter = normalise(textSplitChar2.getText());
             switch (m_splitlocation) {
                 case 0: // "1"
-                    pattern = "^([^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^([^" + delimiter + "]+)" + ".*$";
                     break;
                 case 1: // "2"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "([^" + delimiter + "]+)" + ".*$";
                     break;
                 case 2: // "3"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "([^"
-                            + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "[^" + delimiter + "]+" + delimiter + "([^"
+                            + delimiter + "]+)" + ".*$";
                     break;
                 case 3: // "4"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "[^"
-                            + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "[^" + delimiter + "]+" + delimiter + "[^"
+                            + delimiter + "]+" + delimiter + "([^" + delimiter + "]+)" + ".*$";
                     break;
                 case 4: // "1-2"
-                    pattern = "^([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^([^" + delimiter + "]+" + delimiter + "[^" + delimiter + "]+)" + ".*$";
                     break;
                 case 5: // "2-3"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+" + sDelimiter + "[^"
-                            + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "([^" + delimiter + "]+" + delimiter + "[^"
+                            + delimiter + "]+)" + ".*$";
                     break;
                 case 6: // "3-4"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "([^"
-                            + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "[^" + delimiter + "]+" + delimiter + "([^"
+                            + delimiter + "]+" + delimiter + "[^" + delimiter + "]+)" + ".*$";
                     break;
                 case 7: // "1-3"
-                    pattern = "^([^" + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+" + sDelimiter + "[^"
-                            + sDelimiter + "]+)" + ".*$";
+                    pattern = "^([^" + delimiter + "]+" + delimiter + "[^" + delimiter + "]+" + delimiter + "[^"
+                            + delimiter + "]+)" + ".*$";
                     break;
                 case 8: // "2-4"
-                    pattern = "^[^" + sDelimiter + "]+" + sDelimiter + "([^" + sDelimiter + "]+" + sDelimiter + "[^"
-                            + sDelimiter + "]+" + sDelimiter + "[^" + sDelimiter + "]+)" + ".*$";
+                    pattern = "^[^" + delimiter + "]+" + delimiter + "([^" + delimiter + "]+" + delimiter + "[^"
+                            + delimiter + "]+" + delimiter + "[^" + delimiter + "]+)" + ".*$";
             }
         }
         if (bUseRegexp.getModel() == group.getSelection()) {
@@ -580,20 +580,20 @@ public class GuessPatternDialog extends JDialog {
     }
 
     /**
-     * Converts the first character of sDelimiter into a substring suitable for
+     * Converts the first character of delimiter into a substring suitable for
      * inclusion in a regexp. This is done by expressing the character as an
      * octal escape.
      *
-     * @param sDelimiter first character of this string to be used as delimiter
+     * @param delimiter first character of this string to be used as delimiter
      * @return escaped octal representation of character
      */
-    private String normalise(String sDelimiter) {
+    private String normalise(String delimiter) {
 
-        if (sDelimiter.length() == 0) {
+        if (delimiter.length() == 0) {
             return ".";
         }
 
-        return String.format("\\0%o", (int)sDelimiter.charAt(0));
+        return String.format("\\0%o", (int)delimiter.charAt(0));
     }
 
     public String match(String s) {

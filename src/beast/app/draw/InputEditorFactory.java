@@ -45,23 +45,23 @@ public class InputEditorFactory {
         inputEditorMap = new HashMap<>();
         listInputEditorMap = new HashMap<>();
 
-//        String [] sKnownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
+//        String [] knownEditors = new String [] {"beast.app.draw.DataInputEditor","beast.app.beauti.AlignmentListInputEditor", "beast.app.beauti.FrequenciesInputEditor", "beast.app.beauti.OperatorListInputEditor", "beast.app.beauti.ParametricDistributionInputEditor", "beast.app.beauti.PriorListInputEditor", "beast.app.beauti.SiteModelInputEditor", "beast.app.beauti.TaxonSetInputEditor", "beast.app.beauti.TipDatesInputEditor", "beast.app.draw.BooleanInputEditor", "beast.app.draw.DoubleInputEditor", "beast.app.draw.EnumInputEditor", "beast.app.draw.IntegerInputEditor", "beast.app.draw.ListInputEditor", 
 //        		"beast.app.draw.ParameterInputEditor", "beast.app.draw.PluginInputEditor", "beast.app.draw.StringInputEditor"};
-//        registerInputEditors(sKnownEditors);
+//        registerInputEditors(knownEditors);
         String[] PACKAGE_DIRS = {"beast.app",};
-        for (String sPackage : PACKAGE_DIRS) {
-            List<String> sInputEditors = AddOnManager.find("beast.app.draw.InputEditor", sPackage);
-            registerInputEditors(sInputEditors.toArray(new String[0]));
+        for (String packageName : PACKAGE_DIRS) {
+            List<String> inputEditors = AddOnManager.find("beast.app.draw.InputEditor", packageName);
+            registerInputEditors(inputEditors.toArray(new String[0]));
         }
     }
 
-    private void registerInputEditors(String[] sInputEditors) {
+    private void registerInputEditors(String[] inputEditors) {
     	//BeautiDoc doc = new BeautiDoc();
-        for (String sInputEditor : sInputEditors) {
+        for (String inputEditor : inputEditors) {
         	// ignore inner classes, which are marked with $
-        	if (!sInputEditor.contains("$")) {
+        	if (!inputEditor.contains("$")) {
 	            try {
-	                Class<?> _class = Class.forName(sInputEditor);
+	                Class<?> _class = Class.forName(inputEditor);
 	                
 	                
 	                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
@@ -70,10 +70,10 @@ public class InputEditorFactory {
 	                //InputEditor editor = (InputEditor) _class.newInstance();
 	                Class<?>[] types = editor.types();
 	                for (Class<?> type : types) {
-	                    inputEditorMap.put(type, sInputEditor);
+	                    inputEditorMap.put(type, inputEditor);
 	                    if (editor instanceof ListInputEditor) {
 	                        Class<?> baseType = ((ListInputEditor) editor).baseType();
-	                        listInputEditorMap.put(baseType, sInputEditor);
+	                        listInputEditorMap.put(baseType, inputEditor);
 	                    }
 	                }
 	            } catch (java.lang.InstantiationException e) {
@@ -101,8 +101,8 @@ public class InputEditorFactory {
         }
         for (Input<?> input : inputs) {
             try {
-                String sFullInputName = beastObject.getClass().getName() + "." + input.getName();
-                if (!doc.beautiConfig.suppressBEASTObjects.contains(sFullInputName)) {
+                String fullInputName = beastObject.getClass().getName() + "." + input.getName();
+                if (!doc.beautiConfig.suppressBEASTObjects.contains(fullInputName)) {
                     InputEditor inputEditor = createInputEditor(input, beastObject, true, ExpandOption.FALSE, ButtonStatus.ALL, editor, doc);
                     box.add(inputEditor.getComponent());
                     box.add(Box.createVerticalStrut(5));
@@ -162,11 +162,11 @@ public class InputEditorFactory {
         // check whether the super.editor has a custom method for creating an Editor
         if (editor != null) {        	
             try {
-                String sName = input.getName();
-                sName = new String(sName.charAt(0) + "").toUpperCase() + sName.substring(1);
-                sName = "create" + sName + "Editor";
+                String name = input.getName();
+                name = new String(name.charAt(0) + "").toUpperCase() + name.substring(1);
+                name = "create" + name + "Editor";
                 Class<?> _class = editor.getClass();
-                Method method = _class.getMethod(sName);
+                Method method = _class.getMethod(name);
                 inputEditor = (InputEditor) method.invoke(editor);
                 //Log.trace.println(inputEditor.getClass().getName() + " (CUSTOM EDITOR)");
                 return inputEditor;
@@ -179,11 +179,11 @@ public class InputEditorFactory {
             // handle list inputs
             if (listInputEditorMap.containsKey(inputClass)) {
                 // use custom list input editor
-                String sInputEditor = listInputEditorMap.get(inputClass);
-                Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+                String inputEditorName = listInputEditorMap.get(inputClass);
+                Constructor<?> con = Class.forName(inputEditorName).getConstructor(BeautiDoc.class);
                 inputEditor = (InputEditor) con.newInstance(doc);
 
-                //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance();
+                //inputEditor = (InputEditor) Class.forName(inputEditor).newInstance();
             } else {
                 // otherwise, use generic list editor
                 inputEditor = new ListInputEditor(doc);
@@ -201,49 +201,49 @@ public class InputEditorFactory {
         		inputEditor = new BEASTObjectInputEditor(doc);
         	} else {
 	            // handle BEASTObject-input with custom input editors
-	            String sInputEditor = inputEditorMap.get(inputClass2);
+	            String inputEditorName = inputEditorMap.get(inputClass2);
 	            
-	            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+	            Constructor<?> con = Class.forName(inputEditorName).getConstructor(BeautiDoc.class);
 	            inputEditor = (InputEditor) con.newInstance(doc);
         	}
         }        	
 //    	} else if (inputEditorMap.containsKey(inputClass)) {
 //            // handle BEASTObject-input with custom input editors
-//            String sInputEditor = inputEditorMap.get(inputClass);
+//            String inputEditor = inputEditorMap.get(inputClass);
 //            
-//            Constructor<?> con = Class.forName(sInputEditor).getConstructor(BeautiDoc.class);
+//            Constructor<?> con = Class.forName(inputEditor).getConstructor(BeautiDoc.class);
 //            inputEditor = (InputEditor) con.newInstance(doc);
-//            //inputEditor = (InputEditor) Class.forName(sInputEditor).newInstance(doc);
+//            //inputEditor = (InputEditor) Class.forName(inputEditor).newInstance(doc);
 //            //} else if (inputClass.isEnum()) {
 //            //    inputEditor = new EnumInputEditor();
 //        } else {
 //            // assume it is a general BEASTObject, so create a default BEASTObject input editor
 //            inputEditor = new PluginInputEditor(doc);
 //        }
-        String sFullInputName = beastObject.getClass().getName() + "." + input.getName();
-        //System.err.println(sFullInputName);
+        String fullInputName = beastObject.getClass().getName() + "." + input.getName();
+        //System.err.println(fullInputName);
         ExpandOption expandOption = bForceExpansion;
-        if (doc.beautiConfig.inlineBEASTObject.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+        if (doc.beautiConfig.inlineBEASTObject.contains(fullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
             expandOption = ExpandOption.TRUE;
             // deal with initially collapsed beastObjects
-            if (doc.beautiConfig.collapsedBEASTObjects.contains(sFullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+            if (doc.beautiConfig.collapsedBEASTObjects.contains(fullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
                 if (input.get() != null) {
                     Object o = input.get();
                     if (o instanceof ArrayList) {
                         for (Object o2 : (ArrayList<?>) o) {
                             if (o2 instanceof BEASTInterface) {
-                                String sID = ((BEASTInterface) o2).getID();
-                                if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-                                    ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-                                    ListInputEditor.g_collapsedIDs.add(sID);
+                                String id = ((BEASTInterface) o2).getID();
+                                if (!ListInputEditor.g_initiallyCollapsedIDs.contains(id)) {
+                                    ListInputEditor.g_initiallyCollapsedIDs.add(id);
+                                    ListInputEditor.g_collapsedIDs.add(id);
                                 }
                             }
                         }
                     } else if (o instanceof BEASTInterface) {
-                        String sID = ((BEASTInterface) o).getID();
-                        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(sID)) {
-                            ListInputEditor.g_initiallyCollapsedIDs.add(sID);
-                            ListInputEditor.g_collapsedIDs.add(sID);
+                        String id = ((BEASTInterface) o).getID();
+                        if (!ListInputEditor.g_initiallyCollapsedIDs.contains(id)) {
+                            ListInputEditor.g_initiallyCollapsedIDs.add(id);
+                            ListInputEditor.g_collapsedIDs.add(id);
                         }
                     }
                 }
@@ -262,12 +262,12 @@ public class InputEditorFactory {
      * find beastObjects that could fit the input
      * @param input
      * @param parent beastObject containing the input
-     * @param sTabuList list of ids that are not allowed
+     * @param tabuList list of ids that are not allowed
      * @param doc
      * @return
      */
     
-    public List<String> getAvailablePlugins(Input<?> input, BEASTInterface parent, List<String> sTabuList, BeautiDoc doc) {
+    public List<String> getAvailablePlugins(Input<?> input, BEASTInterface parent, List<String> tabuList, BeautiDoc doc) {
 
         //List<String> beastObjectNames = BeautiConfig.getInputCandidates(parent, input);
         List<String> beastObjectNames = new ArrayList<>();
@@ -277,24 +277,24 @@ public class InputEditorFactory {
 
 
         /* add ascendants to tabu list */
-        if (sTabuList == null) {
-            sTabuList = new ArrayList<>();
+        if (tabuList == null) {
+            tabuList = new ArrayList<>();
         }
         if (!doc.isExpertMode()) {
             for (BEASTInterface beastObject : BEASTObjectPanel.listAscendants(parent, doc.pluginmap.values())) {
-                sTabuList.add(beastObject.getID());
+                tabuList.add(beastObject.getID());
             }
         }
-        //System.err.println(sTabuList);
+        //System.err.println(tabuList);
 
         /* collect all beastObjects in the system, that are not in the tabu list*/
         beastObjectNames = new ArrayList<>();
         for (BEASTInterface beastObject : doc.pluginmap.values()) {
             if (input.getType().isAssignableFrom(beastObject.getClass())) {
                 boolean bIsTabu = false;
-                if (sTabuList != null) {
-                    for (String sTabu : sTabuList) {
-                        if (sTabu.equals(beastObject.getID())) {
+                if (tabuList != null) {
+                    for (String tabu : tabuList) {
+                        if (tabu.equals(beastObject.getID())) {
                             bIsTabu = true;
                         }
                     }
@@ -312,12 +312,12 @@ public class InputEditorFactory {
         }
         /* add all beastObject-classes of type assignable to the input */
         if (doc.isExpertMode()) {
-            List<String> sClasses = AddOnManager.find(input.getType(), "beast");
-            for (String sClass : sClasses) {
+            List<String> classes = AddOnManager.find(input.getType(), "beast");
+            for (String className : classes) {
                 try {
-                    Object o = Class.forName(sClass).newInstance();
+                    Object o = Class.forName(className).newInstance();
                     if (input.canSetValue(o, parent)) {
-                        beastObjectNames.add("new " + sClass);
+                        beastObjectNames.add("new " + className);
                     }
                 } catch (Exception e) {
                     // ignore
@@ -331,12 +331,12 @@ public class InputEditorFactory {
      * finds beauti templates that can create subnets that fit an input
      * @param input
      * @param parent
-     * @param sTabuList
+     * @param tabuList
      * @param doc
      * @return
      */
 
-    public List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, BEASTInterface parent, List<String> sTabuList, BeautiDoc doc) {
+    public List<BeautiSubTemplate> getAvailableTemplates(Input<?> input, BEASTInterface parent, List<String> tabuList, BeautiDoc doc) {
         Class<?> type = input.getType();
         List<BeautiSubTemplate> candidates = doc.beautiConfig.getInputCandidates(parent, input, type);
         if (input.getRule().equals(Validate.OPTIONAL)) {

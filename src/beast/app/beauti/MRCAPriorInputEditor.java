@@ -46,9 +46,9 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         Box itemBox = Box.createHorizontalBox();
 
         MRCAPrior prior = (MRCAPrior) beastObject;
-        String sText = prior.getID();
+        String text = prior.getID();
 
-        JButton taxonButton = new JButton(sText);
+        JButton taxonButton = new JButton(text);
         taxonButton.setMinimumSize(Base.PREFERRED_SIZE);
         taxonButton.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(taxonButton);
@@ -83,14 +83,14 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 
         List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox<BeautiSubTemplate> comboBox = new JComboBox<>(availableBEASTObjects.toArray(new BeautiSubTemplate[]{}));
-        comboBox.setName(sText+".distr");
+        comboBox.setName(text+".distr");
 
         if (prior.distInput.get() != null) {
-            String sID = prior.distInput.get().getID();
-            //sID = BeautiDoc.parsePartition(sID);
-            sID = sID.substring(0, sID.indexOf('.'));
+            String id = prior.distInput.get().getID();
+            //id = BeautiDoc.parsePartition(id);
+            id = id.substring(0, id.indexOf('.'));
             for (BeautiSubTemplate template : availableBEASTObjects) {
-                if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
+                if (template.classInput.get() != null && template.shortClassName.equals(id)) {
                     comboBox.setSelectedItem(template);
                 }
             }
@@ -125,7 +125,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         itemBox.add(comboBox);
 
         JCheckBox isMonophyleticdBox = new JCheckBox(doc.beautiConfig.getInputLabel(prior, prior.isMonophyleticInput.getName()));
-        isMonophyleticdBox.setName(sText+".isMonophyletic");
+        isMonophyleticdBox.setName(text+".isMonophyletic");
         isMonophyleticdBox.setSelected(prior.isMonophyleticInput.get());
         isMonophyleticdBox.setToolTipText(prior.isMonophyleticInput.getHTMLTipText());
         isMonophyleticdBox.addActionListener(new MRCAPriorActionListener(prior));
@@ -167,8 +167,8 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         	taxa = prior.treeInput.get().getTaxaNames();
         }
         
-        for (String sTaxon : taxa) {
-            candidates.add(doc.getTaxon(sTaxon));
+        for (String taxon : taxa) {
+            candidates.add(doc.getTaxon(taxon));
         }
         return candidates;
     }

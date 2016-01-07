@@ -43,19 +43,19 @@ public class TipDatesRandomWalker extends TreeOperator {
 
         // determine taxon set to choose from
         if (m_taxonsetInput.get() != null) {
-            List<String> sTaxaNames = new ArrayList<>();
-            for (String sTaxon : treeInput.get().getTaxaNames()) {
-                sTaxaNames.add(sTaxon);
+            List<String> taxaNames = new ArrayList<>();
+            for (String taxon : treeInput.get().getTaxaNames()) {
+                taxaNames.add(taxon);
             }
 
             List<String> set = m_taxonsetInput.get().asStringList();
             int nNrOfTaxa = set.size();
             taxonIndices = new int[nNrOfTaxa];
             int k = 0;
-            for (String sTaxon : set) {
-                int iTaxon = sTaxaNames.indexOf(sTaxon);
+            for (String taxon : set) {
+                int iTaxon = taxaNames.indexOf(taxon);
                 if (iTaxon < 0) {
-                    throw new IllegalArgumentException("Cannot find taxon " + sTaxon + " in tree");
+                    throw new IllegalArgumentException("Cannot find taxon " + taxon + " in tree");
                 }
                 taxonIndices[k++] = iTaxon;
             }

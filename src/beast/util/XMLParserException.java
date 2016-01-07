@@ -50,12 +50,12 @@ public class XMLParserException extends Exception {
      */
     int errorNr;
 
-    public XMLParserException(String sMsg) {
-    	super(sMsg);
+    public XMLParserException(String msg) {
+    	super(msg);
     }
     
-    public XMLParserException(Node node, String sMsg, int nErrorNr) {
-        super(sMsg);
+    public XMLParserException(Node node, String msg, int nErrorNr) {
+        super(msg);
         _node = node;
         msg = "";
         errorNr = nErrorNr;
@@ -64,54 +64,54 @@ public class XMLParserException extends Exception {
     // format message and resolve parent
     @Override
 	public String getMessage() {
-        String sMsg = "\nError " + errorNr + " parsing the xml input file\n\n" + msg + super.getMessage();
+        String msg = "\nError " + errorNr + " parsing the xml input file\n\n" + this.msg + super.getMessage();
         if (_node == null) {
-            return "NULL NODE\n" + sMsg;
+            return "NULL NODE\n" + msg;
         }
         String path = "";
         Node node = _node;
         while (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
-            String sID;
-            sID = getAttribute(node, "id");
-            if (sID != null) {
-                sID = " id='" + sID + "'";
+            String id;
+            id = getAttribute(node, "id");
+            if (id != null) {
+                id = " id='" + id + "'";
             } else {
-                sID = "";
+                id = "";
             }
 
-            String sName;
-            sName = getAttribute(node, "name");
-            if (sName != null) {
-                sName = " name='" + sName + "'";
+            String name;
+            name = getAttribute(node, "name");
+            if (name != null) {
+                name = " name='" + name + "'";
             } else {
-                sName = "";
+                name = "";
             }
 
-            String sSpec;
-            sSpec = getAttribute(node, "spec");
-            if (sSpec != null) {
-                sSpec = " spec='" + sSpec + "'";
+            String spec;
+            spec = getAttribute(node, "spec");
+            if (spec != null) {
+                spec = " spec='" + spec + "'";
             } else {
-                sSpec = "";
+                spec = "";
             }
             path = path.replaceAll("  <", "      <");
-            path = "  <" + node.getNodeName() + sID + sName + sSpec + ">\n" + path;
+            path = "  <" + node.getNodeName() + id + name + spec + ">\n" + path;
             node = node.getParentNode();
         }
-        sMsg += "\n\nError detected about here:\n" + path;
-        return sMsg;
+        msg += "\n\nError detected about here:\n" + path;
+        return msg;
     } // getMessage
 
-    String getAttribute(Node node, String sTarget) {
+    String getAttribute(Node node, String target) {
         NamedNodeMap atts = node.getAttributes();
         if (atts == null) {
             return null;
         }
         for (int i = 0; i < atts.getLength(); i++) {
-            String sName = atts.item(i).getNodeName();
-            if (sName.equals(sTarget)) {
-                String sValue = atts.item(i).getNodeValue();
-                return sValue;
+            String name = atts.item(i).getNodeName();
+            if (name.equals(target)) {
+                String valueString = atts.item(i).getNodeValue();
+                return valueString;
             }
         }
         return null;

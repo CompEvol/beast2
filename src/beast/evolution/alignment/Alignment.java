@@ -71,13 +71,13 @@ public class Alignment extends Map<String> {
     static public void findDataTypes() {
         // build up list of data types
         List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
-        for (String sDataType : m_sDataTypes) {
+        for (String dataTypeName : m_sDataTypes) {
             try {
-                DataType dataType = (DataType) Class.forName(sDataType).newInstance();
+                DataType dataType = (DataType) Class.forName(dataTypeName).newInstance();
                 if (dataType.isStandard()) {
-                    String sDescription = dataType.getTypeDescription();
-                    if (!types.contains(sDescription)) {
-                        types.add(sDescription);
+                    String description = dataType.getTypeDescription();
+                    if (!types.contains(description)) {
+                        types.add(description);
                     }
                 }
             } catch (Exception e) {
@@ -217,8 +217,8 @@ public class Alignment extends Map<String> {
         }
 
         if (siteWeightsInput.get() != null) {
-            String sStr = siteWeightsInput.get().trim();
-            String[] strs = sStr.split(",");
+            String str = siteWeightsInput.get().trim();
+            String[] strs = str.split(",");
             siteWeights = new int[strs.length];
             for (int i = 0; i < strs.length; i++) {
                 siteWeights[i] = Integer.parseInt(strs[i].trim());
@@ -234,9 +234,9 @@ public class Alignment extends Map<String> {
                         "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
             // seems to spend forever in there??
-            List<String> sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
-            for (String sDataType : sDataTypes) {
-                DataType dataType = (DataType) Class.forName(sDataType).newInstance();
+            List<String> dataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+            for (String dataTypeName : dataTypes) {
+                DataType dataType = (DataType) Class.forName(dataTypeName).newInstance();
                 if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
                     m_dataType = dataType;
                     break;
@@ -448,8 +448,8 @@ public class Alignment extends Map<String> {
         return getTaxonCount();
     }
 
-    public int getTaxonIndex(String sID) {
-        return taxaNames.indexOf(sID);
+    public int getTaxonIndex(String id) {
+        return taxaNames.indexOf(id);
     }
 
     /**

@@ -50,7 +50,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     TraitSet traitSet;
     JComboBox<TraitSet.Units> unitsComboBox;
     JComboBox<String> relativeToComboBox;
-    List<String> sTaxa;
+    List<String> taxa;
     Object[][] tableData;
     JTable table;
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
@@ -270,9 +270,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     }
 
     private Component createListBox() {
-        sTaxa = traitSet.taxaInput.get().asStringList();
+        taxa = traitSet.taxaInput.get().asStringList();
         String[] columnData = new String[]{"Name", "Date", "Height"};
-        tableData = new Object[sTaxa.size()][3];
+        tableData = new Object[taxa.size()][3];
         convertTraitToTableData();
         // set up table.
         // special features: background shading of rows
@@ -306,17 +306,17 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             @Override
             public boolean stopCellEditing() {
                 table.removeEditor();
-                String sText = m_textField.getText();
+                String text = m_textField.getText();
 //                try {
-//                    Double.parseDouble(sText);
+//                    Double.parseDouble(text);
 //                } catch (Exception e) {
 //                	try {
-//                		Date.parse(sText);
+//                		Date.parse(text);
 //                	} catch (Exception e2) {
 //                        return false;
 //					}
 //                }
-                tableData[m_iRow][m_iCol] = sText;
+                tableData[m_iRow][m_iCol] = text;
                 convertTableDataToTrait();
                 convertTraitToTableData();
                 return true;
@@ -400,28 +400,28 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     /* synchronise table with data from traitSet BEASTObject */
     private void convertTraitToTableData() {
         for (int i = 0; i < tableData.length; i++) {
-            tableData[i][0] = sTaxa.get(i);
+            tableData[i][0] = taxa.get(i);
             tableData[i][1] = "0";
             tableData[i][2] = "0";
         }
-        String[] sTraits = traitSet.traitsInput.get().split(",");
-        for (String sTrait : sTraits) {
-            sTrait = sTrait.replaceAll("\\s+", " ");
-            String[] sStrs = sTrait.split("=");
-            if (sStrs.length != 2) {
+        String[] traits = traitSet.traitsInput.get().split(",");
+        for (String trait : traits) {
+            trait = trait.replaceAll("\\s+", " ");
+            String[] strs = trait.split("=");
+            if (strs.length != 2) {
                 break;
-                //throw new Exception("could not parse trait: " + sTrait);
+                //throw new Exception("could not parse trait: " + trait);
             }
-            String sTaxonID = normalize(sStrs[0]);
-            int taxonIndex = sTaxa.indexOf(sTaxonID);
+            String taxonID = normalize(strs[0]);
+            int taxonIndex = taxa.indexOf(taxonID);
 //            if (iTaxon < 0) {
-//                throw new Exception("Trait (" + sTaxonID + ") is not a known taxon. Spelling error perhaps?");
+//                throw new Exception("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
             if (taxonIndex >= 0) {
-                tableData[taxonIndex][1] = normalize(sStrs[1]);
-                tableData[taxonIndex][0] = sTaxonID;
+                tableData[taxonIndex][1] = normalize(strs[1]);
+                tableData[taxonIndex][0] = taxonID;
             } else {
-            	Log.warning.println("WARNING: File contains taxon " + sTaxonID + " that cannot be found in alignment");
+            	Log.warning.println("WARNING: File contains taxon " + taxonID + " that cannot be found in alignment");
             }
         }
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
@@ -450,20 +450,20 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         }
     } // convertTraitToTableData
 
-    private double parseDate(String sStr) {
+    private double parseDate(String str) {
         // default, try to interpret the string as a number
         try {
-            return Double.parseDouble(sStr);
+            return Double.parseDouble(str);
         } catch (NumberFormatException e) {
             // does not look like a number, try parsing it as a date
-                if (sStr.matches(".*[a-zA-Z].*")) {
-                    sStr = sStr.replace('/', '-');
+                if (str.matches(".*[a-zA-Z].*")) {
+                    str = str.replace('/', '-');
                 }
 
             //try {
 
                 // unfortunately this deprecated date parser is the most flexible around at the moment...
-                long time = Date.parse(sStr);
+                long time = Date.parse(str);
                 Date date = new Date(time);
 
                 // AJD
@@ -471,7 +471,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 // far less support for different date formats.
                 // for example it fails on "12-Oct-2014"
                 //dateFormat.setLenient(true);
-                //Date date = dateFormat.parse(sStr);
+                //Date date = dateFormat.parse(str);
 
                 Calendar calendar = dateFormat.getCalendar();
                 calendar.setTime(date);
@@ -491,35 +491,35 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 return dateAsDecimal;
             //}
             //catch (ParseException e1) {
-            //    System.err.println("*** WARNING: Failed to parse '" + sStr + "' as date using dateFormat " + dateFormat);
+            //    System.err.println("*** WARNING: Failed to parse '" + str + "' as date using dateFormat " + dateFormat);
             //}
         }
         //return 0;
     } // parseStrings
 
-    private String normalize(String sStr) {
-        if (sStr.charAt(0) == ' ') {
-            sStr = sStr.substring(1);
+    private String normalize(String str) {
+        if (str.charAt(0) == ' ') {
+            str = str.substring(1);
         }
-        if (sStr.endsWith(" ")) {
-            sStr = sStr.substring(0, sStr.length() - 1);
+        if (str.endsWith(" ")) {
+            str = str.substring(0, str.length() - 1);
         }
-        return sStr;
+        return str;
     }
 
     /**
      * synchronise traitSet BEAST object with table data
      */
     private void convertTableDataToTrait() {
-        String sTrait = "";
+        String trait = "";
         for (int i = 0; i < tableData.length; i++) {
-            sTrait += sTaxa.get(i) + "=" + tableData[i][1];
+            trait += taxa.get(i) + "=" + tableData[i][1];
             if (i < tableData.length - 1) {
-                sTrait += ",\n";
+                trait += ",\n";
             }
         }
         try {
-            traitSet.traitsInput.setValue(sTrait, traitSet);
+            traitSet.traitsInput.setValue(trait, traitSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -537,9 +537,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         unitsComboBox = new JComboBox<>(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
         unitsComboBox.addActionListener(e -> {
-                String sSelected = unitsComboBox.getSelectedItem().toString();
+                String selected = unitsComboBox.getSelectedItem().toString();
                 try {
-                    traitSet.unitsInput.setValue(sSelected, traitSet);
+                    traitSet.unitsInput.setValue(selected, traitSet);
                     //System.err.println("Traitset is now: " + m_traitSet.m_sUnits.get());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -555,12 +555,12 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             relativeToComboBox.setSelectedIndex(0);
         }
         relativeToComboBox.addActionListener(e -> {
-                String sSelected = TraitSet.DATE_BACKWARD_TRAIT;
+                String selected = TraitSet.DATE_BACKWARD_TRAIT;
                 if (relativeToComboBox.getSelectedIndex() == 0) {
-                    sSelected = TraitSet.DATE_FORWARD_TRAIT;
+                    selected = TraitSet.DATE_FORWARD_TRAIT;
                 }
                 try {
-                    traitSet.traitNameInput.setValue(sSelected, traitSet);
+                    traitSet.traitNameInput.setValue(selected, traitSet);
                     Log.warning.println("Relative position is now: " + traitSet.traitNameInput.get());
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -576,29 +576,29 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         guessButton.addActionListener(e -> {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
                 dlg.allowAddingValues();
-                String sTrait = "";
+                String trait = "";
                 switch (dlg.showDialog("Guess dates")) {
                     case canceled:
                         return;
                     case trait:
-                        sTrait = dlg.getTrait();
+                        trait = dlg.getTrait();
                         break;
                     case pattern:
-                        for (String sTaxon : sTaxa) {
-                            String sMatch = dlg.match(sTaxon);
-                            if (sMatch == null) {
+                        for (String taxon : taxa) {
+                            String match = dlg.match(taxon);
+                            if (match == null) {
                                 return;
                             }
-                            double nDate = parseDate(sMatch);
-                            if (sTrait.length() > 0) {
-                                sTrait += ",";
+                            double nDate = parseDate(match);
+                            if (trait.length() > 0) {
+                                trait += ",";
                             }
-                            sTrait += sTaxon + "=" + nDate;
+                            trait += taxon + "=" + nDate;
                         }
                         break;
                 }
                 try {
-                    traitSet.traitsInput.setValue(sTrait, traitSet);
+                    traitSet.traitsInput.setValue(trait, traitSet);
                     convertTraitToTableData();
                     convertTableDataToTrait();
                 } catch (Exception ex) {

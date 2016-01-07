@@ -62,12 +62,12 @@ public class Arrow extends Shape {
 
     /* c'tor for creating arrow with all fields set properly
       * Used when arrows are created by Document.recalcArrows */
-    public Arrow(BEASTObjectShape tailShape, BEASTObjectShape headShape, String sInputName) {
+    public Arrow(BEASTObjectShape tailShape, BEASTObjectShape headShape, String inputName) {
 	        m_sTailID = tailShape.getID();
 	        m_tailShape = tailShape;
-	        InputShape input = headShape.getInputShape(sInputName);
+	        InputShape input = headShape.getInputShape(inputName);
 	        if (input == null) {
-	        	Log.warning.println("Arrow from " + tailShape.m_beastObject.getID() + " to " + headShape.m_beastObject.getID() + "." + sInputName + " skipped");	        	
+	        	Log.warning.println("Arrow from " + tailShape.m_beastObject.getID() + " to " + headShape.m_beastObject.getID() + "." + inputName + " skipped");	        	
 	        }
 	        m_sHeadID = input.getID();
 	        m_headShape = input;
@@ -102,8 +102,8 @@ public class Arrow extends Shape {
         m_sHeadID = shape.getID();
         m_headShape = shape;
         adjustCoordinates();
-        String sInputName = m_headShape.getInputName();
-        m_headShape.getBEASTObject().setInputValue(sInputName, m_tailShape.m_beastObject);
+        String inputName = m_headShape.getInputName();
+        m_headShape.getBEASTObject().setInputValue(inputName, m_tailShape.m_beastObject);
         return true;//setFunctionInput(objects, doc);
     }
 
@@ -247,8 +247,8 @@ public class Arrow extends Shape {
         return m_sID;
     }
 
-    public void setID(String sID) {
-        m_sID = sID;
+    public void setID(String id) {
+        m_sID = id;
     }
 
     @Override

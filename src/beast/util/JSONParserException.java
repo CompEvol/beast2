@@ -51,8 +51,8 @@ public class JSONParserException extends XMLParserException {
      */
     int m_nErrorNr;
 
-    public JSONParserException(JSONObject node, String sMsg, int nErrorNr) {
-        super(sMsg);
+    public JSONParserException(JSONObject node, String msg, int nErrorNr) {
+        super(msg);
         this.node = node;
         m_sMsg = "";
         m_nErrorNr = nErrorNr;

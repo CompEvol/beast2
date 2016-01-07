@@ -131,11 +131,11 @@ public class JSONParser {
 		// keep line breaks so that error reporting indicates the correct line.
 		BufferedReader fin = new BufferedReader(new FileReader(file));
 		StringBuffer buf = new StringBuffer();
-		String sStr = null;
+		String str = null;
 		while (fin.ready()) {
-			sStr = fin.readLine();
-			if (!sStr.matches("^\\s*//.*")) {
-				buf.append(sStr);
+			str = fin.readLine();
+			if (!str.matches("^\\s*//.*")) {
+				buf.append(str);
 			}
 			buf.append('\n');
 		}
@@ -179,9 +179,9 @@ public class JSONParser {
 	                final Object attr = jsonobject.get(key);
 	                if (attr instanceof String) {
 	                	if (((String) attr).contains("$(" + var + ")")) {
-	                		String sAtt = (String) attr;
-	                		sAtt = sAtt.replaceAll("\\$\\(" + var + "\\)", value);
-	                		jsonobject.put(key, sAtt);
+	                		String att = (String) attr;
+	                		att = att.replaceAll("\\$\\(" + var + "\\)", value);
+	                		jsonobject.put(key, att);
 	                	}
 	                } else if (attr instanceof JSONObject) {
 	                	replaceVariable(attr, var, value);
@@ -208,17 +208,17 @@ public class JSONParser {
 	 * retrieving all non-runnable elements when a template is instantiated by
 	 * Beauti *
 	 */
-	// public List<BEASTObject> parseTemplate(String sXML, HashMap<String, BEASTObject>
-	// sIDMap, boolean bInitialize) throws Exception {
+	// public List<BEASTObject> parseTemplate(String xml, HashMap<String, BEASTObject>
+	// iDMap, boolean bInitialize) throws Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML file into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// //factory.setValidating(true);
 	// doc = factory.newDocumentBuilder().parse(new InputSource(new
-	// StringReader(sXML)));
+	// StringReader(xml)));
 	// processPlates();
 	//
-	// IDMap = sIDMap;//new HashMap<>();
+	// IDMap = iDMap;//new HashMap<>();
 	// likelihoodMap = new HashMap<>();
 	// IDNodeMap = new HashMap<>();
 	//
@@ -237,8 +237,8 @@ public class JSONParser {
 	// return beastObjects;
 	// }
 	// // only process templates
-	// // String sType = getAttribute(topNode, "type");
-	// // if (sType == null || !sType.equals("template")) {
+	// // String typeName = getAttribute(topNode, "type");
+	// // if (typeName == null || !typeName.equals("template")) {
 	// // return beastObjects;
 	// // }
 	//
@@ -412,13 +412,13 @@ public class JSONParser {
 	// of
 	// * the top level <beast> element is considered.
 	// */
-	// public BEASTObject parseFragment(String sXML, boolean bInitialize) throws
+	// public BEASTObject parseFragment(String xml, boolean bInitialize) throws
 	// Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML fragment into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// doc = factory.newDocumentBuilder().parse(new InputSource(new
-	// StringReader(sXML)));
+	// StringReader(xml)));
 	// doc.normalize();
 	// processPlates();
 	//
@@ -467,24 +467,24 @@ public class JSONParser {
 	// XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
 	// * to create a simple tree.
 	// */
-	// public BEASTObject parseBareFragment(String sXML, boolean bInitialize) throws
+	// public BEASTObject parseBareFragment(String xml, boolean bInitialize) throws
 	// Exception {
 	// // get rid of XML processing instruction
-	// sXML = sXML.replaceAll("<\\?xml[^>]*>", "");
-	// if (sXML.indexOf("<beast") > -1) {
-	// return parseFragment(sXML, bInitialize);
+	// xml = xml.replaceAll("<\\?xml[^>]*>", "");
+	// if (xml.indexOf("<beast") > -1) {
+	// return parseFragment(xml, bInitialize);
 	// } else {
-	// return parseFragment("<beast>" + sXML + "</beast>", bInitialize);
+	// return parseFragment("<beast>" + xml + "</beast>", bInitialize);
 	// }
 	// }
 	//
-	// public List<BEASTObject> parseBareFragments(String sXML, boolean bInitialize)
+	// public List<BEASTObject> parseBareFragments(String xml, boolean bInitialize)
 	// throws Exception {
 	// m_bInitialize = bInitialize;
 	// // parse the XML fragment into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// doc = factory.newDocumentBuilder().parse(new InputSource(new
-	// StringReader(sXML)));
+	// StringReader(xml)));
 	// doc.normalize();
 	// processPlates();
 	//
@@ -620,7 +620,7 @@ public class JSONParser {
 											 done = true;
 											 //String reserved = getAttribute(child, "reserved");
 											 //if (reserved != null && reserved.toLowerCase().equals("true")) {
-											 //	 reservedElements.add(sName);
+											 //	 reservedElements.add(name);
 											 //}
 										 }
 									} catch (ClassNotFoundException e) {
@@ -704,7 +704,7 @@ public class JSONParser {
 
 	/**
 	 * Check that BEASTObject is a class that is assignable to class with name
-	 * sClass. This involves a parameter clutch to deal with non-real
+	 * className. This involves a parameter clutch to deal with non-real
 	 * parameters. This needs a bit of work, obviously...
 	 */
 	boolean checkType(String className, BEASTInterface beastObject) throws JSONParserException {
@@ -790,7 +790,7 @@ public class JSONParser {
 		}
 
 		String clazzName = null;
-		// determine clazzName from sSpecName, taking name spaces in account
+		// determine clazzName from specName, taking name spaces in account
 		for (String nameSpace : nameSpaces) {
 			if (clazzName == null) {
 				if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
@@ -816,7 +816,7 @@ public class JSONParser {
 		}
 		if (clazzName == null) {
 			throw new JSONParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
-			// throw new ClassNotFoundException(sSpecClass);
+			// throw new ClassNotFoundException(specClass);
 		}
 				
 		// sanity check		
@@ -826,13 +826,13 @@ public class JSONParser {
 				// if (o instanceof Input) {
 				// // if we got this far, it is a basic input,
 				// // that is, one of the form <input name='xyz'>value</input>
-				// String sName = getAttribute(node, "name");
-				// if (sName == null) {
-				// sName = "value";
+				// String name = getAttribute(node, "name");
+				// if (name == null) {
+				// name = "value";
 				// }
-				// String sText = node.getTextContent();
-				// if (sText.length() > 0) {
-				// setInput(node, parent, sName, sText);
+				// String text = node.getTextContent();
+				// if (text.length() > 0) {
+				// setInput(node, parent, name, text);
 				// }
 				// return null;
 				// } else {

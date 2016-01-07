@@ -327,24 +327,24 @@ public class BeastMCMC {
         }
 
         String[] getArgs() {
-            List<String> sArgs = new ArrayList<>();
-            sArgs.add("-seed");
-            sArgs.add(m_seedEntry.getText());
+            List<String> args = new ArrayList<>();
+            args.add("-seed");
+            args.add(m_seedEntry.getText());
             switch (m_mode.getSelectedIndex()) {
                 case 0:
                     break;
                 case 1:
-                    sArgs.add("-overwrite");
+                    args.add("-overwrite");
                     break;
                 case 2:
-                    sArgs.add("-resume");
+                    args.add("-resume");
                     break;
             }
 //			if (m_bUseGPU.isSelected()) {
-//				sArgs.add("-useGPU");
+//				args.add("-useGPU");
 //			}
-            sArgs.add(m_fileEntry.getText());
-            return sArgs.toArray(new String[0]);
+            args.add(m_fileEntry.getText());
+            return args.toArray(new String[0]);
         }
 
         void init() {
@@ -377,17 +377,17 @@ public class BeastMCMC {
         private Component createHeader() {
             Box box = Box.createHorizontalBox();
 
-            String sIconLocation = "beast/app/draw/icons/beast.png";
+            String iconLocation = "beast/app/draw/icons/beast.png";
             ImageIcon icon = null;
             try {
-                URL url = ClassLoader.getSystemResource(sIconLocation);
+                URL url = ClassLoader.getSystemResource(iconLocation);
                 if (url == null) {
-                    System.err.println("Cannot find icon " + sIconLocation);
+                    System.err.println("Cannot find icon " + iconLocation);
                     return null;
                 }
                 icon = new ImageIcon(url);
             } catch (Exception e) {
-                System.err.println("Cannot load icon " + sIconLocation + " " + e.getMessage());
+                System.err.println("Cannot load icon " + iconLocation + " " + e.getMessage());
                 return null;
             }
 
@@ -424,11 +424,11 @@ public class BeastMCMC {
                     fileChooser.setDialogTitle("Select Beast 2 XML file");
                     int rval = fileChooser.showOpenDialog(null);
                     if (rval == JFileChooser.APPROVE_OPTION) {
-                        String sFileName = fileChooser.getSelectedFile().toString();
-                        if (sFileName.lastIndexOf('/') > 0) {
-                            Beauti.g_sDir = sFileName.substring(0, sFileName.lastIndexOf('/'));
+                        String fileName = fileChooser.getSelectedFile().toString();
+                        if (fileName.lastIndexOf('/') > 0) {
+                            Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf('/'));
                         }
-                        m_fileEntry.setText(sFileName);
+                        m_fileEntry.setText(fileName);
                     }
                 });
             box.add(button);

@@ -175,10 +175,10 @@ public class AlignmentViewer extends JPanel {
             for (int i = 0; i < nSites; i++) {
                 int iPattern = m_alignment.getPatternIndex(i);
                 int[] pattern = m_alignment.getPattern(iPattern);
-                String sPattern = dataType.state2string(pattern);
-                headerChar[i] = mostFrequentCharInPattern(sPattern);
+                String patternString = dataType.state2string(pattern);
+                headerChar[i] = mostFrequentCharInPattern(patternString);
                 for (int j = 0; j < nTaxa; j++) {
-                    char c = sPattern.charAt(j);
+                    char c = patternString.charAt(j);
                     if (c == headerChar[i]) {
                         tableData[j][i + 1] = colorMap[0][c];
                     } else {
@@ -235,10 +235,10 @@ public class AlignmentViewer extends JPanel {
         }
     }
 
-    private char mostFrequentCharInPattern(String sPattern) {
+    private char mostFrequentCharInPattern(String pattern) {
         char[] counts = new char[256];
-        for (int i = 0; i < sPattern.length(); i++) {
-            counts[sPattern.charAt(i)]++;
+        for (int i = 0; i < pattern.length(); i++) {
+            counts[pattern.charAt(i)]++;
         }
         int iMax = 0, nMax = 0;
         for (int i = 0; i < counts.length; i++) {

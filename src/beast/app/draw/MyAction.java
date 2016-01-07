@@ -27,24 +27,24 @@ public abstract class MyAction extends AbstractAction {
      * path for icons
      */
 
-    public MyAction(String sName, String sToolTipText, String sIcon, int acceleratorKey) {
-        this(sName, sToolTipText, sIcon, KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+    public MyAction(String name, String toolTipText, String icon, int acceleratorKey) {
+        this(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
     } // c'tor
 
-    public MyAction(String sName, String sToolTipText, String sIcon, String sAcceleratorKey) {
-        this(sName, sToolTipText, sIcon, KeyStroke.getKeyStroke(sAcceleratorKey));
+    public MyAction(String name, String toolTipText, String icon, String acceleratorKey) {
+        this(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey));
     } // c'tor
 
-    public MyAction(String sName, String sToolTipText, String sIcon, KeyStroke acceleratorKeystroke) {
-        super(sName);
-        // setToolTipText(sToolTipText);
-        putValue(Action.SHORT_DESCRIPTION, sToolTipText);
-        putValue(Action.LONG_DESCRIPTION, sToolTipText);
+    public MyAction(String name, String toolTipText, String icon, KeyStroke acceleratorKeystroke) {
+        super(name);
+        // setToolTipText(toolTipText);
+        putValue(Action.SHORT_DESCRIPTION, toolTipText);
+        putValue(Action.LONG_DESCRIPTION, toolTipText);
         if (acceleratorKeystroke != null && acceleratorKeystroke.getKeyCode() >= 0) {
             putValue(Action.ACCELERATOR_KEY, acceleratorKeystroke);
         }
-        putValue(Action.MNEMONIC_KEY, new Integer(sName.charAt(0)));
-        java.net.URL tempURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + sIcon + ".png");
+        putValue(Action.MNEMONIC_KEY, new Integer(name.charAt(0)));
+        java.net.URL tempURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + icon + ".png");
         if (!Utils.isMac()) {
 	        if (tempURL != null) {
 	            putValue(Action.SMALL_ICON, new ImageIcon(tempURL));

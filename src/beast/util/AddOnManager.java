@@ -220,13 +220,13 @@ public class AddOnManager {
     public static List<Package> getPackages() throws IOException, ParserConfigurationException, SAXException {
 
         List<Package> packages = new ArrayList<>();
-        List<String> sURLs = getPackagesURL();
+        List<String> uRLs = getPackagesURL();
 
-        for (String sURL : sURLs) {
-            URL url = new URL(sURL);
+        for (String uRL : uRLs) {
+            URL url = new URL(uRL);
             InputStream is = url.openStream(); // throws an IOException
 
-            if (sURL.endsWith(".xml")) {
+            if (uRL.endsWith(".xml")) {
                 addPackages(is, packages);
             } 
 
@@ -301,8 +301,8 @@ public class AddOnManager {
         if (!aPackage.url.toLowerCase().endsWith(".zip")) {
             throw new IOException("Package should be packaged in a zip file");
         }
-//        String sName = URL2PackageName(sURL); // not safe to use
-        String sName = aPackage.packageName;
+//        String name = URL2PackageName(uRL); // not safe to use
+        String name = aPackage.packageName;
 
         // install all dependent packages
         if (customDir == null && packages != null) {
@@ -318,35 +318,35 @@ public class AddOnManager {
         // create directory
         URL templateURL = new URL(aPackage.url);
         ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-        String sDir = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + sName;
+        String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + name;
         if (customDir != null) {
-            sDir = customDir + "/" + sName;
+            dirName = customDir + "/" + name;
         }
-        File dir = new File(sDir);
+        File dir = new File(dirName);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
-                throw new IOException("Could not create template directory " + sDir);
+                throw new IOException("Could not create template directory " + dirName);
             }
         }
         // grab file from URL
-        String sZipFile = sDir + "/" + sName + ".zip";
-        FileOutputStream fos = new FileOutputStream(sZipFile);
+        String zipFile = dirName + "/" + name + ".zip";
+        FileOutputStream fos = new FileOutputStream(zipFile);
         fos.getChannel().transferFrom(rbc, 0, 1 << 24);
 
         // unzip archive
-        doUnzip(sZipFile, sDir);
+        doUnzip(zipFile, dirName);
         // refresh classes
         loadExternalJars();
         fos.close();
-        return sDir;
+        return dirName;
     }
 
     public static String uninstallPackage(Package aPackage, boolean useAppDir, String customDir, List<Package> packages, boolean autoUninstall) throws IOException {
         if (!aPackage.url.toLowerCase().endsWith(".zip")) {
             throw new IOException("Package should be packaged in a zip file");
         }
-//        String sName = URL2PackageName(sURL);
-        String sName = aPackage.packageName;
+//        String name = URL2PackageName(uRL);
+        String name = aPackage.packageName;
 
         // uninstall all dependent packages
         if (customDir == null && packages != null) {
@@ -363,11 +363,11 @@ public class AddOnManager {
             }
         }
 
-        String sDir = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + sName;
+        String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + name;
         if (customDir != null) {
-            sDir = customDir + "/" + sName;
+            dirName = customDir + "/" + name;
         }
-        File dir = new File(sDir);
+        File dir = new File(dirName);
         List<File> deleteFailed = new ArrayList<>();
         deleteRecursively(dir, deleteFailed);
 
@@ -380,14 +380,14 @@ public class AddOnManager {
             }
             outfile.close();
         }
-        return sDir;
+        return dirName;
     }
 
     public static boolean checkIsInstalled(String packageName) {
         boolean isInstalled = false;
-        List<String> sBeastDirs = getBeastDirectories();
-        for (String sDir : sBeastDirs) {
-            File f = new File(sDir + "/" + packageName);
+        List<String> beastDirs = getBeastDirectories();
+        for (String dirName : beastDirs) {
+            File f = new File(dirName + "/" + packageName);
             if (f.exists()) {
                 isInstalled = true;
             }
@@ -558,30 +558,30 @@ public class AddOnManager {
      * return list of directories that may contain packages *
      */
     public static List<String> getBeastDirectories() {
-        List<String> sDirs = new ArrayList<>();
+        List<String> dirs = new ArrayList<>();
         // check if there is the BEAST environment variable is set
         if (System.getProperty("BEAST_ADDON_PATH") != null) {
-            String sBEAST = System.getProperty("BEAST_ADDON_PATH");
-            for (String sDir : sBEAST.split(":")) {
-                sDirs.add(sDir);
+            String bEAST = System.getProperty("BEAST_ADDON_PATH");
+            for (String dirName : bEAST.split(":")) {
+                dirs.add(dirName);
             }
         }
         if (System.getenv("BEAST_ADDON_PATH") != null) {
-            String sBEAST = System.getenv("BEAST_ADDON_PATH");
-            for (String sDir : sBEAST.split(":")) {
-                sDirs.add(sDir);
+            String bEAST = System.getenv("BEAST_ADDON_PATH");
+            for (String dirName : bEAST.split(":")) {
+                dirs.add(dirName);
             }
         }
 
         // add user package directory
-        sDirs.add(getPackageUserDir());
+        dirs.add(getPackageUserDir());
 
         // add application package directory
-        sDirs.add(getPackageSystemDir());
+        dirs.add(getPackageSystemDir());
 
         // add BEAST installation directory
         if (getBEASTInstallDir() != null)
-            sDirs.add(getBEASTInstallDir());
+            dirs.add(getBEASTInstallDir());
 
         // pick up directories in class path, useful when running in an IDE
         String strClassPath = System.getProperty("java.class.path");
@@ -594,8 +594,8 @@ public class AddOnManager {
                     // deal with the way Mac's appbundler sets up paths
                   	path = path.replaceAll("/[^/]*/Contents/Java", "");
                     // exclude Intellij build path out/production
-                    if (!sDirs.contains(path) && !path.contains("production")) {
-                        sDirs.add(path);
+                    if (!dirs.contains(path) && !path.contains("production")) {
+                        dirs.add(path);
                     }
                 }
             }
@@ -605,9 +605,9 @@ public class AddOnManager {
         // subdirectories that look like they may contain an package
         // this is detected by checking the subdirectory contains a lib or
         // templates directory
-        List<String> sSubDirs = new ArrayList<>();
-        for (String sDir : sDirs) {
-            File dir = new File(sDir);
+        List<String> subDirs = new ArrayList<>();
+        for (String dirName : dirs) {
+            File dir = new File(dirName);
             if (dir.isDirectory()) {
                 File[] files = dir.listFiles();
                 if (files == null)
@@ -617,7 +617,7 @@ public class AddOnManager {
                     if (file.isDirectory()) {
                         File versionFile = new File(file, "version.xml");
                         if (versionFile.exists())
-                            sSubDirs.add(file.getAbsolutePath());
+                            subDirs.add(file.getAbsolutePath());
                     }
                 }
             }
@@ -625,9 +625,9 @@ public class AddOnManager {
         // check version dependencies
 
 
-        sDirs.addAll(sSubDirs);
+        dirs.addAll(subDirs);
 
-        return sDirs;
+        return dirs;
     } // getBeastDirectories
 
     /**
@@ -636,10 +636,10 @@ public class AddOnManager {
     public static void loadExternalJars() throws IOException {
         processDeleteList();
 
-        List<String> sDirs = getBeastDirectories();
-        checkDependencies(sDirs);
-        for (String sJarDir : sDirs) {
-            File versionFile = new File(sJarDir + "/version.xml");
+        List<String> dirs = getBeastDirectories();
+        checkDependencies(dirs);
+        for (String jarDirName : dirs) {
+            File versionFile = new File(jarDirName + "/version.xml");
             if (versionFile.exists()) {
                 try {
                     // print name and version of package
@@ -651,19 +651,19 @@ public class AddOnManager {
                 	// too bad, won't print out any info
                 }
             }
-            File jarDir = new File(sJarDir + "/lib");
+            File jarDir = new File(jarDirName + "/lib");
             if (!jarDir.exists()) {
-                jarDir = new File(sJarDir + "\\lib");
+                jarDir = new File(jarDirName + "\\lib");
             }
             if (jarDir.exists() && jarDir.isDirectory()) {
-                for (String sFile : jarDir.list()) {
-                    if (sFile.endsWith(".jar")) {
-                        Log.debug.print("Probing: " + sFile + " ");
+                for (String fileName : jarDir.list()) {
+                    if (fileName.endsWith(".jar")) {
+                        Log.debug.print("Probing: " + fileName + " ");
                         // check that we are not reload existing classes
                         String loadedClass = null;
                         try {
                             JarInputStream jarFile = new JarInputStream
-                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + sFile));
+                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
                             JarEntry jarEntry;
 
                             while (loadedClass == null) {
@@ -689,7 +689,7 @@ public class AddOnManager {
 
 
                         @SuppressWarnings("deprecation")
-                        URL url = new File(jarDir.getAbsolutePath() + "/" + sFile).toURL();
+                        URL url = new File(jarDir.getAbsolutePath() + "/" + fileName).toURL();
                         if (loadedClass == null) {
                             addURL(url);
                         } else {
@@ -711,8 +711,8 @@ public class AddOnManager {
             try {
                 BufferedReader fin = new BufferedReader(new FileReader(toDeleteLisFile));
                 while (fin.ready()) {
-                    String sStr = fin.readLine();
-                    File file = new File(sStr);
+                    String str = fin.readLine();
+                    File file = new File(str);
                     file.delete();
                 }
                 fin.close();
@@ -727,16 +727,16 @@ public class AddOnManager {
      * go through list of directories collecting version and dependency information for
      * all packages. Version and dependency info is stored in a file
      *
-     * @param sDirs
+     * @param dirs
      */
-    private static void checkDependencies(List<String> sDirs) {
+    private static void checkDependencies(List<String> dirs) {
         HashMap<String, Double> packageVersion = new HashMap<>();
         packageVersion.put("beast2", beastVersion.parseVersion(beastVersion.getVersion()));
         List<PackageDependency> dependencies = new ArrayList<>();
 
         // gather version and dependency info for all packages
-        for (String sDir : sDirs) {
-            File version = new File(sDir + "/version.xml");
+        for (String dirName : dirs) {
+            File version = new File(dirName + "/version.xml");
             if (version.exists()) {
                 try {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -744,21 +744,21 @@ public class AddOnManager {
                     doc.normalize();
                     // get name and version of package
                     Element addon = doc.getDocumentElement();
-                    String sAddon = addon.getAttribute("name");
-                    String sAddonVersion = addon.getAttribute("version");
-                    packageVersion.put(sAddon, beastVersion.parseVersion(sAddonVersion));
+                    String addonName = addon.getAttribute("name");
+                    String addonVersion = addon.getAttribute("version");
+                    packageVersion.put(addonName, beastVersion.parseVersion(addonVersion));
 
                     // get dependencies of add-n
                     NodeList nodes = doc.getElementsByTagName("depends");
                     for (int i = 0; i < nodes.getLength(); i++) {
                         Element dependson = (Element) nodes.item(i);
                         PackageDependency dep = new PackageDependency();
-                        dep.packageName = sAddon;
+                        dep.packageName = addonName;
                         dep.dependson = dependson.getAttribute("on");
-                        String sAtLeast = dependson.getAttribute("atleast");
-                        dep.setAtLest(sAtLeast);
-                        String sAtMost = dependson.getAttribute("atmost");
-                        dep.setAtMost(sAtMost);
+                        String atLeastString = dependson.getAttribute("atleast");
+                        dep.setAtLest(atLeastString);
+                        String atMostString = dependson.getAttribute("atmost");
+                        dep.setAtMost(atMostString);
                         dependencies.add(dep);
                     }
 
@@ -842,8 +842,8 @@ public class AddOnManager {
             throw new IOException("Error, could not add URL to system classloader");
         }
         String classpath = System.getProperty("java.class.path");
-        String sJar = u + "";
-        classpath += System.getProperty("path.separator") + sJar.substring(5);
+        String jar = u + "";
+        classpath += System.getProperty("path.separator") + jar.substring(5);
         System.setProperty("java.class.path", classpath);
         all_classes = null;
     }
@@ -902,13 +902,13 @@ public class AddOnManager {
             fileSep = "\\\\";
         }
         for (int i = 0; i < all_classes.size(); i++) {
-            String sStr = all_classes.get(i);
-            sStr = sStr.substring(0, sStr.length() - 6);
-            sStr = sStr.replaceAll(fileSep, ".");
-            if (sStr.startsWith(".")) {
-                sStr = sStr.substring(1);
+            String str = all_classes.get(i);
+            str = str.substring(0, str.length() - 6);
+            str = str.replaceAll(fileSep, ".");
+            if (str.startsWith(".")) {
+                str = str.substring(1);
             }
-            all_classes.set(i, sStr);
+            all_classes.set(i, str);
         }
 
     }
@@ -1087,15 +1087,15 @@ public class AddOnManager {
 
         List<String> result = new ArrayList<>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
-            String sClass = all_classes.get(i);
-            sClass = sClass.replaceAll("/", ".");
-            //Log.debug.println(sClass + " " + pkgname);
+            String className = all_classes.get(i);
+            className = className.replaceAll("/", ".");
+            //Log.debug.println(className + " " + pkgname);
 
             // must match package
-            if (sClass.startsWith(pkgname)) {
-                //Log.debug.println(sClass);
+            if (className.startsWith(pkgname)) {
+                //Log.debug.println(className);
                 try {
-                    Class<?> clsNew = Class.forName(sClass);
+                    Class<?> clsNew = Class.forName(className);
 
                     // no abstract classes
                     if (!Modifier.isAbstract(clsNew.getModifiers()) &&
@@ -1103,10 +1103,10 @@ public class AddOnManager {
                             (cls.isInterface() && hasInterface(cls, clsNew)) ||
                             // must be derived from class
                             (!clsNew.isInterface() && isSubclass(cls, clsNew))) {
-                        result.add(sClass);
+                        result.add(className);
                     }
                 } catch (Throwable e) {
-                    Log.debug.println("Checking class: " + sClass);
+                    Log.debug.println("Checking class: " + className);
                     e.printStackTrace();
                 }
 
@@ -1167,10 +1167,10 @@ public class AddOnManager {
                 System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
-            List<String> sURLs = getPackagesURL();
+            List<String> uRLs = getPackagesURL();
             Log.debug.println("Packages user path : " + getPackageUserDir());
-            for (String sURL : sURLs) {
-                Log.debug.println("Access URL : " + sURL);
+            for (String uRL : uRLs) {
+                Log.debug.println("Access URL : " + uRL);
             }
             Log.debug.print("Getting list of packages ...");
             List<Package> packages = null;

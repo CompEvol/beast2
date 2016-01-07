@@ -113,7 +113,7 @@ public class XMLProducer extends XMLParser {
             // beautify XML hierarchy
             String xml = cleanUpXML(buf.toString(), m_sXMLBeuatifyXSL);
             // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
-            // String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
+            // String xml2 = cleanUpXML(xml, m_sIDRefReplacementXSL);
             String xml2 = xml;
             xml = findPlates(xml2);
             // beatify by applying name spaces to spec attributes
@@ -168,7 +168,7 @@ public class XMLProducer extends XMLParser {
 
     // ensure attributes are ordered so that id goes first, then spec, then remainder of attributes
     private String sortTags(String xml) {
-    	//if (true) return sXML;
+    	//if (true) return xml;
     	String [] strs = xml.split("<");
     	StringBuilder bf = new StringBuilder();
     	bf.append(strs[0]);
@@ -365,15 +365,15 @@ public class XMLProducer extends XMLParser {
      */
     public String modelToXML(BEASTInterface beastObject) {
         try {
-            String sXML0 = toRawXML(beastObject);
-            String sXML = cleanUpXML(sXML0, m_sSupressAlignmentXSL);
+            String xML0 = toRawXML(beastObject);
+            String xml = cleanUpXML(xML0, m_sSupressAlignmentXSL);
             // TODO: fix m_sIDRefReplacementXSL script to deal with nested taxon sets
-            //String sXML2 = cleanUpXML(sXML, m_sIDRefReplacementXSL);
-            String sXML2 = sXML;
-            sXML = findPlates(sXML2);
-            sXML = sXML.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>", "");
-            sXML = sXML.replaceAll("\\n\\s*\\n", "\n");
-            return sXML;
+            //String xml2 = cleanUpXML(xml, m_sIDRefReplacementXSL);
+            String xml2 = xml;
+            xml = findPlates(xml2);
+            xml = xml.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>", "");
+            xml = xml.replaceAll("\\n\\s*\\n", "\n");
+            return xml;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -491,13 +491,13 @@ public class XMLProducer extends XMLParser {
                 if (comparables.size() > 0) {
                 	// TODO: FIX THIS SO THAT NOT AN ARBITRARY `1' is used to generate the plate
                     // we can make a plate now
-//                    String sRange = "1";
+//                    String rangeString = "1";
 //                    int k = 2;
 //                    for (Node sibling : comparables) {
-//                        sRange += "," + k++;
+//                        rangeString += "," + k++;
 //                        sibling.getParentNode().removeChild(sibling);
 //                    }
-//                    makePlate(child, "1", "n", sRange);
+//                    makePlate(child, "1", "n", rangeString);
                 }
             }
         }
@@ -509,43 +509,43 @@ public class XMLProducer extends XMLParser {
     } // findPlates
 
     /**
-     * replace node element by a plate element with variable sVar and range sRange *
+     * replace node element by a plate element with variable var and range rangeString *
      */
-    void makePlate(Node node, String sPattern, String sVar, String sRange) {
+    void makePlate(Node node, String pattern, String var, String rangeString) {
         Element plate = doc.createElement("plate");
-        plate.setAttribute("var", sVar);
-        plate.setAttribute("range", sRange);
-        String sIndent = node.getPreviousSibling().getTextContent();
-        replace(node, sPattern, sVar);
+        plate.setAttribute("var", var);
+        plate.setAttribute("range", rangeString);
+        String indent = node.getPreviousSibling().getTextContent();
+        replace(node, pattern, var);
         node.getParentNode().replaceChild(plate, node);
-        plate.appendChild(doc.createTextNode(sIndent + "  "));
+        plate.appendChild(doc.createTextNode(indent + "  "));
         plate.appendChild(node);
-        plate.appendChild(doc.createTextNode(sIndent));
+        plate.appendChild(doc.createTextNode(indent));
     }
 
     /**
-     * recursively replace all attribute values containing the pattern with variable sVar *
+     * recursively replace all attribute values containing the pattern with variable var *
      */
-    void replace(Node node, String sPattern, String sVar) {
+    void replace(Node node, String pattern, String var) {
         NamedNodeMap atts = node.getAttributes();
         if (atts != null) {
             for (int i = 0; i < atts.getLength(); i++) {
                 Attr attr = (Attr) atts.item(i);
-                String sValue = attr.getValue().replaceAll(sPattern, "\\$\\(" + sVar + "\\)");
-                attr.setValue(sValue);
+                String valueString = attr.getValue().replaceAll(pattern, "\\$\\(" + var + "\\)");
+                attr.setValue(valueString);
             }
         }
         NodeList children = node.getChildNodes();
         for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
             Node child = children.item(childIndex);
-            replace(child, sPattern, sVar);
+            replace(child, pattern, var);
         }
     }
 
     /**
-     * check if two XML nodes are the same, when sPattern1 is replaced by sPattothersern2 *
+     * check if two XML nodes are the same, when pattern1 is replaced by pattothersern2 *
      */
-    boolean comparable(Node node1, Node node2, String sPattern1, String sPattern2) {
+    boolean comparable(Node node1, Node node2, String pattern1, String pattern2) {
         // compare name
         if (!node1.getNodeName().equals(node2.getNodeName())) {
             return false;
@@ -562,17 +562,17 @@ public class XMLProducer extends XMLParser {
         }
         for (int i = 0; i < atts.getLength(); i++) {
             Attr attr = (Attr) atts.item(i);
-            String sName = attr.getName();
-            String sValue = attr.getValue();
-            Node att = atts2.getNamedItem(sName);
+            String name = attr.getName();
+            String valueString = attr.getValue();
+            Node att = atts2.getNamedItem(name);
             if (att == null) {
                 return false;
             }
-            String sValue2 = ((Attr) att).getValue();
-            if (!sValue.equals(sValue2)) {
-                sValue = sValue.replaceAll(sPattern1, "\\$\\(n\\)");
-                sValue2 = sValue2.replaceAll(sPattern2, "\\$\\(n\\)");
-                if (!sValue.equals(sValue2)) {
+            String valueString2 = ((Attr) att).getValue();
+            if (!valueString.equals(valueString2)) {
+                valueString = valueString.replaceAll(pattern1, "\\$\\(n\\)");
+                valueString2 = valueString2.replaceAll(pattern2, "\\$\\(n\\)");
+                if (!valueString.equals(valueString2)) {
                     return false;
                 }
             }
@@ -588,7 +588,7 @@ public class XMLProducer extends XMLParser {
                 for (int childIndex2 = 0; !isMatch && childIndex2 < children2.getLength(); childIndex2++) {
                     Node child2 = children2.item(childIndex2);
                     if (child2.getNodeType() == Node.ELEMENT_NODE && name.equals(child2.getNodeName())) {
-                        isMatch = comparable(child, child2, sPattern1, sPattern2);
+                        isMatch = comparable(child, child2, pattern1, pattern2);
                     }
                 }
                 if (!isMatch) {
@@ -771,7 +771,7 @@ public class XMLProducer extends XMLParser {
             "</xsl:stylesheet>\n";
 
     /**
-     * produce elements for a beast object with name sName, putting results in buf.
+     * produce elements for a beast object with name name, putting results in buf.
      * It tries to create XML conforming to the XML transformation rules (see XMLParser)
      * that is moderately readable.
      */
@@ -788,28 +788,28 @@ public class XMLProducer extends XMLParser {
         }
         
 //        if (beastObject instanceof Alignment) {
-//            sElementName = XMLParser.DATA_ELEMENT;
+//            elementName = XMLParser.DATA_ELEMENT;
 //        }
 //        if (beastObject instanceof Sequence) {
-//            sElementName = XMLParser.SEQUENCE_ELEMENT;
+//            elementName = XMLParser.SEQUENCE_ELEMENT;
 //        }
 //        if (beastObject instanceof State) {
-//            sElementName = XMLParser.STATE_ELEMENT;
+//            elementName = XMLParser.STATE_ELEMENT;
 //        }
 //        if (beastObject instanceof Distribution) {
-//            sElementName = XMLParser.DISTRIBUTION_ELEMENT;
+//            elementName = XMLParser.DISTRIBUTION_ELEMENT;
 //        }
 //        if (beastObject instanceof Logger) {
-//            sElementName = XMLParser.LOG_ELEMENT;
+//            elementName = XMLParser.LOG_ELEMENT;
 //        }
 //        if (beastObject instanceof Operator) {
-//            sElementName = XMLParser.OPERATOR_ELEMENT;
+//            elementName = XMLParser.OPERATOR_ELEMENT;
 //        }
 //        if (beastObject instanceof RealParameter) {
-//            sElementName = XMLParser.REAL_PARAMETER_ELEMENT;
+//            elementName = XMLParser.REAL_PARAMETER_ELEMENT;
 //        }
 //        if (beastObject instanceof Tree) {
-//            sElementName = XMLParser.TREE_ELEMENT;
+//            elementName = XMLParser.TREE_ELEMENT;
 //        }
 
         if (isTopLevel) {
@@ -831,17 +831,17 @@ public class XMLProducer extends XMLParser {
         } else {
             // see whether a reasonable id can be generated
             if (beastObject.getID() != null && !beastObject.getID().equals("")) {
-                String sID = beastObject.getID();
+                String id = beastObject.getID();
                 // ensure ID is unique
-                if (IDs.contains(sID)) {
+                if (IDs.contains(id)) {
                     int k = 1;
-                    while (IDs.contains(sID + k)) {
+                    while (IDs.contains(id + k)) {
                         k++;
                     }
-                    sID = sID + k;
+                    id = id + k;
                 }
-                buf.append(" id='" + normalise(sID) + "'");
-                IDs.add(sID);
+                buf.append(" id='" + normalise(id) + "'");
+                IDs.add(id);
             }
             isDone.add(beastObject);
         }
@@ -906,7 +906,7 @@ public class XMLProducer extends XMLParser {
      * produce XML for an input of a beast object, both as attribute/value pairs for
      * primitive inputs (if bShort=true) and as individual elements (if bShort=false)
      *
-     * @param sInput: name of the input
+     * @param input: name of the input
      * @param beastObject: beast object to produce this input XML for
      * @param buf:    gets XML results are appended
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)

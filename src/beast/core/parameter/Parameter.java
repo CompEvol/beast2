@@ -87,14 +87,14 @@ public interface Parameter<T> extends Function {
         @SuppressWarnings("unchecked")
 		@Override
         public void initAndValidate() throws Exception {
-            T[] sValues = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
+            T[] valuesString = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
 
-            int nDimension = Math.max(dimensionInput.get(), sValues.length);
+            int nDimension = Math.max(dimensionInput.get(), valuesString.length);
             dimensionInput.setValue(nDimension, this);
             values = (T[]) Array.newInstance(getMax().getClass(), nDimension);
             storedValues = (T[]) Array.newInstance(getMax().getClass(), nDimension);
             for (int i = 0; i < values.length; i++) {
-                values[i] = sValues[i % sValues.length];
+                values[i] = valuesString[i % valuesString.length];
             }
 
             m_bIsDirty = new boolean[dimensionInput.get()];

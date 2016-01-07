@@ -185,12 +185,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         	} else if (type.equals("Tree")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}
-            String sPartition = partition.getID();
-            sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
-            if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
-            	sPartition = sPartition.substring(2);
+            String partitionID = partition.getID();
+            partitionID = partitionID.substring(partitionID.lastIndexOf('.') + 1);
+            if (partitionID.length() > 1 && partitionID.charAt(1) == ':') {
+            	partitionID = partitionID.substring(2);
             }
-            listModel.addElement(sPartition);
+            listModel.addElement(partitionID);
         }
         if (iPartition >= 0 && listModel.size() > 0)
             listOfPartitions.setSelectedIndex(iPartition);
@@ -312,15 +312,15 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         	} else if (type.equals("Tree")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).treeInput.get();
         	}
-            String sPartition = partition.getID();
-            sPartition = sPartition.substring(sPartition.lastIndexOf('.') + 1);
-            if (sPartition.length() > 1 && sPartition.charAt(1) == ':') {
-            	sPartition = sPartition.substring(2);
+            String partitionID = partition.getID();
+            partitionID = partitionID.substring(partitionID.lastIndexOf('.') + 1);
+            if (partitionID.length() > 1 && partitionID.charAt(1) == ':') {
+            	partitionID = partitionID.substring(2);
             }
-            if (sPartition.equals(sourceID)) {
+            if (partitionID.equals(sourceID)) {
             	iSource = i;
             }
-            if (sPartition.equals(targetID)) {
+            if (partitionID.equals(targetID)) {
             	iTarget = i;
             }
         } 

@@ -104,12 +104,12 @@ public class RealParameter extends Parameter.Base<Double> {
 
 
     @Override
-    void fromXML(final int nDimension, final String sLower, final String sUpper, final String[] sValues) {
-        setLower(Double.parseDouble(sLower));
-        setUpper(Double.parseDouble(sUpper));
+    void fromXML(final int nDimension, final String lower, final String upper, final String[] valuesString) {
+        setLower(Double.parseDouble(lower));
+        setUpper(Double.parseDouble(upper));
         values = new Double[nDimension];
-        for (int i = 0; i < sValues.length; i++) {
-            values[i] = Double.parseDouble(sValues[i]);
+        for (int i = 0; i < valuesString.length; i++) {
+            values[i] = Double.parseDouble(valuesString[i]);
         }
     }
 

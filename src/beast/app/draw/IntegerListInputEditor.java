@@ -254,27 +254,27 @@ public class IntegerListInputEditor extends ListInputEditor {
         @Override
 		protected void addInputLabel() {
             if (m_bAddButtons) {
-                String sName = formatName(m_input.getName());
-                addInputLabel(sName, m_input.getHTMLTipText());
+                String name = formatName(m_input.getName());
+                addInputLabel(name, m_input.getHTMLTipText());
             }
         }
 
         @Override
-		protected String formatName(String sName) {
-    	    if (doc.beautiConfig.inputLabelMap.containsKey(m_beastObject.getClass().getName() + "." + sName)) {
-    	        sName = doc.beautiConfig.inputLabelMap.get(m_beastObject.getClass().getName() + "." + sName);
+		protected String formatName(String name) {
+    	    if (doc.beautiConfig.inputLabelMap.containsKey(m_beastObject.getClass().getName() + "." + name)) {
+    	        name = doc.beautiConfig.inputLabelMap.get(m_beastObject.getClass().getName() + "." + name);
     	    } else {
-    	        sName = sName.replaceAll("([a-z])([A-Z])", "$1 $2");
-    	        sName = sName.substring(0, 1).toUpperCase() + sName.substring(1);
+    	        name = name.replaceAll("([a-z])([A-Z])", "$1 $2");
+    	        name = name.substring(0, 1).toUpperCase() + name.substring(1);
     	    }
-    	    return sName;
+    	    return name;
         }
 
         @Override
-		protected void addInputLabel(String sLabel, String sTipText) {
+		protected void addInputLabel(String label, String tipText) {
             if (m_bAddButtons) {
-                m_inputLabel = new JLabel(sLabel);
-                m_inputLabel.setToolTipText(sTipText);
+                m_inputLabel = new JLabel(label);
+                m_inputLabel.setToolTipText(tipText);
                 m_inputLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
                 //Dimension size = new Dimension(g_nLabelWidth, 20);
                 Dimension size = new Dimension(200, 20);

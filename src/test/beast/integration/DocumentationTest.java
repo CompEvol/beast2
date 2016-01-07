@@ -22,9 +22,9 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testDescriptions() {
-        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        final List<String> sUndocumentedPlugins = new ArrayList<String>();
-        for (final String beastObjectName : sPluginNames) {
+        final List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> undocumentedPlugins = new ArrayList<String>();
+        for (final String beastObjectName : pluginNames) {
             try {
                 final Class<?> pluginClass = Class.forName(beastObjectName);
                 final Annotation[] classAnnotations = pluginClass.getAnnotations();
@@ -32,19 +32,19 @@ public class DocumentationTest extends TestCase {
                 for (final Annotation annotation : classAnnotations) {
                     if (annotation instanceof Description) {
                         final Description description = (Description) annotation;
-                        final String sDescription = description.value();
-                        if (isProperDocString(sDescription)) {
+                        final String descriptionString = description.value();
+                        if (isProperDocString(descriptionString)) {
                             hasSatisfactoryDescription = true;
                         }
                     }
                 }
                 if (!hasSatisfactoryDescription) {
-                    sUndocumentedPlugins.add(beastObjectName);
+                    undocumentedPlugins.add(beastObjectName);
                 }
             } catch (Exception e) {
             }
         }
-        assertTrue("No proper description for: " + sUndocumentedPlugins.toString(), sUndocumentedPlugins.size() == 0);
+        assertTrue("No proper description for: " + undocumentedPlugins.toString(), undocumentedPlugins.size() == 0);
     } // testDescriptions
 
     /**
@@ -53,20 +53,20 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testInputTipText() {
-        final List<String> sPluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
-        final List<String> sUndocumentedInputs = new ArrayList<String>();
-        for (final String beastObjectName : sPluginNames) {
+        final List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> undocumentedInputs = new ArrayList<String>();
+        for (final String beastObjectName : pluginNames) {
             try {
                 final BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
                 final List<Input<?>> inputs = beastObject.listInputs();
                 for (final Input<?> input : inputs) {
                     boolean hasSatisfactoryDescription = false;
-                    final String sTipText = input.getTipText();
-                    if (isProperDocString(sTipText)) {
+                    final String tipText = input.getTipText();
+                    if (isProperDocString(tipText)) {
                         hasSatisfactoryDescription = true;
                     }
                     if (!hasSatisfactoryDescription) {
-                        sUndocumentedInputs.add(beastObjectName + ":" + input.getName());
+                        undocumentedInputs.add(beastObjectName + ":" + input.getName());
                     }
                 }
             } catch (Exception e) {
@@ -74,7 +74,7 @@ public class DocumentationTest extends TestCase {
         }
 
         assertTrue("No proper input tip text (at least " + N_WORDS + " words and " + N_CHARS + " characters) for: "
-                + sUndocumentedInputs.toString(), sUndocumentedInputs.size() == 0);
+                + undocumentedInputs.toString(), undocumentedInputs.size() == 0);
     } // testInputTipText
 
 
@@ -85,14 +85,14 @@ public class DocumentationTest extends TestCase {
     @Test
     public void test_DocMaker() throws Exception {
         // this code runs just fine stand alone, but not in ant. TODO: figure out why
-//		String [] sArgs = {"."};
-//		DocMaker b = new DocMaker(sArgs);
+//		String [] args = {"."};
+//		DocMaker b = new DocMaker(args);
 //		b.generateDocs();
 //		// clean up
-//		String [] sFiles = new File(".").list();
-//		for (String sFile : sFiles) {
-//			if (sFile.endsWith(".html")) {
-//				new File(sFile).delete();
+//		String [] files = new File(".").list();
+//		for (String fileName : files) {
+//			if (fileName.endsWith(".html")) {
+//				new File(fileName).delete();
 //			}
 //		}
     } // test_DocMaker
@@ -103,14 +103,14 @@ public class DocumentationTest extends TestCase {
 
     // description of at least 15 chars and at least 4 words is satisfactory?!?
     // TODO: needs a bit more smarts to prevent as df a hsf jasd;fajasdf
-    boolean isProperDocString(final String sStr) {
+    boolean isProperDocString(final String str) {
         // check length
-        if (sStr.length() < N_CHARS) {
+        if (str.length() < N_CHARS) {
             return false;
         }
         // count nr of words
-        final String[] sWords = sStr.split("\\s+");
-        if (sWords.length < N_WORDS) {
+        final String[] words = str.split("\\s+");
+        if (words.length < N_WORDS) {
             return false;
         }
         return true;

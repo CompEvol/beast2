@@ -41,8 +41,8 @@ public class ESS extends BEASTObject implements Loggable {
 
     @Override
     public void init(PrintStream out) throws Exception {
-        final String sID = ((BEASTObject) functionInput.get()).getID();
-        out.print("ESS(" + sID + ")\t");
+        final String id = ((BEASTObject) functionInput.get()).getID();
+        out.print("ESS(" + id + ")\t");
     }
 
     final static int MAX_LAG = 2000;

@@ -39,21 +39,21 @@ public class PriorInputEditor extends InputEditor.Base {
         Box itemBox = Box.createHorizontalBox();
 
         Prior prior = (Prior) beastObject;
-        String sText = prior.getParameterName();
-        JLabel label = new JLabel(sText);
+        String text = prior.getParameterName();
+        JLabel label = new JLabel(text);
         label.setMinimumSize(PREFERRED_SIZE);
         label.setPreferredSize(PREFERRED_SIZE);
         itemBox.add(label);
 
         List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);
         JComboBox<BeautiSubTemplate> comboBox = new JComboBox<BeautiSubTemplate>(availableBEASTObjects.toArray(new BeautiSubTemplate[]{}));
-        comboBox.setName(sText+".distr");
+        comboBox.setName(text+".distr");
 
-        String sID = prior.distInput.get().getID();
-        //Log.warning.println("id=" + sID);
-        sID = sID.substring(0, sID.indexOf('.'));
+        String id = prior.distInput.get().getID();
+        //Log.warning.println("id=" + id);
+        id = id.substring(0, id.indexOf('.'));
         for (BeautiSubTemplate template : availableBEASTObjects) {
-            if (template.sClassInput.get() != null && template.sShortClassName.equals(sID)) {
+            if (template.classInput.get() != null && template.shortClassName.equals(id)) {
                 comboBox.setSelectedItem(template);
             }
         }
@@ -64,8 +64,8 @@ public class PriorInputEditor extends InputEditor.Base {
             List<?> list = (List<?>) m_input.get();
 
             BeautiSubTemplate template = (BeautiSubTemplate) comboBox1.getSelectedItem();
-            //String sID = ((BEASTObject) list.get(iItem)).getID();
-            //String sPartition = BeautiDoc.parsePartition(sID);
+            //String id = ((BEASTObject) list.get(iItem)).getID();
+            //String partition = BeautiDoc.parsePartition(id);
             PartitionContext context = doc.getContextFor((BEASTInterface) list.get(itemNr));
             Prior prior1 = (Prior) list.get(itemNr);
             try {
@@ -120,10 +120,10 @@ public class PriorInputEditor extends InputEditor.Base {
         }
         comboBox.setMaximumSize(new Dimension(1024, 24));
 
-        String sTipText = getDoc().tipTextMap.get(beastObject.getID());
+        String tipText = getDoc().tipTextMap.get(beastObject.getID());
         //System.out.println(beastObject.getID());
-        if (sTipText != null) {
-            JLabel tipTextLabel = new JLabel(" " + sTipText);
+        if (tipText != null) {
+            JLabel tipTextLabel = new JLabel(" " + tipText);
             itemBox.add(tipTextLabel);
         }
         itemBox.add(Box.createGlue());
