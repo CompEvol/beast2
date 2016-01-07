@@ -354,9 +354,11 @@ public class ListInputEditor extends InputEditor.Base {
         BEASTInterface plugin = (BEASTInterface) ((List<?>) m_input.get()).get(i);
         BEASTObjectDialog dlg = new BEASTObjectDialog(plugin, m_input.getType(), doc);
         if (dlg.showDialog()) {
-            //m_labels.get(i).setText(dlg.m_panel.m_plugin.getID());
-            m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
-            //o = dlg.m_panel.m_plugin;
+            //m_labels.get(i).setText(dlg.m_panel.m_beastObject.getID());
+        	if (m_entries.size() > i) {
+        		m_entries.get(i).setText(dlg.m_panel.m_plugin.getID());
+        	}
+            //o = dlg.m_panel.m_beastObject;
             dlg.accept((BEASTInterface) o, doc);
             refreshPanel();
         }
