@@ -56,31 +56,31 @@ public class UserDataType extends Base {
         stateCount = stateCountInput.get();
         codeLength = codeLengthInput.get();
 
-        String codeMap = codeMapInput.get();
+        String codeMapString = codeMapInput.get();
         if (!codeMapInput.get().equals("")) {
-            String[] strs = codeMap.split(",");
+            String[] sStrs = codeMapString.split(",");
             codeMap = "";
-            mapCodeToStateSet = new int[strs.length][];
+            mapCodeToStateSet = new int[sStrs.length][];
             int k = 0;
-            for (String str : strs) {
-                String[] strs2 = str.split("=");
+            for (String sStr : sStrs) {
+                String[] sStrs2 = sStr.split("=");
                 // parse the code
-                String code = strs2[0].replaceAll("\\s", "");
+                String sCode = sStrs2[0].replaceAll("\\s", "");
 
-                codeMap += code;
+                codeMap += sCode;
                 if (codeLength > 0) {
-                    if (code.length() != codeLength) {
-                        throw new IllegalArgumentException("Invalide code '" + code + "'. Expected code of length " + codeLength);
+                    if (sCode.length() != codeLength) {
+                        throw new IllegalArgumentException("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
                     }
                 } else {
                     codeMap += ",";
                 }
                 // parse the state set
                 List<Integer> stateSet = new ArrayList<>();
-                strs2 = strs2[1].split("\\s+");
-                for (String str2 : strs2) {
-                    if (str2.length() > 0) {
-                        int i = Integer.parseInt(str2);
+                sStrs2 = sStrs2[1].split("\\s+");
+                for (String sStr2 : sStrs2) {
+                    if (sStr2.length() > 0) {
+                        int i = Integer.parseInt(sStr2);
                         if (i < 0 || (stateCount > 0 && i >= stateCount)) {
                             throw new IllegalArgumentException("state index should be from 0 to statecount, not " + i);
                         }
