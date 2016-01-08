@@ -141,11 +141,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     // returns true if bitSet is a subset of bitSet2
 //    private boolean isSubset(final BitSet bitSet, final BitSet bitSet2) {
-//        boolean bIsSubset = true;
-//        for (int k = bitSet.nextSetBit(0); bIsSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
-//            bIsSubset = bitSet2.get(k);
+//        boolean isSubset = true;
+//        for (int k = bitSet.nextSetBit(0); isSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
+//            isSubset = bitSet2.get(k);
 //        }
-//        return bIsSubset;
+//        return isSubset;
 //    }
 
     @SuppressWarnings("unchecked")
@@ -201,7 +201,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (final MRCAPrior prior : calibrations) {
             final TaxonSet taxonSet = prior.taxonsetInput.get();
             if (taxonSet != null && !prior.onlyUseTipsInput.get()) {
-	            final Set<String> bTaxa = new HashSet<>();
+	            final Set<String> taxa = new HashSet<>();
 	        	if (taxonSet.asStringList() == null) {
 	        		taxonSet.initAndValidate();
 	        	}
@@ -210,7 +210,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	                if (!taxa.contains(taxonID)) {
 	                    throw new IllegalArgumentException("Taxon <" + taxonID + "> could not be found in list of taxa. Choose one of " + taxa.toArray(new String[0]));
 	                }
-	                bTaxa.add(taxonID);
+	                taxa.add(taxonID);
 	            }
 	            final ParametricDistribution distr = prior.distInput.get();
 	            final Bound bounds = new Bound();
@@ -226,7 +226,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	
 	            if (prior.isMonophyleticInput.get()) {
 	                // add any monophyletic constraint
-	                taxonSets.add(lastMonophyletic, bTaxa);
+	                taxonSets.add(lastMonophyletic, taxa);
 	                distributions.add(lastMonophyletic, distr);
 	                m_bounds.add(lastMonophyletic, bounds);
 	                taxonSetIDs.add(prior.getID());
@@ -234,7 +234,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	            } else {
 	                // only calibrations with finite bounds are added
 	                if (!Double.isInfinite(bounds.lower) || !Double.isInfinite(bounds.upper)) {
-	                    taxonSets.add(bTaxa);
+	                    taxonSets.add(taxa);
 	                    distributions.add(distr);
 	                    m_bounds.add(bounds);
 	                    taxonSetIDs.add(prior.getID());
@@ -256,18 +256,18 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 intersection.retainAll(taxonSets.get(j));
 
                 if (intersection.size() > 0) {
-                    final boolean bIsSubset = taxonSets.get(i).containsAll(taxonSets.get(j));
-                    final boolean bIsSubset2 = taxonSets.get(j).containsAll(taxonSets.get(i));
+                    final boolean isSubset = taxonSets.get(i).containsAll(taxonSets.get(j));
+                    final boolean isSubset2 = taxonSets.get(j).containsAll(taxonSets.get(i));
                     // sanity check: make sure either
                     // o taxonset1 is subset of taxonset2 OR
                     // o taxonset1 is superset of taxonset2 OR
                     // o taxonset1 does not intersect taxonset2
-                    if (!(bIsSubset || bIsSubset2)) {
+                    if (!(isSubset || isSubset2)) {
                         throw new IllegalArgumentException("333: Don't know how to generate a Random Tree for taxon sets that intersect, " +
                                 "but are not inclusive. Taxonset " + taxonSetIDs.get(i) + " and " + taxonSetIDs.get(j));
                     }
                     // swap i & j if b1 subset of b2
-                    if (bIsSubset) {
+                    if (isSubset) {
                         swap(taxonSets, i, j);
                         swap(distributions, i, j);
                         swap(m_bounds, i, j);
@@ -343,9 +343,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             final MRCAPrior p = calibrations.get(k);
             if( p.isMonophyleticInput.get() ) {
                 final TaxonSet taxonSet = p.taxonsetInput.get();
-                final Set<String> bTaxa = new HashSet<>();
-                bTaxa.addAll(taxonSet.asStringList());
-                /* int c = */ traverse(root, bTaxa, taxonSet.getTaxonCount(), new int[1]);
+                final Set<String> taxa = new HashSet<>();
+                taxa.addAll(taxonSet.asStringList());
+                /* int c = */ traverse(root, taxa, taxonSet.getTaxonCount(), new int[1]);
                 // boolean b = c == nrOfTaxa + 127;
             }
         }
@@ -469,15 +469,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (final int iMonoNode : children[iIsMonophyleticNode]) {
             // create list of leaf nodes for this monophyletic MRCA
             final Set<Node> candidates2 = new HashSet<>();
-            final Set<String> bTaxonSet = taxonSets.get(iMonoNode);
-            for (String taxon : bTaxonSet) {
+            final Set<String> isTaxonSet = taxonSets.get(iMonoNode);
+            for (String taxon : isTaxonSet) {
                 candidates2.add(allCandidates.get(taxon));
             }
 
             final Node MRCA = simulateCoalescent(iMonoNode, allCandidates, candidates2, demoFunction);
             remainingCandidates.add(MRCA);
 
-            taxaDone.addAll(bTaxonSet);
+            taxaDone.addAll(isTaxonSet);
         }
 
         for (final Node node : candidates) {

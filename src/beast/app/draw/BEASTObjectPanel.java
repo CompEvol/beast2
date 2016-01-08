@@ -150,9 +150,9 @@ public class BEASTObjectPanel extends JPanel {
         this(beastObject, _pluginClass, true, doc);
     }
 
-    public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, boolean bShowHeader, BeautiDoc doc) {
+    public BEASTObjectPanel(BEASTInterface beastObject, Class<?> _pluginClass, boolean isShowHeader, BeautiDoc doc) {
         initPlugins(beastObject, doc);
-        init(beastObject, _pluginClass, bShowHeader, doc);
+        init(beastObject, _pluginClass, isShowHeader, doc);
     }
 
     void init(BEASTInterface beastObject, Class<?> _pluginClass, boolean showHeader, BeautiDoc doc) {
@@ -324,16 +324,16 @@ public class BEASTObjectPanel extends JPanel {
         /* process outputs */
         List<BEASTInterface> ascendants = new ArrayList<>();
         ascendants.add(parent);
-        boolean bProgress = true;
-        while (bProgress) {
-            bProgress = false;
+        boolean progress = true;
+        while (progress) {
+            progress = false;
             for (int i = 0; i < ascendants.size(); i++) {
                 BEASTInterface ascendant = ascendants.get(i);
                 if (outputs.containsKey(ascendant)) {
                     for (BEASTInterface parent2 : outputs.get(ascendant)) {
                         if (!ascendants.contains(parent2)) {
                             ascendants.add(parent2);
-                            bProgress = true;
+                            progress = true;
                         }
                     }
                 }

@@ -119,7 +119,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
 		this.itemNr = itemNr;
 		if (input.get() instanceof List) {
 			alignments = (List<Alignment>) input.get();
@@ -193,7 +193,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
         delButton.setName("-");
         delButton.setToolTipText("Delete selected items from the list");
         delButton.addActionListener(e -> {
-            if (doc.bHasLinkedAtLeastOnce) {
+            if (doc.hasLinkedAtLeastOnce) {
                 JOptionPane.showMessageDialog(null, "Cannot delete partition while parameters are linked");
                 return;
             }
@@ -270,7 +270,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
             table.repaint();
         });
 		box.add(linkSModelButton);
-		linkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
+		linkSModelButton.setEnabled(!getDoc().hasLinkedAtLeastOnce);
 		JButton unlinkSModelButton = new JButton("Unlink " + label);
 		unlinkSModelButton.setName("Unlink " + label);
 		unlinkSModelButton.addActionListener(e -> {
@@ -279,7 +279,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
             table.repaint();
         });
 		box.add(unlinkSModelButton);
-		unlinkSModelButton.setEnabled(!getDoc().bHasLinkedAtLeastOnce);
+		unlinkSModelButton.setEnabled(!getDoc().hasLinkedAtLeastOnce);
 
 		linkButtons.add(linkSModelButton);
 		unlinkButtons.add(unlinkSModelButton);

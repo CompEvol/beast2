@@ -344,11 +344,11 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		warning("3. change group and population size parameters");
 		beautiFrame.menuItemWithPath("View","Show Initialization panel").click();
 		
-		beautiFrame.button("bPopSizes.t:tree.editButton").click();
+		beautiFrame.button("isPopSizes.t:tree.editButton").click();
 		beautiFrame.textBox("dimension").selectAll().setText("3");
-		beautiFrame.button("bPopSizes.t:tree.editButton").click();
+		beautiFrame.button("isPopSizes.t:tree.editButton").click();
 		
-		beautiFrame.button("bGroupSizes.t:tree.editButton").click();
+		beautiFrame.button("isGroupSizes.t:tree.editButton").click();
 		beautiFrame.textBox("dimension").selectAll().setText("3");
 		screenshotTaker.saveComponentAsPng(beauti.frame, PREFIX + "init.png");
 		printBeautiState(f);

@@ -212,8 +212,8 @@ abstract public class Shape {
         if (iSpace < 0) {
             iSpace = color.length();
         }
-        String bStr = color.substring(iStart, iSpace);
-        int b = (new Integer(bStr)).intValue();
+        String isStr = color.substring(iStart, iSpace);
+        int b = (new Integer(isStr)).intValue();
         return new Color(r, g, b);
     } // string2Color
 

@@ -53,10 +53,10 @@ public class ClockModelListInputEditor extends ListInputEditor {
     protected SmallLabel fixMeanRatesValidateLabel;
     
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean rate of clock models");
     	m_buttonStatus = ButtonStatus.NONE;
-    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
     	
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
     	fixMeanRatesCheckBox.addActionListener(e -> {
@@ -114,7 +114,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
     	List<RealParameter> parameters = operator.parameterInput.get();
     	parameters.clear();
     	double commonClockRate = -1;
-    	boolean bAllClocksAreEqual = true;
+    	boolean isAllClocksAreEqual = true;
 		try {
 	    	for (int i = 0; i < doc.alignments.size(); i++) {
 	    		Alignment data = doc.alignments.get(i); 
@@ -127,13 +127,13 @@ public class ClockModelListInputEditor extends ListInputEditor {
 	    				commonClockRate = clockRate.valuesInput.get().get(0);
 	    			} else {
 	    				if (Math.abs(commonClockRate - clockRate.valuesInput.get().get(0)) > 1e-10) {
-	    					bAllClocksAreEqual = false;
+	    					isAllClocksAreEqual = false;
 	    				}
 	    			}
     				weights += weight + " ";
 	    			parameters.add(clockRate);
 	    		}
-	    		//doc.bAutoSetClockRate = false;
+	    		//doc.autoSetClockRate = false;
 	    	}
 	    	if (!fixMeanRatesCheckBox.isSelected()) {
 	    		fixMeanRatesValidateLabel.setVisible(false);
@@ -150,7 +150,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
 			weightParameter.setID("weightparameter");
 			weightParameter.isEstimatedInput.setValue(false, weightParameter);
 	    	operator.parameterWeightsInput.setValue(weightParameter, operator);
-	    	if (!bAllClocksAreEqual) {
+	    	if (!isAllClocksAreEqual) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
 	    		fixMeanRatesValidateLabel.setToolTipText("Not all clocks are equal. Are you sure this is what you want?");
@@ -166,7 +166,7 @@ public class ClockModelListInputEditor extends ListInputEditor {
 	    		fixMeanRatesValidateLabel.setVisible(false);
 	    	}
 			repaint();
-    		//doc.bAutoSetClockRate = true;
+    		//doc.autoSetClockRate = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

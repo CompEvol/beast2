@@ -904,7 +904,7 @@ public class XMLProducer extends XMLParser {
 
     /**
      * produce XML for an input of a beast object, both as attribute/value pairs for
-     * primitive inputs (if bShort=true) and as individual elements (if bShort=false)
+     * primitive inputs (if isShort=true) and as individual elements (if isShort=false)
      *
      * @param input: name of the input
      * @param beastObject: beast object to produce this input XML for

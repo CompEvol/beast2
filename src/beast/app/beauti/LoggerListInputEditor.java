@@ -33,8 +33,8 @@ public class LoggerListInputEditor extends ListInputEditor {
     
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+    	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
     }
     
     @Override

@@ -20,7 +20,7 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
     Alignment alignment;
 
     private static final long serialVersionUID = 1L;
-    boolean bUseDefaultBehavior;
+    boolean useDefaultBehavior;
 
 	public FrequenciesInputEditor(BeautiDoc doc) {
 		super(doc);
@@ -33,8 +33,8 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        super.init(input, beastObject, itemNr, isExpandOption, addButtons);
     } // init
 
 

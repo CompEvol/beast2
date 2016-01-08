@@ -57,14 +57,14 @@ public class TreeSetParser {
 	/** flag to indicate that single child nodes are allowed **/
 	boolean m_bAllowSingleChild = false;
 	
-	public TreeSetParser(int nBurnInPercentage, boolean bAllowSingleChild) {
+	public TreeSetParser(int nBurnInPercentage, boolean allowSingleChild) {
 		m_sLabels = new ArrayList<>();
 		m_fLongitude = new ArrayList<>();
 		m_fLatitude = new ArrayList<>();
 		m_nBurnInPercentage = Math.max(nBurnInPercentage, 0);
 		m_fMinLat = 90; m_fMinLong = 180;
 		m_fMaxLat = -90; m_fMaxLong = -180;
-		m_bAllowSingleChild = bAllowSingleChild;
+		m_bAllowSingleChild = allowSingleChild;
 	} // c'tor
 	
 	public TreeSetParser(List<String> labels, List<Float> longitude, List<Float> latitude, int nBurnInPercentage) {
@@ -114,7 +114,7 @@ public class TreeSetParser {
 		}
 		m_bIsLabelledNewick = false;
 		m_nNrOfLabels = m_sLabels.size();
-		boolean bAddLabels = (m_nNrOfLabels == 0);
+		boolean addLabels = (m_nNrOfLabels == 0);
 		if (str.toLowerCase().indexOf("translate") < 0) {
 			m_bIsLabelledNewick = true;
 			// could not find translate block, assume it is a list of Newick trees instead of Nexus file
@@ -136,7 +136,7 @@ public class TreeSetParser {
 					str2 = str2.replaceAll("[;\\(\\),]"," ");
 					str2 = str2.replaceAll(":[0-9\\.Ee-]+"," ");
 					String [] labels = str2.split("\\s+");
-					if (bAddLabels) {
+					if (addLabels) {
 						m_nNrOfLabels = 0;
 						for (int i = 0; i < labels.length; i++) {
 							if (labels[i].length() > 0) {
@@ -169,15 +169,15 @@ public class TreeSetParser {
 			// read tree set from file, and store in individual strings
 			str = readLine(fin);
 			//m_nNrOfLabels = 0;
-			boolean bLastLabel = false;
-			while (fin.ready() && !bLastLabel) {
+			boolean isLastLabel = false;
+			while (fin.ready() && !isLastLabel) {
 				if (str.indexOf(";") >= 0) {
 					str = str.replace(';',' ');
 					str = str.trim();
 					if (str.isEmpty()) {
 						break;
 					}
-					bLastLabel = true;
+					isLastLabel = true;
 				}
 				str = str.replaceAll(",", "");
 				str = str.replaceAll("^\\s+", "");
@@ -213,11 +213,11 @@ public class TreeSetParser {
 					}
 					label = label.substring(0, label.indexOf("("));
 				}
-				if (bAddLabels) {
+				if (addLabels) {
 					m_sLabels.add(label);
 					m_nNrOfLabels++;
 				}
-				if (!bLastLabel) {
+				if (!isLastLabel) {
 					str = readLine(fin);
 				}
 			}
@@ -440,7 +440,7 @@ public class TreeSetParser {
 		isFirstChild.add(true);
 		stack.lastElement().setHeight(DEFAULT_LENGTH);
 		metaDataString.add(null);
-		boolean bIsLabel = true;
+		boolean isLabel = true;
 		while (m_iTokenEnd < m_chars.length) {
 			switch (nextToken()) {
 			case BRACE_OPEN:
@@ -450,7 +450,7 @@ public class TreeSetParser {
 				stack.add(node2);
 				isFirstChild.add(true);
 				metaDataString.add(null);
-				bIsLabel = true;
+				isLabel = true;
 			}
 				break;
 			case BRACE_CLOSE:
@@ -526,14 +526,14 @@ public class TreeSetParser {
 				stack.add(node2);
 				isFirstChild.add(false);
 				metaDataString.add(null);
-				bIsLabel = true;
+				isLabel = true;
 			}
 				break;
 			case COLON:
-				bIsLabel = false;
+				isLabel = false;
 				break;
 			case TEXT:
-				if (bIsLabel) {
+				if (isLabel) {
 					String label = str.substring(m_iTokenStart, m_iTokenEnd);
 					stack.lastElement().setNr(getLabelIndex(label)); 
 				} else {

@@ -96,17 +96,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * contains all loggers from the template *
      */
 
-    public boolean bAutoSetClockRate = true;
+    public boolean autoSetClockRate = true;
         
-    public boolean bAutoUpdateOperatorWeights = true;
+    public boolean autoUpdateOperatorWeights = true;
 
-    public boolean bAutoUpdateFixMeanSubstRate = true;
+    public boolean autoUpdateFixMeanSubstRate = true;
     /**
      * flags for whether parameters can be linked.
      * Once a parameter is linked, (un)linking in the alignment editor should be disabled
      */
-    public boolean bAllowLinking = false;
-    public boolean bHasLinkedAtLeastOnce = false;
+    public boolean allowLinking = false;
+    public boolean hasLinkedAtLeastOnce = false;
 
     /**
      * [0] = sitemodel [1] = clock model [2] = tree *
@@ -754,16 +754,16 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /** get status of mode-flags in BEAUti, so these can be restored when reloading an XML file **/
     String getBeautiStatus() {
 	    String beautiStatus = "";
-	    if (!bAutoSetClockRate) {
+	    if (!autoSetClockRate) {
 	        beautiStatus = "noAutoSetClockRate";
 	    }
-	    if (bAllowLinking) {
+	    if (allowLinking) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
 	    }
-	    if (!bAutoUpdateOperatorWeights) {
+	    if (!autoUpdateOperatorWeights) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateOperatorWeights";
 	    }
-	    if (!bAutoUpdateFixMeanSubstRate) {
+	    if (!autoUpdateFixMeanSubstRate) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
 	    }
 	    return beautiStatus;
@@ -798,14 +798,14 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         if (beautiStatus == null) {
             beautiStatus = "";
         }
-        bAutoSetClockRate = !beautiStatus.contains("noAutoSetClockRate");
-        beauti.autoSetClockRate.setSelected(bAutoSetClockRate);
-        bAllowLinking = beautiStatus.contains("allowLinking");
-        beauti.allowLinking.setSelected(bAllowLinking);
-        bAutoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
-        beauti.autoUpdateOperatorWeights.setSelected(bAutoUpdateOperatorWeights);
-        bAutoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate"); 
-        beauti.autoUpdateFixMeanSubstRate.setSelected(bAutoUpdateFixMeanSubstRate);
+        autoSetClockRate = !beautiStatus.contains("noAutoSetClockRate");
+        beauti.autoSetClockRate.setSelected(autoSetClockRate);
+        allowLinking = beautiStatus.contains("allowLinking");
+        beauti.allowLinking.setSelected(allowLinking);
+        autoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
+        beauti.autoUpdateOperatorWeights.setSelected(autoUpdateOperatorWeights);
+        autoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate"); 
+        beauti.autoUpdateFixMeanSubstRate.setSelected(autoUpdateFixMeanSubstRate);
 
         // parse file
         XMLParser parser = new XMLParser();
@@ -1085,12 +1085,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     // return null;
     // }
 
-    synchronized public void scrubAll(boolean bUseNotEstimatedStateNodes, boolean bInitial) {
+    synchronized public void scrubAll(boolean useNotEstimatedStateNodes, boolean isInitial) {
         try {
-            if (bAutoSetClockRate) {
+            if (autoSetClockRate) {
                 setClockRate();
             }
-            if (bAutoUpdateFixMeanSubstRate) {
+            if (autoUpdateFixMeanSubstRate) {
             	SiteModelInputEditor.customConnector(this);
             }
 
@@ -1112,10 +1112,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
 
             // go through all templates, and process connectors in relevant ones
-            boolean bProgress = true;
-            while (bProgress) {
+            boolean progress = true;
+            while (progress) {
                 warning("============================ start scrubbing ===========================");
-                bProgress = false;
+                progress = false;
                 setUpActivePlugins();
 
                 // process MRCA priors
@@ -1140,10 +1140,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 templates.addAll(beautiConfig.subTemplates);
 
                 for (PartitionContext context : possibleContexts) {
-                    applyBeautiRules(templates, bInitial, context);
+                    applyBeautiRules(templates, isInitial, context);
                 }
                 // add 'Species' as special partition name
-                applyBeautiRules(templates, bInitial, new PartitionContext("Species"));
+                applyBeautiRules(templates, isInitial, new PartitionContext("Species"));
 
                 // if the model changed, some rules that use inposterior() may
                 // not have been triggered properly
@@ -1152,11 +1152,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 List<BEASTInterface> posteriorPredecessors2 = new ArrayList<>();
                 collectPredecessors(((MCMC) mcmc.get()).posteriorInput.get(), posteriorPredecessors2);
                 if (posteriorPredecessors.size() != posteriorPredecessors2.size()) {
-                    bProgress = true;
+                    progress = true;
                 } else {
                     for (BEASTInterface beastObject : posteriorPredecessors2) {
                         if (!posteriorPredecessors.contains(beastObject)) {
-                            bProgress = true;
+                            progress = true;
                             break;
                         }
                     }
@@ -1169,7 +1169,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 if (beastObject instanceof RealParameter) {
                     if (beastObject.getID().startsWith("parameter.")) {
                         PartitionContext context = new PartitionContext(beastObject.getID().substring("parameter.".length()));
-                        applyBeautiRules(templates, bInitial, context);
+                        applyBeautiRules(templates, isInitial, context);
                     }
                 }
             }
@@ -1186,7 +1186,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             Log.err.println(e.getMessage());
         }
         
-        if (bAutoUpdateOperatorWeights) {
+        if (autoUpdateOperatorWeights) {
         	reweightSpeciesPartitionOperators();
         }
     } // scrubAll
@@ -1257,7 +1257,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return sb.toString();
     }
 
-    void applyBeautiRules(List<BeautiSubTemplate> templates, boolean bInitial, PartitionContext context) throws Exception {
+    void applyBeautiRules(List<BeautiSubTemplate> templates, boolean isInitial, PartitionContext context) throws Exception {
         for (BeautiSubTemplate template : templates) {
             String templateID = translatePartitionNames(template.getMainID(), context);
             BEASTInterface beastObject = pluginmap.get(templateID);
@@ -1268,7 +1268,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 for (BeautiConnector connector : template.connectors) {
 
                     if (connector.atInitialisationOnly()) {
-                        if (bInitial) {
+                        if (isInitial) {
                             warning("connect: " + connector.toString(context) + "\n");
                             connect(connector, context);
                         }
@@ -1295,7 +1295,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     void setClockRate() throws Exception {
-    	boolean bNeedsEstimationBySPTree = false;
+    	boolean needsEstimationBySPTree = false;
         if (pluginmap.containsKey("Tree.t:Species")) {
         	Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
 	        // check whether there is a calibration
@@ -1303,7 +1303,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	            if (beastObject instanceof MRCAPrior) {
 	                MRCAPrior prior = (MRCAPrior) beastObject;
 	                if (prior.distInput.get() != null) {
-	                    bNeedsEstimationBySPTree = true;
+	                    needsEstimationBySPTree = true;
 	                }
 	            }
 	        }
@@ -1316,23 +1316,23 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             for (Distribution distr : ((CompoundDistribution) likelihood).pDistributions.get()) {
                 if (distr instanceof GenericTreeLikelihood) {
                     GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
-                    boolean bNeedsEstimation = bNeedsEstimationBySPTree;
+                    boolean needsEstimation = needsEstimationBySPTree;
                     if (i > 0) {
                         BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
-                        bNeedsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
+                        needsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
                     } else {
                         // TODO: this might not be a valid type conversion from TreeInterface to Tree
                         Tree tree = (Tree) treeLikelihood.treeInput.get();
                         // check whether there are tip dates
                         if (tree.hasDateTrait()) {
-                            bNeedsEstimation = true;
+                            needsEstimation = true;
                         }
                         // check whether there is a calibration
                         for (Object beastObject : tree.getOutputs()) {
                             if (beastObject instanceof MRCAPrior) {
                                 MRCAPrior prior = (MRCAPrior) beastObject;
                                 if (prior.distInput.get() != null) {
-                                    bNeedsEstimation = true;
+                                    needsEstimation = true;
                                 }
                             }
                         }
@@ -1340,7 +1340,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
                     if (model != null) {
                         RealParameter clockRate = model.meanRateInput.get();
-                        clockRate.isEstimatedInput.setValue(bNeedsEstimation, clockRate);
+                        clockRate.isEstimatedInput.setValue(needsEstimation, clockRate);
                         if (firstClock == null) {
                             firstClock = clockRate;
                         }
@@ -1630,13 +1630,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         int nPartitions = partitionNames.size();
         for (int i = 0; i < 3; i++) {
-            boolean[] bUsedPartition = new boolean[nPartitions];
+            boolean[] usedPartition = new boolean[nPartitions];
             for (int j = 0; j < nPartitions; j++) {
                 int iPartition = nCurrentPartitions[i].get(j);// getPartitionNr(m_pPartitionByAlignments[i].get(j));
-                bUsedPartition[iPartition] = true;
+                usedPartition[iPartition] = true;
             }
             for (int j = 0; j < nPartitions; j++) {
-                if (bUsedPartition[j]) {
+                if (usedPartition[j]) {
                     pPartition[i].add(pPartitionByAlignments[i].get(j));
                 }
             }
@@ -2217,7 +2217,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     // methods for dealing with linking
     void determineLinks() {
-        if (!bAllowLinking) {
+        if (!allowLinking) {
             return;
         }
         linked.clear();
@@ -2271,10 +2271,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         }
 
-        bHasLinkedAtLeastOnce = false;
+        hasLinkedAtLeastOnce = false;
         for (Input<?> input : linked) {
             if (input.getType().isAssignableFrom(RealParameter.class)) {
-                bHasLinkedAtLeastOnce = true;
+                hasLinkedAtLeastOnce = true;
                 break;
             }
         }
@@ -2308,7 +2308,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public void addLink(Input<?> input) {
         linked.add(input);
-        bHasLinkedAtLeastOnce = true;
+        hasLinkedAtLeastOnce = true;
     }
 
     public void deLink(Input<?> input) {

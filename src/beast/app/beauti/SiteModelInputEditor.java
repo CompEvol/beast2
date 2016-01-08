@@ -54,11 +54,11 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     
     @Override
     public void init(Input<?> input, BEASTInterface beastObject, int itemNr,
-    		ExpandOption bExpandOption, boolean bAddButtons) {
+    		ExpandOption isExpandOption, boolean addButtons) {
     	fixMeanRatesCheckBox = new JCheckBox("Fix mean substitution rate");
     	fixMeanRatesCheckBox.setName("FixMeanMutationRate");
-    	fixMeanRatesCheckBox.setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
-    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    	fixMeanRatesCheckBox.setEnabled(!doc.autoUpdateFixMeanSubstRate);
+    	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
 
 		List<Operator> operators = ((MCMC) doc.mcmc.get()).operatorsInput.get();
     	fixMeanRatesCheckBox.addActionListener(e -> {
@@ -119,7 +119,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         final Input<?> input = sitemodel.muParameterInput;
         ParameterInputEditor mutationRateEditor = new ParameterInputEditor(doc);
         mutationRateEditor.init(input, sitemodel, -1, ExpandOption.FALSE, true);
-        mutationRateEditor.getEntry().setEnabled(!doc.bAutoUpdateFixMeanSubstRate);
+        mutationRateEditor.getEntry().setEnabled(!doc.autoUpdateFixMeanSubstRate);
         return mutationRateEditor;
     }
 	
@@ -271,10 +271,10 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     
     /** set up relative weights and parameter input **/
     public void setUpOperator() {
-    	boolean bAllClocksAreEqual = true;
+    	boolean isAllClocksAreEqual = true;
     	try {
     		boolean hasOneEstimatedRate = customConnector(doc);
-		    if (doc.bAutoUpdateFixMeanSubstRate) {
+		    if (doc.autoUpdateFixMeanSubstRate) {
 		    	fixMeanRatesCheckBox.setSelected(hasOneEstimatedRate);
 		    	doFixMeanRates(hasOneEstimatedRate);
 		    }
@@ -294,7 +294,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		    				commonClockRate = mutationRate.valuesInput.get().get(0);
     		    			} else {
     		    				if (Math.abs(commonClockRate - mutationRate.valuesInput.get().get(0)) > 1e-10) {
-    		    					bAllClocksAreEqual = false;
+    		    					isAllClocksAreEqual = false;
     		    				}
     		    			}
     		    		}
@@ -318,7 +318,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 				repaint();
 	    		return;
 	    	}
-	    	if (!bAllClocksAreEqual) {
+	    	if (!isAllClocksAreEqual) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
 	    		fixMeanRatesValidateLabel.setToolTipText("Not all clocks are equal. Are you sure this is what you want?");

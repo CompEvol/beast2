@@ -425,11 +425,11 @@ public class FileDrop {
     // BEGIN 2007-09-12 Nathan Blomquist -- Linux (KDE/Gnome) support added.
     private static String ZERO_CHAR_STRING = "" + (char) 0;
 
-    private static File[] createFileArray(BufferedReader bReader, PrintStream out) {
+    private static File[] createFileArray(BufferedReader reader, PrintStream out) {
         try {
             java.util.List<File> list = new java.util.ArrayList<>();
             java.lang.String line = null;
-            while ((line = bReader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 try {
                     // kde seems to append a 0 char to the end of the reader
                     if (ZERO_CHAR_STRING.equals(line)) continue;

@@ -335,23 +335,23 @@ public class Node extends BEASTObject {
      *         information. Unlike toNewick(), here Nodes are numbered, instead of
      *         using the node labels.
      *         If there are internal nodes with non-null IDs then their numbers are also printed.
-     *         Also, all internal nodes are labelled if bPrintInternalNodeNumbers
+     *         Also, all internal nodes are labelled if printInternalNodeNumbers
      *         is set true. This is useful for example when storing a State to file
      *         so that it can be restored.
      */
-    public String toShortNewick(final boolean bPrintInternalNodeNumbers) {
+    public String toShortNewick(final boolean printInternalNodeNumbers) {
         final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            buf.append(getLeft().toShortNewick(bPrintInternalNodeNumbers));
+            buf.append(getLeft().toShortNewick(printInternalNodeNumbers));
             if (getRight() != null) {
                 buf.append(',');
-                buf.append(getRight().toShortNewick(bPrintInternalNodeNumbers));
+                buf.append(getRight().toShortNewick(printInternalNodeNumbers));
             }
             buf.append(")");
             if (getID() != null) {
                 buf.append(getNr());
-            } else if (bPrintInternalNodeNumbers) {
+            } else if (printInternalNodeNumbers) {
                 buf.append(getNr());
             }
 

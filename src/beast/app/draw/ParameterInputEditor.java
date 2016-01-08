@@ -47,8 +47,8 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
     
     
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+    	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
     	m_beastObject = beastObject;
     }
 
@@ -117,7 +117,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
         } else {
             setUpEntry();
             paramBox.add(m_entry);
-            if (doc.bAllowLinking) {
+            if (doc.allowLinking) {
 	            boolean isLinked = doc.isLinked(m_input);
 				if (isLinked || doc.suggestedLinks((BEASTInterface) m_input.get()).size() > 0) {
 		            JButton linkbutton = new JButton(Utils.getIcon(BeautiPanel.ICONPATH + 
@@ -165,13 +165,13 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
             }
             m_isEstimatedBox.setToolTipText(parameter.isEstimatedInput.getHTMLTipText());
 
-            boolean bIsClockRate = false;
+            boolean isClockRate = false;
             for (Object output : parameter.getOutputs()) {
                 if (output instanceof BranchRateModel.Base) {
-                    bIsClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
+                    isClockRate |= ((BranchRateModel.Base) output).meanRateInput.get() == parameter;
                 }
             }
-            m_isEstimatedBox.setEnabled(!bIsClockRate || !getDoc().bAutoSetClockRate);
+            m_isEstimatedBox.setEnabled(!isClockRate || !getDoc().autoSetClockRate);
 
 
             m_isEstimatedBox.addActionListener(e -> {

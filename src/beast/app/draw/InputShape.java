@@ -155,13 +155,13 @@ public class InputShape extends Shape {
                 label += "=" + ((BEASTInterface) o).getID();
             } else if (o instanceof List<?>) {
                 label += "=[";
-                boolean bNeedsComma = false;
+                boolean needsComma = false;
                 for (Object o2 : (List<?>) o) {
-                    if (bNeedsComma) {
+                    if (needsComma) {
                         label += ",";
                     }
                     label += toString(o2);
-                    bNeedsComma = true;
+                    needsComma = true;
                 }
                 label += "]";
             }

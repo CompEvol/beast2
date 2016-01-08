@@ -31,7 +31,7 @@ public class SmallButtonOld extends JButton {
         this.image = image;
     }
 
-    public SmallButtonOld(String label, boolean bIsEnabled) {
+    public SmallButtonOld(String label, boolean isEnabled) {
         super(label);
         //this.label = label;
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
@@ -40,7 +40,7 @@ public class SmallButtonOld extends JButton {
         setSize(15, 15);
         setMinimumSize(new Dimension(15, 15));
         setMaximumSize(new Dimension(15, 15));
-        setEnabled(bIsEnabled);
+        setEnabled(isEnabled);
     } // c'tor
 
     /**

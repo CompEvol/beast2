@@ -58,8 +58,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     List<Taxon> taxonsets;
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         this.itemNr = itemNr;
         if (itemNr >= 0) {
             tree = (Tree) ((List<?>) input.get()).get(itemNr);

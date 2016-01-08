@@ -35,7 +35,7 @@ import beast.core.util.Log;
  * <p/>
  * The default just provides an edit field and uses toString() on Input to get its value.
  * To change the behaviour, override
- * public void init(Input<?> input, BEASTObject beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons)
+ * public void init(Input<?> input, BEASTObject beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons)
  */
 /** note that it is assumed that any InputEditor is a java.awt.Component **/
 public interface InputEditor {
@@ -62,10 +62,10 @@ public interface InputEditor {
      * @param input to be edited
      * @param beastObject parent beastObject containing the input
      * @param itemNr if the input is a list, itemNr indicates which item to edit in the list
-     * @param bExpandOption start state of input editor
-     * @param bAddButtons button status of input editor
+     * @param isExpandOption start state of input editor
+     * @param addButtons button status of input editor
      */
-    void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons);
+    void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons);
 
     /** set document with the model containing the input **/
     void setDoc(BeautiDoc doc);
@@ -200,8 +200,8 @@ public abstract class Base extends JPanel implements InputEditor {
      * construct an editor consisting of a label and input entry *
      */
     @Override
-	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
         this.itemNr= itemNr;

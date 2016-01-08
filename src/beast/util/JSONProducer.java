@@ -262,7 +262,7 @@ public class JSONProducer {
 
 	/**
      * produce JSON for an input of a beastObject, both as attribute/value pairs for
-     * primitive inputs (if isShort=true) and as individual elements (if bShort=false)
+     * primitive inputs (if isShort=true) and as individual elements (if isShort=false)
      *
      * @param input0: name of the input
      * @param beastObject: beastObject to produce this input JSON for

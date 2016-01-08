@@ -381,10 +381,10 @@ public class DocMaker {
     } // createBEASTObjectPage
 
 
-    public String getHTML(String beastObjectName, boolean bUseExternalStyleSheet) throws Exception {
+    public String getHTML(String beastObjectName, boolean useExternalStyleSheet) throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append("<html>\n<head>\n<title>BEAST " + version.getVersionString() + " Documentation: " + beastObjectName + "</title>\n");
-        if (bUseExternalStyleSheet) {
+        if (useExternalStyleSheet) {
             buf.append("<link rel='StyleSheet' href='/tmp/styles.css' type='text/css'>\n");
         } else {
             buf.append("<style type='text/css'>\n");

@@ -92,7 +92,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     public BeautiPanel currentTab;
 
-    public boolean[] bPaneIsVisible;
+    public boolean[] isPaneIsVisible;
     public BeautiPanel[] panels;
 
     /**
@@ -120,8 +120,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public boolean isInitialising = true;
 
     public Beauti(BeautiDoc doc) {
-        bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
-        Arrays.fill(bPaneIsVisible, true);
+        isPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
+        Arrays.fill(isPaneIsVisible, true);
         // m_panels = new BeautiPanel[NR_OF_PANELS];
         this.doc = doc;
         this.doc.addBeautiDocListener(this);
@@ -134,12 +134,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     }
 
     void toggleVisible(int nPanelNr) {
-        if (bPaneIsVisible[nPanelNr]) {
-            bPaneIsVisible[nPanelNr] = false;
+        if (isPaneIsVisible[nPanelNr]) {
+            isPaneIsVisible[nPanelNr] = false;
             int nTabNr = tabNrForPanel(nPanelNr);
             removeTabAt(nTabNr);
         } else {
-            bPaneIsVisible[nPanelNr] = true;
+            isPaneIsVisible[nPanelNr] = true;
             int nTabNr = tabNrForPanel(nPanelNr);
             BeautiPanelConfig panel = doc.beautiConfig.panels.get(nPanelNr);
             insertTab(
@@ -154,7 +154,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     int tabNrForPanel(int nPanelNr) {
         int k = 0;
         for (int i = 0; i < nPanelNr; i++) {
-            if (bPaneIsVisible[i]) {
+            if (isPaneIsVisible[i]) {
                 k++;
             }
         }
@@ -536,7 +536,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             super("Show "
                     + doc.beautiConfig.panels.get(iPanel).nameInput.get()
                     + " panel",
-                    doc.beautiConfig.panels.get(iPanel).bIsVisibleInput.get());
+                    doc.beautiConfig.panels.get(iPanel).isVisibleInput.get());
             m_iPanel = iPanel;
             if (m_viewPanelCheckBoxMenuItems == null) {
                 m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[doc.beautiConfig.panels
@@ -564,8 +564,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-            for (int nPanelNr = 0; nPanelNr < bPaneIsVisible.length; nPanelNr++) {
-                if (!bPaneIsVisible[nPanelNr]) {
+            for (int nPanelNr = 0; nPanelNr < isPaneIsVisible.length; nPanelNr++) {
+                if (!isPaneIsVisible[nPanelNr]) {
                     toggleVisible(nPanelNr);
                     m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
                 }
@@ -714,34 +714,34 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         modeMenu.setMnemonic('M');
 
         autoSetClockRate = new JCheckBoxMenuItem(
-                "Automatic set clock rate", this.doc.bAutoSetClockRate);
+                "Automatic set clock rate", this.doc.autoSetClockRate);
         autoSetClockRate.addActionListener(ae -> {
-                doc.bAutoSetClockRate = autoSetClockRate.getState();
+                doc.autoSetClockRate = autoSetClockRate.getState();
                 refreshPanel();
             });
         modeMenu.add(autoSetClockRate);
 
         allowLinking = new JCheckBoxMenuItem(
-                "Allow parameter linking", this.doc.bAllowLinking);
+                "Allow parameter linking", this.doc.allowLinking);
         allowLinking.addActionListener(ae -> {
-                doc.bAllowLinking = allowLinking.getState();
+                doc.allowLinking = allowLinking.getState();
                 doc.determineLinks();
                 refreshPanel();
             });
         modeMenu.add(allowLinking);
 
         autoUpdateOperatorWeights = new JCheckBoxMenuItem(
-                "Automatic change operator weights for *BEAST analyses", this.doc.bAutoUpdateOperatorWeights);
+                "Automatic change operator weights for *BEAST analyses", this.doc.autoUpdateOperatorWeights);
         autoUpdateOperatorWeights.addActionListener(ae -> {
-                doc.bAutoUpdateOperatorWeights = autoUpdateOperatorWeights.getState();
+                doc.autoUpdateOperatorWeights = autoUpdateOperatorWeights.getState();
                 refreshPanel();
             });
         modeMenu.add(autoUpdateOperatorWeights);
 
         autoUpdateFixMeanSubstRate = new JCheckBoxMenuItem(
-                "Automatic set fix mean substitution rate flag", this.doc.bAutoUpdateFixMeanSubstRate);
+                "Automatic set fix mean substitution rate flag", this.doc.autoUpdateFixMeanSubstRate);
         autoUpdateFixMeanSubstRate.addActionListener(ae -> {
-                doc.bAutoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
+                doc.autoUpdateFixMeanSubstRate = autoUpdateFixMeanSubstRate.getState();
                 refreshPanel();
             });
         modeMenu.add(autoUpdateFixMeanSubstRate);
@@ -1052,12 +1052,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             while (getTabCount() > 0) {
                 removeTabAt(0);
             }
-            bPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
-            Arrays.fill(bPaneIsVisible, true);
+            isPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
+            Arrays.fill(isPaneIsVisible, true);
         }
         for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
             BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-            bPaneIsVisible[iPanel] = panelConfig.bIsVisibleInput.get();
+            isPaneIsVisible[iPanel] = panelConfig.isVisibleInput.get();
         }
         // add panels according to BeautiConfig
         panels = new BeautiPanel[doc.beautiConfig.panels.size()];
@@ -1069,7 +1069,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
 
         for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
-            if (!bPaneIsVisible[iPanel]) {
+            if (!isPaneIsVisible[iPanel]) {
                 removeTabAt(iPanel);
             }
         }

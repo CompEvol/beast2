@@ -209,8 +209,8 @@ public class JSONParser {
 	 * Beauti *
 	 */
 	// public List<BEASTObject> parseTemplate(String xml, HashMap<String, BEASTObject>
-	// iDMap, boolean bInitialize) throws Exception {
-	// m_bInitialize = bInitialize;
+	// iDMap, boolean initialise) throws Exception {
+	// m_bInitialize = initialise;
 	// // parse the XML file into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// //factory.setValidating(true);
@@ -412,9 +412,9 @@ public class JSONParser {
 	// of
 	// * the top level <beast> element is considered.
 	// */
-	// public BEASTObject parseFragment(String xml, boolean bInitialize) throws
+	// public BEASTObject parseFragment(String xml, boolean initialise) throws
 	// Exception {
-	// m_bInitialize = bInitialize;
+	// m_bInitialize = initialise;
 	// // parse the XML fragment into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// doc = factory.newDocumentBuilder().parse(new InputSource(new
@@ -467,20 +467,20 @@ public class JSONParser {
 	// XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
 	// * to create a simple tree.
 	// */
-	// public BEASTObject parseBareFragment(String xml, boolean bInitialize) throws
+	// public BEASTObject parseBareFragment(String xml, boolean initialise) throws
 	// Exception {
 	// // get rid of XML processing instruction
 	// xml = xml.replaceAll("<\\?xml[^>]*>", "");
 	// if (xml.indexOf("<beast") > -1) {
-	// return parseFragment(xml, bInitialize);
+	// return parseFragment(xml, initialise);
 	// } else {
-	// return parseFragment("<beast>" + xml + "</beast>", bInitialize);
+	// return parseFragment("<beast>" + xml + "</beast>", initialise);
 	// }
 	// }
 	//
-	// public List<BEASTObject> parseBareFragments(String xml, boolean bInitialize)
+	// public List<BEASTObject> parseBareFragments(String xml, boolean initialise)
 	// throws Exception {
-	// m_bInitialize = bInitialize;
+	// m_bInitialize = initialise;
 	// // parse the XML fragment into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	// doc = factory.newDocumentBuilder().parse(new InputSource(new
@@ -801,13 +801,13 @@ public class JSONParser {
 		}
 		if (clazzName == null) {
 			// try to create the old-fashioned way by creating the class
-            boolean bDone = false;
+            boolean isDone = false;
             for (final String nameSpace : nameSpaces) {
                 try {
-                    if (!bDone) {
+                    if (!isDone) {
                         Class.forName(nameSpace + specClass);
                         clazzName = nameSpace + specClass;
-                        bDone = true;
+                        isDone = true;
                     }
                 } catch (ClassNotFoundException e) {
                     // class does not exist -- try another namespace

@@ -13,9 +13,9 @@ public abstract class Runnable extends BEASTObject {
      * The Runnable implementation is responsible for making its
      * State synchronising with the file *
      * @param fileName
-     * @param bRestoreFromFile
+     * @param isRestoreFromFile
      */
-    public void setStateFile(final String fileName, final boolean bRestoreFromFile) {
+    public void setStateFile(final String fileName, final boolean isRestoreFromFile) {
     	if (System.getProperty("state.file.name") != null) {
     		stateFileName = System.getProperty("state.file.name");
     	} else {
@@ -25,7 +25,7 @@ public abstract class Runnable extends BEASTObject {
             	stateFileName = fileName;
             }
     	}
-        restoreFromFile = bRestoreFromFile;
+        restoreFromFile = isRestoreFromFile;
     }
 
     /**

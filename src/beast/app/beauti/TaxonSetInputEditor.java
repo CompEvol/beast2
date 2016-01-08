@@ -66,7 +66,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
         m_input = input;
         m_beastObject = beastObject;
 		this.itemNr = itemNr;

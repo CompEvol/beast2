@@ -561,14 +561,14 @@ public class AddOnManager {
         List<String> dirs = new ArrayList<>();
         // check if there is the BEAST environment variable is set
         if (System.getProperty("BEAST_ADDON_PATH") != null) {
-            String bEAST = System.getProperty("BEAST_ADDON_PATH");
-            for (String dirName : bEAST.split(":")) {
+            String BEAST = System.getProperty("BEAST_ADDON_PATH");
+            for (String dirName : BEAST.split(":")) {
                 dirs.add(dirName);
             }
         }
         if (System.getenv("BEAST_ADDON_PATH") != null) {
-            String bEAST = System.getenv("BEAST_ADDON_PATH");
-            for (String dirName : bEAST.split(":")) {
+            String BEAST = System.getenv("BEAST_ADDON_PATH");
+            for (String dirName : BEAST.split(":")) {
                 dirs.add(dirName);
             }
         }

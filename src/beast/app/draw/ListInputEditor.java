@@ -114,9 +114,9 @@ public class ListInputEditor extends InputEditor.Base {
      * o a set of buttons for adding, deleting, editing items in the list
      */
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
-        m_bExpandOption = bExpandOption;
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
+        m_bExpandOption = isExpandOption;
         m_input = input;
         m_beastObject = beastObject;
         this.itemNr = -1;

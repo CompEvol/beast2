@@ -39,7 +39,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
     	Box box = Box.createHorizontalBox();
     	box.add(Box.createHorizontalStrut(25));
     	box.add(new JLabel("Operator"));
@@ -49,7 +49,7 @@ public class OperatorListInputEditor extends ListInputEditor {
     	add(box);
     	
     	m_buttonStatus = ButtonStatus.NONE;
-    	super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+    	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
     }
     
     @Override

@@ -131,8 +131,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     boolean m_bIsEditable = true;
     
 
-    public void setEditable(boolean bIsEditable) {
-        m_bIsEditable = bIsEditable;
+    public void setEditable(boolean isEditable) {
+        m_bIsEditable = isEditable;
     }
 
     /**
@@ -1374,19 +1374,19 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 }
             } else if (shape instanceof Arrow) {
                 Shape tail = ((Arrow) shape).m_tailShape;
-                boolean bNeedsDrawing = true;
+                boolean needsDrawing = true;
                 if (tail instanceof BEASTObjectShape) {
-                    bNeedsDrawing = needsDrawing(((BEASTObjectShape) tail).m_beastObject);
+                    needsDrawing = needsDrawing(((BEASTObjectShape) tail).m_beastObject);
                 }
-                if (bNeedsDrawing) {
+                if (needsDrawing) {
                     Shape head = ((Arrow) shape).m_headShape;
                     if (head instanceof InputShape) {
                         BEASTObjectShape beastObjectShape = ((InputShape) head).m_beastObjectShape;
                         if (beastObjectShape != null) {
-                            bNeedsDrawing = needsDrawing(beastObjectShape.m_beastObject);
+                            needsDrawing = needsDrawing(beastObjectShape.m_beastObject);
                         }
                     }
-                    if (bNeedsDrawing) {
+                    if (needsDrawing) {
                         shape.m_bNeedsDrawing = true;
                     }
                 }
@@ -1887,7 +1887,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     m_drawShape.normalize();
                 }
                 m_bIsMoving = false;
-                boolean bAdded = true;
+                boolean added = true;
                 switch (m_nMode) {
                     case MODE_SELECT:
                         if (m_selectRect != null) {
@@ -1937,10 +1937,10 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                                     e.printStackTrace();
                                 }
                             } else {
-                                bAdded = false;
+                                added = false;
                             }
                         } else {
-                            bAdded = false;
+                            added = false;
                         }
                         break;
                     case MODE_ARROW:
@@ -1996,7 +1996,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 }
                 m_drawShape = null;
                 m_nMode = MODE_SELECT;
-                if (bAdded) {
+                if (added) {
                     m_Selection.setSingleSelection(m_doc.m_objects.size() - 1);
                     g_panel.repaint();
                 } else {

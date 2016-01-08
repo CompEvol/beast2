@@ -129,14 +129,14 @@ public class InputEditorFactory {
         return createInputEditor(input, beastObject, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
     }
 
-    public InputEditor createInputEditor(Input<?> input, BEASTInterface beastObject, boolean bAddButtons,
-                                                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
+    public InputEditor createInputEditor(Input<?> input, BEASTInterface beastObject, boolean addButtons,
+                                                ExpandOption forceExpansion, ButtonStatus buttonStatus,
                                                 InputEditor editor, BeautiDoc doc) throws Exception {
-    	return createInputEditor(input, -1, beastObject, bAddButtons, bForceExpansion, buttonStatus, editor, doc);
+    	return createInputEditor(input, -1, beastObject, addButtons, forceExpansion, buttonStatus, editor, doc);
     }
     
-    public InputEditor createInputEditor(Input<?> input, int listItemNr, BEASTInterface beastObject, boolean bAddButtons,
-                ExpandOption bForceExpansion, ButtonStatus buttonStatus,
+    public InputEditor createInputEditor(Input<?> input, int listItemNr, BEASTInterface beastObject, boolean addButtons,
+                ExpandOption forceExpansion, ButtonStatus buttonStatus,
                 InputEditor editor, BeautiDoc doc) throws Exception {
         if (input.getType() == null) {
             input.determineClass(beastObject);
@@ -222,11 +222,11 @@ public class InputEditorFactory {
 //        }
         String fullInputName = beastObject.getClass().getName() + "." + input.getName();
         //System.err.println(fullInputName);
-        ExpandOption expandOption = bForceExpansion;
-        if (doc.beautiConfig.inlineBEASTObject.contains(fullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+        ExpandOption expandOption = forceExpansion;
+        if (doc.beautiConfig.inlineBEASTObject.contains(fullInputName) || forceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
             expandOption = ExpandOption.TRUE;
             // deal with initially collapsed beastObjects
-            if (doc.beautiConfig.collapsedBEASTObjects.contains(fullInputName) || bForceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
+            if (doc.beautiConfig.collapsedBEASTObjects.contains(fullInputName) || forceExpansion == ExpandOption.TRUE_START_COLLAPSED) {
                 if (input.get() != null) {
                     Object o = input.get();
                     if (o instanceof ArrayList) {
@@ -251,7 +251,7 @@ public class InputEditorFactory {
             }
         }
         inputEditor.setDoc(doc);
-        inputEditor.init(input, beastObject, listItemNr, expandOption, bAddButtons);
+        inputEditor.init(input, beastObject, listItemNr, expandOption, addButtons);
         ((JComponent) inputEditor).setBorder(BorderFactory.createEmptyBorder());
         inputEditor.getComponent().setVisible(true);
         //Log.trace.println(inputEditor.getClass().getName());
@@ -291,15 +291,15 @@ public class InputEditorFactory {
         beastObjectNames = new ArrayList<>();
         for (BEASTInterface beastObject : doc.pluginmap.values()) {
             if (input.getType().isAssignableFrom(beastObject.getClass())) {
-                boolean bIsTabu = false;
+                boolean isTabu = false;
                 if (tabuList != null) {
                     for (String tabu : tabuList) {
                         if (tabu.equals(beastObject.getID())) {
-                            bIsTabu = true;
+                            isTabu = true;
                         }
                     }
                 }
-                if (!bIsTabu) {
+                if (!isTabu) {
                     try {
                         if (input.canSetValue(beastObject, parent)) {
                             beastObjectNames.add(beastObject.getID());

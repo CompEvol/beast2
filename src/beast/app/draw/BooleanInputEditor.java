@@ -29,8 +29,8 @@ public class BooleanInputEditor extends InputEditor.Base {
      * create input editor containing a check box *
      */
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         m_beastObject = beastObject;
         m_input = input;
 		this.itemNr = itemNr;

@@ -205,18 +205,18 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         constantPattern = new ArrayList<>();
         for (int i = 0; i < nPatterns; i++) {
             final int[] pattern = dataInput.get().getPattern(i);
-            final boolean[] bIsInvariant = new boolean[nStateCount];
-            Arrays.fill(bIsInvariant, true);
+            final boolean[] isInvariant = new boolean[nStateCount];
+            Arrays.fill(isInvariant, true);
             for (final int state : pattern) {
-                final boolean[] bStateSet = dataInput.get().getStateSet(state);
+                final boolean[] isStateSet = dataInput.get().getStateSet(state);
                 if (m_useAmbiguities.get() || !dataInput.get().getDataType().isAmbiguousState(state)) {
                     for (int k = 0; k < nStateCount; k++) {
-                        bIsInvariant[k] &= bStateSet[k];
+                        isInvariant[k] &= isStateSet[k];
                     }
                 }
             }
             for (int k = 0; k < nStateCount; k++) {
-                if (bIsInvariant[k]) {
+                if (isInvariant[k]) {
                     constantPattern.add(i * nStateCount + k);
                 }
             }

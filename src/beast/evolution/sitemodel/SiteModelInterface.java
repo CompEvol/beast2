@@ -128,8 +128,8 @@ public interface SiteModelInterface {
          */
         public boolean hasPropInvariantCategory = true;
 
-        public void setPropInvariantIsCategory(final boolean bPropInvariantIsCategory) {
-            hasPropInvariantCategory = bPropInvariantIsCategory;
+        public void setPropInvariantIsCategory(final boolean propInvariantIsCategory) {
+            hasPropInvariantCategory = propInvariantIsCategory;
             refresh();
         }
 

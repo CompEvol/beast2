@@ -31,11 +31,11 @@ public class BeautiPanelConfig extends BEASTObject {
             "distribution/distribution[id='prior'] for prior distributions." +
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
 
-    final public Input<Partition> bHasPartitionsInput = new Input<>("hasPartitions", "flag to indicate the panel has" +
+    final public Input<Partition> hasPartitionsInput = new Input<>("hasPartitions", "flag to indicate the panel has" +
             "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
 
-    final public Input<Boolean> bAddButtonsInput = new Input<>("addButtons", "flag to indicate buttons should be added, default true", true);
-    final public Input<Boolean> bIsVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);
+    final public Input<Boolean> addButtonsInput = new Input<>("addButtons", "flag to indicate buttons should be added, default true", true);
+    final public Input<Boolean> isVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);
 
 
     final public Input<String> iconInput = new Input<>("icon", "icon shown in the panel relative to /beast/app/beauti, default 0.png", "0.png");
@@ -71,7 +71,7 @@ public class BeautiPanelConfig extends BEASTObject {
     /**
      * flag to indicate we are dealing with a list input *
      */
-    boolean bIsList;
+    boolean isList;
 
 
     FlexibleInput<?> _input;
@@ -123,7 +123,7 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     public Partition hasPartition() {
-        return bHasPartitionsInput.get();
+        return hasPartitionsInput.get();
     }
 
     public boolean addButtons() {
@@ -153,11 +153,11 @@ public class BeautiPanelConfig extends BEASTObject {
 //                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
 
             List<BEASTInterface> beastObjects;
-            if (bHasPartitionsInput.get() == Partition.none) {
+            if (hasPartitionsInput.get() == Partition.none) {
                 beastObjects = new ArrayList<>();
                 beastObjects.add(doc.mcmc.get());
             } else {
-                beastObjects = doc.getPartitions(bHasPartitionsInput.get().toString());
+                beastObjects = doc.getPartitions(hasPartitionsInput.get().toString());
             }
             parentBEASTObjects = new ArrayList<>();
             parentInputs = new ArrayList<>();
@@ -165,7 +165,7 @@ public class BeautiPanelConfig extends BEASTObject {
             parentBEASTObjects.add(doc);
             parentInputs.add(doc.mcmc);
             type = doc.mcmc.getType();
-            bIsList = false;
+            isList = false;
             for (int i = 0; i < pathComponents.length; i++) {
                 List<BEASTInterface> oldPlugins = beastObjects;
                 beastObjects = new ArrayList<>();
@@ -175,7 +175,7 @@ public class BeautiPanelConfig extends BEASTObject {
                     final Input<?> namedInput = beastObject.getInput(pathComponents[i]);
                     type = namedInput.getType();
                     if (namedInput.get() instanceof List<?>) {
-                        bIsList = true;
+                        isList = true;
                         List<?> list = (List<?>) namedInput.get();
                         if (conditionalAttribute[i] == null) {
                             for (Object o : list) {
@@ -203,7 +203,7 @@ public class BeautiPanelConfig extends BEASTObject {
                             }
                         }
                     } else if (namedInput.get() instanceof BEASTInterface) {
-                        bIsList = false;
+                        isList = false;
                         if (conditionalAttribute[i] == null) {
                             beastObjects.add((BEASTInterface) namedInput.get());
                             parentBEASTObjects.add(beastObject);
@@ -226,10 +226,10 @@ public class BeautiPanelConfig extends BEASTObject {
                 type = Class.forName(typeInput.get());
             }
             // sanity check
-            if (!bIsList && (bHasPartitionsInput.get() == Partition.none) && beastObjects.size() > 1) {
+            if (!isList && (hasPartitionsInput.get() == Partition.none) && beastObjects.size() > 1) {
             	Log.warning.println("WARNING: multiple beastObjects match, but hasPartitions=none");
                 // this makes sure that all mathing beastObjects are available in one go
-                bIsList = true;
+                isList = true;
                 // this suppresses syncing
                 parentInputs.clear();
             }
@@ -240,7 +240,7 @@ public class BeautiPanelConfig extends BEASTObject {
                 startInputs.add(beastObject);
             }
 
-            if (!bIsList) {
+            if (!isList) {
                 _input = new FlexibleInput<>();
             } else {
                 _input = new FlexibleInput<>(new ArrayList<>());
@@ -251,7 +251,7 @@ public class BeautiPanelConfig extends BEASTObject {
 //                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
 
 
-            if (bIsList) {
+            if (isList) {
                 checkForDups((List<Object>) _input.get());
             }
 
@@ -285,7 +285,7 @@ public class BeautiPanelConfig extends BEASTObject {
     public void sync(int iPartition) {
         if (parentInputs.size() > 0 && _input.get() != null) {
             final Input<?> input = parentInputs.get(iPartition);
-            if (bIsList) {
+            if (isList) {
                 List<Object> list = (List<Object>) _input.get();
                 List<Object> targetList = ((List<Object>) input.get());
                 //targetList.clear();
@@ -317,7 +317,7 @@ public class BeautiPanelConfig extends BEASTObject {
     public void syncTo(int iPartition) {
         _input.setType(type);
         try {
-            if (bIsList) {
+            if (isList) {
                 for (BEASTInterface beastObject : inputs) {
                     _input.setValue(beastObject, this);
                 }
@@ -340,7 +340,7 @@ public class BeautiPanelConfig extends BEASTObject {
      * returns name of the beastObject *
      */
     public String getType() {
-        if (bIsList) {
+        if (isList) {
             return inputs.get(0).getClass().getName();
         }
         if (_input == null) {

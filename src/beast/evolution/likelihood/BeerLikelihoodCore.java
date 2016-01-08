@@ -401,18 +401,18 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param nNodeCount           the number of nodes in the tree
      * @param nPatternCount        the number of patterns
      * @param nMatrixCount         the number of matrices (i.e., number of categories)
-     * @param bIntegrateCategories whether sites are being integrated over all matrices
+     * @param integrateCategories whether sites are being integrated over all matrices
      */
     @Override
-	public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean bIntegrateCategories, boolean bUseAmbiguities) {
+	public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean integrateCategories, boolean useAmbiguities) {
 
         this.nrOfNodes = nNodeCount;
         this.nrOfPatterns = nPatternCount;
         this.nrOfMatrices = nMatrixCount;
 
-        this.integrateCategories = bIntegrateCategories;
+        this.integrateCategories = integrateCategories;
 
-        if (bIntegrateCategories) {
+        if (integrateCategories) {
             partialsSize = nPatternCount * nrOfStates * nMatrixCount;
         } else {
             partialsSize = nPatternCount * nrOfStates;

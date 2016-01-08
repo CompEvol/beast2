@@ -293,8 +293,8 @@ public class XMLParser {
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti *
      */
-    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> iDMap, final boolean bInitialize) throws Exception {
-        needsInitialisation = bInitialize;
+    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> iDMap, final boolean initialise) throws Exception {
+        needsInitialisation = initialise;
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
@@ -367,8 +367,8 @@ public class XMLParser {
      * Only the run element or if that does not exist the last child element of
      * the top level <beast> element is considered.
      */
-    public BEASTInterface parseFragment(final String xml, final boolean bInitialize) throws Exception {
-        needsInitialisation = bInitialize;
+    public BEASTInterface parseFragment(final String xml, final boolean initialise) throws Exception {
+        needsInitialisation = initialise;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
@@ -419,18 +419,18 @@ public class XMLParser {
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
      */
-    public BEASTInterface parseBareFragment(String xml, final boolean bInitialize) throws Exception {
+    public BEASTInterface parseBareFragment(String xml, final boolean initialise) throws Exception {
         // get rid of XML processing instruction
         xml = xml.replaceAll("<\\?xml[^>]*>", "");
         if (xml.contains("<beast")) {
-            return parseFragment(xml, bInitialize);
+            return parseFragment(xml, initialise);
         } else {
-            return parseFragment("<beast>" + xml + "</beast>", bInitialize);
+            return parseFragment("<beast>" + xml + "</beast>", initialise);
         }
     }
 
-    public List<BEASTInterface> parseBareFragments(final String xml, final boolean bInitialize) throws Exception {
-        needsInitialisation = bInitialize;
+    public List<BEASTInterface> parseBareFragments(final String xml, final boolean initialise) throws Exception {
+        needsInitialisation = initialise;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
@@ -684,13 +684,13 @@ public class XMLParser {
 		}
 		if (clazzName == null) {
 			// try to create the old-fashioned way by creating the class
-            boolean bDone = false;
+            boolean isDone = false;
             for (final String nameSpace : nameSpaces) {
                 try {
-                    if (!bDone) {
+                    if (!isDone) {
                         Class.forName(nameSpace + specClass);
                         clazzName = nameSpace + specClass;
-                        bDone = true;
+                        isDone = true;
                     }
                 } catch (ClassNotFoundException e) {
                     // class does not exist -- try another namespace

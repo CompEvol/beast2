@@ -157,7 +157,7 @@ public class BeautiConnector extends BEASTObject {
         	}
         }
 
-        boolean bIsActive = true;
+        boolean isActive = true;
         for (int i = 0; i < conditionIDs.length; i++) {
         	//String id = conditionIDs[i].replaceAll("\\$\\(n\\)", partition);
         	String id = BeautiDoc.translatePartitionNames(conditionIDs[i], partitionContext);
@@ -228,7 +228,7 @@ public class BeautiConnector extends BEASTObject {
         //if (conditionIDs.length > 0) {
         //	System.err.println("isActivated::return true");
         //}
-        return bIsActive;
+        return isActive;
     }
 
     public String getTipText() {

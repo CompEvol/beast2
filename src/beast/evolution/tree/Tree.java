@@ -601,9 +601,9 @@ public class Tree extends StateNode implements TreeInterface {
      * StateNode implementation
      */
     @Override
-    public void setEverythingDirty(final boolean bDirty) {
-        setSomethingIsDirty(bDirty);
-        if (!bDirty) {
+    public void setEverythingDirty(final boolean isDirty) {
+        setSomethingIsDirty(isDirty);
+        if (!isDirty) {
             for( Node n : m_nodes ) {
                 n.isDirty = IS_CLEAN;
             }

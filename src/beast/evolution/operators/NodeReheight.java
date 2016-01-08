@@ -108,16 +108,16 @@ public class NodeReheight extends TreeOperator {
         return 0;
     }
 
-    private boolean checkConsistency(final Node node, final boolean[] bUsed) {
-        if (bUsed[node.getNr()]) {
+    private boolean checkConsistency(final Node node, final boolean[] used) {
+        if (used[node.getNr()]) {
             // used twice? tha's bad
             return false;
         }
-        bUsed[node.getNr()] = true;
+        used[node.getNr()] = true;
         if ( node.isLeaf() ) {
             return true;
         }
-        return checkConsistency(node.getLeft(), bUsed) && checkConsistency(node.getRight(), bUsed);
+        return checkConsistency(node.getLeft(), used) && checkConsistency(node.getRight(), used);
     }
 
     /**
@@ -138,29 +138,29 @@ public class NodeReheight extends TreeOperator {
         }
 
         // find species on the left of selected node
-        final boolean[] bLowerSpecies = new boolean[nrOfSpecies];
+        final boolean[] isLowerSpecies = new boolean[nrOfSpecies];
         final Node[] nodes = treeInput.get().getNodesAsArray();
         for (int i = 0; i < iNode; i++) {
             final Node node = nodes[iReverseOrder[i]];
             if (node.isLeaf()) {
-                bLowerSpecies[node.getNr()] = true;
+                isLowerSpecies[node.getNr()] = true;
             }
         }
         // find species on the right of selected node
-        final boolean[] bUpperSpecies = new boolean[nrOfSpecies];
+        final boolean[] isUpperSpecies = new boolean[nrOfSpecies];
         for (int i = iNode + 1; i < nodes.length; i++) {
             final Node node = nodes[iReverseOrder[i]];
             if (node.isLeaf()) {
-                bUpperSpecies[node.getNr()] = true;
+                isUpperSpecies[node.getNr()] = true;
             }
         }
 
         // find max
         double max = Double.POSITIVE_INFINITY;
         for (int i = 0; i < nrOfSpecies; i++) {
-            if (bLowerSpecies[i]) {
+            if (isLowerSpecies[i]) {
                 for (int j = 0; j < nrOfSpecies; j++) {
-                    if (j != i && bUpperSpecies[j]) {
+                    if (j != i && isUpperSpecies[j]) {
                         final int x = Math.min(i, j);
                         final int y = Math.max(i, j);
                         max = Math.min(max, maxHeight[x][y]);
@@ -181,14 +181,14 @@ public class NodeReheight extends TreeOperator {
             final int iSpecies = taxonMap.get(node.getNr());
             taxonSet[iSpecies] = true;
         } else {
-            final boolean[] bLeftTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getLeft(), bLeftTaxonSet, taxonMap, maxHeight);
-            final boolean[] bRightTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getRight(), bRightTaxonSet, taxonMap, maxHeight);
+            final boolean[] isLeftTaxonSet = new boolean[nrOfSpecies];
+            findMaximaInGeneTree(node.getLeft(), isLeftTaxonSet, taxonMap, maxHeight);
+            final boolean[] isRightTaxonSet = new boolean[nrOfSpecies];
+            findMaximaInGeneTree(node.getRight(), isRightTaxonSet, taxonMap, maxHeight);
             for (int i = 0; i < nrOfSpecies; i++) {
-                if (bLeftTaxonSet[i]) {
+                if (isLeftTaxonSet[i]) {
                     for (int j = 0; j < nrOfSpecies; j++) {
-                        if (j != i && bRightTaxonSet[j]) {
+                        if (j != i && isRightTaxonSet[j]) {
                             final int x = Math.min(i, j);
                             final int y = Math.max(i, j);
                             maxHeight[x][y] = Math.min(maxHeight[x][y], node.getHeight());
@@ -197,7 +197,7 @@ public class NodeReheight extends TreeOperator {
                 }
             }
             for (int i = 0; i < nrOfSpecies; i++) {
-                taxonSet[i] = bLeftTaxonSet[i] | bRightTaxonSet[i];
+                taxonSet[i] = isLeftTaxonSet[i] | isRightTaxonSet[i];
             }
         }
     }
@@ -207,7 +207,7 @@ public class NodeReheight extends TreeOperator {
      */
 
 
-    private Node reconstructTree(final double[] heights, final int[] iReverseOrder, final int iFrom, final int iTo, final boolean[] bHasParent) {
+    private Node reconstructTree(final double[] heights, final int[] iReverseOrder, final int iFrom, final int iTo, final boolean[] hasParent) {
         //iNode = maxIndex(heights, 0, heights.length);
         int iNode = -1;
         double max = Double.NEGATIVE_INFINITY;
@@ -226,7 +226,7 @@ public class NodeReheight extends TreeOperator {
         int iLeft = -1;
         max = Double.NEGATIVE_INFINITY;
         for (int j = iFrom; j < iNode; j++) {
-            if (max < heights[j] && !bHasParent[j]) {
+            if (max < heights[j] && !hasParent[j]) {
                 max = heights[j];
                 iLeft = j;
             }
@@ -236,7 +236,7 @@ public class NodeReheight extends TreeOperator {
         int iRight = -1;
         max = Double.NEGATIVE_INFINITY;
         for (int j = iNode + 1; j < iTo; j++) {
-            if (max < heights[j] && !bHasParent[j]) {
+            if (max < heights[j] && !hasParent[j]) {
                 max = heights[j];
                 iRight = j;
             }
@@ -252,13 +252,13 @@ public class NodeReheight extends TreeOperator {
         if (node.getRight().isLeaf()) {
             heights[iRight] = Double.NEGATIVE_INFINITY;
         }
-        bHasParent[iLeft] = true;
-        bHasParent[iRight] = true;
+        hasParent[iLeft] = true;
+        hasParent[iRight] = true;
         heights[iNode] = Double.NEGATIVE_INFINITY;
 
 
-        reconstructTree(heights, iReverseOrder, iFrom, iNode, bHasParent);
-        reconstructTree(heights, iReverseOrder, iNode, iTo, bHasParent);
+        reconstructTree(heights, iReverseOrder, iFrom, iNode, hasParent);
+        reconstructTree(heights, iReverseOrder, iNode, iTo, hasParent);
         return node;
     }
 

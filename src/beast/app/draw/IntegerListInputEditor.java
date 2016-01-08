@@ -167,8 +167,8 @@ public class IntegerListInputEditor extends ListInputEditor {
          * construct an editor consisting of a label and input entry *
          */
         @Override
-		public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-            m_bAddButtons = bAddButtons;
+		public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+            m_bAddButtons = addButtons;
             m_input = input;
             m_beastObject = beastObject;
             this.itemNr= itemNr;

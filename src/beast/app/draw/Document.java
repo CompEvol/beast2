@@ -183,14 +183,14 @@ public class Document {
      * edit actions on shapes *
      */
     public void moveShape(int nX, int nY, int nToX, int nToY, int nPosition) {
-        boolean bNeedsUndoAction = true;
+        boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
             if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSingleSelection(nPosition)) {
-                bNeedsUndoAction = false;
+                needsUndoAction = false;
             }
         }
-        if (bNeedsUndoAction) {
+        if (needsUndoAction) {
             addUndoAction(new UndoAction(nPosition, UndoAction.MOVE_ACTION));
         }
         Shape shape = m_objects.get(nPosition);
@@ -199,27 +199,27 @@ public class Document {
     } // moveShape
 
     public void moveShapes(int dX, int dY, List<Integer> nPositions) {
-        boolean bNeedsUndoAction = true;
+        boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
             if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSelection(nPositions)) {
-                bNeedsUndoAction = false;
+                needsUndoAction = false;
             }
         }
-        if (bNeedsUndoAction) {
+        if (needsUndoAction) {
             addUndoAction(new UndoAction(nPositions, UndoAction.MOVE_ACTION));
         }
     } // moveShape
 
     public void movePoint(int nPoint, int nX, int nY, int nToX, int nToY, int nPosition) {
-        boolean bNeedsUndoAction = true;
+        boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
             if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.isSingleSelection(nPosition)) {
-                bNeedsUndoAction = false;
+                needsUndoAction = false;
             }
         }
-        if (bNeedsUndoAction) {
+        if (needsUndoAction) {
             addUndoAction(new UndoAction(nPosition, UndoAction.RESHAPE_ACTION));
         }
         Shape shape = m_objects.get(nPosition);
@@ -429,17 +429,17 @@ public class Document {
                 setPluginID((BEASTObjectShape) shape);
                 // ensure the new shape does not overlap exactly with an existing shape
                 int nOffset = 0;
-                boolean bMatch = false;
+                boolean isMatch = false;
                 do {
-                    bMatch = false;
+                    isMatch = false;
                     for (Shape shape2 : m_objects) {
                         if (shape2.m_x == shape.m_x + nOffset && shape2.m_y == shape.m_y + nOffset &&
                                 shape2.m_w == shape.m_w && shape2.m_h == shape.m_h) {
-                            bMatch = true;
+                            isMatch = true;
                             nOffset += 10;
                         }
                     }
-                } while (bMatch);
+                } while (isMatch);
                 shape.m_x += nOffset;
                 shape.m_y += nOffset;
             }
@@ -1625,9 +1625,9 @@ public class Document {
             shape.m_x = DX;
         }
         // move inputs rightward till they exceed x-coord of their inputs
-        boolean bProgress = true;
-        while (bProgress) {
-            bProgress = false;
+        boolean progress = true;
+        while (progress) {
+            progress = false;
             for (Shape shape : inputMap.keySet()) {
                 int nMaxInputX = -DX;
                 for (Shape input : inputMap.get(shape)) {
@@ -1635,14 +1635,14 @@ public class Document {
                 }
                 if (shape.m_x < nMaxInputX + DX) {
                     shape.m_x = nMaxInputX + DX;
-                    bProgress = true;
+                    progress = true;
                 }
             }
         }
         // move inputs rightward till they are stopped by their outputs
-        bProgress = true;
-        while (bProgress) {
-            bProgress = false;
+        progress = true;
+        while (progress) {
+            progress = false;
             for (Shape shape : outputMap.keySet()) {
                 int nMinOutputX = Integer.MAX_VALUE;
                 for (Shape input : outputMap.get(shape)) {
@@ -1650,7 +1650,7 @@ public class Document {
                 }
                 if (nMinOutputX < Integer.MAX_VALUE && shape.m_x < nMinOutputX - DX) {
                     shape.m_x = nMinOutputX - DX;
-                    bProgress = true;
+                    progress = true;
                 }
             }
         }
@@ -1674,9 +1674,9 @@ public class Document {
      */
     void layoutAdjustY(HashMap<BEASTObjectShape, List<BEASTObjectShape>> inputMap) {
         // next, optimise top down order
-        boolean bProgress = true;
+        boolean progress = true;
         int iX = DX;
-        while (bProgress) {
+        while (progress) {
             List<BEASTObjectShape> shapes = new ArrayList<>();
             // find shapes with same x-coordinate
             for (BEASTObjectShape shape : inputMap.keySet()) {
@@ -1728,7 +1728,7 @@ public class Document {
             }
 
 
-            bProgress = (shapes.size() > 0);
+            progress = (shapes.size() > 0);
             iX += DX;
         }
     } // layoutAdjustY
@@ -1736,7 +1736,7 @@ public class Document {
     /**
      * apply spring model algorithm to the placement of plug-in shapes *
      */
-    public void relax(boolean bAllowXToMove) {
+    public void relax(boolean allowXToMove) {
         List<Shape> objects = new ArrayList<>();
         for (Shape shape : m_objects) {
             if (shape.m_bNeedsDrawing) {
@@ -1805,9 +1805,9 @@ public class Document {
                         dx = -dx;
                         //f *= Math.abs((vx+200))/40;
                     }
-                    if (bAllowXToMove) source.m_x = (int) Math.max(100, source.m_x + dx);
+                    if (allowXToMove) source.m_x = (int) Math.max(100, source.m_x + dx);
                     source.m_y = (int) Math.max(10, source.m_y + dy);
-                    if (bAllowXToMove) target.m_x = (int) Math.max(100, target.m_x - dx);
+                    if (allowXToMove) target.m_x = (int) Math.max(100, target.m_x - dx);
                     target.m_y = (int) Math.max(10, target.m_y - dy);
 
                 }
@@ -1837,7 +1837,7 @@ public class Document {
                         }
                     }
                 }
-                if (bAllowXToMove) shape1.m_x = (int) Math.min(800, Math.max(10, shape1.m_x + dx));
+                if (allowXToMove) shape1.m_x = (int) Math.min(800, Math.max(10, shape1.m_x + dx));
                 shape1.m_y = (int) Math.min(800, Math.max(10, shape1.m_y + dy));
             }
         }

@@ -142,9 +142,9 @@ public class ScaleOperator extends Operator {
             }
 
             // not a tree scaler, so scale a parameter
-            final boolean bScaleAll = scaleAllInput.get();
+            final boolean scaleAll = scaleAllInput.get();
             final int nDegreesOfFreedom = degreesOfFreedomInput.get();
-            final boolean bScaleAllIndependently = scaleAllIndependentlyInput.get();
+            final boolean scaleAllIndependently = scaleAllIndependentlyInput.get();
 
             final RealParameter param = parameterInput.get(this);
 
@@ -152,7 +152,7 @@ public class ScaleOperator extends Operator {
 
             final int dim = param.getDimension();
 
-            if (bScaleAllIndependently) {
+            if (scaleAllIndependently) {
                 // update all dimensions independently.
                 hastingsRatio = 0;
                 final BooleanParameter indicators = indicatorInput.get();
@@ -190,7 +190,7 @@ public class ScaleOperator extends Operator {
                         param.setValue(i, newValue);
                     }
                 }
-            } else if (bScaleAll) {
+            } else if (scaleAll) {
                 // update all dimensions
                 // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
                 // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.

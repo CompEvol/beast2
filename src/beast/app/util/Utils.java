@@ -201,11 +201,11 @@ public class Utils {
         return getFile(message, false, defaultFileOrDir, true, description, extensions);
     }
 
-    public static File[] getFile(String message, boolean bLoadNotSave, File defaultFileOrDir, boolean bAllowMultipleSelection, String description, final String... extensions) {
+    public static File[] getFile(String message, boolean isLoadNotSave, File defaultFileOrDir, boolean allowMultipleSelection, String description, final String... extensions) {
         if (isMac()) {
             java.awt.Frame frame = new java.awt.Frame();
             java.awt.FileDialog chooser = new java.awt.FileDialog(frame, message,
-                    (bLoadNotSave ? java.awt.FileDialog.LOAD : java.awt.FileDialog.SAVE));
+                    (isLoadNotSave ? java.awt.FileDialog.LOAD : java.awt.FileDialog.SAVE));
             if (defaultFileOrDir != null) {
                 if (defaultFileOrDir.isDirectory()) {
                     chooser.setDirectory(defaultFileOrDir.getAbsolutePath());
@@ -229,10 +229,10 @@ public class Utils {
                 chooser.setFilenameFilter(filter);
             }
 
-            chooser.setMultipleMode(bAllowMultipleSelection);
+            chooser.setMultipleMode(allowMultipleSelection);
             chooser.setVisible(true);
             if (chooser.getFile() == null) return null;
-            if (bAllowMultipleSelection) {
+            if (allowMultipleSelection) {
             	return chooser.getFiles();
             }
             File file = new java.io.File(chooser.getDirectory(), chooser.getFile());
@@ -244,7 +244,7 @@ public class Utils {
             java.awt.Frame frame = new java.awt.Frame();
             frame.setTitle(message);
             final JFileChooser chooser = new JFileChooser(defaultFileOrDir);
-            chooser.setMultiSelectionEnabled(bAllowMultipleSelection);
+            chooser.setMultiSelectionEnabled(allowMultipleSelection);
             //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
             if (description != null) {
@@ -252,10 +252,10 @@ public class Utils {
                 chooser.setFileFilter(filter);
             }
 
-            if (bLoadNotSave) {
+            if (isLoadNotSave) {
                 if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                     frame.dispose();
-                    if (bAllowMultipleSelection) {
+                    if (allowMultipleSelection) {
                         return chooser.getSelectedFiles();
                     } else {
                         if (chooser.getSelectedFile() == null) {
@@ -267,7 +267,7 @@ public class Utils {
             } else {
                 if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
                     frame.dispose();
-                    if (bAllowMultipleSelection) {
+                    if (allowMultipleSelection) {
                         return chooser.getSelectedFiles();
                     } else {
                         if (chooser.getSelectedFile() == null) {

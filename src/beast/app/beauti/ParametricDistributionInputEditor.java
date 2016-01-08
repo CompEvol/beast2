@@ -42,18 +42,18 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
         useDefaultBehavior = !((beastObject instanceof beast.math.distributions.Prior) || beastObject instanceof MRCAPrior || beastObject instanceof TreeDistribution);
 
 //    	if (useDefaultBehavior && false) {
-//    		super.init(input, beastObject, bExpandOption, bAddButtons);
+//    		super.init(input, beastObject, isExpandOption, addButtons);
 //    	} else {
-        m_bAddButtons = bAddButtons;
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
 		this.itemNr = itemNr;
         if (input.get() != null) {
-            super.init(input, beastObject, itemNr, ExpandOption.TRUE, bAddButtons);
+            super.init(input, beastObject, itemNr, ExpandOption.TRUE, addButtons);
         }
         add(createGraph());
 //    	}

@@ -60,8 +60,8 @@ public class SmallLabel extends JLabel {
     boolean m_bIsEnabled = true;
 
     @Override
-    public void setVisible(boolean bIsEnabled) {
-        m_bIsEnabled = bIsEnabled;
+    public void setVisible(boolean isEnabled) {
+        m_bIsEnabled = isEnabled;
     }
 
 } // class SmallButton

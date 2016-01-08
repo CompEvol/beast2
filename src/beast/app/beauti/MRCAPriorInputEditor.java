@@ -37,8 +37,8 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTInterface beastObject, final int listItemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+	public void init(Input<?> input, BEASTInterface beastObject, final int listItemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
         this.itemNr= listItemNr;

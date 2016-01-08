@@ -617,14 +617,14 @@ public class Alignment extends Map<String> {
             for (int i = 0; i < nPatterns; i++) {
                 int[] nPattern = sitePatterns[i];
                 int iValue = nPattern[0];
-                boolean bIsInvariant = true;
+                boolean isInvariant = true;
                 for (int k = 1; k < nPattern.length; k++) {
                     if (nPattern[k] != iValue) {
-                        bIsInvariant = false;
+                        isInvariant = false;
                         break;
                     }
                 }
-                if (bIsInvariant) {
+                if (isInvariant) {
                     removedSites += patternWeight[i];
                     patternWeight[i] = 0;
 

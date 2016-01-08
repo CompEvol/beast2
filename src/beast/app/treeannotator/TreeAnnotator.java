@@ -421,7 +421,7 @@ public class TreeAnnotator {
     public TreeAnnotator() { }
 
     public TreeAnnotator(final int burninPercentage,
-    					 boolean lowMemory, // bAllowSingleChild was defunct (always set to false), now replaced by flag to say how much 
+    					 boolean lowMemory, // allowSingleChild was defunct (always set to false), now replaced by flag to say how much 
                          HeightsSummary heightsOption,
                          double posteriorLimit,
                          double hpd2D,

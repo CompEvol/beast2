@@ -61,7 +61,7 @@ public class PriorListInputEditor extends ListInputEditor {
     }
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
     	List<?> list = (List<?>) input.get();
     	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
@@ -114,7 +114,7 @@ public class PriorListInputEditor extends ListInputEditor {
         taxonButtons = new ArrayList<>();
         
         //m_buttonStatus = ButtonStatus.NONE;
-        super.init(input, beastObject, itemNr, bExpandOption, bAddButtons);
+        super.init(input, beastObject, itemNr, isExpandOption, addButtons);
 
         
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {

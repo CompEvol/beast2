@@ -103,7 +103,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
         this.config = config;
         if (this.config.hasPartition() != Partition.none &&
-                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+                doc.getPartitions(config.hasPartitionsInput.get().toString()).size() > 1) {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
             add(splitPane,BorderLayout.CENTER);
         } else {
@@ -116,9 +116,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         setOpaque(false);
     } // c'tor
 
-    void addPartitionPanel(Partition bHasPartition, int iPanel) {
+    void addPartitionPanel(Partition hasPartition, int iPanel) {
         Box box = Box.createVerticalBox();
-        if (splitPane != null && bHasPartition != Partition.none) {
+        if (splitPane != null && hasPartition != Partition.none) {
             box.add(createList());
         } else {
             return;
@@ -176,7 +176,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             // this is a weird bit of code, since listModel.clear should ensure that size()==0, but it doesn't
             return;
         }
-        String type = config.bHasPartitionsInput.get().toString();
+        String type = config.hasPartitionsInput.get().toString();
         for (BEASTInterface partition : doc.getPartitions(type)) {
         	if (type.equals("SiteModel")) {
         		partition = (BEASTInterface) ((GenericTreeLikelihood) partition).siteModelInput.get();
@@ -210,13 +210,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
         // toggle splitpane
         if (splitPane == null && config.hasPartition() != Partition.none &&
-                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() > 1) {
+                doc.getPartitions(config.hasPartitionsInput.get().toString()).size() > 1) {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
             add(splitPane,BorderLayout.CENTER);
             addPartitionPanel(config.hasPartition(), iPanel);
         }
         if (splitPane != null && (config.hasPartition() == Partition.none ||
-                doc.getPartitions(config.bHasPartitionsInput.get().toString()).size() <= 1)) {
+                doc.getPartitions(config.hasPartitionsInput.get().toString()).size() <= 1)) {
             remove(splitPane);
             splitPane = null;
         }
@@ -229,13 +229,13 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		g_currentPanel = this;
     }
     
-    void refreshInputPanel(BEASTInterface beastObject, Input<?> input, boolean bAddButtons, InputEditor.ExpandOption bForceExpansion) throws Exception {
+    void refreshInputPanel(BEASTInterface beastObject, Input<?> input, boolean addButtons, InputEditor.ExpandOption forceExpansion) throws Exception {
         if (centralComponent != null) {
             remove(centralComponent);
         }
         if (input != null && input.get() != null && input.getType() != null) {
             InputEditor.ButtonStatus bs = config.buttonStatusInput.get();
-            InputEditor inputEditor = doc.getInputEditorFactory().createInputEditor(input, beastObject, bAddButtons, bForceExpansion, bs, null, doc);
+            InputEditor inputEditor = doc.getInputEditorFactory().createInputEditor(input, beastObject, addButtons, forceExpansion, bs, null, doc);
 
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -284,9 +284,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         BEASTInterface beastObject = config;
         final Input<?> input = config.resolveInput(doc, iPartition);
 
-        boolean bAddButtons = config.addButtons();
-        ExpandOption bForceExpansion = config.forceExpansion();
-        refreshInputPanel(beastObject, input, bAddButtons, bForceExpansion);
+        boolean addButtons = config.addButtons();
+        ExpandOption forceExpansion = config.forceExpansion();
+        refreshInputPanel(beastObject, input, addButtons, forceExpansion);
     }
 
     /** 
@@ -300,7 +300,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     		return;
     	}
 
-    	String type = config.bHasPartitionsInput.get().toString();
+    	String type = config.hasPartitionsInput.get().toString();
     	java.util.List<BEASTInterface> list = doc.getPartitions(type);
     	int iSource = -1, iTarget = -1;
         for (int i = 0; i < list.size(); i++) {

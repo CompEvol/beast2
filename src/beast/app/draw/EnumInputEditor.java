@@ -35,8 +35,8 @@ public class EnumInputEditor extends InputEditor.Base {
      * o a combo box for selecting another value in the enumeration
      */
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
 		this.itemNr = itemNr;

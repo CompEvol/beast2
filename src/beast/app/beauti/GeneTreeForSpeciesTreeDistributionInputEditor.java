@@ -24,8 +24,8 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	}
 
 	@Override
-	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
-        m_bAddButtons = bAddButtons;
+	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
         this.itemNr= itemNr;
@@ -52,10 +52,10 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 			}
 			
 			@Override
-			public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+			public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
 				m_beastObject = beastObject;
 				m_input = input;
-				m_bAddButtons = bAddButtons;
+				m_bAddButtons = addButtons;
 				this.itemNr = itemNr;
 				addInputLabel();
 				

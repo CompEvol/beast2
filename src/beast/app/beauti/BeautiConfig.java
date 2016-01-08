@@ -42,7 +42,7 @@ public class BeautiConfig extends BEASTObject {
 
     final public Input<List<BeautiPanelConfig>> panelsInput = new Input<>("panel", "define custom panels and their properties",
             new ArrayList<>());
-    final public Input<Boolean> bIsExpertInput = new Input<>("isExpert", "flag to indicate Beauti should start in expert mode", false);
+    final public Input<Boolean> isExpertInput = new Input<>("isExpert", "flag to indicate Beauti should start in expert mode", false);
 
 
     final public Input<BeautiSubTemplate> partitionTemplate = new Input<>("partitiontemplate", "defines template used when creating a partition", Validate.REQUIRED);
@@ -107,7 +107,7 @@ public class BeautiConfig extends BEASTObject {
                 }
             }
         }
-        //InputEditor.setExpertMode(bIsExpertInput.get());
+        //InputEditor.setExpertMode(isExpertInput.get());
         subTemplates = subTemplatesInput.get();
         alignmentProvider = alignmentProviderInput.get();
 
@@ -148,7 +148,7 @@ public class BeautiConfig extends BEASTObject {
         for (BeautiSubTemplate sub : subTemplates) {
             sub.setDoc(doc);
         }
-        doc.setExpertMode(bIsExpertInput.get());
+        doc.setExpertMode(isExpertInput.get());
         hyperPriorTemplate.doc = doc;
     }
 

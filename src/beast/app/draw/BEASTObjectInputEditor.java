@@ -43,14 +43,14 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
      * o validation label -- optional, if input is not valid
      */
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
     	//box.setAlignmentY(LEFT_ALIGNMENT);
     	
-        m_bAddButtons = bAddButtons;
+        m_bAddButtons = addButtons;
         m_input = input;
         m_beastObject = beastObject;
 		this.itemNr = itemNr;
-        if (bExpandOption == ExpandOption.FALSE) {
+        if (isExpandOption == ExpandOption.FALSE) {
             simpleInit(input, beastObject);
         } else {
             expandedInit(input, beastObject);
