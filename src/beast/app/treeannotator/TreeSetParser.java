@@ -67,14 +67,14 @@ public class TreeSetParser {
 		m_bAllowSingleChild = bAllowSingleChild;
 	} // c'tor
 	
-	public TreeSetParser(List<String> labels, List<Float> fLongitude, List<Float> fLatitude, int nBurnInPercentage) {
+	public TreeSetParser(List<String> labels, List<Float> longitude, List<Float> latitude, int nBurnInPercentage) {
 		m_sLabels = labels;
 		if (m_sLabels != null) {
 			m_bIsLabelledNewick = true;
 			m_nNrOfLabels = m_sLabels.size();
 		}
-		m_fLongitude = fLongitude;
-		m_fLatitude = fLatitude;
+		m_fLongitude = longitude;
+		m_fLatitude = latitude;
 		m_nBurnInPercentage = Math.max(nBurnInPercentage, 0);
 		m_fMinLat = 90; m_fMinLong = 180;
 		m_fMaxLat = -90; m_fMaxLong = -180;
@@ -195,20 +195,20 @@ public class TreeSetParser {
 					if (iStr2 >= 0) {
 						int iStr3 = label.indexOf(')', iStr2);
 						if (iStr3 >= 0) {
-							float fLat = Float.parseFloat(label.substring(iStr+1, iStr2));// + 180;
-							float fLong = Float.parseFloat(label.substring(iStr2+1, iStr3));// + 360)%360;
-							if (fLat!=0 || fLong!=0) {
-								m_fMinLat = Math.min(m_fMinLat, fLat);
-								m_fMaxLat = Math.max(m_fMaxLat, fLat);
-								m_fMinLong = Math.min(m_fMinLong, fLong);
-								m_fMaxLong = Math.max(m_fMaxLong, fLong);
+							float lat = Float.parseFloat(label.substring(iStr+1, iStr2));// + 180;
+							float _long = Float.parseFloat(label.substring(iStr2+1, iStr3));// + 360)%360;
+							if (lat!=0 || _long!=0) {
+								m_fMinLat = Math.min(m_fMinLat, lat);
+								m_fMaxLat = Math.max(m_fMaxLat, lat);
+								m_fMinLong = Math.min(m_fMinLong, _long);
+								m_fMaxLong = Math.max(m_fMaxLong, _long);
 							}
 							while (m_fLatitude.size() < m_sLabels.size()) {
 								m_fLatitude.add(0f);
 								m_fLongitude.add(0f);
 							}
-							m_fLatitude.add(fLat);
-							m_fLongitude.add(fLong);
+							m_fLatitude.add(lat);
+							m_fLongitude.add(_long);
 						}
 					}
 					label = label.substring(0, label.indexOf("("));
@@ -260,11 +260,11 @@ public class TreeSetParser {
 		
 		
 		// convert lengths (stored as node heights) to heights
-		double fMaxHeight = 0;
+		double maxHeight = 0;
 		double [] heights = new double[trees.size()];
 		for (int i = 0; i < trees.size(); i++) {
 			heights[i] = lengthToHeight(trees.get(i), 0);
-			fMaxHeight = Math.max(fMaxHeight, heights[i]);
+			maxHeight = Math.max(maxHeight, heights[i]);
 		}
 		for (int i = 0; i < trees.size(); i++) {
 			offsetHeight(trees.get(i), heights[i]);
@@ -303,20 +303,20 @@ public class TreeSetParser {
 	/** convert length to height
 	 *  and set ID of leafs
 	 */
-	private double lengthToHeight(Node node, double fOffSet) {
+	private double lengthToHeight(Node node, double offSet) {
 		if (node.isLeaf()) {
-			node.setHeight(-fOffSet - node.getHeight());
+			node.setHeight(-offSet - node.getHeight());
 			node.setID(m_sLabels.get(node.getNr()));
 			return -node.getHeight();
 		} else {
-			double fPosY = fOffSet + node.getHeight();
-			double fYMax = 0;
-			fYMax = Math.max(fYMax, lengthToHeight(node.getLeft(), fPosY));
+			double posY = offSet + node.getHeight();
+			double yMax = 0;
+			yMax = Math.max(yMax, lengthToHeight(node.getLeft(), posY));
 			if (node.getRight() != null) {
-				fYMax = Math.max(fYMax, lengthToHeight(node.getRight(), fPosY));
+				yMax = Math.max(yMax, lengthToHeight(node.getRight(), posY));
 			}
-			node.setHeight(-fPosY);
-			return fYMax;
+			node.setHeight(-posY);
+			return yMax;
 		}
 	}
 

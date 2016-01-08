@@ -119,8 +119,8 @@ public class OperatorListInputEditor extends ListInputEditor {
 
         void processEntry() {
             try {
-                Double fWeight = Double.parseDouble(m_weightEntry.getText());
-                m_operator.m_pWeight.setValue(fWeight, m_operator);
+                Double weight = Double.parseDouble(m_weightEntry.getText());
+                m_operator.m_pWeight.setValue(weight, m_operator);
             } catch (Exception e) {
                 // ignore
             }

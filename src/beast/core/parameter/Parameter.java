@@ -24,15 +24,15 @@ public interface Parameter<T> extends Function {
 
     public void setValue(int i, T value);
     
-    public void setValue(T fValue);
+    public void setValue(T value);
 
     public T getLower();
 
-    public void setLower(final T fLower);
+    public void setLower(final T lower);
 
     public T getUpper();
 
-    public void setUpper(final T fUpper);
+    public void setUpper(final T upper);
 
     public T[] getValues();
 
@@ -211,8 +211,8 @@ public interface Parameter<T> extends Function {
         }
 
         @Override
-        public void setLower(final T fLower) {
-            m_fLower = fLower;
+        public void setLower(final T lower) {
+            m_fLower = lower;
         }
 
         @Override
@@ -221,8 +221,8 @@ public interface Parameter<T> extends Function {
         }
 
         @Override
-        public void setUpper(final T fUpper) {
-            m_fUpper = fUpper;
+        public void setUpper(final T upper) {
+            m_fUpper = upper;
         }
 
         @Override
@@ -235,25 +235,25 @@ public interface Parameter<T> extends Function {
             return Arrays.copyOf(values, values.length);
         }
 
-        public void setBounds(final T fLower, final T fUpper) {
-            m_fLower = fLower;
-            m_fUpper = fUpper;
+        public void setBounds(final T lower, final T upper) {
+            m_fLower = lower;
+            m_fUpper = upper;
         }
 
         @Override
-        public void setValue(final T fValue) {
+        public void setValue(final T value) {
             startEditing(null);
 
-            values[0] = fValue;
+            values[0] = value;
             m_bIsDirty[0] = true;
             m_nLastDirty = 0;
         }
 
         @Override
-        public void setValue(final int iParam, final T fValue) {
+        public void setValue(final int iParam, final T value) {
             startEditing(null);
 
-            values[iParam] = fValue;
+            values[iParam] = value;
             m_bIsDirty[iParam] = true;
             m_nLastDirty = iParam;
 

@@ -58,29 +58,29 @@ public class UserDataType extends Base {
 
         String codeMapString = codeMapInput.get();
         if (!codeMapInput.get().equals("")) {
-            String[] sStrs = codeMapString.split(",");
+            String[] strs = codeMapString.split(",");
             codeMap = "";
-            mapCodeToStateSet = new int[sStrs.length][];
+            mapCodeToStateSet = new int[strs.length][];
             int k = 0;
-            for (String sStr : sStrs) {
-                String[] sStrs2 = sStr.split("=");
+            for (String str : strs) {
+                String[] strs2 = str.split("=");
                 // parse the code
-                String sCode = sStrs2[0].replaceAll("\\s", "");
+                String code = strs2[0].replaceAll("\\s", "");
 
-                codeMap += sCode;
+                codeMap += code;
                 if (codeLength > 0) {
-                    if (sCode.length() != codeLength) {
-                        throw new IllegalArgumentException("Invalide code '" + sCode + "'. Expected code of length " + codeLength);
+                    if (code.length() != codeLength) {
+                        throw new IllegalArgumentException("Invalide code '" + code + "'. Expected code of length " + codeLength);
                     }
                 } else {
                     codeMap += ",";
                 }
                 // parse the state set
                 List<Integer> stateSet = new ArrayList<>();
-                sStrs2 = sStrs2[1].split("\\s+");
-                for (String sStr2 : sStrs2) {
-                    if (sStr2.length() > 0) {
-                        int i = Integer.parseInt(sStr2);
+                strs2 = strs2[1].split("\\s+");
+                for (String str2 : strs2) {
+                    if (str2.length() > 0) {
+                        int i = Integer.parseInt(str2);
                         if (i < 0 || (stateCount > 0 && i >= stateCount)) {
                             throw new IllegalArgumentException("state index should be from 0 to statecount, not " + i);
                         }

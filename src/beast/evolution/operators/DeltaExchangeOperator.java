@@ -294,8 +294,8 @@ public class DeltaExchangeOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(final double fValue) {
-        delta = fValue;
+    public void setCoercableParameterValue(final double value) {
+        delta = value;
     }
 
     /**
@@ -309,9 +309,9 @@ public class DeltaExchangeOperator extends Operator {
     public void optimize(final double logAlpha) {
         // must be overridden by operator implementation to have an effect
         if (autoOptimize) {
-            double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(delta);
-            delta = Math.exp(fDelta);
+            double delta = calcDelta(logAlpha);
+            delta += Math.log(delta);
+            delta = Math.exp(delta);
             if (isIntegerOperator) {
             	// when delta < 0.5
             	// Randomizer.nextInt((int) Math.round(delta)) becomes

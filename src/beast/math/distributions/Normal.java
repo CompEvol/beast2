@@ -31,24 +31,24 @@ public class Normal extends ParametricDistribution {
      */
     @SuppressWarnings("deprecation")
 	void refresh() {
-        double fMean;
-        double fSigma;
+        double mean;
+        double sigma;
         if (meanInput.get() == null) {
-            fMean = 0;
+            mean = 0;
         } else {
-            fMean = meanInput.get().getValue();
+            mean = meanInput.get().getValue();
         }
         if (sigmaInput.get() == null) {
         	if (tauInput.get() == null) {
-        		fSigma = 1;
+        		sigma = 1;
         	} else {
-                fSigma = Math.sqrt(1.0/tauInput.get().getValue());
+                sigma = Math.sqrt(1.0/tauInput.get().getValue());
         	}
         } else {
-            fSigma = sigmaInput.get().getValue();
+            sigma = sigmaInput.get().getValue();
         }
-        dist.setMean(fMean);
-        dist.setStandardDeviation(fSigma);
+        dist.setMean(mean);
+        dist.setStandardDeviation(sigma);
     }
 
     @Override

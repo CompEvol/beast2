@@ -317,8 +317,8 @@ public class XMLParser {
         }
         final Node topNode = nodes.item(0);
         // sanity check that we are reading a beast 2 file
-        final double fVersion = getAttributeAsDouble(topNode, "version");
-        if (!topNode.getNodeName().equals(BEAST_ELEMENT) || fVersion < 2.0 || fVersion == Double.MAX_VALUE) {
+        final double version = getAttributeAsDouble(topNode, "version");
+        if (!topNode.getNodeName().equals(BEAST_ELEMENT) || version < 2.0 || version == Double.MAX_VALUE) {
             return beastObjects;
         }
         // only process templates
@@ -470,8 +470,8 @@ public class XMLParser {
             throw new XMLParserException("Expected top level beast element in XML");
         }
         final Node topNode = nodes.item(0);
-        final double fVersion = getAttributeAsDouble(topNode, "version");
-        if (fVersion < 2.0 || fVersion == Double.MAX_VALUE) {
+        final double version = getAttributeAsDouble(topNode, "version");
+        if (version < 2.0 || version == Double.MAX_VALUE) {
             throw new XMLParserException(topNode, "Wrong version: only versions > 2.0 are supported", 101);
         }
 

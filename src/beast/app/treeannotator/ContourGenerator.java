@@ -96,15 +96,15 @@ public class ContourGenerator {
 	*
 	*  @param  xArr   2D array containing the grid x coordinate data.
 	*  @param  yArr   2D array containing the grid y coordinate data.
-	*  @param  fArr   2D array containing the grid function (z) data.
+	*  @param  zArr   2D array containing the grid function (z) data.
 	*  @param  cAttr  Array containing attributes of the contour levels.
 	**/
-	public ContourGenerator(double[][] xArr, double[][] yArr, double[][] fArr, ContourAttrib[] cAttr) {
+	public ContourGenerator(double[][] xArr, double[][] yArr, double[][] zArr, ContourAttrib[] cAttr) {
 
 		//	Make sure input data is reasonable.
-		if (yArr.length != xArr.length || yArr.length != fArr.length)
+		if (yArr.length != xArr.length || yArr.length != zArr.length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
-		if (yArr[0].length != xArr[0].length || yArr[0].length != fArr[0].length)
+		if (yArr[0].length != xArr[0].length || yArr[0].length != zArr[0].length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
 		if (xArr.length <= 1 || xArr[0].length <= 1)
 			throw new IllegalArgumentException(kArrSizeMsg);
@@ -112,7 +112,7 @@ public class ContourGenerator {
 		this.cAttr = cAttr;
 		xArray = xArr;
 		yArray = yArr;
-		funcArray = fArr;
+		funcArray = zArr;
 
 	}
 
@@ -125,13 +125,13 @@ public class ContourGenerator {
 	*
 	*  @param  xArr   1D array containing the grid x coordinate data.
 	*  @param  yArr   1D array containing the grid y coordinate data.
-	*  @param  fArr   2D array containing the grid function (z) data.
+	*  @param  zArr   2D array containing the grid function (z) data.
 	*  @param  cAttr  Array containing attributes of the contour levels.
 	**/
-	public ContourGenerator(double[] xArr, double[] yArr, double[][] fArr, ContourAttrib[] cAttr) {
+	public ContourGenerator(double[] xArr, double[] yArr, double[][] zArr, ContourAttrib[] cAttr) {
 
 		//	Make sure input data is reasonable.
-		if (yArr.length != fArr.length || xArr.length != fArr[0].length)
+		if (yArr.length != zArr.length || xArr.length != zArr[0].length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
 		if (xArr.length <= 1)
 			throw new IllegalArgumentException(kArrSizeMsg);
@@ -139,7 +139,7 @@ public class ContourGenerator {
 		this.cAttr = cAttr;
 		xArr1D = xArr;
 		yArr1D = yArr;
-		funcArray = fArr;
+		funcArray = zArr;
 	}
 
 	/**
@@ -150,25 +150,25 @@ public class ContourGenerator {
 	*
 	*  @param  xArr   2D array containing the grid x coordinate data.
 	*  @param  yArr   2D array containing the grid y coordinate data.
-	*  @param  fArr   2D array containing the grid function (z) data.
+	*  @param  zArr   2D array containing the grid function (z) data.
 	*  @param  nc     The number of contour levels to generate.
 	*  @param  logInterval  Uses a logarithmic contour interval if true, and
 	*                       uses a linear interval if false.
 	**/
-	public ContourGenerator(double[][] xArr, double[][] yArr, double[][] fArr,
+	public ContourGenerator(double[][] xArr, double[][] yArr, double[][] zArr,
 								int nc, boolean logInterval) {
 
 		//	Make sure input data is reasonable.
-		if (yArr.length != xArr.length || yArr.length != fArr.length)
+		if (yArr.length != xArr.length || yArr.length != zArr.length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
-		if (yArr[0].length != xArr[0].length || yArr[0].length != fArr[0].length)
+		if (yArr[0].length != xArr[0].length || yArr[0].length != zArr[0].length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
 		if (xArr.length <= 1 || xArr[0].length <= 1)
 			throw new IllegalArgumentException(kArrSizeMsg);
 
 		xArray = xArr;
 		yArray = yArr;
-		funcArray = fArr;
+		funcArray = zArr;
 
 		if (logInterval)
 			findLogIntervals(nc);
@@ -186,23 +186,23 @@ public class ContourGenerator {
 	*
 	*  @param  xArr   1D array containing the grid x coordinate data.
 	*  @param  yArr   1D array containing the grid y coordinate data.
-	*  @param  fArr   2D array containing the grid function (z) data.
+	*  @param  zArr   2D array containing the grid function (z) data.
 	*  @param  nc     The number of contour levels to generate.
 	*  @param  logInterval  Uses a logarithmic contour interval if true, and
 	*                       uses a linear interval if false.
 	**/
-	public ContourGenerator(double[] xArr, double[] yArr, double[][] fArr,
+	public ContourGenerator(double[] xArr, double[] yArr, double[][] zArr,
 								int nc, boolean logInterval) {
 
 		//	Make sure input data is reasonable.
-		if (yArr.length != fArr.length || xArr.length != fArr[0].length)
+		if (yArr.length != zArr.length || xArr.length != zArr[0].length)
 			throw new IllegalArgumentException(kInconsistantArrMsg);
 		if (xArr.length <= 1)
 			throw new IllegalArgumentException(kArrSizeMsg);
 
 		xArr1D = xArr;
 		yArr1D = yArr;
-		funcArray = fArr;
+		funcArray = zArr;
 
 		if (logInterval)
 			findLogIntervals(nc);

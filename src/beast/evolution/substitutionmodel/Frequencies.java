@@ -61,9 +61,9 @@ public class Frequencies extends CalculationNode {
     @Override
     public void initAndValidate() throws Exception {
         update();
-        double fSum = getSumOfFrequencies(getFreqs());
+        double sum = getSumOfFrequencies(getFreqs());
         // sanity check
-        if (Math.abs(fSum - 1.0) > 1e-6) {
+        if (Math.abs(sum - 1.0) > 1e-6) {
             throw new IllegalArgumentException("Frequencies do not add up to 1");
         }
 
@@ -124,14 +124,14 @@ public class Frequencies extends CalculationNode {
         Arrays.fill(freqs, 1.0 / stateCount);
 
         int nAttempts = 0;
-        double fDifference;
+        double difference;
         do {
-            double[] fTmpFreq = new double[stateCount];
+            double[] tmpFreq = new double[stateCount];
 
-            double fTotal = 0.0;
+            double total = 0.0;
             for (int i = 0; i < alignment.getPatternCount(); i++) {
                 int[] nPattern = alignment.getPattern(i);
-                double fWeight = alignment.getPatternWeight(i);
+                double weight = alignment.getPatternWeight(i);
 
                 for (int iValue : nPattern) {
                     int[] codes = dataType.getStatesForCode(iValue);
@@ -142,32 +142,32 @@ public class Frequencies extends CalculationNode {
                     }
 
                     for (int iCode : codes) {
-                        double fTmp = (freqs[iCode] * fWeight) / sum;
-                        fTmpFreq[iCode] += fTmp;
-                        fTotal += fTmp;
+                        double tmp = (freqs[iCode] * weight) / sum;
+                        tmpFreq[iCode] += tmp;
+                        total += tmp;
                     }
                 }
             }
 
-            fDifference = 0.0;
+            difference = 0.0;
             for (int i = 0; i < stateCount; i++) {
-                fDifference += Math.abs((fTmpFreq[i] / fTotal) - freqs[i]);
-                freqs[i] = fTmpFreq[i] / fTotal;
+                difference += Math.abs((tmpFreq[i] / total) - freqs[i]);
+                freqs[i] = tmpFreq[i] / total;
             }
             nAttempts++;
-        } while (fDifference > 1E-8 && nAttempts < 1000);
+        } while (difference > 1E-8 && nAttempts < 1000);
 
 //    	Alignment alignment = m_data.get();
 //        m_fFreqs = new double[alignment.getMaxStateCount()];
 //        for (int i = 0; i < alignment.getPatternCount(); i++) {
 //            int[] nPattern = alignment.getPattern(i);
-//            double fWeight = alignment.getPatternWeight(i);
+//            double weight = alignment.getPatternWeight(i);
 //            DataType dataType = alignment.getDataType();
 //            for (int iValue : nPattern) {
 //            	if (iValue < 4) {
 //            	int [] codes = dataType.getStatesForCode(iValue);
 //            	for (int iCode : codes) {
-//                    m_fFreqs[iCode] += fWeight / codes.length;
+//                    m_fFreqs[iCode] += weight / codes.length;
 //            	}
 //            	}
 ////                if (iValue < m_fFreqs.length) { // ignore unknowns
@@ -176,12 +176,12 @@ public class Frequencies extends CalculationNode {
 //            }
 //        }
 //        // normalize
-//        double fSum = 0;
+//        double sum = 0;
 //        for (double f : m_fFreqs) {
-//            fSum += f;
+//            sum += f;
 //        }
 //        for (int i = 0; i < m_fFreqs.length; i++) {
-//            m_fFreqs[i] /= fSum;
+//            m_fFreqs[i] /= sum;
 //        }
         Log.info.println("Starting frequencies: " + Arrays.toString(freqs));
     } // calcFrequencies

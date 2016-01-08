@@ -24,8 +24,8 @@ public interface TreeInterface {
     
 	boolean somethingIsDirty();
 
-    public void getMetaData(Node node, Double[] fT, String pattern);
-    public void setMetaData(Node node, Double[] fT, String pattern);
+    public void getMetaData(Node node, Double[] t, String pattern);
+    public void setMetaData(Node node, Double[] t, String pattern);
 
     /*
     * Note that leaf nodes are always numbered 0,...,nodeCount-1

@@ -127,12 +127,12 @@ public class ScaleOperator extends Operator {
                 final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
                     final Node root = tree.getRoot();
-                    final double fNewHeight = root.getHeight() * scale;
+                    final double newHeight = root.getHeight() * scale;
 
-                    if (fNewHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
+                    if (newHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
                         return Double.NEGATIVE_INFINITY;
                     }
-                    root.setHeight(fNewHeight);
+                    root.setHeight(newHeight);
                     return -Math.log(scale);
                 } else {
                     // scale the beast.tree
@@ -278,9 +278,9 @@ public class ScaleOperator extends Operator {
     @Override
     public void optimize(final double logAlpha) {
         if (optimiseInput.get()) {
-            double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(1.0 / m_fScaleFactor - 1.0);
-            setCoercableParameterValue(1.0 / (Math.exp(fDelta) + 1.0));
+            double delta = calcDelta(logAlpha);
+            delta += Math.log(1.0 / m_fScaleFactor - 1.0);
+            setCoercableParameterValue(1.0 / (Math.exp(delta) + 1.0));
         }
     }
 
@@ -290,8 +290,8 @@ public class ScaleOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(final double fValue) {
-        m_fScaleFactor = Math.max(Math.min(fValue, upper), lower);
+    public void setCoercableParameterValue(final double value) {
+        m_fScaleFactor = Math.max(Math.min(value, upper), lower);
     }
 
     @Override

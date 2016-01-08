@@ -81,7 +81,7 @@ public class WilsonBalding extends TreeOperator {
     public double proposal() {
         Tree tree = treeInput.get(this);
 
-        double oldMinAge, newMinAge, newRange, oldRange, newAge, fHastingsRatio;
+        double oldMinAge, newMinAge, newRange, oldRange, newAge, hastingsRatio;
 
         // choose a random node avoiding root
         final int nodeCount = tree.getNodeCount();
@@ -121,11 +121,11 @@ public class WilsonBalding extends TreeOperator {
         newAge = newMinAge + (Randomizer.nextDouble() * newRange);
         oldMinAge = Math.max(i.getHeight(), CiP.getHeight());
         oldRange = PiP.getHeight() - oldMinAge;
-        fHastingsRatio = newRange / Math.abs(oldRange);
+        hastingsRatio = newRange / Math.abs(oldRange);
 
         if (oldRange == 0 || newRange == 0) {
             // This happens when some branch lengths are zero.
-            // If oldRange = 0, fHastingsRatio == Double.POSITIVE_INFINITY and
+            // If oldRange = 0, hastingsRatio == Double.POSITIVE_INFINITY and
             // node i can be catapulted anywhere in the tree, resulting in
             // very bad trees that are always accepted.
             // For symmetry, newRange = 0 should therefore be ruled out as well
@@ -191,7 +191,7 @@ public class WilsonBalding extends TreeOperator {
 
         iP.setHeight(newAge);
 
-        return Math.log(fHastingsRatio);
+        return Math.log(hastingsRatio);
     }
 
 

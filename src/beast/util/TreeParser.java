@@ -560,8 +560,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
          * @param root root of tree
          */
         private void convertLengthToHeight(final Node root) {
-            final double fTotalHeight = convertLengthToHeight(root, 0);
-            offset(root, -fTotalHeight);
+            final double totalHeight = convertLengthToHeight(root, 0);
+            offset(root, -totalHeight);
         }
 
         /**
@@ -569,21 +569,21 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
          * results in heights from 0 to -total_height_of_tree.
          *
          * @param node node of a clade to convert
-         * @param fHeight Parent height.
+         * @param height Parent height.
          * @return total height of clade
          */
-        private double convertLengthToHeight(final Node node, final double fHeight) {
-            final double fLength = node.getHeight();
-            node.setHeight((fHeight - fLength) * scaleInput.get());
+        private double convertLengthToHeight(final Node node, final double height) {
+            final double length = node.getHeight();
+            node.setHeight((height - length) * scaleInput.get());
             if (node.isLeaf()) {
                 return node.getHeight();
             } else {
-                final double fLeft = convertLengthToHeight(node.getLeft(), fHeight - fLength);
+                final double left = convertLengthToHeight(node.getLeft(), height - length);
                 if (node.getRight() == null) {
-                    return fLeft;
+                    return left;
                 }
-                final double fRight = convertLengthToHeight(node.getRight(), fHeight - fLength);
-                return Math.min(fLeft, fRight);
+                final double right = convertLengthToHeight(node.getRight(), height - length);
+                return Math.min(left, right);
             }
         }
 
@@ -592,19 +592,19 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
          * node heights that is produced by convertLengthToHeight(node, height).
          *
          * @param node node of clade to offset
-         * @param fDelta offset
+         * @param delta offset
          */
-        private void offset(final Node node, final double fDelta) {
-            node.setHeight(node.getHeight() + fDelta);
+        private void offset(final Node node, final double delta) {
+            node.setHeight(node.getHeight() + delta);
             if (node.isLeaf()) {
                 if (node.getHeight() < thresholdInput.get()) {
                     node.setHeight(0);
                 }
             }
             if (!node.isLeaf()) {
-                offset(node.getLeft(), fDelta);
+                offset(node.getLeft(), delta);
                 if (node.getRight() != null) {
-                    offset(node.getRight(), fDelta);
+                    offset(node.getRight(), delta);
                 }
             }
         }

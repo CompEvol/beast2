@@ -79,15 +79,15 @@ public class Exchange extends TreeOperator {
     public double proposal() {
         final Tree tree = treeInput.get(this);
 
-        double fLogHastingsRatio = 0;
+        double logHastingsRatio = 0;
 
         if (isNarrowInput.get()) {
-            fLogHastingsRatio = narrow(tree);
+            logHastingsRatio = narrow(tree);
         } else {
-            fLogHastingsRatio = wide(tree);
+            logHastingsRatio = wide(tree);
         }
 
-        return fLogHastingsRatio;
+        return logHastingsRatio;
     }
 
     private int isg(final Node n) {

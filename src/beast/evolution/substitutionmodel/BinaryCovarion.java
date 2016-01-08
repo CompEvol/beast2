@@ -163,18 +163,18 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         // bring in frequencies
 //        for (int i = 0; i < m_nStates; i++) {
 //            for (int j = i + 1; j < m_nStates; j++) {
-//            	m_rateMatrix[i][j] *= fFreqs[j];
-//            	m_rateMatrix[j][i] *= fFreqs[i];
+//            	m_rateMatrix[i][j] *= freqs[j];
+//            	m_rateMatrix[j][i] *= freqs[i];
 //            }
 //        }
         // set up diagonal
         for (int i = 0; i < nrOfStates; i++) {
-            double fSum = 0.0;
+            double sum = 0.0;
             for (int j = 0; j < nrOfStates; j++) {
                 if (i != j)
-                    fSum += rateMatrix[i][j];
+                    sum += rateMatrix[i][j];
             }
-            rateMatrix[i][i] = -fSum;
+            rateMatrix[i][i] = -sum;
         }
         // normalise rate matrix to one expected substitution per unit time
         normalize(rateMatrix, getFrequencies());
@@ -182,21 +182,21 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 
     @Override
     public double[] getFrequencies() {
-        double[] fFreqs = new double[4];
+        double[] freqs = new double[4];
         if (mode.equals(MODE.BEAST) || mode.equals(MODE.REVERSIBLE)) {
-	        fFreqs[0] = frequencies.getValue(0) * hiddenFrequencies.getValue(0);
-	        fFreqs[1] = frequencies.getValue(1) * hiddenFrequencies.getValue(0);
-	        fFreqs[2] = frequencies.getValue(0) * hiddenFrequencies.getValue(1);
-	        fFreqs[3] = frequencies.getValue(1) * hiddenFrequencies.getValue(1);
+	        freqs[0] = frequencies.getValue(0) * hiddenFrequencies.getValue(0);
+	        freqs[1] = frequencies.getValue(1) * hiddenFrequencies.getValue(0);
+	        freqs[2] = frequencies.getValue(0) * hiddenFrequencies.getValue(1);
+	        freqs[3] = frequencies.getValue(1) * hiddenFrequencies.getValue(1);
         } else {
         	double h0 = alpha.getValue(1) * (alpha.getValue(0) + alpha.getValue(1));
         	double h1 = alpha.getValue(0) * (alpha.getValue(0) + alpha.getValue(1));
-	        fFreqs[0] = frequencies.getValue(0) * h0;
-	        fFreqs[1] = frequencies.getValue(1) * h0;
-	        fFreqs[2] = frequencies.getValue(0) * h1;
-	        fFreqs[3] = frequencies.getValue(1) * h1;        	
+	        freqs[0] = frequencies.getValue(0) * h0;
+	        freqs[1] = frequencies.getValue(1) * h0;
+	        freqs[2] = frequencies.getValue(0) * h1;
+	        freqs[3] = frequencies.getValue(1) * h1;        	
         }
-        return fFreqs;
+        return freqs;
     }
 
 

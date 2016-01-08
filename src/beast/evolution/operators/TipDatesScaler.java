@@ -67,21 +67,21 @@ public class TipDatesScaler extends TreeOperator {
         // randomly select leaf node
         int i = Randomizer.nextInt(taxonIndices.length);
         Node node = tree.getNode(taxonIndices[i]);
-        double fUpper = node.getParent().getHeight();
-        //double fLower = 0.0;
-        //final double newValue = (Randomizer.nextDouble() * (fUpper -fLower)) + fLower;
+        double upper = node.getParent().getHeight();
+        //double lower = 0.0;
+        //final double newValue = (Randomizer.nextDouble() * (upper -lower)) + lower;
 
         // scale node
-        double fScale = (scaleFactor + (Randomizer.nextDouble() * ((1.0 / scaleFactor) - scaleFactor)));
-        final double newValue = node.getHeight() * fScale;
+        double scale = (scaleFactor + (Randomizer.nextDouble() * ((1.0 / scaleFactor) - scaleFactor)));
+        final double newValue = node.getHeight() * scale;
 
         // check the tree does not get negative branch lengths
-        if (newValue > fUpper) {
+        if (newValue > upper) {
             return Double.NEGATIVE_INFINITY;
         }
         node.setHeight(newValue);
 
-        return -Math.log(fScale);
+        return -Math.log(scale);
     }
 
     @Override
@@ -90,16 +90,16 @@ public class TipDatesScaler extends TreeOperator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
-        scaleFactor = fValue;
+    public void setCoercableParameterValue(double value) {
+        scaleFactor = value;
     }
 
 
     @Override
     public void optimize(double logAlpha) {
-        double fDelta = calcDelta(logAlpha);
-        fDelta += Math.log(1.0 / scaleFactor - 1.0);
-        scaleFactor = 1.0 / (Math.exp(fDelta) + 1.0);
+        double delta = calcDelta(logAlpha);
+        delta += Math.log(1.0 / scaleFactor - 1.0);
+        scaleFactor = 1.0 / (Math.exp(delta) + 1.0);
     }
 
     @Override

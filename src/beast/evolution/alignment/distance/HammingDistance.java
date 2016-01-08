@@ -9,13 +9,13 @@ public class HammingDistance extends Distance.Base {
 
     @Override
     public double pairwiseDistance(int taxon1, int taxon2) {
-        double fDist = 0;
+        double dist = 0;
         for (int i = 0; i < patterns.getPatternCount(); i++) {
             if (patterns.getPattern(taxon1, i) != patterns.getPattern(taxon2, i)) {
-                fDist += patterns.getPatternWeight(i);
+                dist += patterns.getPatternWeight(i);
             }
         }
-        return fDist / patterns.getSiteCount();
+        return dist / patterns.getSiteCount();
     }
 
 }

@@ -152,16 +152,16 @@ public class TipDatesRandomWalker extends TreeOperator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
-        windowSize = fValue;
+    public void setCoercableParameterValue(double value) {
+        windowSize = value;
     }
 
     @Override
     public void optimize(double logAlpha) {
         // must be overridden by operator implementation to have an effect
-        double fDelta = calcDelta(logAlpha);
-        fDelta += Math.log(windowSize);
-        windowSize = Math.exp(fDelta);
+        double delta = calcDelta(logAlpha);
+        delta += Math.log(windowSize);
+        windowSize = Math.exp(delta);
     }
 
     @Override

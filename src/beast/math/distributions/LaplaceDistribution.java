@@ -79,14 +79,14 @@ public class LaplaceDistribution extends ParametricDistribution {
         }
 
         @Override
-        public double density(double fX) {
+        public double density(double x) {
             // f(x|\mu,b) = \frac{1}{2b} \exp \left( -\frac{|x-\mu|}{b} \right) \,\!
-            return c * Math.exp(-Math.abs(fX - mu) / scale);
+            return c * Math.exp(-Math.abs(x - mu) / scale);
         }
 
         @Override
-        public double logDensity(double fX) {
-            return Math.log(c) - (Math.abs(fX - mu) / scale);
+        public double logDensity(double x) {
+            return Math.log(c) - (Math.abs(x - mu) / scale);
         }
     } // class LaplaceImpl
 

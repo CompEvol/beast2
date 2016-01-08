@@ -376,16 +376,16 @@ public class Tree extends StateNode implements TreeInterface {
      * copy meta data matching pattern to double array
      *
      * @param node     the node
-     * @param fT       the double array to be filled with meta data
+     * @param t       the double array to be filled with meta data
      * @param pattern the name of the meta data
      */
     @Override
-	public void getMetaData(final Node node, final Double[] fT, final String pattern) {
-        fT[Math.abs(node.getNr())] = (Double) node.getMetaData(pattern);
+	public void getMetaData(final Node node, final Double[] t, final String pattern) {
+        t[Math.abs(node.getNr())] = (Double) node.getMetaData(pattern);
         if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), fT, pattern);
+            getMetaData(node.getLeft(), t, pattern);
             if (node.getRight() != null) {
-                getMetaData(node.getRight(), fT, pattern);
+                getMetaData(node.getRight(), t, pattern);
             }
         }
     }
@@ -394,33 +394,33 @@ public class Tree extends StateNode implements TreeInterface {
      * copy meta data matching pattern to double array
      *
      * @param node     the node
-     * @param fT       the integer array to be filled with meta data
+     * @param t       the integer array to be filled with meta data
      * @param pattern the name of the meta data
      */
-    public void getMetaData(final Node node, final Integer[] fT, final String pattern) {
-        fT[Math.abs(node.getNr())] = (Integer) node.getMetaData(pattern);
+    public void getMetaData(final Node node, final Integer[] t, final String pattern) {
+        t[Math.abs(node.getNr())] = (Integer) node.getMetaData(pattern);
         if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), fT, pattern);
+            getMetaData(node.getLeft(), t, pattern);
             if (node.getRight() != null) {
-                getMetaData(node.getRight(), fT, pattern);
+                getMetaData(node.getRight(), t, pattern);
             }
         }
     }
 
 
     /**
-     * traverse tree and assign meta-data values in fT to nodes in the
+     * traverse tree and assign meta-data values in t to nodes in the
      * tree to the meta-data field represented by the given pattern.
      * This only has an effect when setMetadata() in a subclass
      * of Node know how to process such value.
      */
     @Override
-	public void setMetaData(final Node node, final Double[] fT, final String pattern) {
-        node.setMetaData(pattern, fT[Math.abs(node.getNr())]);
+	public void setMetaData(final Node node, final Double[] t, final String pattern) {
+        node.setMetaData(pattern, t[Math.abs(node.getNr())]);
         if (!node.isLeaf()) {
-            setMetaData(node.getLeft(), fT, pattern);
+            setMetaData(node.getLeft(), t, pattern);
             if (node.getRight() != null) {
-                setMetaData(node.getRight(), fT, pattern);
+                setMetaData(node.getRight(), t, pattern);
             }
         }
     }
@@ -617,22 +617,22 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-    public int scale(final double fScale) throws Exception {
-        root.scale(fScale);
+    public int scale(final double scale) throws Exception {
+        root.scale(scale);
         return getInternalNodeCount()- getDirectAncestorNodeCount();
     }
 
 
 //    /**
 //     * The same as scale but with option to scale all sampled nodes
-//     * @param fScale
+//     * @param scale
 //     * @param scaleSNodes if true all sampled nodes are scaled. Note, the most recent node is considered to
 //     *                    have height 0.
 //     * @return
 //     * @throws Exception
 //     */
-//    public int scale(double fScale, boolean scaleSNodes) throws Exception {
-//        ((ZeroBranchSANode)root).scale(fScale, scaleSNodes);
+//    public int scale(double scale, boolean scaleSNodes) throws Exception {
+//        ((ZeroBranchSANode)root).scale(scale, scaleSNodes);
 //        if (scaleSNodes) {
 //            return getNodeCount() - 1 - getDirectAncestorNodeCount();
 //        } else {
@@ -908,14 +908,14 @@ public class Tree extends StateNode implements TreeInterface {
      * Convert age/height to the date time scale given by a trait set,
      * if one exists.  Otherwise just return the unconverted height.
      *
-     * @param fHeight
+     * @param height
      * @return date specified by height
      */
-    public double getDate(final double fHeight) {
+    public double getDate(final double height) {
         if (hasDateTrait()) {
-            return timeTraitSet.getDate(fHeight);
+            return timeTraitSet.getDate(height);
         } else
-            return fHeight;
+            return height;
     }
 
     /**

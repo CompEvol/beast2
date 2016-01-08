@@ -425,20 +425,20 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
         }
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-            Double fMinDate = Double.MAX_VALUE;
+            Double minDate = Double.MAX_VALUE;
             for (int i = 0; i < tableData.length; i++) {
-                fMinDate = Math.min(fMinDate, parseDate((String) tableData[i][1]));
+                minDate = Math.min(minDate, parseDate((String) tableData[i][1]));
             }
             for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = parseDate((String) tableData[i][1]) - fMinDate;
+                tableData[i][2] = parseDate((String) tableData[i][1]) - minDate;
             }
         } else {
-            Double fMaxDate = 0.0;
+            Double maxDate = 0.0;
             for (int i = 0; i < tableData.length; i++) {
-                fMaxDate = Math.max(fMaxDate, parseDate((String) tableData[i][1]));
+                maxDate = Math.max(maxDate, parseDate((String) tableData[i][1]));
             }
             for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = fMaxDate - parseDate((String) tableData[i][1]);
+                tableData[i][2] = maxDate - parseDate((String) tableData[i][1]);
             }
         }
 

@@ -29,20 +29,20 @@ public class Gamma extends ParametricDistribution {
      */
     @SuppressWarnings("deprecation")
 	void refresh() {
-        double fAlpha;
-        double fBeta;
+        double alpha;
+        double beta;
         if (alphaInput.get() == null) {
-            fAlpha = 2;
+            alpha = 2;
         } else {
-            fAlpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getValue();
         }
         if (betaInput.get() == null) {
-            fBeta = 2;
+            beta = 2;
         } else {
-            fBeta = betaInput.get().getValue();
+            beta = betaInput.get().getValue();
         }
-        m_dist.setAlpha(fAlpha);
-        m_dist.setBeta(fBeta);
+        m_dist.setAlpha(alpha);
+        m_dist.setBeta(beta);
     }
 
     @Override

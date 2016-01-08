@@ -194,15 +194,15 @@ public class LogAnalyser {
         int nSampleInterval = (int) (m_fTraces[0][1] - m_fTraces[0][0]);
         for (int i = 1; i < nItems; i++) {
             // calc mean and standard deviation
-            Double[] fTrace = m_fTraces[i];
-            double fSum = 0, fSum2 = 0;
-            for (double f : fTrace) {
-                fSum += f;
-                fSum2 += f * f;
+            Double[] trace = m_fTraces[i];
+            double sum = 0, sum2 = 0;
+            for (double f : trace) {
+                sum += f;
+                sum2 += f * f;
             }
             if (m_types[i] != type.NOMINAL) {
-                m_fMean[i] = fSum / fTrace.length;
-                m_fStdDev[i] = Math.sqrt(fSum2 / fTrace.length - m_fMean[i] * m_fMean[i]);
+                m_fMean[i] = sum / trace.length;
+                m_fStdDev[i] = Math.sqrt(sum2 / trace.length - m_fMean[i] * m_fMean[i]);
             } else {
                 m_fMean[i] = Double.NaN;
                 m_fStdDev[i] = Double.NaN;
@@ -210,35 +210,35 @@ public class LogAnalyser {
 
             if (m_types[i] == type.REAL || m_types[i] == type.INTEGER) {
                 // calc median, and 95% HPD interval
-                Double[] fSorted = fTrace.clone();
-                Arrays.sort(fSorted);
-                m_fMedian[i] = fSorted[fTrace.length / 2];
+                Double[] sorted = trace.clone();
+                Arrays.sort(sorted);
+                m_fMedian[i] = sorted[trace.length / 2];
                 // n instances cover 95% of the trace, reduced down by 1 to match Tracer
-                int n = (int) ((fSorted.length - 1) * 95.0 / 100.0);
-                double fMinRange = Double.MAX_VALUE;
+                int n = (int) ((sorted.length - 1) * 95.0 / 100.0);
+                double minRange = Double.MAX_VALUE;
                 int hpdIndex = 0;
-                for (int k = 0; k < fSorted.length - n; k++) {
-                    double fRange = fSorted[k + n] - fSorted[k];
-                    if (fRange < fMinRange) {
-                        fMinRange = fRange;
+                for (int k = 0; k < sorted.length - n; k++) {
+                    double range = sorted[k + n] - sorted[k];
+                    if (range < minRange) {
+                        minRange = range;
                         hpdIndex = k;
                     }
                 }
-                m_f95HPDlow[i] = fSorted[hpdIndex];
-                m_f95HPDup[i] = fSorted[hpdIndex + n];
+                m_f95HPDlow[i] = sorted[hpdIndex];
+                m_f95HPDup[i] = sorted[hpdIndex + n];
 
                 // calc effective sample size
                 m_fACT[i] = ESS.ACT(m_fTraces[i], nSampleInterval);
-                m_fStdError[i] = ESS.stdErrorOfMean(fTrace, nSampleInterval);
-                m_fESS[i] = fTrace.length / (m_fACT[i] / nSampleInterval);
+                m_fStdError[i] = ESS.stdErrorOfMean(trace, nSampleInterval);
+                m_fESS[i] = trace.length / (m_fACT[i] / nSampleInterval);
 
                 // calc geometric mean
-                if (fSorted[0] > 0) {
+                if (sorted[0] > 0) {
                     // geometric mean is only defined when all elements are positive
                     double gm = 0;
-                    for (double f : fTrace)
+                    for (double f : trace)
                         gm += Math.log(f);
-                    m_fGeometricMean[i] = Math.exp(gm / fTrace.length);
+                    m_fGeometricMean[i] = Math.exp(gm / trace.length);
                 } else
                     m_fGeometricMean[i] = Double.NaN;
             } else {
@@ -257,21 +257,21 @@ public class LogAnalyser {
         logln("\n");
     } // calcStats
 
-    public void setData(Double[][] fTraces, String[] labels, type[] types) {
-        m_fTraces = fTraces.clone();
+    public void setData(Double[][] traces, String[] labels, type[] types) {
+        m_fTraces = traces.clone();
         m_sLabels = labels.clone();
         m_types = types.clone();
         calcStats();
     }
 
-    public void setData(Double[] fTrace, int nSampleStep) {
-        Double[][] fTraces = new Double[2][];
-        fTraces[0] = new Double[fTrace.length];
-        for (int i = 0; i < fTrace.length; i++) {
-            fTraces[0][i] = (double) i * nSampleStep;
+    public void setData(Double[] trace, int nSampleStep) {
+        Double[][] traces = new Double[2][];
+        traces[0] = new Double[trace.length];
+        for (int i = 0; i < trace.length; i++) {
+            traces[0][i] = (double) i * nSampleStep;
         }
-        fTraces[1] = fTrace.clone();
-        setData(fTraces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
+        traces[1] = trace.clone();
+        setData(traces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
     }
 
     public int indexof(String label) {
@@ -368,43 +368,43 @@ public class LogAnalyser {
         return m_fGeometricMean[iColumn];
     }
 
-    public double getMean(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double getMean(Double[] trace) {
+        setData(trace, 1);
         return m_fMean[1];
     }
 
-    public double getStdDev(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double getStdDev(Double[] trace) {
+        setData(trace, 1);
         return m_fStdDev[1];
     }
 
-    public double getMedian(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double getMedian(Double[] trace) {
+        setData(trace, 1);
         return m_fMedian[1];
     }
 
-    public double get95HPDup(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double get95HPDup(Double[] trace) {
+        setData(trace, 1);
         return m_f95HPDup[1];
     }
 
-    public double get95HPDlow(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double get95HPDlow(Double[] trace) {
+        setData(trace, 1);
         return m_f95HPDlow[1];
     }
 
-    public double getESS(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double getESS(Double[] trace) {
+        setData(trace, 1);
         return m_fESS[1];
     }
 
-    public double getACT(Double[] fTrace, int nSampleStep) {
-        setData(fTrace, nSampleStep);
+    public double getACT(Double[] trace, int nSampleStep) {
+        setData(trace, nSampleStep);
         return m_fACT[1];
     }
 
-    public double getGeometricMean(Double[] fTrace) {
-        setData(fTrace, 1);
+    public double getGeometricMean(Double[] trace) {
+        setData(trace, 1);
         return m_fGeometricMean[1];
     }
 

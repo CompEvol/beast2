@@ -42,9 +42,9 @@ public class ScaledPopulationFunction extends PopulationFunction.Abstract {
 
     @Override
 	public double getIntensity(double t) {
-        double fIntensity = popParameterInput.get().getIntensity(t);
-        double fScale = scaleFactorInput.get().getValue();
-        return fIntensity / fScale;
+        double intensity = popParameterInput.get().getIntensity(t);
+        double scale = scaleFactorInput.get().getValue();
+        return intensity / scale;
     }
 
     @Override

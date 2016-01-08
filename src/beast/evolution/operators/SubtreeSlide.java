@@ -76,12 +76,12 @@ public class SubtreeSlide extends TreeOperator {
     final public Input<Double> limitInput = new Input<>("limit", "limit on step size, default disable, " +
             "i.e. -1. (when positive, gets multiplied by tree-height/log2(n-taxa).", -1.0);
     // shadows size
-    double fSize;
+    double size;
     private double limit;
 
     @Override
     public void initAndValidate() {
-        fSize = sizeInput.get();
+        size = sizeInput.get();
         limit = limitInput.get();
     }
 
@@ -219,9 +219,9 @@ public class SubtreeSlide extends TreeOperator {
 
     private double getDelta() {
         if (!gaussianInput.get()) {
-            return (Randomizer.nextDouble() * fSize) - (fSize / 2.0);
+            return (Randomizer.nextDouble() * size) - (size / 2.0);
         } else {
-            return Randomizer.nextGaussian() * fSize;
+            return Randomizer.nextGaussian() * size;
         }
     }
 
@@ -251,32 +251,32 @@ public class SubtreeSlide extends TreeOperator {
     @Override
     public void optimize(final double logAlpha) {
         if (optimiseInput.get() && ! Double.isInfinite(logAlpha) ) {
-            double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(fSize);
-            final double f = Math.exp(fDelta);
-//            double f = Math.exp(fDelta);
+            double delta = calcDelta(logAlpha);
+            delta += Math.log(size);
+            final double f = Math.exp(delta);
+//            double f = Math.exp(delta);
             if( limit > 0 ) {
                 final Tree tree = treeInput.get();
                 final double h = tree.getRoot().getHeight();
                 final double k = Math.log(tree.getLeafNodeCount()) / Math.log(2);
                 final double lim = (h / k) * limit;
                 if( f <= lim ) {
-                    fSize = f;
+                    size = f;
                 }
             } else {
-               fSize = f;
+               size = f;
             }
         }
     }
 
     @Override
     public double getCoercableParameterValue() {
-        return fSize;
+        return size;
     }
 
     @Override
-    public void setCoercableParameterValue(final double fValue) {
-        fSize = fValue;
+    public void setCoercableParameterValue(final double value) {
+        size = value;
     }
 
     @Override
@@ -289,7 +289,7 @@ public class SubtreeSlide extends TreeOperator {
         if (ratio > 2.0) ratio = 2.0;
         if (ratio < 0.5) ratio = 0.5;
 
-        final double newDelta = fSize * ratio;
+        final double newDelta = size * ratio;
 
         final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {

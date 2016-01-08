@@ -210,8 +210,8 @@ public class BayesianSkyline extends TreeDistribution {
             int diff = intervals.getCoalescentEvents(j) - 1;
             for (int k = 0; k < diff; k++) {
                 //cp.setN0(getPopSize(currentTime));
-                double fPopSize = getPopSize(currentTime);
-                logP += calculateIntervalLikelihood(fPopSize, 0.0, currentTime, intervals.getLineageCount(j) - k - 1,
+                double popSize = getPopSize(currentTime);
+                logP += calculateIntervalLikelihood(popSize, 0.0, currentTime, intervals.getLineageCount(j) - k - 1,
                         IntervalType.COALESCENT);
                 subIndex += 1;
                 if (subIndex >= groupSizes.getValue(groupIndex)) {

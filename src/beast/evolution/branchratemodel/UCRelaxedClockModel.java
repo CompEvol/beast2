@@ -304,8 +304,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    		int iNode = node.getNr();
 //    		int patterncount = dataInput.get().getPatternCount();
 //    		int statecount = dataInput.get().getDataType().getStateCount();
-//            double [] fParentPartials = new double[patterncount * statecount];
-//    		likelihoodCore.getNodePartials(node.getParent().getNr(), fParentPartials);
+//            double [] parentPartials = new double[patterncount * statecount];
+//    		likelihoodCore.getNodePartials(node.getParent().getNr(), parentPartials);
 //    		if (node.isLeaf()) {
 //        		// distance of leaf to its parent, ignores ambiguities
 //    			int [] nStates = new int[patterncount ];
@@ -316,9 +316,9 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //        			double d = 0;
 //        			for (int j = 0; j < statecount; j++) {
 //        				if (j == k) {
-//        					d += 1.0 - fParentPartials[i * statecount + j];
+//        					d += 1.0 - parentPartials[i * statecount + j];
 //        				} else {
-//        					d += fParentPartials[i * statecount + j];
+//        					d += parentPartials[i * statecount + j];
 //        				}
 //        			}
 //        			distance += d * dataInput.get().getPatternWeight(i);
@@ -326,13 +326,13 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    			return distance;
 //    		} else {
 //        		// L1 distance of internal node partials to its parent partials
-//                double [] fPartials = new double[fParentPartials.length];
-//        		likelihoodCore.getNodePartials(iNode, fPartials);
+//                double [] partials = new double[parentPartials.length];
+//        		likelihoodCore.getNodePartials(iNode, partials);
 //        		double distance = 0;
 //        		for (int i = 0; i < patterncount; i++) {
 //        			double d = 0;
 //        			for (int j = 0; j < statecount; j++) {
-//       					d += Math.abs(fPartials[i * statecount + j] - fParentPartials[i * statecount + j]);
+//       					d += Math.abs(partials[i * statecount + j] - parentPartials[i * statecount + j]);
 //        			}
 //        			distance += d * dataInput.get().getPatternWeight(i);
 //        		}

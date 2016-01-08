@@ -16,15 +16,15 @@ public class UniformOperator extends Operator {
 
     int howMany;
     Parameter<?> parameter;
-    double fLower, fUpper;
+    double lower, upper;
     int iLower, iUpper;
 
     @Override
     public void initAndValidate() throws Exception {
         parameter = parameterInput.get();
         if (parameter instanceof RealParameter) {
-            fLower = (Double) parameter.getLower();
-            fUpper = (Double) parameter.getUpper();
+            lower = (Double) parameter.getLower();
+            upper = (Double) parameter.getUpper();
         } else if (parameter instanceof IntegerParameter) {
             iLower = (Integer) parameter.getLower();
             iUpper = (Integer) parameter.getUpper();
@@ -48,7 +48,7 @@ public class UniformOperator extends Operator {
                 int newValue = Randomizer.nextInt(iUpper - iLower + 1) + iLower; // from 0 to n-1, n must > 0,
                 ((IntegerParameter) parameter).setValue(index, newValue);
             } else {
-                double newValue = Randomizer.nextDouble() * (fUpper - fLower) + fLower;
+                double newValue = Randomizer.nextDouble() * (upper - lower) + lower;
                 ((RealParameter) parameter).setValue(index, newValue);
             }
 

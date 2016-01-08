@@ -114,8 +114,8 @@ public class SpeciesTreePrior extends TreeDistribution {
                     // constant pop size function
                     logP += gamma2Prior.calcLogP(popSizesBottom);
 //			for (int i = 0; i < speciesNodes.length; i++) {
-//				double fPopSize = m_fPopSizesBottom.getValue(i);
-//				logP += m_bottomPrior.logDensity(fPopSize); 
+//				double popSize = m_fPopSizesBottom.getValue(i);
+//				logP += m_bottomPrior.logDensity(popSize); 
 //			}
                     break;
                 case linear:
@@ -129,37 +129,37 @@ public class SpeciesTreePrior extends TreeDistribution {
 
                     for (int i = 0; i < speciesNodes.length; i++) {
                         final Node node = speciesNodes[i];
-                        final double fPopSizeBottom;
+                        final double popSizeBottom;
                         if (node.isLeaf()) {
-                            // Gamma(4, fPsi) prior
-                            fPopSizeBottom = popSizesBottom.getValue(i);
-                            logP += gamma4Prior.logDensity(fPopSizeBottom);
+                            // Gamma(4, psi) prior
+                            popSizeBottom = popSizesBottom.getValue(i);
+                            logP += gamma4Prior.logDensity(popSizeBottom);
                         }
-                        final double fPopSizeTop = popSizesTop.getValue(i);
-                        logP += gamma2Prior.logDensity(fPopSizeTop);
+                        final double popSizeTop = popSizesTop.getValue(i);
+                        logP += gamma2Prior.logDensity(popSizeTop);
                     }
                     break;
                 case linear_with_constant_root:
 //			logP += m_gamma4Prior.calcLogP(m_fPopSizesBottom);
 //			logP += m_gamma2Prior.calcLogP(m_fPopSizesTop);
 //			int iRoot = m_tree.get().getRoot().getNr();
-//			double fPopSize = m_fPopSizesTop.getValue(iRoot);
-//			logP -= m_gamma2Prior.logDensity(fPopSize); 
+//			double popSize = m_fPopSizesTop.getValue(iRoot);
+//			logP -= m_gamma2Prior.logDensity(popSize); 
 
                     for (int i = 0; i < speciesNodes.length; i++) {
                         final Node node = speciesNodes[i];
                         if (node.isLeaf()) {
-                            final double fPopSizeBottom = popSizesBottom.getValue(i);
-                            logP += gamma4Prior.logDensity(fPopSizeBottom);
+                            final double popSizeBottom = popSizesBottom.getValue(i);
+                            logP += gamma4Prior.logDensity(popSizeBottom);
                         }
                         if (!node.isRoot()) {
                             if (i < speciesNodes.length - 1) {
-                                final double fPopSizeTop = popSizesTop.getArrayValue(i);
-                                logP += gamma2Prior.logDensity(fPopSizeTop);
+                                final double popSizeTop = popSizesTop.getArrayValue(i);
+                                logP += gamma2Prior.logDensity(popSizeTop);
                             } else {
                                 final int iNode = treeInput.get().getRoot().getNr();
-                                final double fPopSizeTop = popSizesTop.getArrayValue(iNode);
-                                logP += gamma2Prior.logDensity(fPopSizeTop);
+                                final double popSizeTop = popSizesTop.getArrayValue(iNode);
+                                logP += gamma2Prior.logDensity(popSizeTop);
                             }
                         }
                     }

@@ -231,9 +231,9 @@ public class JSONParser {
 	// }
 	// Node topNode = nodes.item(0);
 	// // sanity check that we are reading a beast 2 file
-	// double fVersion = getAttributeAsDouble(topNode, "version");
-	// if (!topNode.getNodeName().equals(BEAST_ELEMENT) || fVersion < 2.0 ||
-	// fVersion == Double.MAX_VALUE) {
+	// double version = getAttributeAsDouble(topNode, "version");
+	// if (!topNode.getNodeName().equals(BEAST_ELEMENT) || version < 2.0 ||
+	// version == Double.MAX_VALUE) {
 	// return beastObjects;
 	// }
 	// // only process templates
@@ -520,8 +520,8 @@ public class JSONParser {
 		if (nodes == null || nodes.keySet().size() == 0) {
 			throw new JSONParserException(doc, "Expected top level beast element in XML", 1001);
 		}
-		double fVersion = getAttributeAsDouble(nodes, "version");
-		if (fVersion < 2.0 || fVersion == Double.MAX_VALUE) {
+		double version = getAttributeAsDouble(nodes, "version");
+		if (version < 2.0 || version == Double.MAX_VALUE) {
 			throw new JSONParserException(nodes, "Wrong version: only versions > 2.0 are supported", 101);
 		}
 

@@ -615,10 +615,10 @@ public class State extends BEASTObject {
         setEverythingDirty(true);
         //state.storeCalculationNodes();
         checkCalculationNodesDirtiness();
-        final double fLogLikelihood = posterior.calculateLogP();
+        final double logLikelihood = posterior.calculateLogP();
         setEverythingDirty(false);
         acceptCalculationNodes();
-        return fLogLikelihood;
+        return logLikelihood;
     }
 
 	public double robustlyCalcNonStochasticPosterior(Distribution posterior) throws Exception {
@@ -626,9 +626,9 @@ public class State extends BEASTObject {
         setEverythingDirty(true);
         storeCalculationNodes();
         checkCalculationNodesDirtiness();
-        final double fLogLikelihood = posterior.getNonStochasticLogP();
+        final double logLikelihood = posterior.getNonStochasticLogP();
         setEverythingDirty(false);
         acceptCalculationNodes();
-        return fLogLikelihood;
+        return logLikelihood;
 	}
 } // class State

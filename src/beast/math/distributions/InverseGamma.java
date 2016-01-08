@@ -29,19 +29,19 @@ public class InverseGamma extends ParametricDistribution {
      * ensure internal state is up to date *
      */
     void refresh() {
-        double fAlpha;
-        double fBeta;
+        double alpha;
+        double beta;
         if (alphaInput.get() == null) {
-            fAlpha = 2;
+            alpha = 2;
         } else {
-            fAlpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getValue();
         }
         if (betaInput.get() == null) {
-            fBeta = 2;
+            beta = 2;
         } else {
-            fBeta = betaInput.get().getValue();
+            beta = betaInput.get().getValue();
         }
-        dist.setAlphaBeta(fAlpha, fBeta);
+        dist.setAlphaBeta(alpha, beta);
     }
 
     @Override
@@ -56,13 +56,13 @@ public class InverseGamma extends ParametricDistribution {
         // log of the constant beta^alpha/Gamma(alpha)
         double C;
 
-        InverseGammaImpl(double fAlpha, double fBeta) {
-            setAlphaBeta(fAlpha, fBeta);
+        InverseGammaImpl(double alpha, double beta) {
+            setAlphaBeta(alpha, beta);
         }
 
-        void setAlphaBeta(double fAlpha, double fBeta) {
-            m_fAlpha = fAlpha;
-            m_fBeta = fBeta;
+        void setAlphaBeta(double alpha, double beta) {
+            m_fAlpha = alpha;
+            m_fBeta = beta;
             C = m_fAlpha * Math.log(m_fBeta) - org.apache.commons.math.special.Gamma.logGamma(m_fAlpha);
         }
 
@@ -82,15 +82,15 @@ public class InverseGamma extends ParametricDistribution {
         }
 
         @Override
-        public double density(double fX) {
-            double fLogP = logDensity(fX);
-            return Math.exp(fLogP);
+        public double density(double x) {
+            double logP = logDensity(x);
+            return Math.exp(logP);
         }
 
         @Override
-        public double logDensity(double fX) {
-            double fLogP = -(m_fAlpha + 1.0) * Math.log(fX) - (m_fBeta / fX) + C;
-            return fLogP;
+        public double logDensity(double x) {
+            double logP = -(m_fAlpha + 1.0) * Math.log(x) - (m_fBeta / x) + C;
+            return logP;
         }
     } // class OneOnXImpl
 

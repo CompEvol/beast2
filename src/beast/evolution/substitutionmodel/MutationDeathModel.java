@@ -45,8 +45,8 @@ public class MutationDeathModel extends SubstitutionModel.Base {
     }
 
     @Override
-    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-        double distance = (fStartTime - fEndTime) * fRate;
+    public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
+        double distance = (startTime - endTime) * rate;
         int i, j;
         // assuming that expected number of changes in CTMCModel is 1 per unit time
         // we are contributing s*deathRate number of changes per unit of time
@@ -62,7 +62,7 @@ public class MutationDeathModel extends SubstitutionModel.Base {
         }
         SubstitutionModel.Base CTMCModel = CTMCModelInput.get();
         if (CTMCModel != null) {
-            CTMCModel.getTransitionProbabilities(node, fStartTime, fEndTime, mutationR * fRate, trMatrix);
+            CTMCModel.getTransitionProbabilities(node, startTime, endTime, mutationR * rate, trMatrix);
         } else {
             trMatrix[0] = 1.0;
         }

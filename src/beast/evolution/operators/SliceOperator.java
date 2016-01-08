@@ -215,8 +215,8 @@ public class SliceOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(double fValue) {
-        windowSize = fValue;
+    public void setCoercableParameterValue(double value) {
+        windowSize = value;
     }
 
     /**
@@ -229,10 +229,10 @@ public class SliceOperator extends Operator {
     @Override
     public void optimize(double logAlpha) {
         // must be overridden by operator implementation to have an effect
-        double fDelta = calcDelta(logAlpha);
+        double delta = calcDelta(logAlpha);
 
-        fDelta += Math.log(windowSize);
-        windowSize = Math.exp(fDelta);
+        delta += Math.log(windowSize);
+        windowSize = Math.exp(delta);
     }
 
     @Override

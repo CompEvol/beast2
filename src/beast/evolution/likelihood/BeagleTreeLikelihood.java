@@ -296,11 +296,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             ascertainedSitePatterns = true;
         }
 
-        double[] fPatternWeights = new double[patternCount];
+        double[] patternWeights = new double[patternCount];
         for (int i = 0; i < patternCount; i++) {
-            fPatternWeights[i] = dataInput.get().getPatternWeight(i);
+            patternWeights[i] = dataInput.get().getPatternWeight(i);
         }
-        beagle.setPatternWeights(fPatternWeights);
+        beagle.setPatternWeights(patternWeights);
 
         if (this.rescalingScheme == PartialsRescalingScheme.AUTO &&
                 resourceDetails != null &&
@@ -326,14 +326,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
 
 //            m_fProportionInvariant = m_siteModel.getProportianInvariant();
-//            double [] fProportionInvariantCorrection = new double[m_nPatternCount * m_nStateCount];
+//            double [] proportionInvariantCorrection = new double[m_nPatternCount * m_nStateCount];
 //            if (!SiteModel.g_bUseOriginal && m_fProportionInvariant > 0) {
 //            	calcConstantPatternIndices(m_nPatternCount, m_nStateCount);
 //            	for (int i : m_iConstantPattern) {
-//            		fProportionInvariantCorrection[i] = m_fProportionInvariant;
+//            		proportionInvariantCorrection[i] = m_fProportionInvariant;
 //            	}
 //            }
-//            beagle.setProportionInvariantCorrection(fProportionInvariantCorrection);
+//            beagle.setProportionInvariantCorrection(proportionInvariantCorrection);
         return true;
     }
 

@@ -39,16 +39,16 @@ public interface SubstitutionModel {
 
     /**
      * get the complete transition probability matrix for the given distance
-     * determined as (fStartTime-fEndTime)*fRate
+     * determined as (startTime-endTime)*rate
      *
      * @param node       tree node for which to calculate the probabilities
-     * @param fStartTime
-     * @param fEndTime   we assume start time is larger than end time
-     * @param fRate      rate, includes gamma rates and branch rates
+     * @param startTime
+     * @param endTime   we assume start time is larger than end time
+     * @param rate      rate, includes gamma rates and branch rates
      * @param matrix     an array to store the matrix which represents the transition probability
      *                   matrix in the form of an array. So, matrix must be of size n*n where n is number of states.
      */
-    void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix);
+    void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix);
 
     /**
      * @param node In most cases, the rate matrix is independent of the tree, but if it changes

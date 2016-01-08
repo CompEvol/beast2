@@ -35,11 +35,11 @@ public class RandomGeneTree extends RandomTree {
             throw new IllegalArgumentException("empty nodes set");
         }
 
-        final double fLowestHeight = speciesTreeInput.get().getRoot().getHeight();
+        final double lowestHeight = speciesTreeInput.get().getRoot().getHeight();
 
         for (int attempts = 0; attempts < 1000; ++attempts) {
             try {
-                final List<Node> rootNode = simulateCoalescent(nodes, demographic, fLowestHeight, maxHeight);
+                final List<Node> rootNode = simulateCoalescent(nodes, demographic, lowestHeight, maxHeight);
                 if (rootNode.size() == 1) {
                     return rootNode.get(0);
                 }

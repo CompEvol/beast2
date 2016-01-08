@@ -28,38 +28,38 @@ public class BirthDeathGernhard08ModelTest extends TestCase {
                 "relativeDeathRate", relativeDeathRate);
 
 
-        double fLogP = 0;
-        fLogP = likelihood.calculateLogP(); // -3.520936119641363
-        assertEquals(fLogP, 2.5878899503981287, BEASTTestCase.PRECISION);
+        double logP = 0;
+        logP = likelihood.calculateLogP(); // -3.520936119641363
+        assertEquals(logP, 2.5878899503981287, BEASTTestCase.PRECISION);
 
         likelihood.initByName("type", "timesonly",
                 "tree", tree,
                 "birthDiffRate", birthDiffRate,
                 "relativeDeathRate", relativeDeathRate);
-        fLogP = likelihood.calculateLogP();
-        assertEquals(fLogP, 9.16714116240823, BEASTTestCase.PRECISION);
+        logP = likelihood.calculateLogP();
+        assertEquals(logP, 9.16714116240823, BEASTTestCase.PRECISION);
 
         likelihood.initByName("type", "oriented",
                 "tree", tree,
                 "birthDiffRate", birthDiffRate,
                 "relativeDeathRate", relativeDeathRate);
-        fLogP = likelihood.calculateLogP();
-        assertEquals(fLogP, 4.379649419626184, BEASTTestCase.PRECISION);
+        logP = likelihood.calculateLogP();
+        assertEquals(logP, 4.379649419626184, BEASTTestCase.PRECISION);
 
         likelihood.initByName("type", "labeled",
                 "tree", tree,
                 "birthDiffRate", birthDiffRate,
                 "relativeDeathRate", relativeDeathRate);
-        fLogP = likelihood.calculateLogP();
-        assertEquals(fLogP, 1.2661341104158121, BEASTTestCase.PRECISION);
+        logP = likelihood.calculateLogP();
+        assertEquals(logP, 1.2661341104158121, BEASTTestCase.PRECISION);
         
         likelihood.initByName("type", "labeled",
         		"tree", tree,
         		"birthDiffRate", birthDiffRate,
         		"relativeDeathRate", relativeDeathRate,
         		"originHeight", originHeight);
-        fLogP = likelihood.calculateLogP();
-        assertEquals(fLogP, 8.41413452832378, BEASTTestCase.PRECISION);
+        logP = likelihood.calculateLogP();
+        assertEquals(logP, 8.41413452832378, BEASTTestCase.PRECISION);
     }
 
 }

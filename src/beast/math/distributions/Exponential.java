@@ -28,17 +28,17 @@ public class Exponential extends ParametricDistribution {
      */
     @SuppressWarnings("deprecation")
 	void refresh() {
-        double fLambda;
+        double lambda;
         if (lambdaInput.get() == null) {
-            fLambda = 1;
+            lambda = 1;
         } else {
-            fLambda = lambdaInput.get().getValue();
-            if (fLambda < 0) {
-                Log.err.println("Exponential::Lambda should be positive not " + fLambda + ". Assigning default value.");
-                fLambda = 1;
+            lambda = lambdaInput.get().getValue();
+            if (lambda < 0) {
+                Log.err.println("Exponential::Lambda should be positive not " + lambda + ". Assigning default value.");
+                lambda = 1;
             }
         }
-        m_dist.setMean(fLambda);
+        m_dist.setMean(lambda);
     }
 
     @Override

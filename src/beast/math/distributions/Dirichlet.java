@@ -29,8 +29,8 @@ public class Dirichlet extends ParametricDistribution {
     class DirichletImpl implements ContinuousDistribution {
         Double[] m_fAlpha;
 
-        void setAlpha(Double[] fAlpha) {
-            m_fAlpha = fAlpha;
+        void setAlpha(Double[] alpha) {
+            m_fAlpha = alpha;
         }
 
         @Override
@@ -62,21 +62,21 @@ public class Dirichlet extends ParametricDistribution {
 
     @Override
     public double calcLogP(Function pX) throws Exception {
-        Double[] fAlpha = alphaInput.get().getValues();
+        Double[] alpha = alphaInput.get().getValues();
         if (alphaInput.get().getDimension() != pX.getDimension()) {
             throw new IllegalArgumentException("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()
                     + " and dim(x)=" + pX.getDimension());
         }
-        double fLogP = 0;
-        double fSumAlpha = 0;
+        double logP = 0;
+        double sumAlpha = 0;
         for (int i = 0; i < pX.getDimension(); i++) {
-            double fX = pX.getArrayValue(i);
-            fLogP += (fAlpha[i] - 1) * Math.log(fX);
-            fLogP -= org.apache.commons.math.special.Gamma.logGamma(fAlpha[i]);
-            fSumAlpha += fAlpha[i];
+            double x = pX.getArrayValue(i);
+            logP += (alpha[i] - 1) * Math.log(x);
+            logP -= org.apache.commons.math.special.Gamma.logGamma(alpha[i]);
+            sumAlpha += alpha[i];
         }
-        fLogP += org.apache.commons.math.special.Gamma.logGamma(fSumAlpha);
-        return fLogP;
+        logP += org.apache.commons.math.special.Gamma.logGamma(sumAlpha);
+        return logP;
     }
 
 }

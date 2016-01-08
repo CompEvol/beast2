@@ -48,15 +48,15 @@ public class JukesCantor extends SubstitutionModel.Base {
     }
 
     @Override
-    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-        double fDelta = 4.0 / 3.0 * (fStartTime - fEndTime);
-        double fPStay = (1.0 + 3.0 * Math.exp(-fDelta * fRate)) / 4.0;
-        double fPMove = (1.0 - Math.exp(-fDelta * fRate)) / 4.0;
+    public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
+        double delta = 4.0 / 3.0 * (startTime - endTime);
+        double pStay = (1.0 + 3.0 * Math.exp(-delta * rate)) / 4.0;
+        double pMove = (1.0 - Math.exp(-delta * rate)) / 4.0;
         // fill the matrix with move probabilities
-        Arrays.fill(matrix, fPMove);
+        Arrays.fill(matrix, pMove);
         // fill the diagonal
         for (int i = 0; i < 4; i++) {
-            matrix[i * 5] = fPStay;
+            matrix[i * 5] = pStay;
         }
     }
 

@@ -191,9 +191,9 @@ public abstract class Operator extends BEASTObject {
     /**
      * set value that changed through automatic operator optimisation
      *
-     * @param fValue
+     * @param value
      */
-    public void setCoercableParameterValue(final double fValue) {
+    public void setCoercableParameterValue(final double value) {
     }
 
     /**

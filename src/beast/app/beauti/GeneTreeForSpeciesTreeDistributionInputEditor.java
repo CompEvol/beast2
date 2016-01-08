@@ -39,7 +39,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	
 	static final int OTHER = 3;
 	String [] valuesString = new String[]{"autosomal_nuclear", "X", "Y or mitochondrial", "other"};
-	Double [] fValues = new Double[]{2.0, 1.5, 0.5, -1.0};
+	Double [] _values = new Double[]{2.0, 1.5, 0.5, -1.0};
 	JComboBox<String> m_selectBeastObjectBox;
 	
 	public InputEditor createPloidyEditor() {
@@ -71,7 +71,7 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 	                    	return;
 	                    }
 	                    try {
-	                    	setValue(fValues[i]);
+	                    	setValue(_values[i]);
 	                        //lm_input.setValue(selected, m_beastObject);
 	                    } catch (Exception e1) {
 	                        e1.printStackTrace();
@@ -85,8 +85,8 @@ public class GeneTreeForSpeciesTreeDistributionInputEditor extends InputEditor.B
 			private void setSelection() {
 				Double value = (Double) m_input.get();
 				m_selectBeastObjectBox.setSelectedIndex(OTHER);
-				for (int i = 0; i < fValues.length; i++) {
-					if (value.equals(fValues[i])) {
+				for (int i = 0; i < _values.length; i++) {
+					if (value.equals(_values[i])) {
 						m_selectBeastObjectBox.setSelectedIndex(i);
 					}
 				}

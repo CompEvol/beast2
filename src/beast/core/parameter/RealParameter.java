@@ -92,9 +92,9 @@ public class RealParameter extends Parameter.Base<Double> {
      * StateNode methods *
      */
     @Override
-    public int scale(final double fScale) throws Exception {
+    public int scale(final double scale) throws Exception {
         for (int i = 0; i < values.length; i++) {
-            values[i] *= fScale;
+            values[i] *= scale;
             if (values[i] < m_fLower || values[i] > m_fUpper) {
                 throw new IllegalArgumentException("parameter scaled our of range");
             }

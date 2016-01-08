@@ -86,21 +86,21 @@ public class NodeReheight extends TreeOperator {
         tree.startEditing(this);  // we change the tree
         reorder(tree.getRoot());
         // collect heights
-        final double[] fHeights = new double[nNodes];
+        final double[] heights = new double[nNodes];
         final int[] iReverseOrder = new int[nNodes];
-        collectHeights(tree.getRoot(), fHeights, iReverseOrder, 0);
+        collectHeights(tree.getRoot(), heights, iReverseOrder, 0);
         // change height of an internal node
-        int iNode = Randomizer.nextInt(fHeights.length);
+        int iNode = Randomizer.nextInt(heights.length);
         while (m_nodes[iReverseOrder[iNode]].isLeaf()) {
-            iNode = Randomizer.nextInt(fHeights.length);
+            iNode = Randomizer.nextInt(heights.length);
         }
-        final double fMaxHeight = calcMaxHeight(iReverseOrder, iNode);
-        fHeights[iNode] = Randomizer.nextDouble() * fMaxHeight;
-        m_nodes[iReverseOrder[iNode]].setHeight(fHeights[iNode]);
+        final double maxHeight = calcMaxHeight(iReverseOrder, iNode);
+        heights[iNode] = Randomizer.nextDouble() * maxHeight;
+        m_nodes[iReverseOrder[iNode]].setHeight(heights[iNode]);
         // reconstruct tree from heights
-        final Node root = reconstructTree(fHeights, iReverseOrder, 0, fHeights.length, new boolean[fHeights.length]);
+        final Node root = reconstructTree(heights, iReverseOrder, 0, heights.length, new boolean[heights.length]);
 
-        assert checkConsistency(root, new boolean[fHeights.length]) ;
+        assert checkConsistency(root, new boolean[heights.length]) ;
 //            System.err.println("Inconsisten tree");
 //        }
         root.setParent(null);
@@ -126,15 +126,15 @@ public class NodeReheight extends TreeOperator {
      */
     private double calcMaxHeight(final int[] iReverseOrder, final int iNode) {
         // find maximum height between two species. Only upper right part is populated
-        final double[][] fMaxHeight = new double[nrOfSpecies][nrOfSpecies];
+        final double[][] maxHeight = new double[nrOfSpecies][nrOfSpecies];
         for (int i = 0; i < nrOfSpecies; i++) {
-            Arrays.fill(fMaxHeight[i], Double.POSITIVE_INFINITY);
+            Arrays.fill(maxHeight[i], Double.POSITIVE_INFINITY);
         }
 
         // calculate for every species tree the maximum allowable merge point
         for (int i = 0; i < nrOfGeneTrees; i++) {
             final Tree tree = geneTreesInput.get().get(i);
-            findMaximaInGeneTree(tree.getRoot(), new boolean[nrOfSpecies], m_taxonMap.get(i), fMaxHeight);
+            findMaximaInGeneTree(tree.getRoot(), new boolean[nrOfSpecies], m_taxonMap.get(i), maxHeight);
         }
 
         // find species on the left of selected node
@@ -156,19 +156,19 @@ public class NodeReheight extends TreeOperator {
         }
 
         // find max
-        double fMax = Double.POSITIVE_INFINITY;
+        double max = Double.POSITIVE_INFINITY;
         for (int i = 0; i < nrOfSpecies; i++) {
             if (bLowerSpecies[i]) {
                 for (int j = 0; j < nrOfSpecies; j++) {
                     if (j != i && bUpperSpecies[j]) {
                         final int x = Math.min(i, j);
                         final int y = Math.max(i, j);
-                        fMax = Math.min(fMax, fMaxHeight[x][y]);
+                        max = Math.min(max, maxHeight[x][y]);
                     }
                 }
             }
         }
-        return fMax;
+        return max;
     } // calcMaxHeight
 
 
@@ -176,22 +176,22 @@ public class NodeReheight extends TreeOperator {
      * for every species in the left on the gene tree and for every species in the right
      * cap the maximum join height by the lowest place the two join in the gene tree
      */
-    private void findMaximaInGeneTree(final Node node, final boolean[] taxonSet, final Map<Integer, Integer> taxonMap, final double[][] fMaxHeight) {
+    private void findMaximaInGeneTree(final Node node, final boolean[] taxonSet, final Map<Integer, Integer> taxonMap, final double[][] maxHeight) {
         if (node.isLeaf()) {
             final int iSpecies = taxonMap.get(node.getNr());
             taxonSet[iSpecies] = true;
         } else {
             final boolean[] bLeftTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getLeft(), bLeftTaxonSet, taxonMap, fMaxHeight);
+            findMaximaInGeneTree(node.getLeft(), bLeftTaxonSet, taxonMap, maxHeight);
             final boolean[] bRightTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getRight(), bRightTaxonSet, taxonMap, fMaxHeight);
+            findMaximaInGeneTree(node.getRight(), bRightTaxonSet, taxonMap, maxHeight);
             for (int i = 0; i < nrOfSpecies; i++) {
                 if (bLeftTaxonSet[i]) {
                     for (int j = 0; j < nrOfSpecies; j++) {
                         if (j != i && bRightTaxonSet[j]) {
                             final int x = Math.min(i, j);
                             final int y = Math.max(i, j);
-                            fMaxHeight[x][y] = Math.min(fMaxHeight[x][y], node.getHeight());
+                            maxHeight[x][y] = Math.min(maxHeight[x][y], node.getHeight());
                         }
                     }
                 }
@@ -207,13 +207,13 @@ public class NodeReheight extends TreeOperator {
      */
 
 
-    private Node reconstructTree(final double[] fHeights, final int[] iReverseOrder, final int iFrom, final int iTo, final boolean[] bHasParent) {
-        //iNode = maxIndex(fHeights, 0, fHeights.length);
+    private Node reconstructTree(final double[] heights, final int[] iReverseOrder, final int iFrom, final int iTo, final boolean[] bHasParent) {
+        //iNode = maxIndex(heights, 0, heights.length);
         int iNode = -1;
-        double fMax = Double.NEGATIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
         for (int j = iFrom; j < iTo; j++) {
-            if (fMax < fHeights[j] && !m_nodes[iReverseOrder[j]].isLeaf()) {
-                fMax = fHeights[j];
+            if (max < heights[j] && !m_nodes[iReverseOrder[j]].isLeaf()) {
+                max = heights[j];
                 iNode = j;
             }
         }
@@ -222,22 +222,22 @@ public class NodeReheight extends TreeOperator {
         }
         final Node node = m_nodes[iReverseOrder[iNode]];
 
-        //int iLeft = maxIndex(fHeights, 0, iNode);
+        //int iLeft = maxIndex(heights, 0, iNode);
         int iLeft = -1;
-        fMax = Double.NEGATIVE_INFINITY;
+        max = Double.NEGATIVE_INFINITY;
         for (int j = iFrom; j < iNode; j++) {
-            if (fMax < fHeights[j] && !bHasParent[j]) {
-                fMax = fHeights[j];
+            if (max < heights[j] && !bHasParent[j]) {
+                max = heights[j];
                 iLeft = j;
             }
         }
 
-        //int iRight = maxIndex(fHeights, iNode+1, fHeights.length);
+        //int iRight = maxIndex(heights, iNode+1, heights.length);
         int iRight = -1;
-        fMax = Double.NEGATIVE_INFINITY;
+        max = Double.NEGATIVE_INFINITY;
         for (int j = iNode + 1; j < iTo; j++) {
-            if (fMax < fHeights[j] && !bHasParent[j]) {
-                fMax = fHeights[j];
+            if (max < heights[j] && !bHasParent[j]) {
+                max = heights[j];
                 iRight = j;
             }
         }
@@ -247,28 +247,28 @@ public class NodeReheight extends TreeOperator {
         node.setRight(m_nodes[iReverseOrder[iRight]]);
         node.getRight().setParent(node);
         if (node.getLeft().isLeaf()) {
-            fHeights[iLeft] = Double.NEGATIVE_INFINITY;
+            heights[iLeft] = Double.NEGATIVE_INFINITY;
         }
         if (node.getRight().isLeaf()) {
-            fHeights[iRight] = Double.NEGATIVE_INFINITY;
+            heights[iRight] = Double.NEGATIVE_INFINITY;
         }
         bHasParent[iLeft] = true;
         bHasParent[iRight] = true;
-        fHeights[iNode] = Double.NEGATIVE_INFINITY;
+        heights[iNode] = Double.NEGATIVE_INFINITY;
 
 
-        reconstructTree(fHeights, iReverseOrder, iFrom, iNode, bHasParent);
-        reconstructTree(fHeights, iReverseOrder, iNode, iTo, bHasParent);
+        reconstructTree(heights, iReverseOrder, iFrom, iNode, bHasParent);
+        reconstructTree(heights, iReverseOrder, iNode, iTo, bHasParent);
         return node;
     }
 
     // helper for reconstructTree, to find maximum in range
-//    private int maxIndex(final double[] fHeights, final int iFrom, final int iTo) {
+//    private int maxIndex(final double[] heights, final int iFrom, final int iTo) {
 //        int iMax = -1;
-//        double fMax = Double.NEGATIVE_INFINITY;
+//        double max = Double.NEGATIVE_INFINITY;
 //        for (int i = iFrom; i < iTo; i++) {
-//            if (fMax < fHeights[i]) {
-//                fMax = fHeights[i];
+//            if (max < heights[i]) {
+//                max = heights[i];
 //                iMax = i;
 //            }
 //        }
@@ -278,17 +278,17 @@ public class NodeReheight extends TreeOperator {
    /**
       ** gather height of each node, and the node index associated with the height.*
       **/
-    private int collectHeights(final Node node, final double[] fHeights, final int[] iReverseOrder, int iCurrent) {
+    private int collectHeights(final Node node, final double[] heights, final int[] iReverseOrder, int iCurrent) {
         if (node.isLeaf()) {
-            fHeights[iCurrent] = node.getHeight();
+            heights[iCurrent] = node.getHeight();
             iReverseOrder[iCurrent] = node.getNr();
             iCurrent++;
         } else {
-            iCurrent = collectHeights(node.getLeft(), fHeights, iReverseOrder, iCurrent);
-            fHeights[iCurrent] = node.getHeight();
+            iCurrent = collectHeights(node.getLeft(), heights, iReverseOrder, iCurrent);
+            heights[iCurrent] = node.getHeight();
             iReverseOrder[iCurrent] = node.getNr();
             iCurrent++;
-            iCurrent = collectHeights(node.getRight(), fHeights, iReverseOrder, iCurrent);
+            iCurrent = collectHeights(node.getRight(), heights, iReverseOrder, iCurrent);
         }
         return iCurrent;
     }

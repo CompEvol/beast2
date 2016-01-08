@@ -155,9 +155,9 @@ public class UpDownOperator extends Operator {
     @Override
     public void optimize(final double logAlpha) {
         if (optimiseInput.get()) {
-            double fDelta = calcDelta(logAlpha);
-            fDelta += Math.log(1.0 / scaleFactor - 1.0);
-            setCoercableParameterValue(1.0 / (Math.exp(fDelta) + 1.0) );
+            double delta = calcDelta(logAlpha);
+            delta += Math.log(1.0 / scaleFactor - 1.0);
+            setCoercableParameterValue(1.0 / (Math.exp(delta) + 1.0) );
         }
     }
 
@@ -167,8 +167,8 @@ public class UpDownOperator extends Operator {
     }
 
     @Override
-    public void setCoercableParameterValue(final double fValue) {
-        scaleFactor = Math.max(Math.min(fValue,upper),lower);
+    public void setCoercableParameterValue(final double value) {
+        scaleFactor = Math.max(Math.min(value,upper),lower);
     }
 
     @Override

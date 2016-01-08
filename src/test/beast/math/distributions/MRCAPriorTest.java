@@ -41,29 +41,29 @@ public class MRCAPriorTest extends TestCase {
         TaxonSet set = new TaxonSet();
         set.initByName("taxon", human, "taxon", bonobo, "taxon", chimp);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
-        double fLogP = prior.calculateLogP();
-        assertEquals(fLogP, 0, 0);
+        double logP = prior.calculateLogP();
+        assertEquals(logP, 0, 0);
 
         /* check (gorilla, siamang) is NOT monophyletic **/
         set = new TaxonSet();
         set.initByName("taxon", gorilla, "taxon", siamang);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
-        fLogP = prior.calculateLogP();
-        assertEquals(fLogP, Double.NEGATIVE_INFINITY, 0);
+        logP = prior.calculateLogP();
+        assertEquals(logP, Double.NEGATIVE_INFINITY, 0);
 
         /* check (gorilla, orangutan, siamang) is monophyletic **/
         set = new TaxonSet();
         set.initByName("taxon", gorilla, "taxon", orangutan, "taxon", siamang);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
-        fLogP = prior.calculateLogP();
-        assertEquals(fLogP, 0, 0);
+        logP = prior.calculateLogP();
+        assertEquals(logP, 0, 0);
 
         /* check (human, gorilla) is NOT monophyletic **/
         set = new TaxonSet();
         set.initByName("taxon", human, "taxon", gorilla);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
-        fLogP = prior.calculateLogP();
-        assertEquals(fLogP, Double.NEGATIVE_INFINITY, 0);
+        logP = prior.calculateLogP();
+        assertEquals(logP, Double.NEGATIVE_INFINITY, 0);
     }
 
     @Test
@@ -96,27 +96,27 @@ public class MRCAPriorTest extends TestCase {
 
         /* get distribution for set (human, bonobo, chimp) */
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true, "distr", exp);
-        double fLogP = prior.calculateLogP();
-        assertEquals(-0.024003, fLogP, BEASTTestCase.PRECISION);
+        double logP = prior.calculateLogP();
+        assertEquals(-0.024003, logP, BEASTTestCase.PRECISION);
 
         /* get distribution for set (human, chimp), do not require the set to by monophyletic */
         set = new TaxonSet();
         set.initByName("taxon", human, "taxon", chimp);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", false);
-        fLogP = prior.calculateLogP();
-        assertEquals(-0.024003, fLogP, BEASTTestCase.PRECISION);
+        logP = prior.calculateLogP();
+        assertEquals(-0.024003, logP, BEASTTestCase.PRECISION);
 
         /* get distribution for set (human, chimp), DO require the set to by monophyletic */
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
-        fLogP = prior.calculateLogP();
-        assertEquals(Double.NEGATIVE_INFINITY, fLogP, 0);
+        logP = prior.calculateLogP();
+        assertEquals(Double.NEGATIVE_INFINITY, logP, 0);
 
         /* get distribution for set (human, gorilla) = root, not monophyletic */
         set = new TaxonSet();
         set.initByName("taxon", human, "taxon", gorilla);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", false);
-        fLogP = prior.calculateLogP();
-        assertEquals(-0.024003 - 0.012035, fLogP, BEASTTestCase.PRECISION);
+        logP = prior.calculateLogP();
+        assertEquals(-0.024003 - 0.012035, logP, BEASTTestCase.PRECISION);
     }
 
 }

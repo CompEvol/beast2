@@ -50,22 +50,22 @@ public class LogNormalDistributionModel extends ParametricDistribution {
      * make sure internal state is up to date *
      */
     void refresh() {
-        double fMean;
-        double fSigma;
+        double mean;
+        double sigma;
         if (SParameterInput.get() == null) {
-            fSigma = 1;
+            sigma = 1;
         } else {
-            fSigma = SParameterInput.get().getValue();
+            sigma = SParameterInput.get().getValue();
         }
         if (MParameterInput.get() == null) {
-            fMean = 0;
+            mean = 0;
         } else {
-            fMean = MParameterInput.get().getValue();
+            mean = MParameterInput.get().getValue();
         }
         if (hasMeanInRealSpace) {
-            fMean = Math.log(fMean) - (0.5 * fSigma * fSigma);
+            mean = Math.log(mean) - (0.5 * sigma * sigma);
         }
-        dist.setMeanAndStdDev(fMean, fSigma);
+        dist.setMeanAndStdDev(mean, sigma);
     }
 
     @Override
@@ -79,16 +79,16 @@ public class LogNormalDistributionModel extends ParametricDistribution {
         double m_fStdDev;
         NormalDistributionImpl m_normal = new NormalDistributionImpl(0, 1);
 
-        public LogNormalImpl(double fMean, double fStdDev) {
-            setMeanAndStdDev(fMean, fStdDev);
+        public LogNormalImpl(double mean, double stdDev) {
+            setMeanAndStdDev(mean, stdDev);
         }
 
         @SuppressWarnings("deprecation")
-		void setMeanAndStdDev(double fMean, double fStdDev) {
-            m_fMean = fMean;
-            m_fStdDev = fStdDev;
-            m_normal.setMean(fMean);
-            m_normal.setStandardDeviation(fStdDev);
+		void setMeanAndStdDev(double mean, double stdDev) {
+            m_fMean = mean;
+            m_fStdDev = stdDev;
+            m_normal.setMean(mean);
+            m_normal.setStandardDeviation(stdDev);
         }
 
         @Override
@@ -107,19 +107,19 @@ public class LogNormalDistributionModel extends ParametricDistribution {
         }
 
         @Override
-        public double density(double fX) {
-            if( fX <= 0 ) {
+        public double density(double x) {
+            if( x <= 0 ) {
                 return 0;
             }
-            return m_normal.density(Math.log(fX)) / fX;
+            return m_normal.density(Math.log(x)) / x;
         }
 
         @Override
-        public double logDensity(double fX) {
-            if( fX <= 0 ) {
+        public double logDensity(double x) {
+            if( x <= 0 ) {
                 return  Double.NEGATIVE_INFINITY;
             }
-            return m_normal.logDensity(Math.log(fX)) - Math.log(fX);
+            return m_normal.logDensity(Math.log(x)) - Math.log(x);
         }
     } // class LogNormalImpl
 

@@ -31,18 +31,18 @@ public class TreeTopFinder extends CalculationNode {
     }
 
     private double calcHighestTreeHeight() {
-        double fTop = 0;
+        double top = 0;
         for (Tree tree : trees) {
-            fTop = Math.max(tree.getRoot().getHeight(), fTop);
+            top = Math.max(tree.getRoot().getHeight(), top);
         }
-        return fTop;
+        return top;
     }
 
     @Override
     protected boolean requiresRecalculation() {
-        double fTop = calcHighestTreeHeight();
-        if (fTop != height) {
-            height = fTop;
+        double top = calcHighestTreeHeight();
+        if (top != height) {
+            height = top;
             return true;
         }
         return false;

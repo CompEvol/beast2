@@ -40,9 +40,9 @@ public class CompoundParameterHelper<T> {
         return parameterIndex.length;
     }
 
-    public void setValue(final int iParam, final T fValue) {
+    public void setValue(final int iParam, final T value) {
         final Parameter<T> para = parameterList.get(getY(iParam));
-        para.setValue(getX(iParam), fValue);
+        para.setValue(getX(iParam), value);
     }
 
     public T getValue(final int iParam) {

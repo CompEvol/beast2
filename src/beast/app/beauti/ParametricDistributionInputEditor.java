@@ -119,20 +119,20 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             }
 
             Font font = g.getFont();
-            double fMinValue = 0.1;
-            double fMaxValue = 1;
+            double minValue = 0.1;
+            double maxValue = 1;
             try {
-                fMinValue = m_distr.inverseCumulativeProbability(0.01);
-                fMaxValue = m_distr.inverseCumulativeProbability(0.99);
+                minValue = m_distr.inverseCumulativeProbability(0.01);
+                maxValue = m_distr.inverseCumulativeProbability(0.99);
             } catch (Exception e) {
                 // use defaults
             }
-            double fXRange = fMaxValue - fMinValue;
-            // adjust fYMax so that the ticks come out right
-            double fX0 = fMinValue;
+            double xRange = maxValue - minValue;
+            // adjust yMax so that the ticks come out right
+            double x0 = minValue;
             int k = 0;
-            double f = fXRange;
-            double f2 = fX0;
+            double f = xRange;
+            double f2 = x0;
             while (f > 10) {
                 f /= 10;
                 f2 /= 10;
@@ -154,36 +154,36 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 f /= 10;
                 f2 /= 10;
             }
-            //double fAdjXRange = f;
+            //double adjXRange = f;
 
-            fXRange = fXRange + fMinValue - f2;
-            fXRange = adjust(fXRange);
+            xRange = xRange + minValue - f2;
+            xRange = adjust(xRange);
             final int NR_OF_TICKS_X = m_nTicks;
 
-            fMinValue = f2; //fXRange = fAdjXRange;
+            minValue = f2; //xRange = adjXRange;
 
             int nPoints;
             if (!m_distr.isIntegerDistribution()) {
                 nPoints = 100;
             } else {
-                nPoints = (int) (fXRange);
+                nPoints = (int) (xRange);
             }
             int[] xPoints = new int[nPoints];
             int[] yPoints = new int[nPoints];
             double[] fyPoints = new double[nPoints];
-            double fYMax = 0;
+            double yMax = 0;
             for (int i = 0; i < nPoints; i++) {
                 //try {
-                    fyPoints[i] = getDensityForPlot(m_distr, fMinValue + (fXRange * i) / nPoints);
+                    fyPoints[i] = getDensityForPlot(m_distr, minValue + (xRange * i) / nPoints);
                 //}
                 if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
                     fyPoints[i] = 0;
                 }
-                //fyPoints[i] = Math.exp(m_distr.logDensity(fMinValue + (fXRange * i)/nPoints));
-                fYMax = Math.max(fYMax, fyPoints[i]);
+                //fyPoints[i] = Math.exp(m_distr.logDensity(minValue + (xRange * i)/nPoints));
+                yMax = Math.max(yMax, fyPoints[i]);
             }
 
-            fYMax = adjust(fYMax);
+            yMax = adjust(yMax);
             final int NR_OF_TICKS_Y = m_nTicks;
 
             // draw ticks on edge
@@ -195,7 +195,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             int maxLabelWidth = 0;
             FontMetrics sfm = getFontMetrics(smallFont);
             for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
-                ylabels[i] = format(fYMax * i / NR_OF_TICKS_Y);
+                ylabels[i] = format(yMax * i / NR_OF_TICKS_Y);
                 int stringWidth = sfm.stringWidth(ylabels[i]);
                 if (stringWidth > maxLabelWidth) maxLabelWidth = stringWidth;
             }
@@ -203,7 +203,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             // collect the xlabels
             String[] xlabels = new String[NR_OF_TICKS_X+1];
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
-                xlabels[i] = format(fMinValue + fXRange * i / NR_OF_TICKS_X);
+                xlabels[i] = format(minValue + xRange * i / NR_OF_TICKS_X);
             }
             int maxLabelHeight = sfm.getMaxAscent()+sfm.getMaxDescent();
 
@@ -221,7 +221,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
             for (int i = 0; i < nPoints; i++) {
                 xPoints[i] = leftMargin + nGraphWidth * i / nPoints;
-                yPoints[i] = 1 + (int) (TOP_MARGIN + nGraphHeight - nGraphHeight * fyPoints[i] / fYMax);
+                yPoints[i] = 1 + (int) (TOP_MARGIN + nGraphHeight - nGraphHeight * fyPoints[i] / yMax);
             }
             if (!m_distr.isIntegerDistribution()) {
                 g.drawPolyline(xPoints, yPoints, nPoints);
@@ -251,14 +251,14 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             try {
                 FontMetrics fontMetrics = g.getFontMetrics();
                 String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
-                Double[] fQuantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
+                Double[] quantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
             	mayBeUnstable = false;
                 for (k = 0; k < 5; k++) {
 
                     int y = TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
 
                 	try {
-                        g.drawString(format(m_distr.inverseCumulativeProbability(fQuantiles[k])), nGraphWidth / 2 + leftMargin, y);
+                        g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), nGraphWidth / 2 + leftMargin, y);
                     } catch (MathException e) {
                         g.drawString("not available", nGraphWidth / 2 + leftMargin, y);
                     }
@@ -288,27 +288,27 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             return writer.toString();
         }
         
-        private double adjust(double fYMax) {
-            // adjust fYMax so that the ticks come out right
+        private double adjust(double yMax) {
+            // adjust yMax so that the ticks come out right
             int k = 0;
-            double fY = fYMax;
-            while (fY > 10) {
-                fY /= 10;
+            double y = yMax;
+            while (y > 10) {
+                y /= 10;
                 k++;
             }
-            while (fY < 1 && fY > 0) {
-                fY *= 10;
+            while (y < 1 && y > 0) {
+                y *= 10;
                 k--;
             }
-            fY = Math.ceil(fY);
-            m_nTicks = NR_OF_TICKS[(int) fY];
+            y = Math.ceil(y);
+            m_nTicks = NR_OF_TICKS[(int) y];
             for (int i = 0; i < k; i++) {
-                fY *= 10;
+                y *= 10;
             }
             for (int i = k; i < 0; i++) {
-                fY /= 10;
+                y /= 10;
             }
-            return fY;
+            return y;
         }
     }
     

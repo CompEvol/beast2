@@ -29,20 +29,20 @@ public class Beta extends ParametricDistribution {
      */
     @SuppressWarnings("deprecation")
 	void refresh() {
-        double fAlpha;
-        double fBeta;
+        double alpha;
+        double beta;
         if (alphaInput.get() == null) {
-            fAlpha = 1;
+            alpha = 1;
         } else {
-            fAlpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getValue();
         }
         if (betaInput.get() == null) {
-            fBeta = 1;
+            beta = 1;
         } else {
-            fBeta = betaInput.get().getValue();
+            beta = betaInput.get().getValue();
         }
-        m_dist.setAlpha(fAlpha);
-        m_dist.setBeta(fBeta);
+        m_dist.setAlpha(alpha);
+        m_dist.setBeta(beta);
     }
 
     @Override

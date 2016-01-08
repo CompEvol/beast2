@@ -128,9 +128,9 @@ public class Node extends BEASTObject {
         return m_tree.getDate(height);
     }
 
-    public void setHeight(final double fHeight) {
+    public void setHeight(final double height) {
         startEditing();
-        height = fHeight;
+        this.height = height;
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf()) {
             getLeft().isDirty |= Tree.IS_DIRTY;
@@ -616,15 +616,15 @@ public class Node extends BEASTObject {
      * Only heights are recognised, but derived classes could deal with
      * richer meta data pattersn.
      */
-    public void setMetaData(final String pattern, final Object fValue) {
+    public void setMetaData(final String pattern, final Object value) {
         startEditing();
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-            height = (Double) fValue;
+            height = (Double) value;
             isDirty |= Tree.IS_DIRTY;
         } else {
-            metaData.put(pattern, fValue);
+            metaData.put(pattern, value);
         }
 
     }
@@ -649,18 +649,18 @@ public class Node extends BEASTObject {
     /**
      * scale height of this node and all its descendants
      *
-     * @param fScale scale factor
+     * @param scale scale factor
      */
-    public void scale(final double fScale) throws Exception {
+    public void scale(final double scale) throws Exception {
         startEditing();
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf() && !isFake()) {
-            height *= fScale;
+            height *= scale;
         }
         if (!isLeaf()) {
-            getLeft().scale(fScale);
+            getLeft().scale(scale);
             if (getRight() != null) {
-                getRight().scale(fScale);
+                getRight().scale(scale);
             }
             if (height < getLeft().height || height < getRight().height) {
                 throw new IllegalArgumentException("Scale gives negative branch length");
@@ -672,21 +672,21 @@ public class Node extends BEASTObject {
 //     * Used for sampled ancestor trees
 //     * Scales this node and all its descendants (either all descendants, or only non-sampled descendants)
 //     *
-//     * @param fScale    the scalar to multiply each scaled node age by
+//     * @param scale    the scalar to multiply each scaled node age by
 //     * @param scaleSNodes true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
 //     *                  internal nodes should be scaled.
 //     * @throws Exception throws exception if resulting tree would have negative branch lengths.
 //     */
-//    public void scale(double fScale, boolean scaleSNodes) throws Exception {
+//    public void scale(double scale, boolean scaleSNodes) throws Exception {
 //        startEditing();
 //        isDirty |= Tree.IS_DIRTY;
 //        if (scaleSNodes || (!isLeaf() && !isFake())) {
-//            height *= fScale;
+//            height *= scale;
 //        }
 //        if (!isLeaf()) {
-//            (getLeft()).scale(fScale, scaleSNodes);
+//            (getLeft()).scale(scale, scaleSNodes);
 //            if (getRight() != null) {
-//                (getRight()).scale(fScale, scaleSNodes);
+//                (getRight()).scale(scale, scaleSNodes);
 //            }
 //            if (height < getLeft().height || height < getRight().height) {
 //                throw new Exception("Scale gives negative branch length");

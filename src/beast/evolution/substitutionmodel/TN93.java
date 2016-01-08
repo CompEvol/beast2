@@ -140,9 +140,9 @@ public class TN93 extends SubstitutionModel.NucleotideBase {
      * @param matrix an array to store the matrix
      */
     @Override
-	public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
+	public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
 
-        double distance = (fStartTime - fEndTime) * fRate;
+        double distance = (startTime - endTime) * rate;
 
         synchronized (this) {
             if (updateIntermediates) {

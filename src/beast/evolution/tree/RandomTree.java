@@ -669,11 +669,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
      * Coalesce two nodes in the active list. This method removes the two
      * (randomly selected) active nodes and replaces them with the new node at
      * the top of the active list.
-     * @param fMinHeight
+     * @param minHeight
      * @param height
      * @return
      */
-    private double coalesceTwoActiveNodes(final double fMinHeight, double height) throws ConstraintViolatedException {
+    private double coalesceTwoActiveNodes(final double minHeight, double height) throws ConstraintViolatedException {
         final int node1 = Randomizer.nextInt(activeNodeCount);
         int node2 = node1;
         while (node2 == node1) {
@@ -710,22 +710,22 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
-//				if (height > fMinHeight) {
+//				if (height > minHeight) {
 //					break;
 //				}
 //			} 
-            final double fMin = Math.max(m_bounds.get(iConstraint).lower, fMinHeight);
-            final double fMax = m_bounds.get(iConstraint).upper;
-            if (fMax < fMin) {
+            final double min = Math.max(m_bounds.get(iConstraint).lower, minHeight);
+            final double max = m_bounds.get(iConstraint).upper;
+            if (max < min) {
                 // failed to draw a matching height from the MRCA distribution
                 // TODO: try to scale rest of tree down
                 throw new ConstraintViolatedException();
             }
-            if (height < fMin || height > fMax) {
-            	if (fMax == Double.POSITIVE_INFINITY) {
-            		height = fMin + 0.1;
+            if (height < min || height > max) {
+            	if (max == Double.POSITIVE_INFINITY) {
+            		height = min + 0.1;
             	} else {
-            		height = fMin + Randomizer.nextDouble() * (fMax - fMin);
+            		height = min + Randomizer.nextDouble() * (max - min);
             	}
                 newNode.setHeight(height);
             }

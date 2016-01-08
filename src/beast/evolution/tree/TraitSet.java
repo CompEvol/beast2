@@ -105,9 +105,9 @@ public class TraitSet extends BEASTObject {
         // find extremes
         minValue = values[0];
         maxValue = values[0];
-        for (double fValue : values) {
-            minValue = Math.min(minValue, fValue);
-            maxValue = Math.max(maxValue, fValue);
+        for (double value : values) {
+            minValue = Math.min(minValue, value);
+            maxValue = Math.max(maxValue, value);
         }
 
         if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
@@ -228,15 +228,15 @@ public class TraitSet extends BEASTObject {
         return str;
     }
 
-    public double getDate(double fHeight) {
+    public double getDate(double height) {
         if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
-            return maxValue - fHeight;
+            return maxValue - height;
         }
 
         if (traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
-            return minValue + fHeight;
+            return minValue + height;
         }
-        return fHeight;
+        return height;
     }
     
     /**

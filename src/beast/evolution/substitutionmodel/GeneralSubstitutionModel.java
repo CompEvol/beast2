@@ -101,8 +101,8 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     private boolean storedUpdateMatrix = true;
 
     @Override
-    public void getTransitionProbabilities(Node node, double fStartTime, double fEndTime, double fRate, double[] matrix) {
-        double distance = (fStartTime - fEndTime) * fRate;
+    public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
+        double distance = (startTime - endTime) * rate;
 
         int i, j, k;
         double temp;
@@ -168,7 +168,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
      * sets up rate matrix *
      */
     protected void setupRateMatrix() {
-        double[] fFreqs = frequencies.getFreqs();
+        double[] freqs = frequencies.getFreqs();
         for (int i = 0; i < nrOfStates; i++) {
             rateMatrix[i][i] = 0;
             for (int j = 0; j < i; j++) {
@@ -181,27 +181,27 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         // bring in frequencies
         for (int i = 0; i < nrOfStates; i++) {
             for (int j = i + 1; j < nrOfStates; j++) {
-                rateMatrix[i][j] *= fFreqs[j];
-                rateMatrix[j][i] *= fFreqs[i];
+                rateMatrix[i][j] *= freqs[j];
+                rateMatrix[j][i] *= freqs[i];
             }
         }
         // set up diagonal
         for (int i = 0; i < nrOfStates; i++) {
-            double fSum = 0.0;
+            double sum = 0.0;
             for (int j = 0; j < nrOfStates; j++) {
                 if (i != j)
-                    fSum += rateMatrix[i][j];
+                    sum += rateMatrix[i][j];
             }
-            rateMatrix[i][i] = -fSum;
+            rateMatrix[i][i] = -sum;
         }
         // normalise rate matrix to one expected substitution per unit time
-        double fSubst = 0.0;
+        double subst = 0.0;
         for (int i = 0; i < nrOfStates; i++)
-            fSubst += -rateMatrix[i][i] * fFreqs[i];
+            subst += -rateMatrix[i][i] * freqs[i];
 
         for (int i = 0; i < nrOfStates; i++) {
             for (int j = 0; j < nrOfStates; j++) {
-                rateMatrix[i][j] = rateMatrix[i][j] / fSubst;
+                rateMatrix[i][j] = rateMatrix[i][j] / subst;
             }
         }
     } // setupRateMatrix

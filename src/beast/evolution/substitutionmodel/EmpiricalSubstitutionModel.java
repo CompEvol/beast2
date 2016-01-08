@@ -121,11 +121,11 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
         }
         // determine diagonal
         for (int i = 0; i < nStates; i++) {
-            double fSum = 0;
+            double sum = 0;
             for (int j = i + 1; j < nStates; j++) {
-                fSum += rates[i * nStates + j];
+                sum += rates[i * nStates + j];
             }
-            rates[i * nStates + i] = -fSum;
+            rates[i * nStates + i] = -sum;
         }
         return rates;
     }
