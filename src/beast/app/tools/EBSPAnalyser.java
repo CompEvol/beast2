@@ -28,6 +28,7 @@ import beast.core.util.Log;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction.Type;
 import beast.math.statistic.DiscreteStatistics;
+import beast.util.HeapSort;
 import jam.console.ConsoleApplication;
 import jam.panels.OptionsPanel;
 
@@ -116,16 +117,22 @@ public class EBSPAnalyser {
         // generate output
         out.println("time\tmean\tmedian\t95HPD lower\t95HPD upper");
         final double[] popSizeAtTimeT = new double[times.size()];
+        int[] indices = new int[times.size()];
+
         for (final double time : alltimes) {
             for (int j = 0; j < popSizeAtTimeT.length; j++) {
                 popSizeAtTimeT[j] = calcPopSize(type, times.get(j), popSizes.get(j), time);
             }
-            Arrays.sort(popSizeAtTimeT);
+
+            HeapSort.sort(popSizeAtTimeT, indices);
+
             out.print(time + "\t");
+
             out.print(DiscreteStatistics.mean(popSizeAtTimeT) + "\t");
             out.print(DiscreteStatistics.median(popSizeAtTimeT) + "\t");
-            out.print(DiscreteStatistics.quantile(0.025, popSizeAtTimeT) + "\t");
-            out.println(DiscreteStatistics.quantile(0.975, popSizeAtTimeT));
+
+            double[] hpdInterval = DiscreteStatistics.HPDInterval(0.95, popSizeAtTimeT, indices);
+            out.println(hpdInterval[0] + "\t" + hpdInterval[1]);
         }
     }
 
