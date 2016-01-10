@@ -108,7 +108,7 @@ public class MRCAPrior extends Distribution {
     private Node getCommonAncestor(Node n1, Node n2) {
         // assert n1.getTree() == n2.getTree();
         if( ! nodesTraversed[n1.getNr()] ) {
-           nodesTraversed[n1.getNr()] = true;
+            nodesTraversed[n1.getNr()] = true;
             nseen += 1;
         }
         if( ! nodesTraversed[n2.getNr()] ) {
@@ -158,7 +158,7 @@ public class MRCAPrior extends Distribution {
 	            if( n == n1 ) {
                     n = n1 = n.getParent();
                 } else {
-                    n = n2 = n.getParent();  
+                    n = n2 = n.getParent();
                 }
 	            if( ! nodesTraversed[n.getNr()] ) {
 	                nodesTraversed[n.getNr()] = true;
@@ -280,7 +280,7 @@ public class MRCAPrior extends Distribution {
      * set. When all taxa in the set are visited, record the time.
      * *
      * @param node
-     * @param taxonCount
+     * @param taxonCount2
      */
     int calcMRCAtime(final Node node, final int[] taxonCount2) {
         if (node.isLeaf()) {
