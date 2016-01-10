@@ -589,11 +589,11 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                             if (match == null) {
                                 return;
                             }
-                            double nDate = parseDate(match);
+                            double date = parseDate(match);
                             if (trait.length() > 0) {
                                 trait += ",";
                             }
-                            trait += taxon + "=" + nDate;
+                            trait += taxon + "=" + date;
                         }
                         break;
                 }

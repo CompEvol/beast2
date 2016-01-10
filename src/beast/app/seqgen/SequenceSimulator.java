@@ -273,7 +273,7 @@ public class SequenceSimulator extends beast.core.Runnable {
                 printUsageAndExit();
             }
             String fileName = args[0];
-            int nReplications = Integer.parseInt(args[1]);
+            int replications = Integer.parseInt(args[1]);
             PrintStream out = System.out;
             if (args.length == 3) {
                 File file = new File(args[2]);
@@ -305,7 +305,7 @@ public class SequenceSimulator extends beast.core.Runnable {
 
             // feed to sequence simulator and generate leaves
             SequenceSimulator treeSimulator = new SequenceSimulator();
-            treeSimulator.init(data, tree, pSiteModel, pBranchRateModel, nReplications);
+            treeSimulator.init(data, tree, pSiteModel, pBranchRateModel, replications);
             XMLProducer producer = new XMLProducer();
             Alignment alignment = treeSimulator.simulate();
             xml = producer.toRawXML(alignment);

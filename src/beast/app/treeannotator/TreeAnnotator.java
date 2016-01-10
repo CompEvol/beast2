@@ -1484,14 +1484,14 @@ public class TreeAnnotator {
         // this call increments the clade counts and it shouldn't
         // this is remedied with removeClades call after while loop below
         CladeSystem cladeSystem = new CladeSystem(targetTree);
-        final int nClades = cladeSystem.getCladeMap().size();
+        final int clades = cladeSystem.getCladeMap().size();
 
         // allocate posterior tree nodes order once
-        int[] postOrderList = new int[nClades];
-        BitSet[] ctarget = new BitSet[nClades];
-        BitSet[] ctree = new BitSet[nClades];
+        int[] postOrderList = new int[clades];
+        BitSet[] ctarget = new BitSet[clades];
+        BitSet[] ctree = new BitSet[clades];
 
-        for (int k = 0; k < nClades; ++k) {
+        for (int k = 0; k < clades; ++k) {
             ctarget[k] = new BitSet();
             ctree[k] = new BitSet();
         }
@@ -1499,10 +1499,10 @@ public class TreeAnnotator {
         cladeSystem.getTreeCladeCodes(targetTree, ctarget);
 
         // temp collecting heights inside loop allocated once
-        double[] hs = new double[nClades];
+        double[] hs = new double[clades];
 
         // heights total sum from posterior trees
-        double[] ths = new double[nClades];
+        double[] ths = new double[clades];
 
         totalTreesUsed = 0;
 
@@ -1512,15 +1512,15 @@ public class TreeAnnotator {
         	Tree tree = treeSet.next();
             TreeUtils.preOrderTraversalList(tree, postOrderList);
             cladeSystem.getTreeCladeCodes(tree, ctree);
-            for (int k = 0; k < nClades; ++k) {
+            for (int k = 0; k < clades; ++k) {
                 int j = postOrderList[k];
-                for (int i = 0; i < nClades; ++i) {
+                for (int i = 0; i < clades; ++i) {
                     if( CollectionUtils.isSubSet(ctarget[i], ctree[j]) ) {
                         hs[i] = tree.getNode(j).getHeight();
                     }
                 }
             }
-            for (int k = 0; k < nClades; ++k) {
+            for (int k = 0; k < clades; ++k) {
                 ths[k] += hs[k];
             }
             totalTreesUsed += 1;
@@ -1534,7 +1534,7 @@ public class TreeAnnotator {
         }
         targetTree.initAndValidate();
         cladeSystem.removeClades(targetTree.getRoot(), true);
-        for (int k = 0; k < nClades; ++k) {
+        for (int k = 0; k < clades; ++k) {
             ths[k] /= totalTreesUsed;
             final Node node = targetTree.getNode(k);
             node.setHeight(ths[k]);

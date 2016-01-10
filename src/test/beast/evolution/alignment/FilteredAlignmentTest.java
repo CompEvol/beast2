@@ -273,17 +273,17 @@ public class FilteredAlignmentTest extends TestCase {
     }
 
     String alignmentToString(Alignment data, int iTaxon) throws Exception {
-        int[] nStates = new int[data.getPatternCount()];
+        int[] states = new int[data.getPatternCount()];
 //        for (int i = 0; i < data.getSiteCount(); i++) {
 //            int iPattern = data.getPatternIndex(i);
 //            int[] sitePattern = data.getPattern(iPattern);
-//            nStates[i] = sitePattern[iTaxon];
+//            states[i] = sitePattern[iTaxon];
 //        }
 
         for (int i = 0; i < data.getPatternCount(); i++) {
             int[] sitePattern = data.getPattern(i);
-            nStates[i] = sitePattern[iTaxon];
+            states[i] = sitePattern[iTaxon];
         }
-        return data.getDataType().state2string(nStates);
+        return data.getDataType().state2string(states);
     }
 }

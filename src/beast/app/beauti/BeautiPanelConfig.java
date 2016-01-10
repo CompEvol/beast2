@@ -45,7 +45,7 @@ public class BeautiPanelConfig extends BEASTObject {
     final public Input<String> typeInput = new Input<>("type", "type used for finding the appropriate beastObject editor. By default, type is determined " +
             "by the input type of the last component of the path");
 
-    final public Input<Integer> nLabelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
+    final public Input<Integer> labelWidthInput = new Input<>("labelWidth", "width of labels used to show name of inputs in input editors", 150);
 
     final public Input<InputEditor.ButtonStatus> buttonStatusInput = new Input<>("buttonStatus", "whether to show add and delete buttons. " +
             "This can be " + Arrays.toString(InputEditor.ButtonStatus.values()) + " (default 'ALL')", InputEditor.ButtonStatus.ALL, InputEditor.ButtonStatus.values());
@@ -186,18 +186,18 @@ public class BeautiPanelConfig extends BEASTObject {
                             }
                             //throw new Exception ("Don't know which element to pick from the list. List component should come with a condition. " + m_sPathComponents[i]);
                         } else {
-                            int nMatches = 0;
+                            int matches = 0;
                             for (int j = 0; j < list.size(); j++) {
                                 BEASTInterface beastObject2 = (BEASTInterface) list.get(j);
                                 if (matches(beastObject2, conditionalAttribute[i], conditionalValue[i])) {
                                     beastObjects.add(beastObject2);
                                     parentBEASTObjects.add(beastObject);
                                     parentInputs.add(namedInput);
-                                    nMatches++;
+                                    matches++;
                                     break;
                                 }
                             }
-                            if (nMatches == 0) {
+                            if (matches == 0) {
                                 parentInputs.add(namedInput);
                                 parentBEASTObjects.add(beastObject);
                             }

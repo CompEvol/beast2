@@ -57,17 +57,17 @@ public class TreeSetParser {
 	/** flag to indicate that single child nodes are allowed **/
 	boolean m_bAllowSingleChild = false;
 	
-	public TreeSetParser(int nBurnInPercentage, boolean allowSingleChild) {
+	public TreeSetParser(int burnInPercentage, boolean allowSingleChild) {
 		m_sLabels = new ArrayList<>();
 		m_fLongitude = new ArrayList<>();
 		m_fLatitude = new ArrayList<>();
-		m_nBurnInPercentage = Math.max(nBurnInPercentage, 0);
+		m_nBurnInPercentage = Math.max(burnInPercentage, 0);
 		m_fMinLat = 90; m_fMinLong = 180;
 		m_fMaxLat = -90; m_fMaxLong = -180;
 		m_bAllowSingleChild = allowSingleChild;
 	} // c'tor
 	
-	public TreeSetParser(List<String> labels, List<Float> longitude, List<Float> latitude, int nBurnInPercentage) {
+	public TreeSetParser(List<String> labels, List<Float> longitude, List<Float> latitude, int burnInPercentage) {
 		m_sLabels = labels;
 		if (m_sLabels != null) {
 			m_bIsLabelledNewick = true;
@@ -75,7 +75,7 @@ public class TreeSetParser {
 		}
 		m_fLongitude = longitude;
 		m_fLatitude = latitude;
-		m_nBurnInPercentage = Math.max(nBurnInPercentage, 0);
+		m_nBurnInPercentage = Math.max(burnInPercentage, 0);
 		m_fMinLat = 90; m_fMinLong = 180;
 		m_fMaxLat = -90; m_fMaxLong = -180;
 	}
@@ -224,7 +224,7 @@ public class TreeSetParser {
 			
 			// read trees
 			// read trees
-            int nBurnIn = m_nBurnInPercentage * nrOfTrees / 100;
+            int burnIn = m_nBurnInPercentage * nrOfTrees / 100;
             //int k = 0;                    
             while (fin.ready()) {
                     str = readLine(fin);
@@ -233,7 +233,7 @@ public class TreeSetParser {
                             String tree = str.substring(0,5);
                             if (tree.toLowerCase().startsWith("tree ")) {
                                     //k++;
-                                    if (nBurnIn <= 0) {
+                                    if (burnIn <= 0) {
                                             int i = str.indexOf('(');
                                             if (i > 0) {
                                                     str = str.substring(i);
@@ -244,7 +244,7 @@ public class TreeSetParser {
                                             trees.add(treeRoot);
                                             //if (trees.size() % 100 ==0) {if (m_nNrOfLabels>=100||trees.size() % 1000 ==0) {Log.warning.print(trees.size() + " ");}}
                                     } else {
-                                            nBurnIn--;
+                                            burnIn--;
                                     }
                             }
                     }

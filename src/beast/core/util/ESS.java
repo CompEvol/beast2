@@ -63,7 +63,7 @@ public class ESS extends BEASTObject implements Loggable {
 //  basic numerical integration technique.
 
     @Override
-    public void log(final int nSample, PrintStream out) {
+    public void log(final int sample, PrintStream out) {
         final Double newValue = functionInput.get().getArrayValue();
         trace.add(newValue);
         sum += newValue;
@@ -103,7 +103,7 @@ public class ESS extends BEASTObject implements Loggable {
         for (int iLag = 0; iLag < maxLag; iLag++) {
             squareLaggedSums.set(iLag, squareLaggedSums.get(iLag) + trace.get(totalSamples - iLag - 1) * trace.get(totalSamples - 1));
             // The following line is the same approximation as in Tracer 
-            // (valid since mean *(nSamples - iLag), sum1, and sum2 are approximately the same)
+            // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
             // though a more accurate estimate would be
             // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
             autoCorrelation[iLag] = squareLaggedSums.get(iLag) - (sum1 + sum2) * mean + mean * mean * (sampleCount - iLag);
@@ -148,14 +148,14 @@ public class ESS extends BEASTObject implements Loggable {
      * Can be used to calculate effective sample size
      *
      * @param trace:         values from which the ACT is calculated
-     * @param nSampleInterval time between samples *
+     * @param sampleInterval time between samples *
      */
     public static double calcESS(List<Double> trace) {
         return calcESS(trace.toArray(new Double[0]), 1);
     }
 
-    public static double calcESS(Double[] trace, int nSampleInterval) {
-        return trace.length / (ACT(trace, nSampleInterval) / nSampleInterval);
+    public static double calcESS(Double[] trace, int sampleInterval) {
+        return trace.length / (ACT(trace, sampleInterval) / sampleInterval);
     }
 
     public static double ACT(Double[] trace, int sampleInterval) {
@@ -170,14 +170,14 @@ public class ESS extends BEASTObject implements Loggable {
             final double mean = sum / (i + 1);
 
             // calculate auto correlation for selected lag times
-            // sum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
+            // sum1 = \sum_{iStart ... totalSamples-iLag-1} trace
             double sum1 = sum;
-            // sum2 = \sum_{iStart+iLag ... nTotalSamples-1} trace
+            // sum2 = \sum_{iStart+iLag ... totalSamples-1} trace
             double sum2 = sum;
             for (int lagIndex = 0; lagIndex < Math.min(i + 1, MAX_LAG); lagIndex++) {
                 squareLaggedSums[lagIndex] = squareLaggedSums[lagIndex] + trace[i - lagIndex] * trace[i];
                 // The following line is the same approximation as in Tracer
-                // (valid since mean *(nSamples - iLag), sum1, and sum2 are approximately the same)
+                // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
                 // though a more accurate estimate would be
                 // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
                 autoCorrelation[lagIndex] = squareLaggedSums[lagIndex] - (sum1 + sum2) * mean + mean * mean * (i + 1 - lagIndex);
@@ -219,14 +219,14 @@ public class ESS extends BEASTObject implements Loggable {
             final double mean = sum / (i + 1);
 
             // calculate auto correlation for selected lag times
-            // sum1 = \sum_{iStart ... nTotalSamples-iLag-1} trace
+            // sum1 = \sum_{iStart ... totalSamples-iLag-1} trace
             double sum1 = sum;
-            // sum2 = \sum_{iStart+iLag ... nTotalSamples-1} trace
+            // sum2 = \sum_{iStart+iLag ... totalSamples-1} trace
             double sum2 = sum;
             for (int lagIndex = 0; lagIndex < Math.min(i + 1, MAX_LAG); lagIndex++) {
                 squareLaggedSums[lagIndex] = squareLaggedSums[lagIndex] + trace[i - lagIndex] * trace[i];
                 // The following line is the same approximation as in Tracer
-                // (valid since mean *(nSamples - iLag), sum1, and sum2 are approximately the same)
+                // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
                 // though a more accurate estimate would be
                 // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
                 autoCorrelation[lagIndex] = squareLaggedSums[lagIndex] - (sum1 + sum2) * mean + mean * mean * (i + 1 - lagIndex);

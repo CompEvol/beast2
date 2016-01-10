@@ -81,13 +81,13 @@ public class NodeReheight extends TreeOperator {
     public double proposal() {
         final Tree tree = treeInput.get();
         m_nodes = tree.getNodesAsArray();
-        final int nNodes = tree.getNodeCount();
+        final int nodeCount = tree.getNodeCount();
         // randomly change left/right order
         tree.startEditing(this);  // we change the tree
         reorder(tree.getRoot());
         // collect heights
-        final double[] heights = new double[nNodes];
-        final int[] iReverseOrder = new int[nNodes];
+        final double[] heights = new double[nodeCount];
+        final int[] iReverseOrder = new int[nodeCount];
         collectHeights(tree.getRoot(), heights, iReverseOrder, 0);
         // change height of an internal node
         int iNode = Randomizer.nextInt(heights.length);

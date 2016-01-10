@@ -58,18 +58,18 @@ public class Selection {
         return m_doc.m_objects.get(getSingleSelection());
     }
 
-    void setSingleSelection(int nSelection) {
+    void setSingleSelection(int selection) {
         m_Selection.removeAll(m_Selection);
-        m_Selection.add(new Integer(nSelection));
-        if (nSelection >= 0) {
-            m_tracker = m_doc.m_objects.get(nSelection).getTracker();
+        m_Selection.add(new Integer(selection));
+        if (selection >= 0) {
+            m_tracker = m_doc.m_objects.get(selection).getTracker();
         }
     }
 
-    //    void setSingleSelection(int nSelection, Document doc) {
+    //    void setSingleSelection(int selection, Document doc) {
 //    	m_Selection.removeAllElements();
-//    	m_Selection.add(nSelection);
-//    	m_tracker = ((Shape) doc.m_objects.get(nSelection)).getTracker();
+//    	m_Selection.add(selection);
+//    	m_tracker = ((Shape) doc.m_objects.get(selection)).getTracker();
 //    }
     boolean contains(int iSelection) {
         for (int i = 0; i < m_Selection.size(); i++) {
@@ -118,17 +118,17 @@ public class Selection {
         m_tracker = null;
     } // clear
 
-    boolean intersects(int nX, int nY) {
+    boolean intersects(int x, int y) {
         for (int i = 0; i < m_Selection.size(); i++) {
             int iShape = m_Selection.get(i).intValue();
-            if (m_doc.m_objects.get(iShape).intersects(nX, nY)) {
+            if (m_doc.m_objects.get(iShape).intersects(x, y)) {
                 return true;
             }
         }
         if (m_tracker != null) {
             for (int i = 0; i < m_tracker.size(); i++) {
                 TrackPoint p = m_tracker.get(i);
-                if (nX > p.m_nX - 5 && nX < p.m_nX + 5 && nY > p.m_nY - 5 && nY < p.m_nY + 5) {
+                if (x > p.m_nX - 5 && x < p.m_nX + 5 && y > p.m_nY - 5 && y < p.m_nY + 5) {
                     return true;
                 }
             }

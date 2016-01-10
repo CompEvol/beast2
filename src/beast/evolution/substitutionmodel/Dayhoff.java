@@ -259,12 +259,12 @@ public class Dayhoff extends EmpiricalSubstitutionModel {
     public int[] getEncodingOrder() {
         Aminoacid dataType = new Aminoacid();
         String codeMap = dataType.getCodeMap();
-        int[] nCodeMap = new int[dataType.getStateCount()];
+        int[] codeMapNrs = new int[dataType.getStateCount()];
         String encoding = "ARNDCQEGHILKMFPSTWYV";
         for (int i = 0; i < dataType.getStateCount(); i++) {
-            nCodeMap[i] = encoding.indexOf(codeMap.charAt(i));
+            codeMapNrs[i] = encoding.indexOf(codeMap.charAt(i));
         }
-        return nCodeMap;
+        return codeMapNrs;
     }
 
     @Override

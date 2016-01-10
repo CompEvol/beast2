@@ -89,13 +89,13 @@ public class BeautiSubTemplate extends BEASTObject {
         xMLInput.setValue("<![CDATA[" + xml + "]]>", this);
 
         connectors = connectorsInput.get();
-//		int nConnectors = connections.get().size();
-//		srcIDs = new String[nConnectors];
-//		targetIDs = new String[nConnectors];
-//		targetInputs = new String[nConnectors];
-////		conditions = new ConnectCondition[nConnectors];
+//		int connectors = connections.get().size();
+//		srcIDs = new String[connectors];
+//		targetIDs = new String[connectors];
+//		targetInputs = new String[connectors];
+////		conditions = new ConnectCondition[connectors];
 //
-//		for (int i = 0; i < nConnectors; i++) {
+//		for (int i = 0; i < connectors; i++) {
 //			BeautiConnector connector = connections.get().get(i);
 //			srcIDs[i] = connector.sourceID.get();
 //			targetIDs[i] = connector.targetID.get();

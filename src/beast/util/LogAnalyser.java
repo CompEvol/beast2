@@ -69,12 +69,12 @@ public class LogAnalyser {
     /**
      *
      * @param args
-     * @param nBurnInPercentage  nBurnInPercentage typical = 10; percentage of data that can be ignored
+     * @param burnInPercentage  burnInPercentage typical = 10; percentage of data that can be ignored
      * @throws Exception
      */
-    public LogAnalyser(String[] args, int nBurnInPercentage) throws Exception {
+    public LogAnalyser(String[] args, int burnInPercentage) throws Exception {
         fileName = args[args.length - 1];
-        readLogFile(fileName, nBurnInPercentage);
+        readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
@@ -82,16 +82,16 @@ public class LogAnalyser {
         this(args, BURN_IN_PERCENTAGE);
     }
 
-    public LogAnalyser(String fileName, int nBurnInPercentage) throws Exception {
+    public LogAnalyser(String fileName, int burnInPercentage) throws Exception {
         this.fileName = fileName;
-        readLogFile(fileName, nBurnInPercentage);
+        readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String fileName, int nBurnInPercentage, boolean quiet) throws Exception {
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws Exception {
         this.fileName = fileName;
         this.quiet = quiet;
-        readLogFile(fileName, nBurnInPercentage);
+        readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
@@ -100,13 +100,13 @@ public class LogAnalyser {
     }
 
     @SuppressWarnings("unchecked")
-	protected void readLogFile(String fileName, int nBurnInPercentage) throws IOException {
+	protected void readLogFile(String fileName, int burnInPercentage) throws IOException {
         log("\nLoading " + fileName);
         BufferedReader fin = new BufferedReader(new FileReader(fileName));
         String str;
         m_sPreAmble = "";
         m_sLabels = null;
-        int nData = 0;
+        int data = 0;
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
             str = fin.readLine();
@@ -114,36 +114,36 @@ public class LogAnalyser {
                 if (m_sLabels == null)
                     m_sLabels = str.split("\\s");
                 else
-                    nData++;
+                    data++;
             } else {
                 m_sPreAmble += str + "\n";
             }
         }
-        int nLines = Math.max(1, nData / 80);
+        int lines = Math.max(1, data / 80);
         // reserve memory
-        int nItems = m_sLabels.length;
-        m_ranges = new List[nItems];
-        int nBurnIn = nData * nBurnInPercentage / 100;
-        m_fTraces = new Double[nItems][nData - nBurnIn];
+        int items = m_sLabels.length;
+        m_ranges = new List[items];
+        int burnIn = data * burnInPercentage / 100;
+        m_fTraces = new Double[items][data - burnIn];
         fin.close();
         fin = new BufferedReader(new FileReader(fileName));
-        nData = -nBurnIn - 1;
-        logln(", burnin " + nBurnInPercentage + "%, skipping " + nBurnIn + " log lines\n\n" + BAR);
+        data = -burnIn - 1;
+        logln(", burnin " + burnInPercentage + "%, skipping " + burnIn + " log lines\n\n" + BAR);
         // grab data from the log, ignoring burn in samples
-        m_types = new type[nItems];
+        m_types = new type[items];
         Arrays.fill(m_types, type.INTEGER);
         while (fin.ready()) {
             str = fin.readLine();
             int i = 0;
             if (str.indexOf('#') < 0 && str.matches("[0-9].*")) // {
-                //nData++;
-                if (++nData >= 0) //{
+                //data++;
+                if (++data >= 0) //{
                     for (String str2 : str.split("\\s")) {
                         try {
                             if (str2.indexOf('.') >= 0) {
                                 m_types[i] = type.REAL;
                             }
-                            m_fTraces[i][nData] = Double.parseDouble(str2);
+                            m_fTraces[i][data] = Double.parseDouble(str2);
                         } catch (Exception e) {
                             if (m_ranges[i] == null) {
                                 m_ranges[i] = new ArrayList<>();
@@ -151,19 +151,19 @@ public class LogAnalyser {
                             if (!m_ranges[i].contains(str2)) {
                                 m_ranges[i].add(str2);
                             }
-                            m_fTraces[i][nData] = 1.0 * m_ranges[i].indexOf(str2);
+                            m_fTraces[i][data] = 1.0 * m_ranges[i].indexOf(str2);
                         }
                         i++;
                     }
             //}
             //}
-            if (nData % nLines == 0) {
+            if (data % lines == 0) {
                 log("*");
             }
         }
         logln("");
         // determine types
-        for (int i = 0; i < nItems; i++)
+        for (int i = 0; i < items; i++)
             if (m_ranges[i] != null)
                 if (m_ranges[i].size() == 2 && m_ranges[i].contains("true") && m_ranges[i].contains("false") ||
                         m_ranges[i].size() == 1 && (m_ranges[i].contains("true") || m_ranges[i].contains("false")))
@@ -180,19 +180,19 @@ public class LogAnalyser {
      */
     void calcStats() {
         logln("\nCalculating statistics\n\n" + BAR);
-        int nStars = 0;
-        int nItems = m_sLabels.length;
-        m_fMean = new Double[nItems];
-        m_fStdError = new Double[nItems];
-        m_fStdDev = new Double[nItems];
-        m_fMedian = new Double[nItems];
-        m_f95HPDlow = new Double[nItems];
-        m_f95HPDup = new Double[nItems];
-        m_fESS = new Double[nItems];
-        m_fACT = new Double[nItems];
-        m_fGeometricMean = new Double[nItems];
-        int nSampleInterval = (int) (m_fTraces[0][1] - m_fTraces[0][0]);
-        for (int i = 1; i < nItems; i++) {
+        int stars = 0;
+        int items = m_sLabels.length;
+        m_fMean = new Double[items];
+        m_fStdError = new Double[items];
+        m_fStdDev = new Double[items];
+        m_fMedian = new Double[items];
+        m_f95HPDlow = new Double[items];
+        m_f95HPDup = new Double[items];
+        m_fESS = new Double[items];
+        m_fACT = new Double[items];
+        m_fGeometricMean = new Double[items];
+        int sampleInterval = (int) (m_fTraces[0][1] - m_fTraces[0][0]);
+        for (int i = 1; i < items; i++) {
             // calc mean and standard deviation
             Double[] trace = m_fTraces[i];
             double sum = 0, sum2 = 0;
@@ -228,9 +228,9 @@ public class LogAnalyser {
                 m_f95HPDup[i] = sorted[hpdIndex + n];
 
                 // calc effective sample size
-                m_fACT[i] = ESS.ACT(m_fTraces[i], nSampleInterval);
-                m_fStdError[i] = ESS.stdErrorOfMean(trace, nSampleInterval);
-                m_fESS[i] = trace.length / (m_fACT[i] / nSampleInterval);
+                m_fACT[i] = ESS.ACT(m_fTraces[i], sampleInterval);
+                m_fStdError[i] = ESS.stdErrorOfMean(trace, sampleInterval);
+                m_fESS[i] = trace.length / (m_fACT[i] / sampleInterval);
 
                 // calc geometric mean
                 if (sorted[0] > 0) {
@@ -249,9 +249,9 @@ public class LogAnalyser {
                 m_fESS[i] = Double.NaN;
                 m_fGeometricMean[i] = Double.NaN;
             }
-            while (nStars < 80 * (i + 1) / nItems) {
+            while (stars < 80 * (i + 1) / items) {
                 log("*");
-                nStars++;
+                stars++;
             }
         }
         logln("\n");
@@ -264,11 +264,11 @@ public class LogAnalyser {
         calcStats();
     }
 
-    public void setData(Double[] trace, int nSampleStep) {
+    public void setData(Double[] trace, int sampleStep) {
         Double[][] traces = new Double[2][];
         traces[0] = new Double[trace.length];
         for (int i = 0; i < trace.length; i++) {
-            traces[0][i] = (double) i * nSampleStep;
+            traces[0][i] = (double) i * sampleStep;
         }
         traces[1] = trace.clone();
         setData(traces, new String[]{"column", "data"}, new type[]{type.REAL, type.REAL});
@@ -398,8 +398,8 @@ public class LogAnalyser {
         return m_fESS[1];
     }
 
-    public double getACT(Double[] trace, int nSampleStep) {
-        setData(trace, nSampleStep);
+    public double getACT(Double[] trace, int sampleStep) {
+        setData(trace, sampleStep);
         return m_fACT[1];
     }
 
@@ -435,11 +435,11 @@ public class LogAnalyser {
             Thread.sleep(100);
         } catch (Exception e) {
         }
-        int nMax = 0;
+        int max = 0;
         for (int i = 1; i < m_sLabels.length; i++)
-            nMax = Math.max(m_sLabels[i].length(), nMax);
+            max = Math.max(m_sLabels[i].length(), max);
         String space = "";
-        for (int i = 0; i < nMax; i++)
+        for (int i = 0; i < max; i++)
             space += " ";
 
         out.println("item" + space.substring(4) + " " + prefixHead +

@@ -308,11 +308,11 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    		likelihoodCore.getNodePartials(node.getParent().getNr(), parentPartials);
 //    		if (node.isLeaf()) {
 //        		// distance of leaf to its parent, ignores ambiguities
-//    			int [] nStates = new int[patterncount ];
-//        		likelihoodCore.getNodeStates(iNode, nStates);
+//    			int [] states = new int[patterncount ];
+//        		likelihoodCore.getNodeStates(iNode, states);
 //        		double distance = 0;
 //        		for (int i = 0; i < patterncount; i++) {
-//        			int k = nStates[i];
+//        			int k = states[i];
 //        			double d = 0;
 //        			for (int j = 0; j < statecount; j++) {
 //        				if (j == k) {

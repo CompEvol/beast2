@@ -210,19 +210,19 @@ public class BEASTObjectPanel extends JPanel {
      * add all inputs of a beastObject to a box *
      */
     public static int countInputs(BEASTInterface beastObject, BeautiDoc doc) {
-        int nInputs = 0;
+        int inputCount = 0;
         try {
             List<Input<?>> inputs = beastObject.listInputs();
             for (Input<?> input : inputs) {
                 String fullInputName = beastObject.getClass().getName() + "." + input.getName();
                 if (!doc.beautiConfig.suppressBEASTObjects.contains(fullInputName)) {
-                    nInputs++;
+                    inputCount++;
                 }
             }
         } catch (Exception e) {
             // ignore
         }
-        return nInputs;
+        return inputCount;
     } // addInputs
 
 

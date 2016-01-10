@@ -262,7 +262,7 @@ public class FilteredAlignment extends Alignment {
         		}
         	}
         	
-        	// need to decrease nSites for mapping sites to patterns in m_nPatternIndex
+        	// need to decrease siteCount for mapping sites to patterns in m_nPatternIndex
         	nrOfSites -= constantWeights.length; 
         }        
         

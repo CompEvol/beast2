@@ -28,9 +28,9 @@ public class TrackPoint {
     public int m_nX;
     public int m_nY, m_nCursor;
 
-    public TrackPoint(int nX, int nY, int nCursor) {
-        m_nX = nX;
-        m_nY = nY;
-        m_nCursor = nCursor;
+    public TrackPoint(int x, int y, int cursor) {
+        m_nX = x;
+        m_nY = y;
+        m_nCursor = cursor;
     }
 }

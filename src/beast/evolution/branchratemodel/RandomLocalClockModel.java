@@ -140,11 +140,11 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     }
 
     private int getNr(Node node) {
-        int nNodeNr = node.getNr();
-        if (nNodeNr > m_tree.getRoot().getNr()) {
-            nNodeNr--;
+        int nodeNr = node.getNr();
+        if (nodeNr > m_tree.getRoot().getNr()) {
+            nodeNr--;
         }
-        return nNodeNr;
+        return nodeNr;
     }
 
     @Override

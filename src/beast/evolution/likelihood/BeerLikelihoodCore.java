@@ -398,37 +398,37 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * initializes partial likelihood arrays.
      *
-     * @param nNodeCount           the number of nodes in the tree
-     * @param nPatternCount        the number of patterns
-     * @param nMatrixCount         the number of matrices (i.e., number of categories)
+     * @param nodeCount           the number of nodes in the tree
+     * @param patternCount        the number of patterns
+     * @param matrixCount         the number of matrices (i.e., number of categories)
      * @param integrateCategories whether sites are being integrated over all matrices
      */
     @Override
-	public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean integrateCategories, boolean useAmbiguities) {
+	public void initialize(int nodeCount, int patternCount, int matrixCount, boolean integrateCategories, boolean useAmbiguities) {
 
-        this.nrOfNodes = nNodeCount;
-        this.nrOfPatterns = nPatternCount;
-        this.nrOfMatrices = nMatrixCount;
+        this.nrOfNodes = nodeCount;
+        this.nrOfPatterns = patternCount;
+        this.nrOfMatrices = matrixCount;
 
         this.integrateCategories = integrateCategories;
 
         if (integrateCategories) {
-            partialsSize = nPatternCount * nrOfStates * nMatrixCount;
+            partialsSize = patternCount * nrOfStates * matrixCount;
         } else {
-            partialsSize = nPatternCount * nrOfStates;
+            partialsSize = patternCount * nrOfStates;
         }
 
-        partials = new double[2][nNodeCount][];
+        partials = new double[2][nodeCount][];
 
-        currentMatrixIndex = new int[nNodeCount];
-        storedMatrixIndex = new int[nNodeCount];
+        currentMatrixIndex = new int[nodeCount];
+        storedMatrixIndex = new int[nodeCount];
 
-        currentPartialsIndex = new int[nNodeCount];
-        storedPartialsIndex = new int[nNodeCount];
+        currentPartialsIndex = new int[nodeCount];
+        storedPartialsIndex = new int[nodeCount];
 
-        states = new int[nNodeCount][];
+        states = new int[nodeCount][];
 
-        for (int i = 0; i < nNodeCount; i++) {
+        for (int i = 0; i < nodeCount; i++) {
             partials[0][i] = null;
             partials[1][i] = null;
 
@@ -437,7 +437,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 
         matrixSize = nrOfStates * nrOfStates;
 
-        matrices = new double[2][nNodeCount][nMatrixCount * matrixSize];
+        matrices = new double[2][nodeCount][matrixCount * matrixSize];
     }
 
     /**
@@ -828,8 +828,8 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //    public void calcNodePsuedoRootPartials(double[] inPseudoPartials, int iNode, double [] outPseudoPartials) {
 //		double [] partials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
 //		double [] oldPartials = m_fPartials[m_iStoredPartials[iNode]][iNode];
-//		int nMaxK = m_nPatterns * m_nMatrices * m_nStates; 
-//		for (int k = 0; k < nMaxK; k++) {
+//		int maxK = m_nPatterns * m_nMatrices * m_nStates; 
+//		for (int k = 0; k < maxK; k++) {
 //			outPseudoPartials[k] = inPseudoPartials[k] * partials[k] / oldPartials[k];
 //		}
 //	}
@@ -866,14 +866,14 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //
 //    @Override
 //    void integratePartialsP(double [] inPartials, double [] proportions, double [] m_fRootPartials) {
-//		int nMaxK = m_nPatterns * m_nStates;
-//		for (int k = 0; k < nMaxK; k++) {
+//		int maxK = m_nPatterns * m_nStates;
+//		for (int k = 0; k < maxK; k++) {
 //			m_fRootPartials[k] = inPartials[k] * proportions[0];
 //		}
 //
 //		for (int l = 1; l < m_nMatrices; l++) {
-//			int n = nMaxK * l;
-//			for (int k = 0; k < nMaxK; k++) {
+//			int n = maxK * l;
+//			for (int k = 0; k < maxK; k++) {
 //				m_fRootPartials[k] += inPartials[n+k] * proportions[l];
 //			}
 //		}

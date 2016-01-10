@@ -182,48 +182,48 @@ public class Document {
     /**
      * edit actions on shapes *
      */
-    public void moveShape(int nX, int nY, int nToX, int nToY, int nPosition) {
+    public void moveShape(int x, int y, int toX, int toY, int position) {
         boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
-            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSingleSelection(nPosition)) {
+            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSingleSelection(position)) {
                 needsUndoAction = false;
             }
         }
         if (needsUndoAction) {
-            addUndoAction(new UndoAction(nPosition, UndoAction.MOVE_ACTION));
+            addUndoAction(new UndoAction(position, UndoAction.MOVE_ACTION));
         }
-        Shape shape = m_objects.get(nPosition);
-        shape.movePosition(nX, nY, nToX, nToY);
+        Shape shape = m_objects.get(position);
+        shape.movePosition(x, y, toX, toY);
         adjustArrows();
     } // moveShape
 
-    public void moveShapes(int dX, int dY, List<Integer> nPositions) {
+    public void moveShapes(int dX, int dY, List<Integer> positions) {
         boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
-            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSelection(nPositions)) {
+            if (undoAction.m_nActionType == UndoAction.MOVE_ACTION && undoAction.isSelection(positions)) {
                 needsUndoAction = false;
             }
         }
         if (needsUndoAction) {
-            addUndoAction(new UndoAction(nPositions, UndoAction.MOVE_ACTION));
+            addUndoAction(new UndoAction(positions, UndoAction.MOVE_ACTION));
         }
     } // moveShape
 
-    public void movePoint(int nPoint, int nX, int nY, int nToX, int nToY, int nPosition) {
+    public void movePoint(int point, int x, int y, int toX, int toY, int position) {
         boolean needsUndoAction = true;
         if (m_nCurrentEditAction == m_undoStack.size() - 1 && m_nCurrentEditAction >= 0) {
             UndoAction undoAction = m_undoStack.get(m_nCurrentEditAction);
-            if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.isSingleSelection(nPosition)) {
+            if (undoAction.m_nActionType == UndoAction.RESHAPE_ACTION && undoAction.isSingleSelection(position)) {
                 needsUndoAction = false;
             }
         }
         if (needsUndoAction) {
-            addUndoAction(new UndoAction(nPosition, UndoAction.RESHAPE_ACTION));
+            addUndoAction(new UndoAction(position, UndoAction.RESHAPE_ACTION));
         }
-        Shape shape = m_objects.get(nPosition);
-        shape.movePoint(nPoint, nX, nY, nToX, nToY);
+        Shape shape = m_objects.get(position);
+        shape.movePoint(point, x, y, toX, toY);
         adjustArrows();
     } // movePoint
 
@@ -251,11 +251,11 @@ public class Document {
     }
 
     String getNewID(List<String> tabulist) {
-        int nID = m_objects.size();
-        String id = "id" + nID;
+        int iD = m_objects.size();
+        String id = "id" + iD;
         while (containsID(id, m_objects, tabulist)) {
-            nID++;
-            id = "id" + nID;
+            iD++;
+            id = "id" + iD;
         }
         return id;
     }
@@ -266,11 +266,11 @@ public class Document {
         }
         BEASTInterface beastObject = shape.m_beastObject;
         String base = beastObject.getClass().getName().replaceAll(".*\\.", "");
-        int nID = 0;
-        while (containsID(base + nID, m_objects, null)) {
-            nID++;
+        int iD = 0;
+        while (containsID(base + iD, m_objects, null)) {
+            iD++;
         }
-        beastObject.setID(base + nID);
+        beastObject.setID(base + iD);
     }
 
     Shape getShapeByID(String id) {
@@ -419,7 +419,7 @@ public class Document {
         if (shapes.size() == 0) {
             return;
         }
-        List<Integer> nPositions = new ArrayList<>();
+        List<Integer> positions = new ArrayList<>();
         for (Shape shape : shapes) {
             if (shape instanceof Arrow) {
                 ((Arrow) shape).setID(getNewID(null));
@@ -428,25 +428,25 @@ public class Document {
                 ((BEASTObjectShape) shape).m_beastObject.setID(null);
                 setPluginID((BEASTObjectShape) shape);
                 // ensure the new shape does not overlap exactly with an existing shape
-                int nOffset = 0;
+                int offset = 0;
                 boolean isMatch = false;
                 do {
                     isMatch = false;
                     for (Shape shape2 : m_objects) {
-                        if (shape2.m_x == shape.m_x + nOffset && shape2.m_y == shape.m_y + nOffset &&
+                        if (shape2.m_x == shape.m_x + offset && shape2.m_y == shape.m_y + offset &&
                                 shape2.m_w == shape.m_w && shape2.m_h == shape.m_h) {
                             isMatch = true;
-                            nOffset += 10;
+                            offset += 10;
                         }
                     }
                 } while (isMatch);
-                shape.m_x += nOffset;
-                shape.m_y += nOffset;
+                shape.m_x += offset;
+                shape.m_y += offset;
             }
             m_objects.add(shape);
-            nPositions.add(m_objects.size() - 1);
+            positions.add(m_objects.size() - 1);
         }
-        addUndoAction(new MultiObjectAction(nPositions, UndoAction.ADD_GROUP_ACTION));
+        addUndoAction(new MultiObjectAction(positions, UndoAction.ADD_GROUP_ACTION));
     } // pasteShape
 
     /**
@@ -459,20 +459,20 @@ public class Document {
 //                selection.m_Selection.remove(i);
 //            }
 //        }
-//        int nNrOfPrimePositions = selection.m_Selection.size();
-//        if (nNrOfPrimePositions == 0) {
+//        int nrOfPrimePositions = selection.m_Selection.size();
+//        if (nrOfPrimePositions == 0) {
 //            return;
 //        }
-//        for (int i = 0; i < nNrOfPrimePositions; i++) {
+//        for (int i = 0; i < nrOfPrimePositions; i++) {
 //        	Shape shape = m_objects.get(((Integer) selection.m_Selection.get(i)).intValue());
 //        	findAffectedShapes(shape, selection.m_Selection);
 //        }
-//        if (selection.m_Selection.size() == nNrOfPrimePositions) {
+//        if (selection.m_Selection.size() == nrOfPrimePositions) {
 //        	// nothing to collapse
 //        	return;
 //        }
 //        
-//        UndoAction action = new UndoMultiSelectionAction(selection.m_Selection, nNrOfPrimePositions);
+//        UndoAction action = new UndoMultiSelectionAction(selection.m_Selection, nrOfPrimePositions);
 //        addUndoAction(action);
 //        action.redo();
 //        selection.clear();
@@ -521,9 +521,9 @@ public class Document {
 //        UngroupAction action = new UngroupAction(selection);
 //        addUndoAction(action);
 //        action.redo();
-//        int nSize = action.getGroupSize();
+//        int size = action.getGroupSize();
 //        selection.clear();
-//        for (int i = 0; i < nSize; i++) {
+//        for (int i = 0; i < size; i++) {
 //            selection.m_Selection.add(new Integer(m_objects.size() - i - 1));
 //        }
 //    } // ungroup
@@ -578,24 +578,24 @@ public class Document {
         return shape.getY2();
     }
 
-    void setPositionX(int nX, int iShape) {
+    void setPositionX(int x, int iShape) {
         Shape shape = m_objects.get(iShape);
-        shape.setX(nX);
+        shape.setX(x);
     }
 
-    void setPositionY(int nY, int iShape) {
+    void setPositionY(int y, int iShape) {
         Shape shape = m_objects.get(iShape);
-        shape.setY(nY);
+        shape.setY(y);
     }
 
-    void setPositionX2(int nX, int iShape) {
+    void setPositionX2(int x, int iShape) {
         Shape shape = m_objects.get(iShape);
-        shape.setX2(nX);
+        shape.setX2(x);
     }
 
-    void setPositionY2(int nY, int iShape) {
+    void setPositionY2(int y, int iShape) {
         Shape shape = m_objects.get(iShape);
-        shape.setY2(nY);
+        shape.setY2(y);
     }
 
     public void setID(String id, int iObject) {
@@ -752,16 +752,16 @@ public class Document {
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
 
         List<Integer> nodes = selection.m_Selection;
-        int nMinX = -1;
+        int minX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nX = getPositionX(nodes.get(iNode).intValue());
-            if (nX < nMinX || iNode == 0) {
-                nMinX = nX;
+            int x = getPositionX(nodes.get(iNode).intValue());
+            if (x < minX || iNode == 0) {
+                minX = x;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            setPositionX(nMinX, nNode);
+            int node = nodes.get(iNode).intValue();
+            setPositionX(minX, node);
         }
         adjustArrows();
     } // alignLeft
@@ -775,17 +775,17 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMaxX = -1;
+        int maxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nX = getPositionX2(nodes.get(iNode).intValue());
-            if (nX > nMaxX || iNode == 0) {
-                nMaxX = nX;
+            int x = getPositionX2(nodes.get(iNode).intValue());
+            if (x > maxX || iNode == 0) {
+                maxX = x;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            int dX = getPositionX2(nNode) - getPositionX(nNode);
-            setPositionX(nMaxX - dX, nNode);
+            int node = nodes.get(iNode).intValue();
+            int dX = getPositionX2(node) - getPositionX(node);
+            setPositionX(maxX - dX, node);
         }
         adjustArrows();
     } // alignRight
@@ -799,16 +799,16 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMinY = -1;
+        int minY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nY = getPositionY(nodes.get(iNode).intValue());
-            if (nY < nMinY || iNode == 0) {
-                nMinY = nY;
+            int y = getPositionY(nodes.get(iNode).intValue());
+            if (y < minY || iNode == 0) {
+                minY = y;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            setPositionY(nMinY, nNode);
+            int node = nodes.get(iNode).intValue();
+            setPositionY(minY, node);
         }
         adjustArrows();
     } // alignTop
@@ -822,17 +822,17 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMaxY = -1;
+        int maxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nY = getPositionY2(nodes.get(iNode).intValue());
-            if (nY > nMaxY || iNode == 0) {
-                nMaxY = nY;
+            int y = getPositionY2(nodes.get(iNode).intValue());
+            if (y > maxY || iNode == 0) {
+                maxY = y;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            int dY = getPositionY2(nNode) - getPositionY(nNode);
-            setPositionY(nMaxY - dY, nNode);
+            int node = nodes.get(iNode).intValue();
+            int dY = getPositionY2(node) - getPositionY(node);
+            setPositionY(maxY - dY, node);
         }
         adjustArrows();
     } // alignBottom
@@ -846,22 +846,22 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMinY = -1;
-        int nMaxY = -1;
+        int minY = -1;
+        int maxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nY = (getPositionY(nodes.get(iNode).intValue()) +
+            int y = (getPositionY(nodes.get(iNode).intValue()) +
                     getPositionY2(nodes.get(iNode).intValue())) / 2;
-            if (nY < nMinY || iNode == 0) {
-                nMinY = nY;
+            if (y < minY || iNode == 0) {
+                minY = y;
             }
-            if (nY > nMaxY || iNode == 0) {
-                nMaxY = nY;
+            if (y > maxY || iNode == 0) {
+                maxY = y;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            int dY = (getPositionY2(nNode) - getPositionY(nNode)) / 2;
-            setPositionY((nMinY + nMaxY) / 2 - dY, nNode);
+            int node = nodes.get(iNode).intValue();
+            int dY = (getPositionY2(node) - getPositionY(node)) / 2;
+            setPositionY((minY + maxY) / 2 - dY, node);
         }
         adjustArrows();
     } // centreHorizontal
@@ -875,22 +875,22 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMinX = -1;
-        int nMaxX = -1;
+        int minX = -1;
+        int maxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nX = (getPositionX(nodes.get(iNode).intValue()) +
+            int x = (getPositionX(nodes.get(iNode).intValue()) +
                     getPositionX2(nodes.get(iNode).intValue())) / 2;
-            if (nX < nMinX || iNode == 0) {
-                nMinX = nX;
+            if (x < minX || iNode == 0) {
+                minX = x;
             }
-            if (nX > nMaxX || iNode == 0) {
-                nMaxX = nX;
+            if (x > maxX || iNode == 0) {
+                maxX = x;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            int dX = (getPositionX2(nNode) - getPositionX(nNode)) / 2;
-            setPositionX((nMinX + nMaxX) / 2 - dX, nNode);
+            int node = nodes.get(iNode).intValue();
+            int dX = (getPositionX2(node) - getPositionX(node)) / 2;
+            setPositionX((minX + maxX) / 2 - dX, node);
         }
         adjustArrows();
     } // centreVertical
@@ -904,20 +904,20 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMinX = -1;
-        int nMaxX = -1;
+        int minX = -1;
+        int maxX = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nX = getPositionX(nodes.get(iNode).intValue());
-            if (nX < nMinX || iNode == 0) {
-                nMinX = nX;
+            int x = getPositionX(nodes.get(iNode).intValue());
+            if (x < minX || iNode == 0) {
+                minX = x;
             }
-            if (nX > nMaxX || iNode == 0) {
-                nMaxX = nX;
+            if (x > maxX || iNode == 0) {
+                maxX = x;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            setPositionX((int) (nMinX + iNode * (nMaxX - nMinX) / (nodes.size() - 1.0)), nNode);
+            int node = nodes.get(iNode).intValue();
+            setPositionX((int) (minX + iNode * (maxX - minX) / (nodes.size() - 1.0)), node);
         }
         adjustArrows();
     } // spaceHorizontal
@@ -931,20 +931,20 @@ public class Document {
         // update undo stack
         addUndoAction(new UndoAction(selection.m_Selection, UndoAction.MOVE_ACTION));
         List<Integer> nodes = selection.m_Selection;
-        int nMinY = -1;
-        int nMaxY = -1;
+        int minY = -1;
+        int maxY = -1;
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nY = getPositionY(nodes.get(iNode).intValue());
-            if (nY < nMinY || iNode == 0) {
-                nMinY = nY;
+            int y = getPositionY(nodes.get(iNode).intValue());
+            if (y < minY || iNode == 0) {
+                minY = y;
             }
-            if (nY > nMaxY || iNode == 0) {
-                nMaxY = nY;
+            if (y > maxY || iNode == 0) {
+                maxY = y;
             }
         }
         for (int iNode = 0; iNode < nodes.size(); iNode++) {
-            int nNode = nodes.get(iNode).intValue();
-            setPositionY((int) (nMinY + iNode * (nMaxY - nMinY) / (nodes.size() - 1.0)), nNode);
+            int node = nodes.get(iNode).intValue();
+            setPositionY((int) (minY + iNode * (maxY - minY) / (nodes.size() - 1.0)), node);
         }
         adjustArrows();
     } // spaceVertical
@@ -972,19 +972,19 @@ public class Document {
 
         /* single selection undo actions **/
 
-        public UndoAction(int nSelection, int nActionType) {
-            if (!(m_objects.get(nSelection) instanceof BEASTObjectShape)) {
+        public UndoAction(int selection, int actionType) {
+            if (!(m_objects.get(selection) instanceof BEASTObjectShape)) {
                 return;
             }
-            m_nActionType = nActionType;
+            m_nActionType = actionType;
             m_nPositions = new ArrayList<>();
-            m_nPositions.add(nSelection);
+            m_nPositions.add(selection);
             init();
         }
         /* multiple selection undo actions **/
 
-        public UndoAction(List<Integer> selection, int nActionType) {
-            m_nActionType = nActionType;
+        public UndoAction(List<Integer> selection, int actionType) {
+            m_nActionType = actionType;
             m_nPositions = new ArrayList<>();
             for (int i = 0; i < selection.size(); i++) {
                 if (m_objects.get(selection.get(i)) instanceof BEASTObjectShape) {
@@ -999,22 +999,22 @@ public class Document {
         public UndoAction() {
         }
 
-        boolean isSingleSelection(int nPosition) {
-            return (m_nPositions.size() == 1 && m_nPositions.get(0) == nPosition);
+        boolean isSingleSelection(int position) {
+            return (m_nPositions.size() == 1 && m_nPositions.get(0) == position);
         }
 
-        boolean isSelection(List<Integer> nPositions) {
-            int nMatches = 0;
-            for (Integer i : nPositions) {
+        boolean isSelection(List<Integer> positions) {
+            int matches = 0;
+            for (Integer i : positions) {
                 if (m_objects.get(i) instanceof BEASTObjectShape) {
                     if (m_nPositions.contains(i)) {
-                        nMatches++;
+                        matches++;
                     } else {
                         return false;
                     }
                 }
             }
-            return nMatches == m_nPositions.size();
+            return matches == m_nPositions.size();
         }
 
         void init() {
@@ -1061,17 +1061,17 @@ public class Document {
      * Use MultiObjectAction to add/delete beastObject with its connecting arrows.
      */
     class PluginAction extends UndoAction {
-        public PluginAction(int nPosition, int nActionType) {
+        public PluginAction(int position, int actionType) {
             // assumes beastObjectShape + all its inputs has just been added
-            m_nActionType = nActionType;
-            BEASTObjectShape beastObjectShape = (BEASTObjectShape) m_objects.get(nPosition);
+            m_nActionType = actionType;
+            BEASTObjectShape beastObjectShape = (BEASTObjectShape) m_objects.get(position);
             m_nPositions = new ArrayList<>();
-            m_nPositions.add(nPosition);
-            nPosition--;
-            while (nPosition >= 0 &&
-                    m_objects.get(nPosition) instanceof InputShape &&
-                    ((InputShape) m_objects.get(nPosition)).getPluginShape() == beastObjectShape) {
-                m_nPositions.add(0, nPosition--);
+            m_nPositions.add(position);
+            position--;
+            while (position >= 0 &&
+                    m_objects.get(position) instanceof InputShape &&
+                    ((InputShape) m_objects.get(position)).getPluginShape() == beastObjectShape) {
+                m_nPositions.add(0, position--);
             }
             // creat XML
             init();
@@ -1122,10 +1122,10 @@ public class Document {
      * action representing addition/deletion of a single arrow.
      */
     class ArrowAction extends UndoAction {
-        public ArrowAction(int nPosition, int nArrowAction) {
-            m_nActionType = nArrowAction;
+        public ArrowAction(int position, int arrowAction) {
+            m_nActionType = arrowAction;
             m_nPositions = new ArrayList<>();
-            m_nPositions.add(nPosition);
+            m_nPositions.add(position);
             init();
         }
 
@@ -1192,24 +1192,24 @@ public class Document {
     class MultiObjectAction extends UndoAction {
         List<UndoAction> m_actions;
 
-        MultiObjectAction(List<Integer> nPositions, int nActionType) {
-            m_nActionType = nActionType;
+        MultiObjectAction(List<Integer> positions, int actionType) {
+            m_nActionType = actionType;
             m_actions = new ArrayList<>();
             // remove duplicates, if any
-            Collections.sort(nPositions, (Integer o1, Integer o2) -> {
+            Collections.sort(positions, (Integer o1, Integer o2) -> {
                     return (o2 - o1);
                 }
             );
-            for (int i = 1; i < nPositions.size(); i++) {
-                if (nPositions.get(i) == nPositions.get(i - 1)) {
-                    nPositions.remove(i);
+            for (int i = 1; i < positions.size(); i++) {
+                if (positions.get(i) == positions.get(i - 1)) {
+                    positions.remove(i);
                     i--;
                 }
             }
             // split in beastObjects and arrows
             List<Integer> iArrows = new ArrayList<>();
             List<Integer> iPluginsShapes = new ArrayList<>();
-            for (int i : nPositions) {
+            for (int i : positions) {
                 Shape shape = m_objects.get(i);
                 if (shape instanceof BEASTObjectShape) {
                     iPluginsShapes.add(i);
@@ -1218,7 +1218,7 @@ public class Document {
                 }
             }
             // create appropriate set of undo actions
-            switch (nActionType) {
+            switch (actionType) {
                 case ADD_GROUP_ACTION:
                     for (int i : iPluginsShapes) {
                         m_actions.add(new PluginAction(i, ADD_PLUGIN_ACTION));
@@ -1372,22 +1372,22 @@ public class Document {
     final static int DX = 120;
     final static int DY = 80;
 
-    void addInput(BEASTObjectShape shape, Object o2, int nDepth, String input) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void addInput(BEASTObjectShape shape, Object o2, int depth, String input) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         if (o2 instanceof BEASTInterface) {
             BEASTObjectShape shape2 = getPluginShapeWithLabel(((BEASTInterface) o2).getID());
             if (shape2 == null) {
                 shape2 = new BEASTObjectShape((BEASTInterface) o2, this);
-                shape2.m_x = nDepth * DX;
+                shape2.m_x = depth * DX;
                 shape2.m_w = DY;
                 shape2.m_beastObject = (BEASTInterface) o2;
                 setPluginID(shape2);
                 m_objects.add(shape2);
             }
-            process(shape2, nDepth);
+            process(shape2, depth);
         }
     }
 
-    void process(BEASTObjectShape shape, int nDepth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+    void process(BEASTObjectShape shape, int depth) throws IllegalArgumentException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         BEASTInterface beastObject = shape.m_beastObject;
         List<Input<?>> inputs = beastObject.listInputs();
         for (Input<?> input_ : inputs) {
@@ -1395,10 +1395,10 @@ public class Document {
             if (o != null) {
                 if (o instanceof List<?>) {
                     for (Object o2 : (List<?>) o) {
-                        addInput(shape, o2, nDepth + 1, input_.getName());
+                        addInput(shape, o2, depth + 1, input_.getName());
                     }
                 } else if (o instanceof BEASTInterface) {
-                    addInput(shape, o, nDepth + 1, input_.getName());
+                    addInput(shape, o, depth + 1, input_.getName());
                     // } else {
                     // it is a primitive type
                 }
@@ -1629,12 +1629,12 @@ public class Document {
         while (progress) {
             progress = false;
             for (Shape shape : inputMap.keySet()) {
-                int nMaxInputX = -DX;
+                int maxInputX = -DX;
                 for (Shape input : inputMap.get(shape)) {
-                    nMaxInputX = Math.max(nMaxInputX, input.m_x);
+                    maxInputX = Math.max(maxInputX, input.m_x);
                 }
-                if (shape.m_x < nMaxInputX + DX) {
-                    shape.m_x = nMaxInputX + DX;
+                if (shape.m_x < maxInputX + DX) {
+                    shape.m_x = maxInputX + DX;
                     progress = true;
                 }
             }
@@ -1644,12 +1644,12 @@ public class Document {
         while (progress) {
             progress = false;
             for (Shape shape : outputMap.keySet()) {
-                int nMinOutputX = Integer.MAX_VALUE;
+                int minOutputX = Integer.MAX_VALUE;
                 for (Shape input : outputMap.get(shape)) {
-                    nMinOutputX = Math.min(nMinOutputX, input.m_x);
+                    minOutputX = Math.min(minOutputX, input.m_x);
                 }
-                if (nMinOutputX < Integer.MAX_VALUE && shape.m_x < nMinOutputX - DX) {
-                    shape.m_x = nMinOutputX - DX;
+                if (minOutputX < Integer.MAX_VALUE && shape.m_x < minOutputX - DX) {
+                    shape.m_x = minOutputX - DX;
                     progress = true;
                 }
             }
@@ -1706,18 +1706,18 @@ public class Document {
                 k++;
             }
             // ensure shapes are sufficiently far apart - at least DY between them
-            int nPrevY = 0;
+            int prevY = 0;
             ArrayList<Integer> yCoords = new ArrayList<>();
             yCoords.addAll(ycoordMap.keySet());
             Collections.sort(yCoords);
             int dY = 0;
             for (Integer i : yCoords) {
                 BEASTObjectShape shape = ycoordMap.get(i);
-                if (shape.m_y < nPrevY + DY) {
-                    dY = nPrevY + DY - shape.m_y;
-                    shape.m_y = nPrevY + DY;
+                if (shape.m_y < prevY + DY) {
+                    dY = prevY + DY - shape.m_y;
+                    shape.m_y = prevY + DY;
                 }
-                nPrevY = shape.m_y;
+                prevY = shape.m_y;
             }
             // upwards correction
             if (dY > 0) {
@@ -1790,11 +1790,11 @@ public class Document {
 
                     double f = 1.0 / 3.0 * (desiredLen - len) / len;
 
-                    int nDegree1 = degreeMap.get(source.getID());
-                    int nDegree2 = degreeMap.get(target.getID());
+                    int degree1 = degreeMap.get(source.getID());
+                    int degree2 = degreeMap.get(target.getID());
 
 
-                    f = f * Math.pow(0.99, (nDegree1 + nDegree2 - 2));
+                    f = f * Math.pow(0.99, (degree1 + degree2 - 2));
 
 
                     // the actual movement distance 'dx' is the force multiplied by the

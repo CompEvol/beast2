@@ -28,14 +28,14 @@ public class CompoundValuable extends CalculationNode implements Function {
     @Override
     public void initAndValidate() throws Exception {
         // determine dimension
-        int nDimension = 0;
+        int dimension = 0;
         for (BEASTObject beastObject : m_values.get()) {
             if (!(beastObject instanceof Function)) {
                 throw new IllegalArgumentException("Input does not implement Valuable");
             }
-            nDimension += ((Function) beastObject).getDimension();
+            dimension += ((Function) beastObject).getDimension();
         }
-        m_fValues = new double[nDimension];
+        m_fValues = new double[dimension];
     }
 
     /**
@@ -72,8 +72,8 @@ public class CompoundValuable extends CalculationNode implements Function {
             if (beastObject instanceof StateNode) {
                 valuable = ((StateNode) beastObject).getCurrent();
             }
-            int nDimension = valuable.getDimension();
-            for (int i = 0; i < nDimension; i++) {
+            int dimension = valuable.getDimension();
+            for (int i = 0; i < dimension; i++) {
                 m_fValues[k++] = valuable.getArrayValue(i);
             }
         }

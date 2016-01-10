@@ -42,8 +42,8 @@ public class TipDatesScaler extends TreeOperator {
             }
 
             List<String> set = taxonsetInput.get().asStringList();
-            int nNrOfTaxa = set.size();
-            taxonIndices = new int[nNrOfTaxa];
+            int nrOfTaxa = set.size();
+            taxonIndices = new int[nrOfTaxa];
             int k = 0;
             for (String taxon : set) {
                 int iTaxon = taxaNames.indexOf(taxon);

@@ -114,7 +114,7 @@ public class State extends BEASTObject {
      * during an operation.
      * <p/>
      * Every time an operation requests a StateNode, an entry is added to changeStateNodes
-     * nChangeStateNodes records how many StateNodes are changed.
+     * changeStateNodes records how many StateNodes are changed.
      * The code is reset when the state is stored, and every time a StateNode
      * is requested by an operator, changeStateNodes is updated.
      */
@@ -211,8 +211,8 @@ public class State extends BEASTObject {
      * changing it. To change a StateNode, say from an Operator,
      * getEditableStateNode() should be called. *
      */
-    public StateNode getStateNode(final int nID) {
-        return stateNode[nID];
+    public StateNode getStateNode(final int iD) {
+        return stateNode[iD];
     }
 
     /**
@@ -224,14 +224,14 @@ public class State extends BEASTObject {
      * change the particular StateNode through the Input.get(Operator)
      * method on the input associated with this StateNode.
      */
-    protected StateNode getEditableStateNode(int nID, Operator operator) {
+    protected StateNode getEditableStateNode(int iD, Operator operator) {
         for (int i = 0; i < nrOfChangedStateNodes; i++) {
-            if (changeStateNodes[i] == nID) {
-                return stateNode[nID];
+            if (changeStateNodes[i] == iD) {
+                return stateNode[iD];
             }
         }
-        changeStateNodes[nrOfChangedStateNodes++] = nID;
-        return stateNode[nID];
+        changeStateNodes[nrOfChangedStateNodes++] = iD;
+        return stateNode[iD];
     }
 
     /**

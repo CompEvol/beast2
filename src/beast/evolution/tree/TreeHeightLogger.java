@@ -32,7 +32,7 @@ public class TreeHeightLogger extends CalculationNode implements Loggable, Funct
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sample, PrintStream out) {
         final Tree tree = treeInput.get();
         out.print(tree.getRoot().getHeight() + "\t");
     }

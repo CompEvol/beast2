@@ -315,16 +315,16 @@ public class Alignment extends Map<String> {
      */
     private void sanityCheckCalcPatternsSetUpAscertainment(boolean log) {
         // Sanity check: make sure sequences are of same length
-        int nLength = counts.get(0).size();
+        int length = counts.get(0).size();
         if (!(m_dataType instanceof StandardData)) {
             for (List<Integer> seq : counts) {
-                if (seq.size() != nLength) {
-                    throw new RuntimeException("Two sequences with different length found: " + nLength + " != " + seq.size());
+                if (seq.size() != length) {
+                    throw new RuntimeException("Two sequences with different length found: " + length + " != " + seq.size());
                 }
             }
         }
-        if (siteWeights != null && siteWeights.length != nLength) {
-            throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + nLength + ")");
+        if (siteWeights != null && siteWeights.length != length) {
+            throw new RuntimeException("Number of weights (" + siteWeights.length + ") does not match sequence length (" + length + ")");
         }
 
         calcPatterns(log);
@@ -378,13 +378,13 @@ public class Alignment extends Map<String> {
 
     static String getSequence(Alignment data, int taxonIndex) {
 
-        int[] nStates = new int[data.getPatternCount()];
+        int[] states = new int[data.getPatternCount()];
         for (int i = 0; i < data.getPatternCount(); i++) {
             int[] sitePattern = data.getPattern(i);
-            nStates[i] = sitePattern[taxonIndex];
+            states[i] = sitePattern[taxonIndex];
         }
         try {
-            return data.getDataType().state2string(nStates);
+            return data.getDataType().state2string(states);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -539,50 +539,50 @@ public class Alignment extends Map<String> {
          * *
          */
     private void calcPatterns(boolean log) {
-        int nTaxa = counts.size();
-        int nSites = counts.get(0).size();
+        int taxonCount = counts.size();
+        int siteCount = counts.get(0).size();
 
         // convert data to transposed int array
-        int[][] nData = new int[nSites][nTaxa];
-        for (int i = 0; i < nTaxa; i++) {
+        int[][] data = new int[siteCount][taxonCount];
+        for (int i = 0; i < taxonCount; i++) {
             List<Integer> sites = counts.get(i);
-            for (int j = 0; j < nSites; j++) {
-                nData[j][i] = sites.get(j);
+            for (int j = 0; j < siteCount; j++) {
+                data[j][i] = sites.get(j);
             }
         }
 
         // sort data
         SiteComparator comparator = new SiteComparator();
-        Arrays.sort(nData, comparator);
+        Arrays.sort(data, comparator);
 
         // count patterns in sorted data
         // if (siteWeights != null) the weights are recalculated below
-        int nPatterns = 1;
-        int[] weights = new int[nSites];
+        int patterns = 1;
+        int[] weights = new int[siteCount];
         weights[0] = 1;
-        for (int i = 1; i < nSites; i++) {
-            if (usingTipLikelihoods || comparator.compare(nData[i - 1], nData[i]) != 0) {
+        for (int i = 1; i < siteCount; i++) {
+            if (usingTipLikelihoods || comparator.compare(data[i - 1], data[i]) != 0) {
             	// In the case where we're using tip probabilities, we need to treat each 
             	// site as a unique pattern, because it could have a unique probability vector.
-                nPatterns++;
-                nData[nPatterns - 1] = nData[i];
+                patterns++;
+                data[patterns - 1] = data[i];
             }
-            weights[nPatterns - 1]++;
+            weights[patterns - 1]++;
         }
 
         // reserve memory for patterns
-        patternWeight = new int[nPatterns];
-        sitePatterns = new int[nPatterns][nTaxa];
-        for (int i = 0; i < nPatterns; i++) {
+        patternWeight = new int[patterns];
+        sitePatterns = new int[patterns][taxonCount];
+        for (int i = 0; i < patterns; i++) {
             patternWeight[i] = weights[i];
-            sitePatterns[i] = nData[i];
+            sitePatterns[i] = data[i];
         }
 
         // find patterns for the sites
-        patternIndex = new int[nSites];
-        for (int i = 0; i < nSites; i++) {
-            int[] sites = new int[nTaxa];
-            for (int j = 0; j < nTaxa; j++) {
+        patternIndex = new int[siteCount];
+        for (int i = 0; i < siteCount; i++) {
+            int[] sites = new int[taxonCount];
+            for (int j = 0; j < taxonCount; j++) {
                 sites[j] = counts.get(j).get(i);
             }
             patternIndex[i] = Arrays.binarySearch(sitePatterns, sites, comparator);
@@ -590,7 +590,7 @@ public class Alignment extends Map<String> {
 
         if (siteWeights != null) {
             Arrays.fill(patternWeight, 0);
-            for (int i = 0; i < nSites; i++) {
+            for (int i = 0; i < siteCount; i++) {
                 patternWeight[patternIndex[i]] += siteWeights[i];
             }
         }
@@ -614,12 +614,12 @@ public class Alignment extends Map<String> {
             if (log) Log.info.println("Stripping invariant sites");
 
             int removedSites = 0;
-            for (int i = 0; i < nPatterns; i++) {
-                int[] nPattern = sitePatterns[i];
-                int iValue = nPattern[0];
+            for (int i = 0; i < patterns; i++) {
+                int[] pattern = sitePatterns[i];
+                int iValue = pattern[0];
                 boolean isInvariant = true;
-                for (int k = 1; k < nPattern.length; k++) {
-                    if (nPattern[k] != iValue) {
+                for (int k = 1; k < pattern.length; k++) {
+                    if (pattern[k] != iValue) {
                         isInvariant = false;
                         break;
                     }

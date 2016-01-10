@@ -280,7 +280,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
     void refreshInputPanel() throws Exception {
         doc.currentInputEditors.clear();
-        InputEditor.Base.g_nLabelWidth = config.nLabelWidthInput.get();
+        InputEditor.Base.g_nLabelWidth = config.labelWidthInput.get();
         BEASTInterface beastObject = config;
         final Input<?> input = config.resolveInput(doc, iPartition);
 

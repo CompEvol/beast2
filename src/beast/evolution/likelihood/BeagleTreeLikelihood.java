@@ -401,8 +401,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             	}
             }
             else {
-            	int nState = data.getPattern(taxon, i);
-                boolean[] stateSet = data.getStateSet(nState);
+            	int stateCount = data.getPattern(taxon, i);
+                boolean[] stateSet = data.getStateSet(stateCount);
                 for (int iState = 0; iState < m_nStateCount; iState++) {
                 	 partials[v++] = (stateSet[iState] ? 1.0 : 0.0);                
                 }

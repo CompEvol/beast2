@@ -133,27 +133,27 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 + doc.getFileName());
     }
 
-    void toggleVisible(int nPanelNr) {
-        if (isPaneIsVisible[nPanelNr]) {
-            isPaneIsVisible[nPanelNr] = false;
-            int nTabNr = tabNrForPanel(nPanelNr);
-            removeTabAt(nTabNr);
+    void toggleVisible(int panelNr) {
+        if (isPaneIsVisible[panelNr]) {
+            isPaneIsVisible[panelNr] = false;
+            int tabNr = tabNrForPanel(panelNr);
+            removeTabAt(tabNr);
         } else {
-            isPaneIsVisible[nPanelNr] = true;
-            int nTabNr = tabNrForPanel(nPanelNr);
-            BeautiPanelConfig panel = doc.beautiConfig.panels.get(nPanelNr);
+            isPaneIsVisible[panelNr] = true;
+            int tabNr = tabNrForPanel(panelNr);
+            BeautiPanelConfig panel = doc.beautiConfig.panels.get(panelNr);
             insertTab(
                     doc.beautiConfig.getButtonLabel(this,
-                            panel.nameInput.get()), null, panels[nPanelNr],
-                    panel.tipTextInput.get(), nTabNr);
+                            panel.nameInput.get()), null, panels[panelNr],
+                    panel.tipTextInput.get(), tabNr);
             // }
-            setSelectedIndex(nTabNr);
+            setSelectedIndex(tabNr);
         }
     }
 
-    int tabNrForPanel(int nPanelNr) {
+    int tabNrForPanel(int panelNr) {
         int k = 0;
-        for (int i = 0; i < nPanelNr; i++) {
+        for (int i = 0; i < panelNr; i++) {
             if (isPaneIsVisible[i]) {
                 k++;
             }
@@ -564,10 +564,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-            for (int nPanelNr = 0; nPanelNr < isPaneIsVisible.length; nPanelNr++) {
-                if (!isPaneIsVisible[nPanelNr]) {
-                    toggleVisible(nPanelNr);
-                    m_viewPanelCheckBoxMenuItems[nPanelNr].setState(true);
+            for (int panelNr = 0; panelNr < isPaneIsVisible.length; panelNr++) {
+                if (!isPaneIsVisible[panelNr]) {
+                    toggleVisible(panelNr);
+                    m_viewPanelCheckBoxMenuItems[panelNr].setState(true);
                 }
             }
         } // actionPerformed

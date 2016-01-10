@@ -61,7 +61,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sample, PrintStream out) {
         // make sure we get the current version of the inputs
         Tree tree = (Tree) treeInput.get().getCurrent();
         List<Function> metadata = parameterInput.get();
@@ -72,7 +72,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         }
         BranchRateModel.Base branchRateModel = clockModelInput.get();
         // write out the log tree with meta data
-        out.print("tree STATE_" + nSample + " = ");
+        out.print("tree STATE_" + sample + " = ");
         tree.getRoot().sort();
         out.print(toNewick(tree.getRoot(), metadata, branchRateModel));
         //out.print(tree.getRoot().toShortNewick(false));

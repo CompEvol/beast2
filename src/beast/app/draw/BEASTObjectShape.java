@@ -131,9 +131,9 @@ public class BEASTObjectShape extends Shape {
                 for (int i = 0; i < m_inputs.size(); i++) {
                     InputShape input = m_inputs.get(i);
                     //input.m_input = inputs.get(i);
-                    int nOffset = i * m_h / (m_inputs.size()) + m_h / (2 * (m_inputs.size()));
+                    int offset = i * m_h / (m_inputs.size()) + m_h / (2 * (m_inputs.size()));
                     input.m_x = m_x - input.m_w;
-                    input.m_y = m_y + nOffset;
+                    input.m_y = m_y + offset;
                     //input.m_w = 10;
                     input.m_h = 10;
                     input.m_fillcolor = m_fillcolor;
@@ -227,8 +227,8 @@ public class BEASTObjectShape extends Shape {
     }
 
     @Override
-    boolean intersects(int nX, int nY) {
-        return super.intersects(nX, nY);
+    boolean intersects(int x, int y) {
+        return super.intersects(x, y);
     }
 
     @Override

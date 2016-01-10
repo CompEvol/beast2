@@ -85,10 +85,10 @@ public class ExampleJSONParsingTest extends TestCase {
             });
 
             List<String> failedFiles = new ArrayList<String>();
-            int nSeed = 127;
+            int seed = 127;
             for (String fileName : exampleFiles) {
-                Randomizer.setSeed(nSeed);
-                nSeed += 10; // need more than one to prevent trouble with multiMCMC logs
+                Randomizer.setSeed(seed);
+                seed += 10; // need more than one to prevent trouble with multiMCMC logs
                 System.out.println("Processing " + fileName);
                 JSONParser parser = new JSONParser();
                 try {

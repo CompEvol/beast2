@@ -118,8 +118,8 @@ public class Logger extends BEASTObject {
         fileName = fileNameInput.get();
 
         final List<BEASTObject> loggers = loggersInput.get();
-        final int nLoggers = loggers.size();
-        if (nLoggers == 0) {
+        final int loggerCount = loggers.size();
+        if (loggerCount == 0) {
             throw new RuntimeException("Logger with nothing to log specified");
         }
 
@@ -132,7 +132,7 @@ public class Logger extends BEASTObject {
         final LOGMODE mode = modeInput.get();
         if (mode.equals(LOGMODE.autodetect)) {
             this.mode = LOGMODE.compound;
-            if (nLoggers == 1 && loggerList.get(0) instanceof Tree) {
+            if (loggerCount == 1 && loggerList.get(0) instanceof Tree) {
             	this.mode = LOGMODE.tree;
             }
         } else if (mode.equals(LOGMODE.tree)) {
@@ -469,7 +469,7 @@ public class Logger extends BEASTObject {
     /**
      * log the state for given sample nr
      * *
-     * * @param nSample
+     * * @param sample
      */
     public void log(int sampleNr) {
         if ((sampleNr < 0) || (sampleNr % every > 0)) {

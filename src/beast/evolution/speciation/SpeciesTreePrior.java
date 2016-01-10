@@ -54,25 +54,25 @@ public class SpeciesTreePrior extends TreeDistribution {
         popSizesTop = popSizesTopInput.get();
 
         // set up sizes of population functions
-        final int nSpecies = treeInput.get().getLeafNodeCount();
-        final int nNodes = treeInput.get().getNodeCount();
+        final int speciesCount = treeInput.get().getLeafNodeCount();
+        final int nodeCount = treeInput.get().getNodeCount();
         switch (popFunction) {
             case constant:
-                popSizesBottom.setDimension(nNodes);
+                popSizesBottom.setDimension(nodeCount);
                 break;
             case linear:
                 if (popSizesTop == null) {
                     throw new IllegalArgumentException("topPopSize must be specified");
                 }
-                popSizesBottom.setDimension(nSpecies);
-                popSizesTop.setDimension(nNodes);
+                popSizesBottom.setDimension(speciesCount);
+                popSizesTop.setDimension(nodeCount);
                 break;
             case linear_with_constant_root:
                 if (popSizesTop == null) {
                     throw new IllegalArgumentException("topPopSize must be specified");
                 }
-                popSizesBottom.setDimension(nSpecies);
-                popSizesTop.setDimension(nNodes - 1);
+                popSizesBottom.setDimension(speciesCount);
+                popSizesTop.setDimension(nodeCount - 1);
                 break;
         }
 
@@ -120,11 +120,11 @@ public class SpeciesTreePrior extends TreeDistribution {
                     break;
                 case linear:
                     // linear pop size function
-//			int nSpecies = m_tree.get().getLeafNodeCount();
-//			m_fPopSizesBottom.setDimension(nSpecies);
+//			int speciesCount = m_tree.get().getLeafNodeCount();
+//			m_fPopSizesBottom.setDimension(speciesCount);
 //			logP += m_gamma4Prior.calcLogP(m_fPopSizesBottom);
-//			int nNodes = m_tree.get().getNodeCount();
-//			m_fPopSizesTop.setDimension(nNodes-1);
+//			int nodeCount = m_tree.get().getNodeCount();
+//			m_fPopSizesTop.setDimension(nodeCount-1);
 //			logP += m_gamma2Prior.calcLogP(m_fPopSizesTop);
 
                     for (int i = 0; i < speciesNodes.length; i++) {

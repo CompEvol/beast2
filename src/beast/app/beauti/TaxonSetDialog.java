@@ -231,8 +231,8 @@ public class TaxonSetDialog extends JDialog {
         JButton selectButton = new JButton(">>");
         selectButton.setName(">>");
         selectButton.addActionListener(e -> {
-                int[] nSelected = listOfTaxonCandidates.getSelectedIndices();
-                for (int i : nSelected) {
+                int[] selected = listOfTaxonCandidates.getSelectedIndices();
+                for (int i : selected) {
                     listModel2.addElement(listModel1.get(i));
                 }
                 for (int i = 0; i < listModel2.size(); i++) {
@@ -243,8 +243,8 @@ public class TaxonSetDialog extends JDialog {
         JButton deselectButton = new JButton("<<");
         deselectButton.setName("<<");
         deselectButton.addActionListener(e -> {
-                int[] nSelected = listOfTaxonSet.getSelectedIndices();
-                for (int i : nSelected) {
+                int[] selected = listOfTaxonSet.getSelectedIndices();
+                for (int i : selected) {
                     listModel1.addElement(listModel2.get(i));
                 }
                 for (int i = 0; i < listModel1.size(); i++) {

@@ -89,10 +89,10 @@ public interface Parameter<T> extends Function {
         public void initAndValidate() throws Exception {
             T[] valuesString = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
 
-            int nDimension = Math.max(dimensionInput.get(), valuesString.length);
-            dimensionInput.setValue(nDimension, this);
-            values = (T[]) Array.newInstance(getMax().getClass(), nDimension);
-            storedValues = (T[]) Array.newInstance(getMax().getClass(), nDimension);
+            int dimension = Math.max(dimensionInput.get(), valuesString.length);
+            dimensionInput.setValue(dimension, this);
+            values = (T[]) Array.newInstance(getMax().getClass(), dimension);
+            storedValues = (T[]) Array.newInstance(getMax().getClass(), dimension);
             for (int i = 0; i < values.length; i++) {
                 values[i] = valuesString[i % valuesString.length];
             }
@@ -183,7 +183,7 @@ public interface Parameter<T> extends Function {
                     values2[i] = values[i % getDimension()];
                 }
                 values = values2;
-                //storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), nDimension);
+                //storedValues = (T[]) Array.newInstance(m_fUpper.getClass(), dimension);
             }
             m_bIsDirty = new boolean[dimension];
             try {

@@ -221,26 +221,26 @@ abstract public class Shape {
         return "<shape" + getAtts() + "/>";
     }
 
-    boolean intersects(int nX, int nY) {
-        return (nX >= m_x - 1 && nX <= m_x + m_w + 1 && nY >= m_y - 1 && nY <= m_y + m_h + 1);
+    boolean intersects(int x, int y) {
+        return (x >= m_x - 1 && x <= m_x + m_w + 1 && y >= m_y - 1 && y <= m_y + m_h + 1);
     }
 
     boolean intersects(Rectangle rect) {
         return rect.intersects(m_x - 1, m_y - 1, m_w + 2, m_h + 2);
     }
-//	boolean intersects(int nX, int nY) {
+//	boolean intersects(int x, int y) {
 //		return false;
 //	}
 //	boolean intersects(Rectangle rect) {
 //		return false;
 //	}
 
-    int offsetX(int nX) {
-        return nX - m_x;
+    int offsetX(int x) {
+        return x - m_x;
     }
 
-    int offsetY(int nY) {
-        return nY - m_y;
+    int offsetY(int y) {
+        return y - m_y;
     }
 
     void offset(int dX, int dY) {
@@ -248,59 +248,59 @@ abstract public class Shape {
         m_y += dY;
     }
 
-    void movePosition(int nOffsetX, int nOffsetY, int nToX, int nToY) {
-        m_x = nToX - nOffsetX;
-        m_y = nToY - nOffsetY;
+    void movePosition(int offsetX, int offsetY, int toX, int toY) {
+        m_x = toX - offsetX;
+        m_y = toY - offsetY;
     } // movePosition
 
-    void movePoint(int nPoint, int nOffsetX, int nOffsetY, int nToX, int nToY) {
-        switch (nPoint) {
+    void movePoint(int point, int offsetX, int offsetY, int toX, int toY) {
+        switch (point) {
             case 0:
-                m_w = m_w + m_x - nToX + nOffsetX;
-                m_x = nToX - nOffsetX;
-                m_h = m_h + m_y - nToY + nOffsetY;
-                m_y = nToY - nOffsetY;
+                m_w = m_w + m_x - toX + offsetX;
+                m_x = toX - offsetX;
+                m_h = m_h + m_y - toY + offsetY;
+                m_y = toY - offsetY;
                 break;
             case 1:
-                m_w = nToX - nOffsetX - m_x;
-                m_h = m_h + m_y - nToY + nOffsetY;
-                m_y = nToY - nOffsetY;
+                m_w = toX - offsetX - m_x;
+                m_h = m_h + m_y - toY + offsetY;
+                m_y = toY - offsetY;
                 break;
             case 2:
-                m_w = m_w + m_x - nToX + nOffsetX;
-                m_x = nToX - nOffsetX;
-                m_h = nToY - nOffsetY - m_y;
+                m_w = m_w + m_x - toX + offsetX;
+                m_x = toX - offsetX;
+                m_h = toY - offsetY - m_y;
                 break;
             case 3:
-                m_w = nToX - nOffsetX - m_x;
-                m_h = nToY - nOffsetY - m_y;
+                m_w = toX - offsetX - m_x;
+                m_h = toY - offsetY - m_y;
                 break;
             case 5:
-                m_w = nToX - nOffsetX - m_x;
+                m_w = toX - offsetX - m_x;
                 break;
             case 4:
-                m_w = m_w + m_x - nToX + nOffsetX;
-                m_x = nToX - nOffsetX;
+                m_w = m_w + m_x - toX + offsetX;
+                m_x = toX - offsetX;
                 break;
             case 7:
-                m_h = nToY - nOffsetY - m_y;
+                m_h = toY - offsetY - m_y;
                 break;
             case 6:
-                m_h = m_h + m_y - nToY + nOffsetY;
-                m_y = nToY - nOffsetY;
+                m_h = m_h + m_y - toY + offsetY;
+                m_y = toY - offsetY;
                 break;
         }
     } // movePoint
 
     void normalize() {
-        int nX1 = m_x;
-        int nX2 = m_x + m_w;
-        int nY1 = m_y;
-        int nY2 = m_y + m_h;
-        m_x = Math.min(nX1, nX2);
-        m_w = Math.max(nX1, nX2) - m_x;
-        m_y = Math.min(nY1, nY2);
-        m_h = Math.max(nY1, nY2) - m_y;
+        int x1 = m_x;
+        int x2 = m_x + m_w;
+        int y1 = m_y;
+        int y2 = m_y + m_h;
+        m_x = Math.min(x1, x2);
+        m_w = Math.max(x1, x2) - m_x;
+        m_y = Math.min(y1, y2);
+        m_h = Math.max(y1, y2) - m_y;
     }
 
     public Color getFillColor() {
@@ -335,20 +335,20 @@ abstract public class Shape {
         return m_y + m_h;
     }
 
-    void setX(int nX) {
-        m_x = nX;
+    void setX(int x) {
+        m_x = x;
     }
 
-    void setY(int nY) {
-        m_y = nY;
+    void setY(int y) {
+        m_y = y;
     }
 
-    void setX2(int nX2) {
-        m_w = nX2 - m_x;
+    void setX2(int x2) {
+        m_w = x2 - m_x;
     }
 
-    void setY2(int nY2) {
-        m_h = nY2 - m_y;
+    void setY2(int y2) {
+        m_h = y2 - m_y;
     }
 
     //void setLabel(String label) {}
@@ -368,8 +368,8 @@ abstract public class Shape {
         return m_nPenWidth;
     }
 
-    void setPenWidth(int nPenWidth) {
-        m_nPenWidth = nPenWidth;
+    void setPenWidth(int penWidth) {
+        m_nPenWidth = penWidth;
     }
 
     abstract void toSVG(PrintStream out);

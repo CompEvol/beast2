@@ -535,9 +535,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         private int getLabelIndex(final String str) {
 
             // look it up in list of taxa
-            for (int nIndex = 0; nIndex < labels.size(); nIndex++) {
-                if (str.equals(labels.get(nIndex))) {
-                    return nIndex;
+            for (int index = 0; index < labels.size(); index++) {
+                if (str.equals(labels.get(index))) {
+                    return index;
                 }
             }
 

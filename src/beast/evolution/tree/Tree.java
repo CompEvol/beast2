@@ -645,9 +645,9 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * print translate block for NEXUS beast.tree file
      */
-    public static void printTranslate(final Node node, final PrintStream out, final int nNodeCount) {
+    public static void printTranslate(final Node node, final PrintStream out, final int nodeCount) {
         final List<String> translateLines = new ArrayList<>();
-        printTranslate(node, translateLines, nNodeCount);
+        printTranslate(node, translateLines, nodeCount);
         Collections.sort(translateLines);
         for (final String line : translateLines) {
             out.println(line);
@@ -659,25 +659,25 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * need this helper so that we can sort list of entries *
      */
-    static void printTranslate(Node node, List<String> translateLines, int nNodeCount) {
+    static void printTranslate(Node node, List<String> translateLines, int nodeCount) {
         if (node.isLeaf()) {
             final String nr = (node.getNr() + taxaTranslationOffset) + "";
             String line = "\t\t" + "    ".substring(nr.length()) + nr + " " + node.getID();
-            if (node.getNr() < nNodeCount) {
+            if (node.getNr() < nodeCount) {
                 line += ",";
             }
             translateLines.add(line);
         } else {
-            printTranslate(node.getLeft(), translateLines, nNodeCount);
+            printTranslate(node.getLeft(), translateLines, nodeCount);
             if (node.getRight() != null) {
-                printTranslate(node.getRight(), translateLines, nNodeCount);
+                printTranslate(node.getRight(), translateLines, nodeCount);
             }
         }
     }
 
-    public static void printTaxa(final Node node, final PrintStream out, final int nNodeCount) {
+    public static void printTaxa(final Node node, final PrintStream out, final int nodeCount) {
         final List<String> translateLines = new ArrayList<>();
-        printTranslate(node, translateLines, nNodeCount);
+        printTranslate(node, translateLines, nodeCount);
         Collections.sort(translateLines);
         for (String line : translateLines) {
             line = line.split("\\s+")[2];
@@ -703,9 +703,9 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public void log(int nSample, PrintStream out) {
+	public void log(int sample, PrintStream out) {
         Tree tree = (Tree) getCurrent();
-        out.print("tree STATE_" + nSample + " = ");
+        out.print("tree STATE_" + sample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree
         //tree.getRoot().sort();
         final int[] dummy = new int[1];

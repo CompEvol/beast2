@@ -15,8 +15,8 @@ public class CalibrationLineagesIterator {
 
     private final boolean rootCalibrated;
 
-    // Use iterators 0 to nCurIters-1 (i.e. iters[0:nCurIters])
-    private int nCurIters;
+    // Use iterators 0 to curIters-1 (i.e. iters[0:curIters])
+    private int curIters;
 
     // per clade Iterator
     private final LinsIterator[] iters;
@@ -25,7 +25,7 @@ public class CalibrationLineagesIterator {
     private int[][] vals;
 
     // Number of taxa not below any calibration point
-    private int nFreeLineages;
+    private int freeLineages;
 
     // indices of maximal clades
     private final int[] maximalClades;
@@ -46,28 +46,28 @@ public class CalibrationLineagesIterator {
         vals = new int[iters.length][];
 
         // number of maximal clades
-        int nMax = 0;
+        int max = 0;
         for(final boolean b : maximal) {
-           nMax += b ? 1 : 0;
+           max += b ? 1 : 0;
         }
 
         // indices of maximal clades in a list
-        maximalClades = new int[nMax];
-        nFreeLineages = leafCount;
+        maximalClades = new int[max];
+        freeLineages = leafCount;
 
-        nMax = 0;
+        max = 0;
         for(int m = 0; m < maximal.length; ++m) {
             if( maximal[m] ) {
-              maximalClades[nMax] = m;
-              ++nMax;
-              nFreeLineages -= clades[m].length;
+              maximalClades[max] = m;
+              ++max;
+              freeLineages -= clades[m].length;
             }
         }
 
-        rootCalibrated = ( nMax == 1 && clades[maximalClades[0]].length == leafCount );
+        rootCalibrated = ( max == 1 && clades[maximalClades[0]].length == leafCount );
 
-        assert ! (rootCalibrated &&  nFreeLineages > 0);
-        assert nFreeLineages >= 0;
+        assert ! (rootCalibrated &&  freeLineages > 0);
+        assert freeLineages >= 0;
     }
 
     boolean isRootCalibrated() {
@@ -79,32 +79,32 @@ public class CalibrationLineagesIterator {
         final int n = cladesFreeLins.length;
 
         // reset iterators used. each call to setOneIterator will increment it by one.
-        nCurIters = 0;
+        curIters = 0;
 
         for(int k = 0; k < n; ++k) {
             setOneIterator(ranks, taxaPartialOrder[k], cladesFreeLins[k], ranks[k]);
         }
 
         if( ! rootCalibrated ) {
-          setOneIterator(ranks, maximalClades, nFreeLineages, n+1);
+          setOneIterator(ranks, maximalClades, freeLineages, n+1);
         }
         
-        for(int k = 0; k < nCurIters-1; ++k) {
+        for(int k = 0; k < curIters-1; ++k) {
             vals[k] = iters[k].next();
         }
 
-        return nCurIters;
+        return curIters;
     }
 
     private void setOneIterator(final int[] ranks, final int[] joinerClades, final int nl, final int rank) {
-        final int nSubs = joinerClades.length;
+        final int subs = joinerClades.length;
 
         LinsIterator itr/* = null*/;
-        if( nSubs == 0 ) {
+        if( subs == 0 ) {
             itr = new LinsIterator(nl, rank, null);
-        } else /*if( nl > 0 || nSubs > 2 ) */ {
-            final int[] s = new int[nSubs];
-            for(int i = 0; i < nSubs; ++i) {
+        } else /*if( nl > 0 || subs > 2 ) */ {
+            final int[] s = new int[subs];
+            for(int i = 0; i < subs; ++i) {
                 s[i] = ranks[joinerClades[i]];
             }
             itr = new LinsIterator(nl, rank, s);
@@ -115,20 +115,20 @@ public class CalibrationLineagesIterator {
             // sorted according to rank
             iters[itr.rank-1] = itr;
             itr.startIter();
-            ++nCurIters;
+            ++curIters;
         //}
     }
 
     int[][] next()
     {
-        final int[] l = iters[nCurIters-1].next();
+        final int[] l = iters[curIters-1].next();
 
         if( l != null ) {
-            vals[nCurIters-1] = l;
+            vals[curIters-1] = l;
             return vals;
         }
 
-        int i = nCurIters-2;
+        int i = curIters-2;
         for( ; i >= 0; --i) {
             if( (vals[i] = iters[i].next()) != null) {
                 break;
@@ -141,7 +141,7 @@ public class CalibrationLineagesIterator {
 
         ++i;
 
-        for( ; i < nCurIters; ++i) {
+        for( ; i < curIters; ++i) {
             iters[i].startIter();
             vals[i] = iters[i].next();
         }
@@ -150,22 +150,22 @@ public class CalibrationLineagesIterator {
     }
 
     public int[][] allJoiners() {
-        final int[][] joiners = new int[nCurIters][];
+        final int[][] joiners = new int[curIters][];
 
-        for(int i = 0; i < nCurIters; ++i) {
+        for(int i = 0; i < curIters; ++i) {
             joiners[i] = iters[i].ljoins();
         }
         return joiners;
     }
 
-    public int nStart(final int i) {
-        return iters[i].nStart;
+    public int start(final int i) {
+        return iters[i].start;
     }
 
     class LinsIterator {
 
         private final int rank;
-        private final int nStart;
+        private final int start;
         private final int[] joiners;
         private final int[] aStart;
         // Current count of lineages at all relevant time points, from 0 (start) to clade top.
@@ -175,7 +175,7 @@ public class CalibrationLineagesIterator {
 
         LinsIterator(final int ns, final int r, final int[] jnr) {
             rank = r;
-            nStart = ns;
+            start = ns;
             joiners = new int [r];
 
             lastJoinger = -1;
@@ -209,7 +209,7 @@ public class CalibrationLineagesIterator {
             } else {
                 //assert(rank > 1);
 
-                if( nStart > 0 ) {
+                if( start > 0 ) {
                     int i = 1;
                     for(; i < lastJoinger+1; ++i) {
                         aStart[i] = 1;

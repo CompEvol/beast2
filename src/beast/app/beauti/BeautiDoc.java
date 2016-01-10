@@ -113,7 +113,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      */
     List<BEASTInterface>[] pPartitionByAlignments;
     List<BEASTInterface>[] pPartition;
-    private List<Integer>[] nCurrentPartitions;
+    private List<Integer>[] currentPartitions;
     // partition names
     List<PartitionContext> partitionNames = new ArrayList<>();
     Set<PartitionContext> possibleContexts = new HashSet<>();
@@ -310,12 +310,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         pPartitionByAlignments = new List[3];
         pPartition = new List[3];
-        nCurrentPartitions = new List[3];
+        currentPartitions = new List[3];
         partitionNames = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             pPartitionByAlignments[i] = new ArrayList<>();
             pPartition[i] = new ArrayList<>();
-            nCurrentPartitions[i] = new ArrayList<>();
+            currentPartitions[i] = new ArrayList<>();
         }
         tipTextMap = new HashMap<>();
 
@@ -1179,7 +1179,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             // collectTreePriors();
 
             Log.warning.println("PARTITIONS:\n");
-            Log.warning.println(Arrays.toString(nCurrentPartitions));
+            Log.warning.println(Arrays.toString(currentPartitions));
 
             determineLinks();
         } catch (Exception e) {
@@ -1581,7 +1581,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         for (int i = 0; i < 3; i++) {
             pPartitionByAlignments[i].clear();
             pPartition[i].clear();
-            nCurrentPartitions[i].clear();
+            currentPartitions[i].clear();
         }
         List<GenericTreeLikelihood> treeLikelihoods = new ArrayList<>();
         for (Distribution distr : likelihood.pDistributions.get()) {
@@ -1598,26 +1598,26 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     // sync SiteModel, ClockModel and Tree to any changes that
                     // may have occurred
                     // this should only affect the clock model in practice
-                    int nPartition = getPartitionNr((BEASTInterface) treeLikelihood.siteModelInput.get());
-                    GenericTreeLikelihood treeLikelihood2 = treeLikelihoods.get(nPartition);
+                    int partition = getPartitionNr((BEASTInterface) treeLikelihood.siteModelInput.get());
+                    GenericTreeLikelihood treeLikelihood2 = treeLikelihoods.get(partition);
                     treeLikelihood.siteModelInput.setValue(treeLikelihood2.siteModelInput.get(), treeLikelihood);
-                    nCurrentPartitions[0].add(nPartition);
+                    currentPartitions[0].add(partition);
 
                     BranchRateModel rateModel = treeLikelihood.branchRateModelInput.get();
                     if (rateModel != null) {
-                        nPartition = getPartitionNr((BEASTInterface) rateModel);
-                        treeLikelihood2 = treeLikelihoods.get(nPartition);
+                        partition = getPartitionNr((BEASTInterface) rateModel);
+                        treeLikelihood2 = treeLikelihoods.get(partition);
                         treeLikelihood.branchRateModelInput.setValue(treeLikelihood2.branchRateModelInput.get(),
                                 treeLikelihood);
-                        nCurrentPartitions[1].add(nPartition);
+                        currentPartitions[1].add(partition);
                     } else {
-                        nCurrentPartitions[1].add(0);
+                        currentPartitions[1].add(0);
                     }
 
-                    nPartition = getPartitionNr((BEASTInterface) treeLikelihood.treeInput.get());
-                    treeLikelihood2 = treeLikelihoods.get(nPartition);
+                    partition = getPartitionNr((BEASTInterface) treeLikelihood.treeInput.get());
+                    treeLikelihood2 = treeLikelihoods.get(partition);
                     treeLikelihood.treeInput.setValue(treeLikelihood2.treeInput.get(), treeLikelihood);
-                    nCurrentPartitions[2].add(nPartition);
+                    currentPartitions[2].add(partition);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1628,21 +1628,21 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         }
 
-        int nPartitions = partitionNames.size();
+        int partitionCount = partitionNames.size();
         for (int i = 0; i < 3; i++) {
-            boolean[] usedPartition = new boolean[nPartitions];
-            for (int j = 0; j < nPartitions; j++) {
-                int iPartition = nCurrentPartitions[i].get(j);// getPartitionNr(m_pPartitionByAlignments[i].get(j));
+            boolean[] usedPartition = new boolean[partitionCount];
+            for (int j = 0; j < partitionCount; j++) {
+                int iPartition = currentPartitions[i].get(j);// getPartitionNr(m_pPartitionByAlignments[i].get(j));
                 usedPartition[iPartition] = true;
             }
-            for (int j = 0; j < nPartitions; j++) {
+            for (int j = 0; j < partitionCount; j++) {
                 if (usedPartition[j]) {
                     pPartition[i].add(pPartitionByAlignments[i].get(j));
                 }
             }
         }
         Log.warning.println("PARTITIONS0:\n");
-        Log.warning.println(Arrays.toString(nCurrentPartitions));
+        Log.warning.println(Arrays.toString(currentPartitions));
     }
 
     int getPartitionNr(String partition, int partitionID) {
@@ -1718,8 +1718,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public void setCurrentPartition(int iCol, int iRow, String partition) {
-        int nCurrentPartion = getPartitionNr(partition, iCol);
-        nCurrentPartitions[iCol].set(iRow, nCurrentPartion);
+        int currentPartion = getPartitionNr(partition, iCol);
+        currentPartitions[iCol].set(iRow, currentPartion);
     }
 
     @Override

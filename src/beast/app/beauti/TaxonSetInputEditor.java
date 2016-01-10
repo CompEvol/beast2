@@ -307,7 +307,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
      * guesses taxon sets based on pattern in regExp based on the taxa in
      * m_rawData
      */
-    public int guessTaxonSets(String regexp, int nMinSize) throws Exception {
+    public int guessTaxonSets(String regexp, int minSize) throws Exception {
         m_taxonset.clear();
         HashMap<String, TaxonSet> map = new HashMap<>();
         Pattern m_pattern = Pattern.compile(regexp);
@@ -359,15 +359,15 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
         }
         // add taxon sets
-        int nIgnored = 0;
+        int ignored = 0;
         for (TaxonSet set : map.values()) {
-            if (set.taxonsetInput.get().size() > nMinSize) {
+            if (set.taxonsetInput.get().size() > minSize) {
                 m_taxonset.add(set);
             } else {
-                nIgnored += set.taxonsetInput.get().size();
+                ignored += set.taxonsetInput.get().size();
             }
         }
-        return nIgnored;
+        return ignored;
     }
 
     void parseTrait(String trait) {

@@ -246,7 +246,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			BufferedReader fin = new BufferedReader(new FileReader(file));
 	        String missing = "?";
 	        String gap = "-";
-	        int nTotalCount = 4;
+	        int totalCount = 4;
 	        String datatype = "nucleotide";
 	        // According to http://en.wikipedia.org/wiki/FASTA_format lists file formats and their data content
 			// .fna = nucleic acid
@@ -283,7 +283,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
 			fin.close();
 			
-			int nChar = -1;
+			int charCount = -1;
 			Alignment alignment = new Alignment();
 	        for (final String taxon : taxa) {
 	            final StringBuilder bsData = seqMap.get(taxon);
@@ -291,9 +291,9 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	            data = data.replaceAll("\\s", "");
 	            seqMap.put(taxon, new StringBuilder(data));
 
-	            if (nChar < 0) {nChar = data.length();}
-	            if (data.length() != nChar) {
-	                throw new IllegalArgumentException("Expected sequence of length " + nChar + " instead of " + data.length() + " for taxon " + taxon);
+	            if (charCount < 0) {charCount = data.length();}
+	            if (data.length() != charCount) {
+	                throw new IllegalArgumentException("Expected sequence of length " + charCount + " instead of " + data.length() + " for taxon " + taxon);
 	            }
 	            // map to standard missing and gap chars
 	            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
@@ -301,15 +301,15 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 	            if (mayBeAminoacid && datatype.equals("nucleotide") && !data.matches("[ACGTUXNacgtuxn?_-]+")) {
 	            	datatype = "aminoacid";
-	            	nTotalCount = 20;
+	            	totalCount = 20;
 	            	for (Sequence seq : alignment.sequenceInput.get()) {
-	            		seq.totalCountInput.setValue(nTotalCount, seq);
+	            		seq.totalCountInput.setValue(totalCount, seq);
 	            	}
 	            }
 	            
 	            final Sequence sequence = new Sequence();
 	            data = data.replaceAll("[Xx]", "?");
-	            sequence.init(nTotalCount, taxon, data);
+	            sequence.init(totalCount, taxon, data);
 	            sequence.setID(NexusParser.generateSequenceID(taxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);
 	        }
@@ -339,15 +339,15 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		org.w3c.dom.Node node = alignments.item(0);
 
 		String dataTypeName = node.getAttributes().getNamedItem("dataType").getNodeValue();
-		int nTotalCount = 4;
+		int totalCount = 4;
 		if (dataTypeName == null) {
 			alignment.dataTypeInput.setValue("integer", alignment);
 		} else if (dataTypeName.toLowerCase().equals("dna") || dataTypeName.toLowerCase().equals("nucleotide")) {
 			alignment.dataTypeInput.setValue("nucleotide", alignment);
-			nTotalCount = 4;
+			totalCount = 4;
 		} else if (dataTypeName.toLowerCase().equals("aminoacid") || dataTypeName.toLowerCase().equals("protein")) {
 			alignment.dataTypeInput.setValue("aminoacid", alignment);
-			nTotalCount = 20;
+			totalCount = 20;
 		} else {
 			alignment.dataTypeInput.setValue("integer", alignment);
 		}
@@ -367,7 +367,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 					}
 				}
 				String data = child.getTextContent();
-				sequence.initByName("totalcount", nTotalCount, "taxon", taxon, "value", data);
+				sequence.initByName("totalcount", totalCount, "taxon", taxon, "value", data);
 				sequence.setID("seq_" + taxon);
 				alignment.sequenceInput.setValue(sequence, alignment);
 

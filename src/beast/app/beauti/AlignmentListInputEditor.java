@@ -79,7 +79,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	 * alignments that form a partition. These can be FilteredAlignments *
 	 */
 	List<Alignment> alignments;
-	int nPartitions;
+	int partitionCount;
 	GenericTreeLikelihood[] likelihoods;
 	Object[][] tableData;
 	JTable table;
@@ -130,7 +130,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		linkButtons = new ArrayList<>();
 		unlinkButtons = new ArrayList<>();
-		nPartitions = alignments.size();
+		partitionCount = alignments.size();
 
         // override BoxLayout in superclass
         setLayout(new BorderLayout());
@@ -286,32 +286,32 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	private int columnLabelToNr(String column) {
-		int nColumn;
+		int columnNr;
 		if (column.contains("Tree")) {
-			nColumn = TREE_COLUMN;
+			columnNr = TREE_COLUMN;
 		} else if (column.contains("Clock")) {
-			nColumn = CLOCKMODEL_COLUMN;
+			columnNr = CLOCKMODEL_COLUMN;
 		} else {
-			nColumn = SITEMODEL_COLUMN;
+			columnNr = SITEMODEL_COLUMN;
 		}
-		return nColumn;
+		return columnNr;
 	}
 
-	private void link(int nColumn) {
-		int[] nSelected = getTableRowSelection();
+	private void link(int columnNr) {
+		int[] selected = getTableRowSelection();
 		// do the actual linking
-		for (int i = 1; i < nSelected.length; i++) {
-			int iRow = nSelected[i];
-			Object old = tableData[iRow][nColumn];
-			tableData[iRow][nColumn] = tableData[nSelected[0]][nColumn];
+		for (int i = 1; i < selected.length; i++) {
+			int iRow = selected[i];
+			Object old = tableData[iRow][columnNr];
+			tableData[iRow][columnNr] = tableData[selected[0]][columnNr];
 			try {
-				updateModel(nColumn, iRow);
+				updateModel(columnNr, iRow);
 			} catch (Exception ex) {
 				Log.warning.println(ex.getMessage());
 				// unlink if we could not link
-				tableData[iRow][nColumn] = old;
+				tableData[iRow][columnNr] = old;
 				try {
-					updateModel(nColumn, iRow);
+					updateModel(columnNr, iRow);
 				} catch (Exception ex2) {
 					// ignore
 				}
@@ -319,13 +319,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 	}
 
-	private void unlink(int nColumn) {
-		int[] nSelected = getTableRowSelection();
-		for (int i = 1; i < nSelected.length; i++) {
-			int iRow = nSelected[i];
-			tableData[iRow][nColumn] = getDoc().partitionNames.get(iRow).partition;
+	private void unlink(int columnNr) {
+		int[] selected = getTableRowSelection();
+		for (int i = 1; i < selected.length; i++) {
+			int iRow = selected[i];
+			tableData[iRow][columnNr] = getDoc().partitionNames.get(iRow).partition;
 			try {
-				updateModel(nColumn, iRow);
+				updateModel(columnNr, iRow);
 			} catch (Exception ex) {
 				Log.err.println(ex.getMessage());
 				ex.printStackTrace();
@@ -338,23 +338,23 @@ public class AlignmentListInputEditor extends ListInputEditor {
         return table.getSelectedRows();
 	}
 
-	/** set partition of type nColumn to partition model nr iRow **/
-	void updateModel(int nColumn, int iRow) throws Exception {
-		Log.warning.println("updateModel: " + iRow + " " + nColumn + " " + table.getSelectedRow() + " "
+	/** set partition of type columnNr to partition model nr iRow **/
+	void updateModel(int columnNr, int iRow) throws Exception {
+		Log.warning.println("updateModel: " + iRow + " " + columnNr + " " + table.getSelectedRow() + " "
 				+ table.getSelectedColumn());
-		for (int i = 0; i < nPartitions; i++) {
+		for (int i = 0; i < partitionCount; i++) {
 			Log.warning.println(i + " " + tableData[i][0] + " " + tableData[i][SITEMODEL_COLUMN] + " "
 					+ tableData[i][CLOCKMODEL_COLUMN] + " " + tableData[i][TREE_COLUMN]);
 		}
 
 		getDoc();
-		String partition = (String) tableData[iRow][nColumn];
+		String partition = (String) tableData[iRow][columnNr];
 
 		// check if partition needs renaming
 		String oldName = null;
 		boolean isRenaming = false;
 		try {
-			switch (nColumn) {
+			switch (columnNr) {
 			case SITEMODEL_COLUMN:
 				if (!doc.pluginmap.containsKey("SiteModel.s:" + partition)) {
 					String id = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
@@ -384,7 +384,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Cannot rename item: " + e.getMessage());
-			tableData[iRow][nColumn] = oldName;
+			tableData[iRow][columnNr] = oldName;
 			return;
 		}
 		if (isRenaming) {
@@ -396,7 +396,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		
 		int partitionID = BeautiDoc.ALIGNMENT_PARTITION;
-		switch (nColumn) {
+		switch (columnNr) {
 		case SITEMODEL_COLUMN:
 			partitionID = BeautiDoc.SITEMODEL_PARTITION;
 			break;
@@ -407,11 +407,11 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			partitionID = BeautiDoc.TREEMODEL_PARTITION;
 			break;
 		}
-		int nPartition = doc.getPartitionNr(partition, partitionID);
+		int partitionNr = doc.getPartitionNr(partition, partitionID);
 		GenericTreeLikelihood treeLikelihood = null;
-		if (nPartition >= 0) {
+		if (partitionNr >= 0) {
 			// we ar linking
-			treeLikelihood = likelihoods[nPartition];
+			treeLikelihood = likelihoods[partitionNr];
 		}
 		// (TreeLikelihood) doc.pluginmap.get("treeLikelihood." +
 		// tableData[iRow][NAME_COLUMN]);
@@ -420,7 +420,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		
 		PartitionContext oldContext = new PartitionContext(this.likelihoods[iRow]);
 
-		switch (nColumn) {
+		switch (columnNr) {
 		case SITEMODEL_COLUMN: {
 			SiteModelInterface siteModel = null;
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
@@ -566,7 +566,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, iRow, partition);
 		}
 		}
-		tableData[iRow][nColumn] = partition;
+		tableData[iRow][columnNr] = partition;
 		if (needsRePartition) {
 			List<BeautiSubTemplate> templates = new ArrayList<>();
 			templates.add(doc.beautiConfig.partitionTemplate.get());
@@ -603,13 +603,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	void initTableData() {
-		this.likelihoods = new GenericTreeLikelihood[nPartitions];
+		this.likelihoods = new GenericTreeLikelihood[partitionCount];
 		if (tableData == null) {
-			tableData = new Object[nPartitions][NR_OF_COLUMNS];
+			tableData = new Object[partitionCount][NR_OF_COLUMNS];
 		}
 		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 
-		for (int i = 0; i < nPartitions; i++) {
+		for (int i = 0; i < partitionCount; i++) {
 			Alignment data = alignments.get(i);
 			// partition name
 			tableData[i][NAME_COLUMN] = data;
@@ -866,7 +866,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		for (int i = 0; i < 3; i++) {
 			partitionNames[i] = new HashSet<>();
 		}
-		for (int i = 0; i < nPartitions; i++) {
+		for (int i = 0; i < partitionCount; i++) {
 			partitionNames[0].add(((BEASTInterface) likelihoods[i].siteModelInput.get()).getID());
 			partitionNames[1].add(likelihoods[i].branchRateModelInput.get().getID());
 			partitionNames[2].add(likelihoods[i].treeInput.get().getID());
@@ -974,7 +974,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		}
 		// debugging code:
-		//for (int i = 0; i < nPartitions; i++) {
+		//for (int i = 0; i < partitionCount; i++) {
 		//	Log.warning.println(i + " " + tableData[i][0]);
 		//}
 	}
@@ -982,8 +982,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	class ComboActionListener implements ActionListener {
 		int m_nColumn;
 
-		public ComboActionListener(int nColumn) {
-			m_nColumn = nColumn;
+		public ComboActionListener(int columnNr) {
+			m_nColumn = columnNr;
 		}
 
 		@Override
@@ -996,7 +996,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			if (table.getSelectedRow() >= 0 && table.getSelectedColumn() >= 0) {
 				Log.warning.println(" " + table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()));
 			}
-			for (int i = 0; i < nPartitions; i++) {
+			for (int i = 0; i < partitionCount; i++) {
 				try {
 					updateModel(m_nColumn, i);
 				} catch (Exception ex) {
@@ -1077,13 +1077,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	} // addItem
 
 	void delItem() {
-		int[] nSelected = getTableRowSelection();
-		if (nSelected.length == 0) {
+		int[] selected = getTableRowSelection();
+		if (selected.length == 0) {
 			JOptionPane.showMessageDialog(this, "Select partitions to delete, before hitting the delete button");
 		}
 		// do the actual deleting
-		for (int i = nSelected.length - 1; i >= 0; i--) {
-			int iRow = nSelected[i];
+		for (int i = selected.length - 1; i >= 0; i--) {
+			int iRow = selected[i];
 			
 			// before deleting, unlink site model, clock model and tree
 			
@@ -1153,7 +1153,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					}
 				}
 				likelihoods = tmp;
-				nPartitions--;
+				partitionCount--;
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Deletion failed: " + e.getMessage());
 				e.printStackTrace();
@@ -1163,8 +1163,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	} // delItem
 
 	void splitItem() {
-		int[] nSelected = getTableRowSelection();
-		if (nSelected.length == 0) {
+		int[] selected = getTableRowSelection();
+		if (selected.length == 0) {
 			JOptionPane.showMessageDialog(this, "Select partitions to split, before hitting the split button");
 			return;
 		}
@@ -1200,8 +1200,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			return;
 		}
 
-		for (int i = nSelected.length - 1; i >= 0; i--) {
-			int iRow = nSelected[i];
+		for (int i = selected.length - 1; i >= 0; i--) {
+			int iRow = selected[i];
 			Alignment alignment = alignments.remove(iRow);
 			getDoc().delAlignmentWithSubnet(alignment);
 			try {

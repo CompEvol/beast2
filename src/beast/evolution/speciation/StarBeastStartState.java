@@ -104,7 +104,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
     }
 
-    private double[] firstMeetings(final Tree gtree, final Map<String, Integer> tipName2Species, final int nSpecies) {
+    private double[] firstMeetings(final Tree gtree, final Map<String, Integer> tipName2Species, final int speciesCount) {
         final Node[] nodes = gtree.listNodesPostOrder(null, null);
         @SuppressWarnings("unchecked")
 		final Set<Integer>[] tipsSpecies = new Set[nodes.length];
@@ -113,7 +113,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
         // d[i,j] = minimum height of node which has tips belonging to species i and j
         // d is is upper triangular
-        final double[] dmin = new double[(nSpecies*(nSpecies-1))/2];
+        final double[] dmin = new double[(speciesCount*(speciesCount-1))/2];
         Arrays.fill(dmin, Double.MAX_VALUE);
 
         for (final Node n : nodes) {
@@ -132,7 +132,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 
                 for (final Integer s1 : sps[0]) {
                     for (final Integer s2 : sps[1]) {
-                        final int i = getDMindex(nSpecies, s1, s2);
+                        final int i = getDMindex(speciesCount, s1, s2);
                         dmin[i] = min(dmin[i], n.getHeight());
                     }
                 }
@@ -144,9 +144,9 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         return dmin;
     }
 
-    private int getDMindex(final int nSpecies, final int s1, final int s2) {
+    private int getDMindex(final int speciesCount, final int s1, final int s2) {
         final int mij = min(s1,s2);
-        return (mij*(2*nSpecies-1 - mij))/2 + (abs(s1-s2)-1);
+        return (mij*(2*speciesCount-1 - mij))/2 + (abs(s1-s2)-1);
     }
 
 
@@ -159,7 +159,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         final Tree stree = speciesTreeInput.get();
         final TaxonSet species = stree.m_taxonset.get();
         final List<String> speciesNames = species.asStringList();
-        final int nSpecies = speciesNames.size();
+        final int speciesCount = speciesNames.size();
 
         final List<Tree> geneTrees = genes.get();
 
@@ -187,13 +187,13 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
               geneTips2Species.put(n.getID(), k);
             }
         }
-        final double[] dg = new double[(nSpecies*(nSpecies-1))/2];
+        final double[] dg = new double[(speciesCount*(speciesCount-1))/2];
 
         final double[][] genesDmins = new double[geneTrees.size()][];
 
         for( int ng = 0; ng < geneTrees.size(); ++ng ) {
             final Tree g = geneTrees.get(ng);
-            final double[] dmin = firstMeetings(g, geneTips2Species, nSpecies);
+            final double[] dmin = firstMeetings(g, geneTips2Species, speciesCount);
             genesDmins[ng] = dmin;
 
             for(int i = 0; i < dmin.length; ++i) {
@@ -202,13 +202,13 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 	// this happens when a gene tree has no taxa for some species-tree taxon.
                 	// TODO: ensure that if this happens, there will always be an "infinite"
                 	// distance between species-taxon 0 and the species-taxon with missing lineages,
-                	// so i < nSpecies - 1.
+                	// so i < speciesCount - 1.
                 	// What if lineages for species-taxon 0 are missing? Then all entries will be 'infinite'.
-                	String id = (i < nSpecies - 1? stree.getExternalNodes().get(i+1).getID() : "unknown taxon");
+                	String id = (i < speciesCount - 1? stree.getExternalNodes().get(i+1).getID() : "unknown taxon");
                 	if (i == 0) {
                 		// test that all entries are 'infinite', which implies taxon 0 has lineages missing 
                 		boolean b = true;
-                		for (int k = 1; b && k < nSpecies - 1; k++) {
+                		for (int k = 1; b && k < speciesCount - 1; k++) {
                 			b = (dmin[k] == Double.MAX_VALUE);
                 		}
                 		if (b) {
@@ -236,7 +236,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         final Distance distance = new Distance() {
             @Override
             public double pairwiseDistance(final int s1, final int s2) {
-                final int i = getDMindex(nSpecies, s1,s2);
+                final int i = getDMindex(speciesCount, s1,s2);
                 return dg[i];
             }
         };
@@ -246,7 +246,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         for(int i = 0; i < speciesNames.size(); ++i) {
             sptips2SpeciesIndex.put(speciesNames.get(i), i);
         }
-        final double[] spmin = firstMeetings(stree, sptips2SpeciesIndex, nSpecies);
+        final double[] spmin = firstMeetings(stree, sptips2SpeciesIndex, speciesCount);
 
         for( int ng = 0; ng < geneTrees.size(); ++ng ) {
             final double[] dmin = genesDmins[ng];
@@ -262,10 +262,10 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 final TaxonSet gtreeTaxa = gtree.m_taxonset.get();
                 final Alignment alignment = gtreeTaxa.alignmentInput.get();
                 final List<String> taxaNames = alignment.getTaxaNames();
-                final int nTaxa =  taxaNames.size();
+                final int taxonCount =  taxaNames.size();
                 // speedup
                 final Map<Integer,Integer> g2s = new HashMap<>();
-                for(int i = 0; i < nTaxa; ++i) {
+                for(int i = 0; i < taxonCount; ++i) {
                     g2s.put(i, geneTips2Species.get(taxaNames.get(i)));
                 }
 
@@ -278,7 +278,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                         final int s2 = g2s.get(t2);
                         double d = jc.pairwiseDistance(t1,t2)/mu;
                         if( s1 != s2 ) {
-                            final int i = getDMindex(nSpecies, s1,s2);
+                            final int i = getDMindex(speciesCount, s1,s2);
                             final double minDist = 2 * spmin[i];
                             if( d <= minDist ) {
                                 d = minDist * 1.001;
@@ -298,7 +298,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             if( lambda != null ) {
                 final double rh = stree.getRoot().getHeight();
                 double l = 0;
-                for(int i = 2; i < nSpecies+1; ++i) {
+                for(int i = 2; i < speciesCount+1; ++i) {
                     l += 1./i;
                 }
                 lambda.setValue((1 / rh) * l);
@@ -349,9 +349,9 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
         final Tree stree = speciesTreeInput.get();
         final TaxonSet species = stree.m_taxonset.get();
-        final int nSpecies = species.asStringList().size();
+        final int speciesCount = species.asStringList().size();
         double s = 0;
-        for(int k = 2; k <= nSpecies; ++k) {
+        for(int k = 2; k <= speciesCount; ++k) {
             s += 1.0/k;
         }
         final double rootHeight = (1/lam) * s;

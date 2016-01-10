@@ -86,7 +86,7 @@ public class Uniform extends TreeOperator {
         final Tree tree = treeInput.get(this);
 
         // randomly select internal node
-        final int nNodeCount = tree.getNodeCount();
+        final int nodeCount = tree.getNodeCount();
         
         // Abort if no non-root internal nodes
         if (tree.getInternalNodeCount()==1)
@@ -94,7 +94,7 @@ public class Uniform extends TreeOperator {
         
         Node node;
         do {
-            final int iNodeNr = nNodeCount / 2 + 1 + Randomizer.nextInt(nNodeCount / 2);
+            final int iNodeNr = nodeCount / 2 + 1 + Randomizer.nextInt(nodeCount / 2);
             node = tree.getNode(iNodeNr);
         } while (node.isRoot() || node.isLeaf());
         final double upper = node.getParent().getHeight();

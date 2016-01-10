@@ -20,10 +20,10 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     public void initAndValidate() throws Exception {
         frequencies = getEmpericalFrequencieValues();
         m_empiricalRates = getEmpericalRateValues();
-        int nFreqs = frequencies.getFreqs().length;
-        if (m_empiricalRates.length != nFreqs * (nFreqs - 1)) {
+        int freqs = frequencies.getFreqs().length;
+        if (m_empiricalRates.length != freqs * (freqs - 1)) {
             throw new IllegalArgumentException("The number of empirical rates (" + m_empiricalRates.length + ") should be " +
-                    "equal to #frequencies * (#frequencies-1) = (" + nFreqs + "*" + (nFreqs - 1) + ").");
+                    "equal to #frequencies * (#frequencies-1) = (" + freqs + "*" + (freqs - 1) + ").");
         }
 
         updateMatrix = true;
@@ -45,15 +45,15 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
      */
     double[] getEmpericalRateValues() throws Exception {
         double[][] matrix = getEmpiricalRates();
-        int[] nOrder = getEncodingOrder();
-        int nStates = matrix.length;
+        int[] order = getEncodingOrder();
+        int states = matrix.length;
 
-        double[] rates = new double[nStates * (nStates - 1)];
+        double[] rates = new double[states * (states - 1)];
         int k = 0;
-        for (int i = 0; i < nStates; i++) {
-            int u = nOrder[i];
-            for (int j = 0; j < nStates; j++) {
-                int v = nOrder[j];
+        for (int i = 0; i < states; i++) {
+            int u = order[i];
+            for (int j = 0; j < states; j++) {
+                int v = order[j];
                 if (i != j) {
                     rates[k++] = matrix[Math.min(u, v)][Math.max(u, v)];
                 }
@@ -67,20 +67,20 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
      */
     Frequencies getEmpericalFrequencieValues() throws Exception {
         double[] freqs = getEmpiricalFrequencies();
-        int[] nOrder = getEncodingOrder();
-        int nStates = freqs.length;
+        int[] order = getEncodingOrder();
+        int states = freqs.length;
         Frequencies freqsParam = new Frequencies();
         String valuesString = "";
 
-        for (int i = 0; i < nStates; i++) {
-            valuesString += freqs[nOrder[i]] + " ";
+        for (int i = 0; i < states; i++) {
+            valuesString += freqs[order[i]] + " ";
         }
         RealParameter freqsRParam = new RealParameter();
         freqsRParam.initByName(
                 "value", valuesString,
                 "lower", 0.0,
                 "upper", 1.0,
-                "dimension", nStates
+                "dimension", states
         );
         freqsParam.frequenciesInput.setValue(freqsRParam, freqsParam);
         freqsParam.initAndValidate();
@@ -111,21 +111,21 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     @Override
     public double[] getRateMatrix(Node node) {
         double[][] matrix = getEmpiricalRates();
-        int nStates = matrix.length;
-        double[] rates = new double[nStates * nStates];
-        for (int i = 0; i < nStates; i++) {
-            for (int j = i + 1; j < nStates; j++) {
-                rates[i * nStates + j] = matrix[i][j];
-                rates[j * nStates + i] = matrix[i][j];
+        int states = matrix.length;
+        double[] rates = new double[states * states];
+        for (int i = 0; i < states; i++) {
+            for (int j = i + 1; j < states; j++) {
+                rates[i * states + j] = matrix[i][j];
+                rates[j * states + i] = matrix[i][j];
             }
         }
         // determine diagonal
-        for (int i = 0; i < nStates; i++) {
+        for (int i = 0; i < states; i++) {
             double sum = 0;
-            for (int j = i + 1; j < nStates; j++) {
-                sum += rates[i * nStates + j];
+            for (int j = i + 1; j < states; j++) {
+                sum += rates[i * states + j];
             }
-            rates[i * nStates + i] = -sum;
+            rates[i * states + i] = -sum;
         }
         return rates;
     }

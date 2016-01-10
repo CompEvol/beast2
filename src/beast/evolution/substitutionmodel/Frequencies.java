@@ -101,10 +101,10 @@ public class Frequencies extends CalculationNode {
             checkFrequencies();
         } else {
             // uniformly distributed
-            int nStates = dataInput.get().getMaxStateCount();
-            freqs = new double[nStates];
-            for (int i = 0; i < nStates; i++) {
-                freqs[i] = 1.0 / nStates;
+            int states = dataInput.get().getMaxStateCount();
+            freqs = new double[states];
+            for (int i = 0; i < states; i++) {
+                freqs[i] = 1.0 / states;
             }
         }
         needsUpdate = false;
@@ -123,17 +123,17 @@ public class Frequencies extends CalculationNode {
         freqs = new double[stateCount];
         Arrays.fill(freqs, 1.0 / stateCount);
 
-        int nAttempts = 0;
+        int attempts = 0;
         double difference;
         do {
             double[] tmpFreq = new double[stateCount];
 
             double total = 0.0;
             for (int i = 0; i < alignment.getPatternCount(); i++) {
-                int[] nPattern = alignment.getPattern(i);
+                int[] pattern = alignment.getPattern(i);
                 double weight = alignment.getPatternWeight(i);
 
-                for (int iValue : nPattern) {
+                for (int iValue : pattern) {
                     int[] codes = dataType.getStatesForCode(iValue);
 
                     double sum = 0.0;
@@ -154,16 +154,16 @@ public class Frequencies extends CalculationNode {
                 difference += Math.abs((tmpFreq[i] / total) - freqs[i]);
                 freqs[i] = tmpFreq[i] / total;
             }
-            nAttempts++;
-        } while (difference > 1E-8 && nAttempts < 1000);
+            attempts++;
+        } while (difference > 1E-8 && attempts < 1000);
 
 //    	Alignment alignment = m_data.get();
 //        m_fFreqs = new double[alignment.getMaxStateCount()];
 //        for (int i = 0; i < alignment.getPatternCount(); i++) {
-//            int[] nPattern = alignment.getPattern(i);
+//            int[] pattern = alignment.getPattern(i);
 //            double weight = alignment.getPatternWeight(i);
 //            DataType dataType = alignment.getDataType();
-//            for (int iValue : nPattern) {
+//            for (int iValue : pattern) {
 //            	if (iValue < 4) {
 //            	int [] codes = dataType.getStatesForCode(iValue);
 //            	for (int iCode : codes) {
@@ -171,7 +171,7 @@ public class Frequencies extends CalculationNode {
 //            	}
 //            	}
 ////                if (iValue < m_fFreqs.length) { // ignore unknowns
-////                    m_fFreqs[iValue] += nWeight;
+////                    m_fFreqs[iValue] += weight;
 ////                }
 //            }
 //        }

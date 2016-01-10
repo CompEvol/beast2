@@ -155,7 +155,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     }
 
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final int sample, final PrintStream out) {
         for (int i = 0; i < dim; i++)
             out.print(getStatisticValue(i) + "\t");
     }

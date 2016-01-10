@@ -157,12 +157,12 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         m_branchLengths = new double[nodeCount];
         storedBranchLengths = new double[nodeCount];
 
-        int nStateCount = dataInput.get().getMaxStateCount();
-        int nPatterns = dataInput.get().getPatternCount();
-        if (nStateCount == 4) {
+        int stateCount = dataInput.get().getMaxStateCount();
+        int patterns = dataInput.get().getPatternCount();
+        if (stateCount == 4) {
             likelihoodCore = new BeerLikelihoodCore4();
         } else {
-            likelihoodCore = new BeerLikelihoodCore(nStateCount);
+            likelihoodCore = new BeerLikelihoodCore(stateCount);
         }
 
         String className = getClass().getSimpleName();
@@ -176,15 +176,15 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
         if (proportionInvariant > 0) {
-            calcConstantPatternIndices(nPatterns, nStateCount);
+            calcConstantPatternIndices(patterns, stateCount);
         }
 
         initCore();
 
-        patternLogLikelihoods = new double[nPatterns];
-        m_fRootPartials = new double[nPatterns * nStateCount];
-        matrixSize = (nStateCount + 1) * (nStateCount + 1);
-        probabilities = new double[(nStateCount + 1) * (nStateCount + 1)];
+        patternLogLikelihoods = new double[patterns];
+        m_fRootPartials = new double[patterns * stateCount];
+        matrixSize = (stateCount + 1) * (stateCount + 1);
+        probabilities = new double[(stateCount + 1) * (stateCount + 1)];
         Arrays.fill(probabilities, 1.0);
 
         if (dataInput.get().isAscertained) {
@@ -201,23 +201,23 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * // taking ambiguities in account, there is a contribution of 1 from
      * // the 'site invariant' category.
      */
-    void calcConstantPatternIndices(final int nPatterns, final int nStateCount) {
+    void calcConstantPatternIndices(final int patterns, final int stateCount) {
         constantPattern = new ArrayList<>();
-        for (int i = 0; i < nPatterns; i++) {
+        for (int i = 0; i < patterns; i++) {
             final int[] pattern = dataInput.get().getPattern(i);
-            final boolean[] isInvariant = new boolean[nStateCount];
+            final boolean[] isInvariant = new boolean[stateCount];
             Arrays.fill(isInvariant, true);
             for (final int state : pattern) {
                 final boolean[] isStateSet = dataInput.get().getStateSet(state);
                 if (m_useAmbiguities.get() || !dataInput.get().getDataType().isAmbiguousState(state)) {
-                    for (int k = 0; k < nStateCount; k++) {
+                    for (int k = 0; k < stateCount; k++) {
                         isInvariant[k] &= isStateSet[k];
                     }
                 }
             }
-            for (int k = 0; k < nStateCount; k++) {
+            for (int k = 0; k < stateCount; k++) {
                 if (isInvariant[k]) {
-                    constantPattern.add(i * nStateCount + k);
+                    constantPattern.add(i * stateCount + k);
                 }
             }
         }
@@ -305,21 +305,21 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     protected void setPartials(Node node, int patternCount) {
         if (node.isLeaf()) {
             Alignment data = dataInput.get();
-            int nStates = data.getDataType().getStateCount();
-            double[] partials = new double[patternCount * nStates];
+            int states = data.getDataType().getStateCount();
+            double[] partials = new double[patternCount * states];
             int k = 0;
             int iTaxon = getTaxonIndex(node.getID(), data);
             for (int iPattern = 0; iPattern < patternCount; iPattern++) {                
                 double[] tipLikelihoods = data.getTipLikelihoods(iTaxon,iPattern);
                 if (tipLikelihoods != null) {
-                	for (int iState = 0; iState < nStates; iState++) {
+                	for (int iState = 0; iState < states; iState++) {
                 		partials[k++] = tipLikelihoods[iState];
                 	}
                 }
                 else {
-                	int nState = data.getPattern(iTaxon, iPattern);
-	                boolean[] stateSet = data.getStateSet(nState);
-	                for (int iState = 0; iState < nStates; iState++) {
+                	int stateCount = data.getPattern(iTaxon, iPattern);
+	                boolean[] stateSet = data.getStateSet(stateCount);
+	                for (int iState = 0; iState < states; iState++) {
 	                	 partials[k++] = (stateSet[iState] ? 1.0 : 0.0);                
 	                }
                 }

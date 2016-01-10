@@ -91,9 +91,9 @@ public class UncertainAlignmentTest extends TestCase {
     	DataType dataType = data.getDataType();
     	
        	System.out.println("Tip likelihoods:");
-    	int nSites = data.getCounts().get(0).size();
+    	int sites = data.getCounts().get(0).size();
     	for (int taxon=0; taxon<data.getTaxonCount(); taxon++) {
-    		for (int i=0; i<nSites; i++) {
+    		for (int i=0; i<sites; i++) {
 	    		double[] probs = data.getTipLikelihoods(taxon,i);
 	    		for (int j=0; j<probs.length; j++) {
 	        		System.out.print(probs[j]+" ");

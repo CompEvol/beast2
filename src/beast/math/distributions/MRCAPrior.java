@@ -272,24 +272,24 @@ public class MRCAPrior extends Distribution {
      * set. When all taxa in the set are visited, record the time.
      * *
      * @param node
-     * @param nTaxonCount
+     * @param taxonCount
      */
-    int calcMRCAtime(final Node node, final int[] nTaxonCount) {
+    int calcMRCAtime(final Node node, final int[] taxonCount2) {
         if (node.isLeaf()) {
-            nTaxonCount[0]++;
+            taxonCount2[0]++;
             if (isInTaxaSet.contains(node.getID())) {
                 return 1;
             } else {
                 return 0;
             }
         } else {
-            int taxonCount = calcMRCAtime(node.getLeft(), nTaxonCount);
-            final int nLeftTaxa = nTaxonCount[0];
-            nTaxonCount[0] = 0;
+            int taxonCount = calcMRCAtime(node.getLeft(), taxonCount2);
+            final int leftTaxa = taxonCount2[0];
+            taxonCount2[0] = 0;
             if (node.getRight() != null) {
-                taxonCount += calcMRCAtime(node.getRight(), nTaxonCount);
-                final int nRightTaxa = nTaxonCount[0];
-                nTaxonCount[0] = nLeftTaxa + nRightTaxa;
+                taxonCount += calcMRCAtime(node.getRight(), taxonCount2);
+                final int rightTaxa = taxonCount2[0];
+                taxonCount2[0] = leftTaxa + rightTaxa;
                 if (taxonCount == nrOfTaxa) {
                 	if (nrOfTaxa == 1 && useOriginate) {
             			MRCATime = node.getDate();
@@ -307,7 +307,7 @@ public class MRCAPrior extends Distribution {
                 	} else {
                 		MRCATime = node.getDate();
                 	}
-                    isMonophyletic = (nTaxonCount[0] == nrOfTaxa);
+                    isMonophyletic = (taxonCount2[0] == nrOfTaxa);
                     return taxonCount + 1;
                 }
             }
@@ -363,7 +363,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final int sample, final PrintStream out) {
         if (onlyUseTips) {
             if (dist != null) {
                 out.print(getCurrentLogP() + "\t");

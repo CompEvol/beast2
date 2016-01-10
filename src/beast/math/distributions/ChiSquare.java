@@ -28,16 +28,16 @@ public class ChiSquare extends ParametricDistribution {
      */
     @SuppressWarnings("deprecation")
 	void refresh() {
-        int nDF;
+        int dF;
         if (dfInput.get() == null) {
-            nDF = 1;
+            dF = 1;
         } else {
-            nDF = dfInput.get().getValue();
-            if (nDF <= 0) {
-                nDF = 1;
+            dF = dfInput.get().getValue();
+            if (dF <= 0) {
+                dF = 1;
             }
         }
-        m_dist.setDegreesOfFreedom(nDF);
+        m_dist.setDegreesOfFreedom(dF);
     }
 
     @Override

@@ -435,8 +435,8 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         nti.setMultifurcationLimit(0);
 
         // code probably incorrect for serial samples
-        final int nLineages = nti.getIntervalCount();
-        assert nLineages >= ttimes[nt].length : nLineages + " " + ttimes[nt].length;
+        final int lineages = nti.getIntervalCount();
+        assert lineages >= ttimes[nt].length : lineages + " " + ttimes[nt].length;
 
         int iCount = 0;
         for (int k = 0; k < ttimes[nt].length; ++k) {
@@ -449,9 +449,9 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
             int linAtStart = nti.getLineageCount(iCount);
             ++iCount;
 
-            assert !(iCount == nLineages && linAtStart != 2);
+            assert !(iCount == lineages && linAtStart != 2);
 
-            int linAtEnd = (iCount == nLineages) ? 1 : nti.getLineageCount(iCount);
+            int linAtEnd = (iCount == lineages) ? 1 : nti.getLineageCount(iCount);
 
             while (linAtStart <= linAtEnd) {
                 ++iCount;
@@ -590,7 +590,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(int sample, PrintStream out) {
         // interval sizes
         out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
         for (int i = 0; i < alltimes.length - (type == Type.STEPWISE ? 1 : 0); i++) {

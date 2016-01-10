@@ -1171,7 +1171,7 @@ public class JSONParser {
 						map.add(new NameValuePair(name, childItem));
 						//setInput(node, parent, name, childItem);
 					}
-					// nChildElements++;
+					// childElements++;
 				} else if (o instanceof JSONArray) {
 					JSONArray list = (JSONArray) o;
 					for (int i = 0; i < list.length(); i++) {

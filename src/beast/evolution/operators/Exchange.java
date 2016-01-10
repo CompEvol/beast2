@@ -107,14 +107,14 @@ public class Exchange extends TreeOperator {
             //        Alternative implementation that has less risk of rejection due to
             //    	  selecting an invalid initial node
             //
-            final int nInternalNodes = tree.getInternalNodeCount();
-            if (nInternalNodes <= 1) {
+            final int internalNodes = tree.getInternalNodeCount();
+            if (internalNodes <= 1) {
                 return Double.NEGATIVE_INFINITY;
             }
 
-            Node iGrandParent = tree.getNode(nInternalNodes + 1 + Randomizer.nextInt(nInternalNodes));
+            Node iGrandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
             while (iGrandParent.getLeft().isLeaf() && iGrandParent.getRight().isLeaf()) {
-                iGrandParent = tree.getNode(nInternalNodes + 1 + Randomizer.nextInt(nInternalNodes));
+                iGrandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
             }
 
             Node iParent = iGrandParent.getLeft();
@@ -131,7 +131,7 @@ public class Exchange extends TreeOperator {
 
             int validGP = 0;
             {
-                for(int i = nInternalNodes + 1; i < 1 + 2*nInternalNodes; ++i) {
+                for(int i = internalNodes + 1; i < 1 + 2*internalNodes; ++i) {
                     validGP += isg(tree.getNode(i));
                 }
             }
@@ -146,12 +146,12 @@ public class Exchange extends TreeOperator {
             return Math.log((float)validGP/validGPafter);
         } else {
 
-            final int nNodes = tree.getNodeCount();
+            final int nodeCount = tree.getNodeCount();
 
             Node i = tree.getRoot();
 
             while (i.isRoot() || i.getParent().isRoot()) {
-                i = tree.getNode(Randomizer.nextInt(nNodes));
+                i = tree.getNode(Randomizer.nextInt(nodeCount));
             }
 
             final Node iParent = i.getParent();

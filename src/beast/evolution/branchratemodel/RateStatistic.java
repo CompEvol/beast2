@@ -177,7 +177,7 @@ public class RateStatistic extends BEASTObject implements Loggable, Function {
 
 
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final int sample, final PrintStream out) {
         final double[] values = calcValues();
         out.print(values[0] + "\t" + values[1] + "\t" + values[2] + "\t");
     }

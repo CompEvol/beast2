@@ -33,9 +33,9 @@ public interface DataType {
      * This is the inverse of string2state()
      * throws exception when State cannot be mapped *
      */
-    String state2string(List<Integer> nStates) throws Exception;
+    String state2string(List<Integer> states) throws Exception;
 
-    String state2string(int[] nStates) throws Exception;
+    String state2string(int[] states) throws Exception;
 
     /**
      * returns an array of length getStateCount() containing the (possibly ambiguous) states
@@ -160,11 +160,11 @@ public interface DataType {
                     // single character codes
                     for (int i = 0; i < data.length(); i++) {
                         char cCode = data.charAt(i);
-                        int nState = codeMap.indexOf(cCode);
-                        if (nState < 0) {
+                        int stateCount = codeMap.indexOf(cCode);
+                        if (stateCount < 0) {
                             throw new IllegalArgumentException("Unknown code found in sequence: " + cCode);
                         }
-                        sequence.add(nState);
+                        sequence.add(stateCount);
                     }
                 } else if (codeLength > 1) {
                     // multi-character codes of fixed length

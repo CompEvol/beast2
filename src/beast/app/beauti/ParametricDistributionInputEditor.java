@@ -162,24 +162,24 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
             minValue = f2; //xRange = adjXRange;
 
-            int nPoints;
+            int points;
             if (!m_distr.isIntegerDistribution()) {
-                nPoints = 100;
+                points = 100;
             } else {
-                nPoints = (int) (xRange);
+                points = (int) (xRange);
             }
-            int[] xPoints = new int[nPoints];
-            int[] yPoints = new int[nPoints];
-            double[] fyPoints = new double[nPoints];
+            int[] xPoints = new int[points];
+            int[] yPoints = new int[points];
+            double[] fyPoints = new double[points];
             double yMax = 0;
-            for (int i = 0; i < nPoints; i++) {
+            for (int i = 0; i < points; i++) {
                 //try {
-                    fyPoints[i] = getDensityForPlot(m_distr, minValue + (xRange * i) / nPoints);
+                    fyPoints[i] = getDensityForPlot(m_distr, minValue + (xRange * i) / points);
                 //}
                 if (Double.isInfinite(fyPoints[i]) || Double.isNaN(fyPoints[i])) {
                     fyPoints[i] = 0;
                 }
-                //fyPoints[i] = Math.exp(m_distr.logDensity(minValue + (xRange * i)/nPoints));
+                //fyPoints[i] = Math.exp(m_distr.logDensity(minValue + (xRange * i)/points));
                 yMax = Math.max(yMax, fyPoints[i]);
             }
 
@@ -210,39 +210,39 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             int leftMargin = maxLabelWidth + TICK_LENGTH + 1 + MARGIN_LEFT_OF_Y_LABELS;
             int bottomMargin = maxLabelHeight + TICK_LENGTH + 1;
 
-            int nGraphWidth = width - leftMargin - RIGHT_MARGIN;
-            int nGraphHeight = height - TOP_MARGIN - bottomMargin - labeloffset;
+            int graphWidth = width - leftMargin - RIGHT_MARGIN;
+            int graphHeight = height - TOP_MARGIN - bottomMargin - labeloffset;
 
             // DRAW GRAPH PAPER
             g.setColor(Color.WHITE);
-            g.fillRect(leftMargin, TOP_MARGIN, nGraphWidth, nGraphHeight);
+            g.fillRect(leftMargin, TOP_MARGIN, graphWidth, graphHeight);
             g.setColor(Color.BLACK);
-            g.drawRect(leftMargin, TOP_MARGIN, nGraphWidth, nGraphHeight);
+            g.drawRect(leftMargin, TOP_MARGIN, graphWidth, graphHeight);
 
-            for (int i = 0; i < nPoints; i++) {
-                xPoints[i] = leftMargin + nGraphWidth * i / nPoints;
-                yPoints[i] = 1 + (int) (TOP_MARGIN + nGraphHeight - nGraphHeight * fyPoints[i] / yMax);
+            for (int i = 0; i < points; i++) {
+                xPoints[i] = leftMargin + graphWidth * i / points;
+                yPoints[i] = 1 + (int) (TOP_MARGIN + graphHeight - graphHeight * fyPoints[i] / yMax);
             }
             if (!m_distr.isIntegerDistribution()) {
-                g.drawPolyline(xPoints, yPoints, nPoints);
+                g.drawPolyline(xPoints, yPoints, points);
             } else {
-                int y0 = 1 + TOP_MARGIN + nGraphHeight;
-                int dotDiameter = nGraphHeight/20;
-                for (int i=0; i<nPoints; i++) {
+                int y0 = 1 + TOP_MARGIN + graphHeight;
+                int dotDiameter = graphHeight/20;
+                for (int i=0; i<points; i++) {
                     g.drawLine(xPoints[i], y0, xPoints[i], yPoints[i]);
                     g.fillOval(xPoints[i]-dotDiameter/2, yPoints[i]-dotDiameter/2, dotDiameter, dotDiameter);
                 }
             }
 
             for (int i = 0; i <= NR_OF_TICKS_X; i++) {
-                int x = leftMargin + i * nGraphWidth / NR_OF_TICKS_X;
-                g.drawLine(x, TOP_MARGIN + nGraphHeight, x, TOP_MARGIN + nGraphHeight + TICK_LENGTH);
-                g.drawString(xlabels[i], x-sfm.stringWidth(xlabels[i])/2, TOP_MARGIN + nGraphHeight + TICK_LENGTH + 1 + sfm.getMaxAscent());
+                int x = leftMargin + i * graphWidth / NR_OF_TICKS_X;
+                g.drawLine(x, TOP_MARGIN + graphHeight, x, TOP_MARGIN + graphHeight + TICK_LENGTH);
+                g.drawString(xlabels[i], x-sfm.stringWidth(xlabels[i])/2, TOP_MARGIN + graphHeight + TICK_LENGTH + 1 + sfm.getMaxAscent());
             }
 
             // draw the y labels and ticks
             for (int i = 0; i <= NR_OF_TICKS_Y; i++) {
-                int y = TOP_MARGIN + nGraphHeight - i * nGraphHeight / NR_OF_TICKS_Y;
+                int y = TOP_MARGIN + graphHeight - i * graphHeight / NR_OF_TICKS_Y;
                 g.drawLine(leftMargin - TICK_LENGTH, y, leftMargin, y);
                 g.drawString(ylabels[i], leftMargin - TICK_LENGTH - 1 - sfm.stringWidth(ylabels[i]), y + 3);
             }
@@ -255,24 +255,24 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             	mayBeUnstable = false;
                 for (k = 0; k < 5; k++) {
 
-                    int y = TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
+                    int y = TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
 
                 	try {
-                        g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), nGraphWidth / 2 + leftMargin, y);
+                        g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), graphWidth / 2 + leftMargin, y);
                     } catch (MathException e) {
-                        g.drawString("not available", nGraphWidth / 2 + leftMargin, y);
+                        g.drawString("not available", graphWidth / 2 + leftMargin, y);
                     }
-                    g.drawString(strs[k], nGraphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - 10, y);
+                    g.drawString(strs[k], graphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - 10, y);
                 }
                 if (mayBeUnstable) {
-                	int x = nGraphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + nGraphHeight + bottomMargin + 10;
+                	int x = graphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + graphHeight + bottomMargin + 10;
                     g.drawString("* numbers", x, y + 20); 
                     g.drawString("may not be", x, y + 30);                	
                     g.drawString("accurate", x, y + 40);                	
                 }
             } catch (Exception e) {
                 // probably something wrong with the parameters of the parametric distribution
-                g.drawString("Improper parameters", leftMargin, TOP_MARGIN + nGraphHeight + bottomMargin + g.getFontMetrics().getMaxAscent());
+                g.drawString("Improper parameters", leftMargin, TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent());
             }
         }
         

@@ -108,8 +108,8 @@ public class InputShape extends Shape {
     }
 
     @Override
-    boolean intersects(int nX, int nY) {
-        return (m_x + m_w / 2 - nX) * (m_x + m_w / 2 - nX) + (m_y + m_h / 2 - nY) * (m_y + m_h / 2 - nY) < m_w * m_w / 4 + m_h * m_h / 4;
+    boolean intersects(int x, int y) {
+        return (m_x + m_w / 2 - x) * (m_x + m_w / 2 - x) + (m_y + m_h / 2 - y) * (m_y + m_h / 2 - y) < m_w * m_w / 4 + m_h * m_h / 4;
     }
 
     @Override

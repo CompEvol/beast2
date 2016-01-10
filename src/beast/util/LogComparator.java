@@ -90,11 +90,11 @@ public class LogComparator {
             }
         }
 
-        int nMax = 0;
+        int max = 0;
         for (int i = 1; i < matchedLabels.size(); i++)
-            nMax = Math.max(matchedLabels.get(i).length(), nMax);
+            max = Math.max(matchedLabels.get(i).length(), max);
         String space = "";
-        for (int i = 0; i < nMax; i++)
+        for (int i = 0; i < max; i++)
             space += " ";
 
         out.println("Comparing log " + analyser1.getLogFile() + " and " + analyser2.getLogFile() + "\n");

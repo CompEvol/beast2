@@ -58,17 +58,17 @@ public class SampleOffValues extends Operator {
 
             // available locations for direct sampling
             int[] loc = new int[idim];
-            int nLoc = 0;
+            int locIndex = 0;
 
             for (int i = 0; i < idim; ++i) {
                 if( !indicators.getValue(i) ) {
-                    loc[nLoc] = i + offset;
-                    ++nLoc;
+                    loc[locIndex] = i + offset;
+                    ++locIndex;
                 }
             }
 
-            if( nLoc > 0 ) {
-                final int index = loc[Randomizer.nextInt(nLoc)];
+            if( locIndex > 0 ) {
+                final int index = loc[Randomizer.nextInt(locIndex)];
                 try {
                     final double val = distribution.inverseCumulativeProbability(Randomizer.nextDouble());
                     hr = distribution.logDensity(data.getValue(index));

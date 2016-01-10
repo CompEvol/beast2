@@ -80,10 +80,10 @@ public class RealParameter extends Parameter.Base<Double> {
      * Loggable implementation *
      */
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final int sample, final PrintStream out) {
         final RealParameter var = (RealParameter) getCurrent();
-        final int nValues = var.getDimension();
-        for (int iValue = 0; iValue < nValues; iValue++) {
+        final int values = var.getDimension();
+        for (int iValue = 0; iValue < values; iValue++) {
             out.print(var.getValue(iValue) + "\t");
         }
     }
@@ -104,10 +104,10 @@ public class RealParameter extends Parameter.Base<Double> {
 
 
     @Override
-    void fromXML(final int nDimension, final String lower, final String upper, final String[] valuesString) {
+    void fromXML(final int dimension, final String lower, final String upper, final String[] valuesString) {
         setLower(Double.parseDouble(lower));
         setUpper(Double.parseDouble(upper));
-        values = new Double[nDimension];
+        values = new Double[dimension];
         for (int i = 0; i < valuesString.length; i++) {
             values[i] = Double.parseDouble(valuesString[i]);
         }

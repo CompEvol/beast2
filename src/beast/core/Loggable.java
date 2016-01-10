@@ -25,10 +25,10 @@ public interface Loggable {
      * log this sample for current state to PrintStream,
      * e.g. value of a parameter, list of parameters or Newick tree
      *
-     * @param nSample chain sample number
+     * @param sample chain sample number
      * @param out     log stream
      */
-    void log(int nSample, PrintStream out);
+    void log(int sample, PrintStream out);
 
     /**
      * close log. An end of log message can be left (as in End; for Nexus trees)

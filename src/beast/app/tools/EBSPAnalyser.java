@@ -45,11 +45,11 @@ public class EBSPAnalyser {
         parse(m_sInputFile, m_nBurninPercentage, m_type, m_out);
     }
 
-    void parse(String fileName, int nBurnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws Exception {
+    void parse(String fileName, int burnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws Exception {
         logln("Processing " + fileName);
         BufferedReader fin = new BufferedReader(new FileReader(fileName));
         String str;
-        int nData = 0;
+        int data = 0;
         // first, sweep through the log file to determine size of the log
         while (fin.ready()) {
             str = fin.readLine();
@@ -65,12 +65,12 @@ public class EBSPAnalyser {
                 }
             }
             if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
-                nData++;
+                data++;
             }
         }
-        final int nBurnIn = nData * nBurnInPercentage / 100;
-        logln(" skipping " + nBurnIn + " line\n\n");
-        nData = -nBurnIn - 1;
+        final int burnIn = data * burnInPercentage / 100;
+        logln(" skipping " + burnIn + " line\n\n");
+        data = -burnIn - 1;
         fin.close();
         fin = new BufferedReader(new FileReader(fileName));
 
@@ -81,7 +81,7 @@ public class EBSPAnalyser {
         while (fin.ready()) {
             str = fin.readLine();
             if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
-                if (++nData > 0) {
+                if (++data > 0) {
                     final String[] strs = str.split("\t");
                     final List<Double> times2 = new ArrayList<>();
                     final List<Double> popSizes2 = new ArrayList<>();

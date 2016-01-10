@@ -161,16 +161,16 @@ public class Node extends BEASTObject {
         return isDirty;
     }
 
-    public void makeDirty(final int nDirty) {
-        isDirty |= nDirty;
+    public void makeDirty(final int dirty) {
+        isDirty |= dirty;
     }
 
-    public void makeAllDirty(final int nDirty) {
-        isDirty = nDirty;
+    public void makeAllDirty(final int dirty) {
+        isDirty = dirty;
         if (!isLeaf()) {
-            getLeft().makeAllDirty(nDirty);
+            getLeft().makeAllDirty(dirty);
             if (getRight() != null) {
-                getRight().makeAllDirty(nDirty);
+                getRight().makeAllDirty(dirty);
             }
         }
     }

@@ -99,9 +99,9 @@ public class SubtreeSlide extends TreeOperator {
         Node i;
         final boolean markClades = markCladesInput.get();
         // 1. choose a random node avoiding root
-        final int nNodes = tree.getNodeCount();
+        final int nodeCount = tree.getNodeCount();
         do {
-            i = tree.getNode(Randomizer.nextInt(nNodes));
+            i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
 
         final Node iP = i.getParent();

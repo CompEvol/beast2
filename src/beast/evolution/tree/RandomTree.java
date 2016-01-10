@@ -141,11 +141,11 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     // returns true if bitSet is a subset of bitSet2
 //    private boolean isSubset(final BitSet bitSet, final BitSet bitSet2) {
-//        boolean bIsSubset = true;
-//        for (int k = bitSet.nextSetBit(0); bIsSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
-//            bIsSubset = bitSet2.get(k);
+//        boolean isSubset = true;
+//        for (int k = bitSet.nextSetBit(0); isSubset && k >= 0; k = bitSet.nextSetBit(k + 1)) {
+//            isSubset = bitSet2.get(k);
 //        }
-//        return bIsSubset;
+//        return isSubset;
 //    }
 
     @SuppressWarnings("unchecked")
@@ -279,7 +279,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         // build tree of mono constraints such that j is parent of i if i is a subset of j but i+1,i+2,...,j-1 are not.
         // The last one, standing for the virtual "root" of all monophyletic clades is not associated with an actual clade
-        final int[] nParent = new int[lastMonophyletic];
+        final int[] parent = new int[lastMonophyletic];
         children = new List[lastMonophyletic + 1];
         for (int i = 0; i < lastMonophyletic + 1; i++) {
             children[i] = new ArrayList<>();
@@ -289,15 +289,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             while (j < lastMonophyletic && !taxonSets.get(j).containsAll(taxonSets.get(i))) {
                 j++;
             }
-            nParent[i] = j;
+            parent[i] = j;
             children[j].add(i);
         }
 
         // make sure upper bounds of a child does not exceed the upper bound of its parent
         for (int i = lastMonophyletic-1; i >= 0 ;--i) {
-            if (nParent[i] < lastMonophyletic ) {
-                if (m_bounds.get(i).upper > m_bounds.get(nParent[i]).upper) {
-                    m_bounds.get(i).upper = m_bounds.get(nParent[i]).upper - 1e-100;
+            if (parent[i] < lastMonophyletic ) {
+                if (m_bounds.get(i).upper > m_bounds.get(parent[i]).upper) {
+                    m_bounds.get(i).upper = m_bounds.get(parent[i]).upper - 1e-100;
                 }
             }
         }
@@ -469,15 +469,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (final int iMonoNode : children[iIsMonophyleticNode]) {
             // create list of leaf nodes for this monophyletic MRCA
             final Set<Node> candidates2 = new HashSet<>();
-            final Set<String> bTaxonSet = taxonSets.get(iMonoNode);
-            for (String taxon : bTaxonSet) {
+            final Set<String> isTaxonSet = taxonSets.get(iMonoNode);
+            for (String taxon : isTaxonSet) {
                 candidates2.add(allCandidates.get(taxon));
             }
 
             final Node MRCA = simulateCoalescent(iMonoNode, allCandidates, candidates2, demoFunction);
             remainingCandidates.add(MRCA);
 
-            taxaDone.addAll(bTaxonSet);
+            taxaDone.addAll(isTaxonSet);
         }
 
         for (final Node node : candidates) {
@@ -751,27 +751,27 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         return null;
     }
 
-    int traverse(final Node node, final Set<String> MRCATaxonSet, final int nNrOfMRCATaxa, final int[] nTaxonCount) {
+    int traverse(final Node node, final Set<String> MRCATaxonSet, final int nrOfMRCATaxa, final int[] taxonCount) {
         if (node.isLeaf()) {
-            nTaxonCount[0]++;
+            taxonCount[0]++;
             if (MRCATaxonSet.contains(node.getID())) {
                 return 1;
             } else {
                 return 0;
             }
         } else {
-            int iTaxons = traverse(node.getLeft(), MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
-            final int nLeftTaxa = nTaxonCount[0];
-            nTaxonCount[0] = 0;
+            int iTaxons = traverse(node.getLeft(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
+            final int leftTaxa = taxonCount[0];
+            taxonCount[0] = 0;
             if (node.getRight() != null) {
-                iTaxons += traverse(node.getRight(), MRCATaxonSet, nNrOfMRCATaxa, nTaxonCount);
-                final int nRightTaxa = nTaxonCount[0];
-                nTaxonCount[0] = nLeftTaxa + nRightTaxa;
+                iTaxons += traverse(node.getRight(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
+                final int rightTaxa = taxonCount[0];
+                taxonCount[0] = leftTaxa + rightTaxa;
             }
             if (iTaxons == nrOfTaxa + 127) {
                 iTaxons++;
             }
-            if (iTaxons == nNrOfMRCATaxa) {
+            if (iTaxons == nrOfMRCATaxa) {
                 // we are at the MRCA, return magic nr
                 return nrOfTaxa + 127;
             }

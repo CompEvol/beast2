@@ -51,24 +51,24 @@ public class AlignmentViewer extends JPanel {
      */
     public AlignmentViewer(Alignment data) throws Exception {
         m_alignment = data;
-        int nSites = data.getSiteCount();
-        int nTaxa = data.getTaxonCount();
-        tableData = new Object[nTaxa][nSites + 1];
+        int siteCount = data.getSiteCount();
+        int taxonCount = data.getTaxonCount();
+        tableData = new Object[taxonCount][siteCount + 1];
         char[] headerChar = updateTableData();
 
         // set up row labels
-        for (int i = 0; i < nTaxa; i++) {
+        for (int i = 0; i < taxonCount; i++) {
             tableData[i][0] = data.getTaxaNames().get(i);
         }
 
         // set up column labels
-        columnData = new Object[nSites + 1];
-        for (int i = 1; i < nSites + 1; i++) {
+        columnData = new Object[siteCount + 1];
+        for (int i = 1; i < siteCount + 1; i++) {
             columnData[i] = "<html>.<br>" + headerChar[i - 1] + "</html>";
         }
         columnData[0] = "<html><br>taxon name</html>";
         columnData[1] = "<html>1<br>" + headerChar[0] + "</html>";
-        for (int i = 10; i < nSites; i += 10) {
+        for (int i = 10; i < siteCount; i += 10) {
             String s = i + "";
             for (int j = 0; j < s.length(); j++) {
             	if (i+j < columnData.length) {
@@ -140,7 +140,7 @@ public class AlignmentViewer extends JPanel {
         mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         mainTable.setFont(font);
         mainTable.getTableHeader().setFont(font);
-        for (int i = 0; i < nSites; i++) {
+        for (int i = 0; i < siteCount; i++) {
             col = mainTable.getColumnModel().getColumn(i);
             col.setPreferredWidth(6);
         }
@@ -164,20 +164,20 @@ public class AlignmentViewer extends JPanel {
     }
 
     private char[] updateTableData() {
-        int nSites = m_alignment.getSiteCount();
-        int nTaxa = m_alignment.getTaxonCount();
+        int siteCount = m_alignment.getSiteCount();
+        int taxonCount = m_alignment.getTaxonCount();
 
         // set up table content
         DataType dataType = m_alignment.getDataType();
-        char[] headerChar = new char[nSites];
+        char[] headerChar = new char[siteCount];
         Object[][] colorMap = setupColorMap();
         try {
-            for (int i = 0; i < nSites; i++) {
+            for (int i = 0; i < siteCount; i++) {
                 int iPattern = m_alignment.getPatternIndex(i);
                 int[] pattern = m_alignment.getPattern(iPattern);
                 String patternString = dataType.state2string(pattern);
                 headerChar[i] = mostFrequentCharInPattern(patternString);
-                for (int j = 0; j < nTaxa; j++) {
+                for (int j = 0; j < taxonCount; j++) {
                     char c = patternString.charAt(j);
                     if (c == headerChar[i]) {
                         tableData[j][i + 1] = colorMap[0][c];
@@ -206,12 +206,12 @@ public class AlignmentViewer extends JPanel {
             String[][] colorMap = new String[2][256];
             for (int k = 'A'; k < 'Z'; k++) {
                 int i = k - 'A';
-                int nRed = ((i & 0x80) >> 7) + ((i & 0x10) >> 4) + ((i & 0x2) << 1);
-                int nGreen = ((i & 0x40) >> 6) + ((i & 0x08) >> 2) + ((i & 0x4));
-                int nBlue = ((i & 0x20) >> 5) + ((i & 0x04) >> 1) + ((i & 0x1) << 2);
-                int nColor = (nRed << 21 + (nGreen << 18)) + (nGreen << 13) + (nBlue << 10) + (nBlue << 5) + (nRed << 2);
-                colorMap[0][k] = "<html><font color='#" + Integer.toString(nColor, 16) + "'><b>.</b></html>";
-                colorMap[1][k] = "<html><font color='#" + Integer.toString(nColor, 16) + "'><b>" + ((char) k) + "</font></html>";
+                int red = ((i & 0x80) >> 7) + ((i & 0x10) >> 4) + ((i & 0x2) << 1);
+                int green = ((i & 0x40) >> 6) + ((i & 0x08) >> 2) + ((i & 0x4));
+                int blue = ((i & 0x20) >> 5) + ((i & 0x04) >> 1) + ((i & 0x1) << 2);
+                int color = (red << 21 + (green << 18)) + (green << 13) + (blue << 10) + (blue << 5) + (red << 2);
+                colorMap[0][k] = "<html><font color='#" + Integer.toString(color, 16) + "'><b>.</b></html>";
+                colorMap[1][k] = "<html><font color='#" + Integer.toString(color, 16) + "'><b>" + ((char) k) + "</font></html>";
             }
             for (char c : m_customColorMap.keySet()) {
                 Color color = m_customColorMap.get(c);
@@ -240,11 +240,11 @@ public class AlignmentViewer extends JPanel {
         for (int i = 0; i < pattern.length(); i++) {
             counts[pattern.charAt(i)]++;
         }
-        int iMax = 0, nMax = 0;
+        int iMax = 0, max = 0;
         for (int i = 0; i < counts.length; i++) {
-            if (counts[i] > nMax) {
+            if (counts[i] > max) {
                 iMax = i;
-                nMax = counts[i];
+                max = counts[i];
             }
         }
         return (char) iMax;

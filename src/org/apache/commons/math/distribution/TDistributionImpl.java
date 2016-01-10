@@ -125,9 +125,9 @@ public class TDistributionImpl
     @Override
     public double density(double x) {
         final double n = degreesOfFreedom;
-        final double nPlus1Over2 = (n + 1) / 2;
-        return Math.exp(Gamma.logGamma(nPlus1Over2) - 0.5 * (Math.log(Math.PI) + Math.log(n)) -
-                Gamma.logGamma(n / 2) - nPlus1Over2 * Math.log(1 + x * x / n));
+        final double plus1Over2 = (n + 1) / 2;
+        return Math.exp(Gamma.logGamma(plus1Over2) - 0.5 * (Math.log(Math.PI) + Math.log(n)) -
+                Gamma.logGamma(n / 2) - plus1Over2 * Math.log(1 + x * x / n));
     }
 
     /**

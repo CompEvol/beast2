@@ -46,7 +46,7 @@ abstract public class LikelihoodCore {
      * reserve memory for partials, indices and other
      * data structures required by the core *
      */
-    abstract public void initialize(int nNodeCount, int nPatternCount, int nMatrixCount, boolean integrateCategories, boolean useAmbiguities);
+    abstract public void initialize(int nodeCount, int patternCount, int matrixCount, boolean integrateCategories, boolean useAmbiguities);
 
     /**
      * clean up after last likelihood calculation, if at all required *

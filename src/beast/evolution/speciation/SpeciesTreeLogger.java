@@ -49,7 +49,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void log(final int nSample, final PrintStream out) {
+    public void log(final int sample, final PrintStream out) {
         // make sure we get the current version of the inputs
         final Tree tree = (Tree) treeInput.get().getCurrent();
         Function metadata = parameterInput.get();
@@ -69,7 +69,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
         }
 
         // write out the log tree with meta data
-        out.print("tree STATE_" + nSample + " = ");
+        out.print("tree STATE_" + sample + " = ");
         tree.getRoot().sort();
         out.print(toNewick(tree.getRoot(), metadata, metadataTop, metadataList));
         //out.print(tree.getRoot().toShortNewick(false));

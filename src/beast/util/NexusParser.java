@@ -176,7 +176,7 @@ public class NexusParser {
 
 //				Node tree = treeParser.getRoot();
 //				tree.sort();
-//				tree.labelInternalNodes(nNrOfLabels);
+//				tree.labelInternalNodes(nrOfLabels);
             }
             str = fin.readLine();
             if (str != null) str = str.trim();
@@ -246,14 +246,14 @@ public class NexusParser {
 
     private void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
-        int nTaxaExpected = -1;
+        int expectedTaxonCount = -1;
         String str;
         do {
             str = nextLine(fin);
             if (str.toLowerCase().matches("\\s*dimensions\\s.*")) {
                 str = str.substring(str.toLowerCase().indexOf("ntax=") + 5);
                 str = str.replaceAll(";", "");
-                nTaxaExpected = Integer.parseInt(str.trim());
+                expectedTaxonCount = Integer.parseInt(str.trim());
             } else if (str.toLowerCase().trim().equals("taxlabels")) {
                 do {
                     str = nextLine(fin);
@@ -279,9 +279,9 @@ public class NexusParser {
                 } while (!str.toLowerCase().equals("end"));
             }
         } while (!str.toLowerCase().equals("end"));
-        if (nTaxaExpected >= 0 && taxa.size() != nTaxaExpected) {
+        if (expectedTaxonCount >= 0 && taxa.size() != expectedTaxonCount) {
             throw new IOException("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
-            		"field (" + nTaxaExpected + ") specified in 'taxa' block");
+            		"field (" + expectedTaxonCount + ") specified in 'taxa' block");
         }
     }
 
@@ -342,9 +342,9 @@ public class NexusParser {
         final Alignment alignment = new Alignment();
 
         String str;
-        int nTaxa = -1;
-        int nChar = -1;
-        int nTotalCount = 4;
+        int taxonCount = -1;
+        int charCount = -1;
+        int totalCount = 4;
         String missing = "?";
         String gap = "-";
         // indicates character matches the one in the first sequence
@@ -363,10 +363,10 @@ public class NexusParser {
                 if (character == null) {
                     throw new IOException("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + str);
                 }
-                nChar = Integer.parseInt(character);
+                charCount = Integer.parseInt(character);
                 final String taxa = getAttValue("ntax", str);
                 if (taxa != null) {
-                    nTaxa = Integer.parseInt(taxa);
+                    taxonCount = Integer.parseInt(taxa);
                 }
             } else if (str.toLowerCase().contains("format")) {
                 while (str.indexOf(';') < 0) {
@@ -386,31 +386,31 @@ public class NexusParser {
                     Log.warning.println("Warning: expected datatype (e.g. something like 'format datatype=dna;') not '" + str + "' Assuming integer dataType");
                     alignment.dataTypeInput.setValue("integer", alignment);
                     if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
-                        nTotalCount = symbols.length();
+                        totalCount = symbols.length();
                     }
                 } else if (dataTypeName.toLowerCase().equals("rna") || dataTypeName.toLowerCase().equals("dna") || dataTypeName.toLowerCase().equals("nucleotide")) {
                     alignment.dataTypeInput.setValue("nucleotide", alignment);
-                    nTotalCount = 4;
+                    totalCount = 4;
                 } else if (dataTypeName.toLowerCase().equals("aminoacid") || dataTypeName.toLowerCase().equals("protein")) {
                     alignment.dataTypeInput.setValue("aminoacid", alignment);
-                    nTotalCount = 20;
+                    totalCount = 20;
                 } else if (dataTypeName.toLowerCase().equals("standard")) {
                     alignment.dataTypeInput.setValue("standard", alignment);
-                    nTotalCount = symbols.length();
+                    totalCount = symbols.length();
 //                    if (symbols == null || symbols.equals("01")) {
 //                        alignment.dataTypeInput.setValue("binary", alignment);
-//                        nTotalCount = 2;
+//                        totalCount = 2;
 //                    }  else {
 //                        alignment.dataTypeInput.setValue("standard", alignment);
-//                        nTotalCount = symbols.length();
+//                        totalCount = symbols.length();
 //                    }
                 } else if (dataTypeName.toLowerCase().equals("binary")) {
                     alignment.dataTypeInput.setValue("binary", alignment);
-                    nTotalCount = 2;
+                    totalCount = 2;
                 } else {
                     alignment.dataTypeInput.setValue("integer", alignment);
                     if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
-                        nTotalCount = symbols.length();
+                        totalCount = symbols.length();
                     }
                 }
                 final String missingChar = getAttValue("missing", str);
@@ -427,7 +427,7 @@ public class NexusParser {
 
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
-            type.setInputValue("nrOfStates", nTotalCount);
+            type.setInputValue("nrOfStates", totalCount);
         	type.initAndValidate();
             alignment.setInputValue("userDataType", type);
         }
@@ -515,7 +515,7 @@ public class NexusParser {
 //                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
 //            }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
-            standardDataType.setInputValue("nrOfStates", Math.max(maxNumberOfStates[0], nTotalCount));
+            standardDataType.setInputValue("nrOfStates", Math.max(maxNumberOfStates[0], totalCount));
             standardDataType.initAndValidate();
             for (UserDataType dataType : standardDataType.charStateLabelsInput.get()) {
             	dataType.initAndValidate();
@@ -562,7 +562,7 @@ public class NexusParser {
                 if (iEnd < str.length()) {
                     taxon = str.substring(iStart, iEnd);
                     seqLen = 0;
-                } else if ((prevTaxon == null || seqLen == nChar) && iEnd == str.length()) {
+                } else if ((prevTaxon == null || seqLen == charCount) && iEnd == str.length()) {
                     taxon = str.substring(iStart, iEnd);
                     seqLen = 0;
                 } else {
@@ -599,7 +599,7 @@ public class NexusParser {
                 taxa.add(taxon);
             }
         }
-        if (nTaxa > 0 && taxa.size() > nTaxa) {
+        if (taxonCount > 0 && taxa.size() > taxonCount) {
             throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + taxa);
         }
 
@@ -642,8 +642,8 @@ public class NexusParser {
             }
 
             //check the length of the sequence (treat ambiguity sets as single characters)
-            if (data_without_ambiguities.length() != nChar) {
-                throw new IOException(str + "\nExpected sequence of length " + nChar + " instead of " + data.length() + " for taxon " + taxon);
+            if (data_without_ambiguities.length() != charCount) {
+                throw new IOException(str + "\nExpected sequence of length " + charCount + " instead of " + data.length() + " for taxon " + taxon);
             }
 
             // map to standard missing and gap chars
@@ -668,7 +668,7 @@ public class NexusParser {
             	alignment.setInputValue(taxon, data);
             } else {
 	            final Sequence sequence = new Sequence();
-	            sequence.init(nTotalCount, taxon, data);
+	            sequence.init(totalCount, taxon, data);
 	            sequence.setID(generateSequenceID(taxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);
             }
@@ -688,8 +688,8 @@ public class NexusParser {
         }
 
         alignment.initAndValidate();
-        if (nTaxa > 0 && nTaxa != alignment.getTaxonCount()) {
-            throw new IOException("dimensions block says there are " + nTaxa + " taxa, but there were " + alignment.getTaxonCount() + " taxa found");
+        if (taxonCount > 0 && taxonCount != alignment.getTaxonCount()) {
+            throw new IOException("dimensions block says there are " + taxonCount + " taxa, but there were " + alignment.getTaxonCount() + " taxa found");
         }
         return alignment;
     } // parseDataBlock

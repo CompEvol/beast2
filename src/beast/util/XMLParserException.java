@@ -54,11 +54,11 @@ public class XMLParserException extends Exception {
     	super(msg);
     }
     
-    public XMLParserException(Node node, String msg, int nErrorNr) {
+    public XMLParserException(Node node, String msg, int errorNr) {
         super(msg);
         _node = node;
         msg = "";
-        errorNr = nErrorNr;
+        errorNr = errorNr;
     }
 
     // format message and resolve parent

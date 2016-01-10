@@ -242,12 +242,12 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     ExtensionFileFilter ef5 = new ExtensionFileFilter(".png", "PNG images");
 
     boolean validateModel() {
-        int nStatus = m_doc.isValidModel();
-        if (nStatus == Document.STATUS_OK) {
+        int status = m_doc.isValidModel();
+        if (status == Document.STATUS_OK) {
             return true;
         }
         String msg = "<html>Document is not valid: ";
-        switch (nStatus) {
+        switch (status) {
             case Document.STATUS_CYCLE:
                 msg += "there is a cycle in the model.";
                 break;
@@ -1237,9 +1237,9 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     void updateStatus() {
         a_undo.setEnabled(m_doc.canUndo());
         a_redo.setEnabled(m_doc.canRedo());
-        int nSelectionSize = m_Selection.m_Selection.size();
-        boolean hasSelection = (nSelectionSize > 0);
-        boolean hasGroupSelection = (nSelectionSize > 1);
+        int selectionSize = m_Selection.m_Selection.size();
+        boolean hasSelection = (selectionSize > 0);
+        boolean hasGroupSelection = (selectionSize > 1);
 
         a_delnode.setEnabled(hasSelection);
         a_copynode.setEnabled(hasSelection);
@@ -1808,15 +1808,15 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                             BEASTObjectDialog dlg = new BEASTObjectDialog(beastObject, beastObject.getClass(), beastObjects, null);
                             if (dlg.showDialog()) {
                                 // add newly created Plug-ins
-                                int nNewShapes = 0;
+                                int newShapes = 0;
                                 if (beastObjects.size() < BEASTObjectPanel.g_plugins.size()) {
                                     for (BEASTInterface beastObject2 : BEASTObjectPanel.g_plugins.values()) {
                                         if (!beastObjects.contains(beastObject2)) {
                                             try {
-                                                nNewShapes++;
+                                                newShapes++;
                                                 Shape shape2 = new BEASTObjectShape(beastObject2, m_doc);
                                                 shape2.m_x = 10;
-                                                shape2.m_y = nNewShapes * 50;
+                                                shape2.m_y = newShapes * 50;
                                                 shape2.m_w = 80;
                                                 m_doc.addNewShape(shape2);
                                                 updateStatus();
