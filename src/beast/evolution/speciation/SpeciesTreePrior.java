@@ -142,8 +142,8 @@ public class SpeciesTreePrior extends TreeDistribution {
                 case linear_with_constant_root:
 //			logP += m_gamma4Prior.calcLogP(m_fPopSizesBottom);
 //			logP += m_gamma2Prior.calcLogP(m_fPopSizesTop);
-//			int iRoot = m_tree.get().getRoot().getNr();
-//			double popSize = m_fPopSizesTop.getValue(iRoot);
+//			int rootNr = m_tree.get().getRoot().getNr();
+//			double popSize = m_fPopSizesTop.getValue(rootNr);
 //			logP -= m_gamma2Prior.logDensity(popSize); 
 
                     for (int i = 0; i < speciesNodes.length; i++) {
@@ -157,8 +157,8 @@ public class SpeciesTreePrior extends TreeDistribution {
                                 final double popSizeTop = popSizesTop.getArrayValue(i);
                                 logP += gamma2Prior.logDensity(popSizeTop);
                             } else {
-                                final int iNode = treeInput.get().getRoot().getNr();
-                                final double popSizeTop = popSizesTop.getArrayValue(iNode);
+                                final int nodeIndex = treeInput.get().getRoot().getNr();
+                                final double popSizeTop = popSizesTop.getArrayValue(nodeIndex);
                                 logP += gamma2Prior.logDensity(popSizeTop);
                             }
                         }

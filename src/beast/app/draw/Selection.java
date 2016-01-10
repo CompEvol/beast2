@@ -71,34 +71,34 @@ public class Selection {
 //    	m_Selection.add(selection);
 //    	m_tracker = ((Shape) doc.m_objects.get(selection)).getTracker();
 //    }
-    boolean contains(int iSelection) {
+    boolean contains(int selectionIndex) {
         for (int i = 0; i < m_Selection.size(); i++) {
-            if (iSelection == m_Selection.get(i).intValue()) {
+            if (selectionIndex == m_Selection.get(i).intValue()) {
                 return true;
             }
         }
         return false;
     } // contains
 
-    void addToSelection(int iSelection) {
-        if (contains(iSelection)) {
+    void addToSelection(int selectionIndex) {
+        if (contains(selectionIndex)) {
             return;
         }
-        m_Selection.add(new Integer(iSelection));
-        List<TrackPoint> tracker = m_doc.m_objects.get(iSelection).getTracker();
+        m_Selection.add(new Integer(selectionIndex));
+        List<TrackPoint> tracker = m_doc.m_objects.get(selectionIndex).getTracker();
         if (m_tracker == null) {
             m_tracker = new ArrayList<>();
         }
         m_tracker.addAll(tracker);
     } // addToSelection
 
-    void toggleSelection(int iSelection) {
-        if (!contains(iSelection)) {
-            addToSelection(iSelection);
+    void toggleSelection(int selectionIndex) {
+        if (!contains(selectionIndex)) {
+            addToSelection(selectionIndex);
         } else {
             m_tracker.removeAll(m_tracker);
             for (int i = 0; i < m_Selection.size(); i++) {
-                if (iSelection == m_Selection.get(i).intValue()) {
+                if (selectionIndex == m_Selection.get(i).intValue()) {
                     m_Selection.remove(i);
                     i--;
                 } else {
@@ -120,8 +120,8 @@ public class Selection {
 
     boolean intersects(int x, int y) {
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iShape = m_Selection.get(i).intValue();
-            if (m_doc.m_objects.get(iShape).intersects(x, y)) {
+            int shapeIndex = m_Selection.get(i).intValue();
+            if (m_doc.m_objects.get(shapeIndex).intersects(x, y)) {
                 return true;
             }
         }
@@ -143,8 +143,8 @@ public class Selection {
             p.m_nY += dY;
         }
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iShape = m_Selection.get(i).intValue();
-            Shape shape = m_doc.m_objects.get(iShape);
+            int shapeIndex = m_Selection.get(i).intValue();
+            Shape shape = m_doc.m_objects.get(shapeIndex);
             shape.offset(dX, dY);
         }
     }
@@ -155,8 +155,8 @@ public class Selection {
         }
         m_tracker.removeAll(m_tracker);
         for (int i = 0; i < m_Selection.size(); i++) {
-            int iSelection = m_Selection.get(i).intValue();
-            List<TrackPoint> tracker = m_doc.m_objects.get(iSelection).getTracker();
+            int selectionIndex = m_Selection.get(i).intValue();
+            List<TrackPoint> tracker = m_doc.m_objects.get(selectionIndex).getTracker();
             m_tracker.addAll(tracker);
         }
     }

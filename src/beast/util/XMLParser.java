@@ -293,7 +293,7 @@ public class XMLParser {
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti *
      */
-    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> iDMap, final boolean initialise) throws Exception {
+    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> idMap, final boolean initialise) throws Exception {
         needsInitialisation = initialise;
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -304,7 +304,7 @@ public class XMLParser {
         
         //XMLParserUtils.saveDocAsXML(doc, "/tmp/beast2.xml");
 
-        IDMap = iDMap;//new HashMap<>();
+        IDMap = idMap;//new HashMap<>();
         likelihoodMap = new HashMap<>();
         IDNodeMap = new HashMap<>();
 
@@ -630,30 +630,30 @@ public class XMLParser {
             }
         }
 
-        final String iDRef = getIDRef(node);
-        if (iDRef != null) {
+        final String dRef = getIDRef(node);
+        if (dRef != null) {
             // produce warning if there are other attributes than idref
             if (node.getAttributes().getLength() > 1) {
                 // check if there are just 2 attributes and other attribute is 'name' and/or 'id'
             	final int offset = (getAttribute(node, "id") == null? 0: 1) + (getAttribute(node, "name") == null? 0: 1);
                 if (node.getAttributes().getLength() > 1 + offset) {
-                    Log.warning.println("Element " + node.getNodeName() + " found with idref='" + iDRef + "'. All other attributes are ignored.\n");
+                    Log.warning.println("Element " + node.getNodeName() + " found with idref='" + dRef + "'. All other attributes are ignored.\n");
                 }
             }
-            if (IDMap.containsKey(iDRef)) {
-                final BEASTInterface beastObject = IDMap.get(iDRef);
+            if (IDMap.containsKey(dRef)) {
+                final BEASTInterface beastObject = IDMap.get(dRef);
                 if (checkType(classname, beastObject)) {
                     return beastObject;
                 }
-                throw new XMLParserException(node, "id=" + iDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
-            } else if (IDNodeMap.containsKey(iDRef)) {
-                final BEASTInterface beastObject = createObject(IDNodeMap.get(iDRef), classname);
+                throw new XMLParserException(node, "id=" + dRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
+            } else if (IDNodeMap.containsKey(dRef)) {
+                final BEASTInterface beastObject = createObject(IDNodeMap.get(dRef), classname);
                 if (checkType(classname, beastObject)) {
                     return beastObject;
                 }
-                throw new XMLParserException(node, "id=" + iDRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 107);
+                throw new XMLParserException(node, "id=" + dRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 107);
             }
-            throw new XMLParserException(node, "Could not find object associated with idref " + iDRef, 170);
+            throw new XMLParserException(node, "Could not find object associated with idref " + dRef, 170);
         }
         // it's not in the ID map yet, so we have to create a new object
         String specClass = classname;
@@ -824,7 +824,7 @@ public class XMLParser {
 
     
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private BEASTInterface useAnnotatedConstructor(Node node, String iD, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
+	private BEASTInterface useAnnotatedConstructor(Node node, String _id, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
 		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(clazzName);

@@ -53,7 +53,7 @@ public class TreeHeightLogger extends CalculationNode implements Loggable, Funct
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(int dim) {
         return treeInput.get().getRoot().getHeight();
     }
 }

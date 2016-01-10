@@ -169,13 +169,13 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
 
             @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow,
-                                                         int iCol) {
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowNr,
+                                                         int colNr) {
                 if (!isSelected) {
                     return null;
                 }
-                m_iRow = iRow;
-                m_iCol = iCol;
+                m_iRow = rowNr;
+                m_iCol = colNr;
                 m_textField.setText((String) value);
                 return m_textField;
             }

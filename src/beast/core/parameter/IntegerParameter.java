@@ -72,13 +72,13 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
         return values[0];
     }
 
-    public int getNativeValue(final int iValue) {
-        return values[iValue];
+    public int getNativeValue(final int value) {
+        return values[value];
     }
 
     @Override
-    public double getArrayValue(int iValue) {
-        return values[iValue];
+    public double getArrayValue(int value) {
+        return values[value];
     }
 
     /**

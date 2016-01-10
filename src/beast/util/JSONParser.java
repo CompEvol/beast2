@@ -209,7 +209,7 @@ public class JSONParser {
 	 * Beauti *
 	 */
 	// public List<BEASTObject> parseTemplate(String xml, HashMap<String, BEASTObject>
-	// iDMap, boolean initialise) throws Exception {
+	// idMap, boolean initialise) throws Exception {
 	// m_bInitialize = initialise;
 	// // parse the XML file into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -218,7 +218,7 @@ public class JSONParser {
 	// StringReader(xml)));
 	// processPlates();
 	//
-	// IDMap = iDMap;//new HashMap<>();
+	// IDMap = idMap;//new HashMap<>();
 	// likelihoodMap = new HashMap<>();
 	// IDNodeMap = new HashMap<>();
 	//
@@ -987,7 +987,7 @@ public class JSONParser {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private BEASTInterface useAnnotatedConstructor(JSONObject node, String iD, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
+	private BEASTInterface useAnnotatedConstructor(JSONObject node, String _id, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
 		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(clazzName);

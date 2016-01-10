@@ -17,7 +17,7 @@ public class UniformOperator extends Operator {
     int howMany;
     Parameter<?> parameter;
     double lower, upper;
-    int iLower, iUpper;
+    int lowerIndex, upperIndex;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -26,8 +26,8 @@ public class UniformOperator extends Operator {
             lower = (Double) parameter.getLower();
             upper = (Double) parameter.getUpper();
         } else if (parameter instanceof IntegerParameter) {
-            iLower = (Integer) parameter.getLower();
-            iUpper = (Integer) parameter.getUpper();
+            lowerIndex = (Integer) parameter.getLower();
+            upperIndex = (Integer) parameter.getUpper();
         } else {
             throw new IllegalArgumentException("parameter should be a RealParameter or IntergerParameter, not " + parameter.getClass().getName());
         }
@@ -45,7 +45,7 @@ public class UniformOperator extends Operator {
             int index = Randomizer.nextInt(parameter.getDimension());
 
             if (parameter instanceof IntegerParameter) {
-                int newValue = Randomizer.nextInt(iUpper - iLower + 1) + iLower; // from 0 to n-1, n must > 0,
+                int newValue = Randomizer.nextInt(upperIndex - lowerIndex + 1) + lowerIndex; // from 0 to n-1, n must > 0,
                 ((IntegerParameter) parameter).setValue(index, newValue);
             } else {
                 double newValue = Randomizer.nextDouble() * (upper - lower) + lower;

@@ -60,10 +60,10 @@ public class FrequenciesInputEditor extends BEASTObjectInputEditor {
         comboBox.addActionListener(e -> {
                 //@SuppressWarnings("unchecked")
 				//JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
-                int iSelected = comboBox.getSelectedIndex();
+                int selected = comboBox.getSelectedIndex();
                 //Frequencies freqs = (Frequencies) m_input.get();
                 try {
-                    switch (iSelected) {
+                    switch (selected) {
                         case 0:
                             freqs.frequenciesInput.setValue(freqsParameter, freqs);
                             freqs.dataInput.setValue(null, freqs);

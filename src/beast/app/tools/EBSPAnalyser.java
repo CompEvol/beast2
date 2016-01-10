@@ -175,7 +175,7 @@ public class EBSPAnalyser {
         int i = 0;
         try {
             while (i < args.length) {
-                int iOld = i;
+                int old = i;
                 if (i < args.length) {
                     if (args[i].equals("")) {
                         i += 1;
@@ -202,7 +202,7 @@ public class EBSPAnalyser {
                         m_nBurninPercentage = Integer.parseInt(args[i + 1]);
                         i += 2;
                     }
-                    if (i == iOld) {
+                    if (i == old) {
                         throw new IllegalArgumentException("Unrecognised argument (argument " + i + ": " + args[i] + ")");
                     }
                 }

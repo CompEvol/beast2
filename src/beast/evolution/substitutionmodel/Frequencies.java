@@ -133,17 +133,17 @@ public class Frequencies extends CalculationNode {
                 int[] pattern = alignment.getPattern(i);
                 double weight = alignment.getPatternWeight(i);
 
-                for (int iValue : pattern) {
-                    int[] codes = dataType.getStatesForCode(iValue);
+                for (int value : pattern) {
+                    int[] codes = dataType.getStatesForCode(value);
 
                     double sum = 0.0;
-                    for (int iCode : codes) {
-                        sum += freqs[iCode];
+                    for (int codeIndex : codes) {
+                        sum += freqs[codeIndex];
                     }
 
-                    for (int iCode : codes) {
-                        double tmp = (freqs[iCode] * weight) / sum;
-                        tmpFreq[iCode] += tmp;
+                    for (int codeIndex : codes) {
+                        double tmp = (freqs[codeIndex] * weight) / sum;
+                        tmpFreq[codeIndex] += tmp;
                         total += tmp;
                     }
                 }
@@ -163,15 +163,15 @@ public class Frequencies extends CalculationNode {
 //            int[] pattern = alignment.getPattern(i);
 //            double weight = alignment.getPatternWeight(i);
 //            DataType dataType = alignment.getDataType();
-//            for (int iValue : pattern) {
-//            	if (iValue < 4) {
-//            	int [] codes = dataType.getStatesForCode(iValue);
-//            	for (int iCode : codes) {
-//                    m_fFreqs[iCode] += weight / codes.length;
+//            for (int value : pattern) {
+//            	if (value < 4) {
+//            	int [] codes = dataType.getStatesForCode(value);
+//            	for (int codeIndex : codes) {
+//                    m_fFreqs[codeIndex] += weight / codes.length;
 //            	}
 //            	}
-////                if (iValue < m_fFreqs.length) { // ignore unknowns
-////                    m_fFreqs[iValue] += weight;
+////                if (value < m_fFreqs.length) { // ignore unknowns
+////                    m_fFreqs[value] += weight;
 ////                }
 //            }
 //        }

@@ -55,59 +55,59 @@ abstract public class LikelihoodCore {
 	abstract public void finalize() throws java.lang.Throwable;
 
     /**
-     * reserve memory for partials for node with number iNode *
+     * reserve memory for partials for node with number nodeIndex *
      */
-    abstract public void createNodePartials(int iNode);
+    abstract public void createNodePartials(int nodeIndex);
 
 
     /**
      * indicate that the partials for node
-     * iNode is about the be changed, that is, that the stored
-     * state for node iNode cannot be reused *
+     * nodeIndex is about the be changed, that is, that the stored
+     * state for node nodeIndex cannot be reused *
      */
-    abstract public void setNodePartialsForUpdate(int iNode);
+    abstract public void setNodePartialsForUpdate(int nodeIndex);
 
     /**
-     * assign values of partials for node with number iNode *
+     * assign values of partials for node with number nodeIndex *
      */
-    abstract public void setNodePartials(int iNode, double[] partials);
+    abstract public void setNodePartials(int nodeIndex, double[] partials);
 
-    abstract public void getNodePartials(int iNode, double[] partials);
-    //abstract public void setCurrentNodePartials(int iNode, double[] partials);
+    abstract public void getNodePartials(int nodeIndex, double[] partials);
+    //abstract public void setCurrentNodePartials(int nodeIndex, double[] partials);
 
-    /** reserve memory for states for node with number iNode **/
-    //abstract public void createNodeStates(int iNode);
+    /** reserve memory for states for node with number nodeIndex **/
+    //abstract public void createNodeStates(int nodeIndex);
 
     /**
-     * assign values of states for node with number iNode *
+     * assign values of states for node with number nodeIndex *
      */
-    abstract public void setNodeStates(int iNode, int[] iStates);
+    abstract public void setNodeStates(int nodeIndex, int[] states);
 
-    abstract public void getNodeStates(int iNode, int[] iStates);
+    abstract public void getNodeStates(int nodeIndex, int[] states);
 
     /**
      * indicate that the probability transition matrix for node
-     * iNode is about the be changed, that is, that the stored
-     * state for node iNode cannot be reused *
+     * nodeIndex is about the be changed, that is, that the stored
+     * state for node nodeIndex cannot be reused *
      */
-    abstract public void setNodeMatrixForUpdate(int iNode);
+    abstract public void setNodeMatrixForUpdate(int nodeIndex);
 
     /**
-     * assign values of states for probability transition matrix for node with number iNode *
+     * assign values of states for probability transition matrix for node with number nodeIndex *
      */
-    abstract public void setNodeMatrix(int iNode, int iMatrixIndex, double[] matrix);
+    abstract public void setNodeMatrix(int nodeIndex, int matrixIndex, double[] matrix);
 
-    abstract public void getNodeMatrix(int iNode, int iMatrixIndex, double[] matrix);
+    abstract public void getNodeMatrix(int nodeIndex, int matrixIndex, double[] matrix);
     /** assign values of states for probability transition matrices 
-     * padded with 1s for dealing with unknown characters for node with number iNode **/
-//	abstract public void setPaddedNodeMatrices(int iNode, double[] matrix);
+     * padded with 1s for dealing with unknown characters for node with number nodeIndex **/
+//	abstract public void setPaddedNodeMatrices(int nodeIndex, double[] matrix);
 
 
     /**
      * indicate that the topology of the tree chanced so the cache
      * data structures cannot be reused *
      */
-    public void setNodeStatesForUpdate(int iNode) {
+    public void setNodeStatesForUpdate(int nodeIndex) {
     }
 
     ;
@@ -129,20 +129,20 @@ abstract public class LikelihoodCore {
     /**
      * return the cumulative scaling effect. Should be zero if no scaling is used *
      */
-    abstract public double getLogScalingFactor(int iPattern);
+    abstract public double getLogScalingFactor(int patternIndex_);
 
     /**
-     * Calculate partials for node iNode3, with children iNode1 and iNode2.
+     * Calculate partials for node node3, with children node1 and node2Index.
      * NB Depending on whether the child nodes contain states or partials, the
      * calculation differs-*
      */
-    abstract public void calculatePartials(int iNode1, int iNode2, int iNode3);
-    //abstract public void calculatePartials(int iNode1, int iNode2, int iNode3, int[] iMatrixMap);
+    abstract public void calculatePartials(int node1, int node2Index, int node3);
+    //abstract public void calculatePartials(int node1, int node2Index, int node3, int[] matrixMap);
 
     /**
      * integrate partials over categories (if any). *
      */
-    abstract public void integratePartials(int iNode, double[] proportions, double[] outPartials);
+    abstract public void integratePartials(int nodeIndex, double[] proportions, double[] outPartials);
 
     /**
      * calculate log likelihoods at the root of the tree,
@@ -157,9 +157,9 @@ abstract public class LikelihoodCore {
     }
 
     abstract protected void calculateIntegratePartials(double[] inPartials, double[] proportions, double[] outPartials);
-//    abstract public void calcRootPsuedoRootPartials(double[] frequencies, int iNode, double [] pseudoPartials);
-//    abstract public void calcNodePsuedoRootPartials(double[] inPseudoPartials, int iNode, double [] outPseudoPartials);
-//    abstract public void calcPsuedoRootPartials(double [] parentPseudoPartials, int iNode, double [] pseudoPartials);
+//    abstract public void calcRootPsuedoRootPartials(double[] frequencies, int nodeIndex, double [] pseudoPartials);
+//    abstract public void calcNodePsuedoRootPartials(double[] inPseudoPartials, int nodeIndex, double [] outPseudoPartials);
+//    abstract public void calcPsuedoRootPartials(double [] parentPseudoPartials, int nodeIndex, double [] pseudoPartials);
 //    abstract void integratePartialsP(double [] inPartials, double [] proportions, double [] m_fRootPartials);
 //    abstract void calculateLogLikelihoodsP(double[] partials,double[] outLogLikelihoods);
 

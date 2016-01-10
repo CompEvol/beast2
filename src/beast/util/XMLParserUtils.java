@@ -87,8 +87,8 @@ public class XMLParserUtils {
             for (final String val : vals) {
                 // copy children
                 final NodeList children = node.getChildNodes();
-                for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                    final Node child = children.item(iChild);
+                for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+                    final Node child = children.item(childIndex);
                     final Node newChild = child.cloneNode(true);
                     replaceVariable(newChild, var, val);
                     node.getParentNode().insertBefore(newChild, node);
@@ -162,8 +162,8 @@ public class XMLParserUtils {
 
         // process children
         final NodeList children = node.getChildNodes();
-        for (int iChild = 0; iChild < children.getLength(); iChild++) {
-            final Node child = children.item(iChild);
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+            final Node child = children.item(childIndex);
             replaceVariable(child, var, valueString);
         }
     } // replace

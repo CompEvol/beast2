@@ -135,16 +135,16 @@ public class TraitSet extends BEASTObject {
     }
 
     @Deprecated // use getStringValue by name instead
-    public String getStringValue(int iTaxonNr) {
-        return taxonValues[iTaxonNr];
+    public String getStringValue(int taxonNr) {
+        return taxonValues[taxonNr];
     }
 
     @Deprecated // use getValue by name instead
-    public double getValue(int iTaxonNr) {
+    public double getValue(int taxonNr) {
         if (values == null) {
             return 0;
         }
-        return values[iTaxonNr];
+        return values[taxonNr];
     }
 
     public String getStringValue(String taxonName) {

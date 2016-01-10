@@ -100,16 +100,16 @@ public class ESS extends BEASTObject implements Loggable {
         double sum1 = sum;
         // sum2 = \sum_{start+lagIndex ... totalSamples-1} trace
         double sum2 = sum;
-        for (int iLag = 0; iLag < maxLag; iLag++) {
-            squareLaggedSums.set(iLag, squareLaggedSums.get(iLag) + trace.get(totalSamples - iLag - 1) * trace.get(totalSamples - 1));
+        for (int lag = 0; lag < maxLag; lag++) {
+            squareLaggedSums.set(lag, squareLaggedSums.get(lag) + trace.get(totalSamples - lag - 1) * trace.get(totalSamples - 1));
             // The following line is the same approximation as in Tracer 
-            // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
+            // (valid since mean *(samples - lag), sum1, and sum2 are approximately the same)
             // though a more accurate estimate would be
-            // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
-            autoCorrelation[iLag] = squareLaggedSums.get(iLag) - (sum1 + sum2) * mean + mean * mean * (sampleCount - iLag);
-            autoCorrelation[iLag] /= (sampleCount - iLag);
-            sum1 -= trace.get(totalSamples - 1 - iLag);
-            sum2 -= trace.get(start + iLag);
+            // autoCorrelation[lag] = m_fSquareLaggedSums.get(lag) - sum1 * sum2
+            autoCorrelation[lag] = squareLaggedSums.get(lag) - (sum1 + sum2) * mean + mean * mean * (sampleCount - lag);
+            autoCorrelation[lag] /= (sampleCount - lag);
+            sum1 -= trace.get(totalSamples - 1 - lag);
+            sum2 -= trace.get(start + lag);
         }
 
         double integralOfACFunctionTimes2 = 0.0;
@@ -170,16 +170,16 @@ public class ESS extends BEASTObject implements Loggable {
             final double mean = sum / (i + 1);
 
             // calculate auto correlation for selected lag times
-            // sum1 = \sum_{iStart ... totalSamples-iLag-1} trace
+            // sum1 = \sum_{start ... totalSamples-lag-1} trace
             double sum1 = sum;
-            // sum2 = \sum_{iStart+iLag ... totalSamples-1} trace
+            // sum2 = \sum_{start+lag ... totalSamples-1} trace
             double sum2 = sum;
             for (int lagIndex = 0; lagIndex < Math.min(i + 1, MAX_LAG); lagIndex++) {
                 squareLaggedSums[lagIndex] = squareLaggedSums[lagIndex] + trace[i - lagIndex] * trace[i];
                 // The following line is the same approximation as in Tracer
-                // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
+                // (valid since mean *(samples - lag), sum1, and sum2 are approximately the same)
                 // though a more accurate estimate would be
-                // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
+                // autoCorrelation[lag] = m_fSquareLaggedSums.get(lag) - sum1 * sum2
                 autoCorrelation[lagIndex] = squareLaggedSums[lagIndex] - (sum1 + sum2) * mean + mean * mean * (i + 1 - lagIndex);
                 autoCorrelation[lagIndex] /= (i + 1 - lagIndex);
                 sum1 -= trace[i - lagIndex];
@@ -219,16 +219,16 @@ public class ESS extends BEASTObject implements Loggable {
             final double mean = sum / (i + 1);
 
             // calculate auto correlation for selected lag times
-            // sum1 = \sum_{iStart ... totalSamples-iLag-1} trace
+            // sum1 = \sum_{start ... totalSamples-lag-1} trace
             double sum1 = sum;
-            // sum2 = \sum_{iStart+iLag ... totalSamples-1} trace
+            // sum2 = \sum_{start+lag ... totalSamples-1} trace
             double sum2 = sum;
             for (int lagIndex = 0; lagIndex < Math.min(i + 1, MAX_LAG); lagIndex++) {
                 squareLaggedSums[lagIndex] = squareLaggedSums[lagIndex] + trace[i - lagIndex] * trace[i];
                 // The following line is the same approximation as in Tracer
-                // (valid since mean *(samples - iLag), sum1, and sum2 are approximately the same)
+                // (valid since mean *(samples - lag), sum1, and sum2 are approximately the same)
                 // though a more accurate estimate would be
-                // autoCorrelation[iLag] = m_fSquareLaggedSums.get(iLag) - sum1 * sum2
+                // autoCorrelation[lag] = m_fSquareLaggedSums.get(lag) - sum1 * sum2
                 autoCorrelation[lagIndex] = squareLaggedSums[lagIndex] - (sum1 + sum2) * mean + mean * mean * (i + 1 - lagIndex);
                 autoCorrelation[lagIndex] /= (i + 1 - lagIndex);
                 sum1 -= trace[i - lagIndex];

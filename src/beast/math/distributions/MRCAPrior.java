@@ -249,15 +249,15 @@ public class MRCAPrior extends Distribution {
             isInTaxaSet.clear();
             int k = 0;
             for (final String taxon : set) {
-                final int iTaxon = taxaNames.indexOf(taxon);
-                if (iTaxon < 0) {
+                final int taxonIndex_ = taxaNames.indexOf(taxon);
+                if (taxonIndex_ < 0) {
                     throw new RuntimeException("Cannot find taxon " + taxon + " in data");
                 }
                 if (isInTaxaSet.contains(taxon)) {
                     throw new RuntimeException("Taxon " + taxon + " is defined multiple times, while they should be unique");
                 }
                 isInTaxaSet.add(taxon);
-                taxonIndex[k++] = iTaxon;
+                taxonIndex[k++] = taxonIndex_;
             }
         } else {
             for (int i = 0; i < nrOfTaxa; i++) {
@@ -410,7 +410,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public double getArrayValue(final int iDim) {
+    public double getArrayValue(final int dim) {
     	if (Double.isNaN(logP)) {
     		try {
     			calculateLogP();
@@ -418,7 +418,7 @@ public class MRCAPrior extends Distribution {
     			logP  = Double.NaN;
     		}
     	}
-        switch (iDim) {
+        switch (dim) {
             case 0:
                 return logP;
             case 1:

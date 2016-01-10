@@ -373,9 +373,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         if (!node.isLeaf()) {
 	    	double oldHeight = node.getHeight();
 	    	node.height *= scale;
-	        final Integer iConstraint = getDistrConstraint(node);
-	        if (iConstraint != null) {
-	            if (node.height < m_bounds.get(iConstraint).lower || node.height > m_bounds.get(iConstraint).upper) {
+	        final Integer constraint = getDistrConstraint(node);
+	        if (constraint != null) {
+	            if (node.height < m_bounds.get(constraint).lower || node.height > m_bounds.get(constraint).upper) {
 	            	//revert scaling
 	            	node.height = oldHeight;
 	            	return;
@@ -462,19 +462,19 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     }
 
 
-    private Node simulateCoalescent(final int iIsMonophyleticNode, final Map<String,Node> allCandidates, final Set<Node> candidates, final PopulationFunction demoFunction)
+    private Node simulateCoalescent(final int isMonophyleticNode, final Map<String,Node> allCandidates, final Set<Node> candidates, final PopulationFunction demoFunction)
             throws ConstraintViolatedException {
         final List<Node> remainingCandidates = new ArrayList<>();
         final Set<String> taxaDone = new TreeSet<>();
-        for (final int iMonoNode : children[iIsMonophyleticNode]) {
+        for (final int monoNode : children[isMonophyleticNode]) {
             // create list of leaf nodes for this monophyletic MRCA
             final Set<Node> candidates2 = new HashSet<>();
-            final Set<String> isTaxonSet = taxonSets.get(iMonoNode);
+            final Set<String> isTaxonSet = taxonSets.get(monoNode);
             for (String taxon : isTaxonSet) {
                 candidates2.add(allCandidates.get(taxon));
             }
 
-            final Node MRCA = simulateCoalescent(iMonoNode, allCandidates, candidates2, demoFunction);
+            final Node MRCA = simulateCoalescent(monoNode, allCandidates, candidates2, demoFunction);
             remainingCandidates.add(MRCA);
 
             taxaDone.addAll(isTaxonSet);
@@ -486,7 +486,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        final double upper = iIsMonophyleticNode < m_bounds.size() ?  m_bounds.get(iIsMonophyleticNode).upper : Double.POSITIVE_INFINITY;
+        final double upper = isMonophyleticNode < m_bounds.size() ?  m_bounds.get(isMonophyleticNode).upper : Double.POSITIVE_INFINITY;
         final Node MRCA = simulateCoalescentWithMax(remainingCandidates, demoFunction, upper);
         return MRCA;
     }
@@ -702,8 +702,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         activeNodeCount += 1;
 
         // check if there is a calibration on this node
-        final Integer iConstraint = getDistrConstraint(newNode);
-        if (iConstraint != null) {
+        final Integer constraint = getDistrConstraint(newNode);
+        if (constraint != null) {
 //			for (int i = 0; i < 1000; i++) {
 //				try {
 //					height = distr.sample(1)[0][0];
@@ -714,8 +714,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 //					break;
 //				}
 //			} 
-            final double min = Math.max(m_bounds.get(iConstraint).lower, minHeight);
-            final double max = m_bounds.get(iConstraint).upper;
+            final double min = Math.max(m_bounds.get(constraint).lower, minHeight);
+            final double max = m_bounds.get(constraint).upper;
             if (max < min) {
                 // failed to draw a matching height from the MRCA distribution
                 // TODO: try to scale rest of tree down
@@ -760,22 +760,22 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 return 0;
             }
         } else {
-            int iTaxons = traverse(node.getLeft(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
+            int taxons = traverse(node.getLeft(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
             final int leftTaxa = taxonCount[0];
             taxonCount[0] = 0;
             if (node.getRight() != null) {
-                iTaxons += traverse(node.getRight(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
+                taxons += traverse(node.getRight(), MRCATaxonSet, nrOfMRCATaxa, taxonCount);
                 final int rightTaxa = taxonCount[0];
                 taxonCount[0] = leftTaxa + rightTaxa;
             }
-            if (iTaxons == nrOfTaxa + 127) {
-                iTaxons++;
+            if (taxons == nrOfTaxa + 127) {
+                taxons++;
             }
-            if (iTaxons == nrOfMRCATaxa) {
+            if (taxons == nrOfMRCATaxa) {
                 // we are at the MRCA, return magic nr
                 return nrOfTaxa + 127;
             }
-            return iTaxons;
+            return taxons;
         }
     }
 

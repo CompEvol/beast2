@@ -154,11 +154,11 @@ public class RateStatistic extends BEASTObject implements Loggable, Function {
     }
 
     @Override
-    public double getArrayValue(final int iDim) {
-        if (iDim > 3) {
+    public double getArrayValue(final int dim) {
+        if (dim > 3) {
             throw new IllegalArgumentException();
         }
-        return calcValues()[iDim];
+        return calcValues()[dim];
     }
 
 

@@ -722,7 +722,7 @@ public class MersenneTwisterFast implements Serializable {
      * Inverse CDF method: only efficient for small lambda.  Warning:
      * this method assumes that lambda < 12 by including a fail-safe
      * loop abort which truncates the possible sample values to <500.
-     * (Numerical implementations of the iCDF method can occasionally
+     * (Numerical implementations of the cDF method can occasionally
      * lead to infinite loops due to floating point errors.)
      * 
      * @param lambda

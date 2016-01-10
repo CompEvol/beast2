@@ -339,8 +339,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     }
 
     // return distance according to distance metric
-    double distance(final int iTaxon1, final int iTaxon2) {
-        return distance.pairwiseDistance(iTaxon1, iTaxon2);
+    double distance(final int taxon1, final int taxon2) {
+        return distance.pairwiseDistance(taxon1, taxon2);
     } // distance
 
     // 1-norm
@@ -430,8 +430,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
         while (clusters > 2) {
             // find minimum
-            int iMin1 = -1;
-            int iMin2 = -1;
+            int min1 = -1;
+            int min2 = -1;
             double min = Double.MAX_VALUE;
             {
                 int i = 0;
@@ -444,8 +444,8 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                         final double val = row[j] - sep1 - sep2;
                         if (val < min) {
                             // new minimum
-                            iMin1 = i;
-                            iMin2 = j;
+                            min1 = i;
+                            min2 = j;
                             min = val;
                         }
                         j = nextActive[j];
@@ -454,20 +454,20 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 }
             }
             // record distance
-            final double minDistance = dist[iMin1][iMin2];
+            final double minDistance = dist[min1][min2];
             clusters--;
-            final double sep1 = separations[iMin1];
-            final double sep2 = separations[iMin2];
+            final double sep1 = separations[min1];
+            final double sep2 = separations[min2];
             final double dist1 = (0.5 * minDistance) + (0.5 * (sep1 - sep2));
             final double dist2 = (0.5 * minDistance) + (0.5 * (sep2 - sep1));
             if (clusters > 2) {
                 // update separations  & distance
                 double newSeparationSum = 0;
-                final double mutualDistance = dist[iMin1][iMin2];
-                final double[] row1 = dist[iMin1];
-                final double[] row2 = dist[iMin2];
+                final double mutualDistance = dist[min1][min2];
+                final double[] row1 = dist[min1];
+                final double[] row2 = dist[min2];
                 for (int i = 0; i < n; i++) {
-                    if (i == iMin1 || i == iMin2 || clusterID[i].size() == 0) {
+                    if (i == min1 || i == min2 || clusterID[i].size() == 0) {
                         row1[i] = 0;
                     } else {
                         final double val1 = row1[i];
@@ -478,21 +478,21 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                         separationSums[i] += (distance - val1 - val2);
                         separations[i] = separationSums[i] / (clusters - 2);
                         row1[i] = distance;
-                        dist[i][iMin1] = distance;
+                        dist[i][min1] = distance;
                     }
                 }
-                separationSums[iMin1] = newSeparationSum;
-                separations[iMin1] = newSeparationSum / (clusters - 2);
-                separationSums[iMin2] = 0;
-                merge(iMin1, iMin2, dist1, dist2, clusterID, clusterNodes);
-                int iPrev = iMin2;
-                // since iMin1 < iMin2 we havenActiveRows[0] >= 0, so the next loop should be save
-                while (clusterID[iPrev].size() == 0) {
-                    iPrev--;
+                separationSums[min1] = newSeparationSum;
+                separations[min1] = newSeparationSum / (clusters - 2);
+                separationSums[min2] = 0;
+                merge(min1, min2, dist1, dist2, clusterID, clusterNodes);
+                int prev = min2;
+                // since min1 < min2 we havenActiveRows[0] >= 0, so the next loop should be save
+                while (clusterID[prev].size() == 0) {
+                    prev--;
                 }
-                nextActive[iPrev] = nextActive[iMin2];
+                nextActive[prev] = nextActive[min2];
             } else {
-                merge(iMin1, iMin2, dist1, dist2, clusterID, clusterNodes);
+                merge(min1, min2, dist1, dist2, clusterID, clusterNodes);
                 break;
             }
         }
@@ -537,24 +537,24 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             }
         }
         while (clusters > 1) {
-            int iMin1 = -1;
-            int iMin2 = -1;
+            int min1 = -1;
+            int min2 = -1;
             // use priority queue to find next best pair to cluster
             Tuple t;
             do {
                 t = queue.poll();
             }
             while (t != null && (clusterID[t.m_iCluster1].size() != t.m_nClusterSize1 || clusterID[t.m_iCluster2].size() != t.m_nClusterSize2));
-            iMin1 = t.m_iCluster1;
-            iMin2 = t.m_iCluster2;
-            merge(iMin1, iMin2, t.m_fDist/2.0, t.m_fDist/2.0, clusterID, clusterNodes);
+            min1 = t.m_iCluster1;
+            min2 = t.m_iCluster2;
+            merge(min1, min2, t.m_fDist/2.0, t.m_fDist/2.0, clusterID, clusterNodes);
             // merge  clusters
 
             // update distances & queue
             for (int i = 0; i < instances; i++) {
-                if (i != iMin1 && clusterID[i].size() != 0) {
-                    final int i1 = Math.min(iMin1, i);
-                    final int i2 = Math.max(iMin1, i);
+                if (i != min1 && clusterID[i].size() != 0) {
+                    final int i1 = Math.min(min1, i);
+                    final int i2 = Math.max(min1, i);
                     final double distance = getDistance(distance0, clusterID[i1], clusterID[i2]);
                     queue.add(new Tuple(distance, i1, i2, clusterID[i1].size(), clusterID[i2].size()));
                 }
@@ -564,39 +564,39 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         }
     } // doLinkClustering
 
-    void merge(int iMin1, int iMin2, double dist1, double dist2, final List<Integer>[] clusterID, final NodeX[] clusterNodes) {
-        if (iMin1 > iMin2) {
-            final int h = iMin1;
-            iMin1 = iMin2;
-            iMin2 = h;
+    void merge(int min1, int min2, double dist1, double dist2, final List<Integer>[] clusterID, final NodeX[] clusterNodes) {
+        if (min1 > min2) {
+            final int h = min1;
+            min1 = min2;
+            min2 = h;
             final double f = dist1;
             dist1 = dist2;
             dist2 = f;
         }
-        clusterID[iMin1].addAll(clusterID[iMin2]);
-        //clusterID[iMin2].removeAllElements();
-        clusterID[iMin2].removeAll(clusterID[iMin2]);
+        clusterID[min1].addAll(clusterID[min2]);
+        //clusterID[min2].removeAllElements();
+        clusterID[min2].removeAll(clusterID[min2]);
 
         // track hierarchy
         final NodeX node = new NodeX();
-        if (clusterNodes[iMin1] == null) {
-            node.m_iLeftInstance = iMin1;
+        if (clusterNodes[min1] == null) {
+            node.m_iLeftInstance = min1;
         } else {
-            node.m_left = clusterNodes[iMin1];
-            clusterNodes[iMin1].m_parent = node;
+            node.m_left = clusterNodes[min1];
+            clusterNodes[min1].m_parent = node;
         }
-        if (clusterNodes[iMin2] == null) {
-            node.m_iRightInstance = iMin2;
+        if (clusterNodes[min2] == null) {
+            node.m_iRightInstance = min2;
         } else {
-            node.m_right = clusterNodes[iMin2];
-            clusterNodes[iMin2].m_parent = node;
+            node.m_right = clusterNodes[min2];
+            clusterNodes[min2].m_parent = node;
         }
         if (distanceIsBranchLength) {
             node.setLength(dist1, dist2);
         } else {
             node.setHeight(dist1, dist2);
         }
-        clusterNodes[iMin1] = node;
+        clusterNodes[min1] = node;
     } // merge
 
     /**
@@ -736,16 +736,16 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
                 final int patterns = dataInput.get().getPatternCount();
                 final double[] centroid1 = new double[patterns];
                 for (int i = 0; i < cluster1.size(); i++) {
-                    final int iTaxon = cluster1.get(i);
+                    final int taxonIndex = cluster1.get(i);
                     for (int j = 0; j < patterns; j++) {
-                        centroid1[j] += dataInput.get().getPattern(iTaxon, j);
+                        centroid1[j] += dataInput.get().getPattern(taxonIndex, j);
                     }
                 }
                 final double[] centroid2 = new double[patterns];
                 for (int i = 0; i < cluster2.size(); i++) {
-                    final int iTaxon = cluster2.get(i);
+                    final int taxonIndex = cluster2.get(i);
                     for (int j = 0; j < patterns; j++) {
-                        centroid2[j] += dataInput.get().getPattern(iTaxon, j);
+                        centroid2[j] += dataInput.get().getPattern(taxonIndex, j);
                     }
                 }
                 for (int j = 0; j < patterns; j++) {
@@ -781,9 +781,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         final int patterns = dataInput.get().getPatternCount();
         final double[] centroid = new double[patterns];
         for (int i = 0; i < cluster.size(); i++) {
-            final int iTaxon = cluster.get(i);
+            final int taxonIndex = cluster.get(i);
             for (int j = 0; j < patterns; j++) {
-                centroid[j] += dataInput.get().getPattern(iTaxon, j);
+                centroid[j] += dataInput.get().getPattern(taxonIndex, j);
             }
         }
         for (int j = 0; j < patterns; j++) {
@@ -793,9 +793,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         double eSS = 0;
         for (int i = 0; i < cluster.size(); i++) {
             final double[] instance = new double[patterns];
-            final int iTaxon = cluster.get(i);
+            final int taxonIndex = cluster.get(i);
             for (int j = 0; j < patterns; j++) {
-                instance[j] += dataInput.get().getPattern(iTaxon, j);
+                instance[j] += dataInput.get().getPattern(taxonIndex, j);
             }
             eSS += distance(centroid, instance);
         }

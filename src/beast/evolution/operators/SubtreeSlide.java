@@ -104,13 +104,13 @@ public class SubtreeSlide extends TreeOperator {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
 
-        final Node iP = i.getParent();
-        final Node CiP = getOtherChild(iP, i);
-        final Node PiP = iP.getParent();
+        final Node p = i.getParent();
+        final Node CiP = getOtherChild(p, i);
+        final Node PiP = p.getParent();
 
         // 2. choose a delta to move
         final double delta = getDelta();
-        final double oldHeight = iP.getHeight();
+        final double oldHeight = p.getHeight();
         final double newHeight = oldHeight + delta;
 
         // 3. if the move is up
@@ -120,32 +120,32 @@ public class SubtreeSlide extends TreeOperator {
             if (PiP != null && PiP.getHeight() < newHeight) {
                 // find new parent
                 Node newParent = PiP;
-                Node newChild = iP;
+                Node newChild = p;
                 while (newParent.getHeight() < newHeight) {
                     newChild = newParent;
                     if( markClades ) newParent.makeDirty(Tree.IS_FILTHY); // JH
                     newParent = newParent.getParent();
                     if (newParent == null) break;
                 }
-                // the moved node 'iP' would become a child of 'newParent'
+                // the moved node 'p' would become a child of 'newParent'
                 //
 
                 // 3.1.1 if creating a new root
                 if (newChild.isRoot()) {
-                    replace(iP, CiP, newChild);
-                    replace(PiP, iP, CiP);
+                    replace(p, CiP, newChild);
+                    replace(PiP, p, CiP);
 
-                    iP.setParent(null);
-                    tree.setRoot(iP);
+                    p.setParent(null);
+                    tree.setRoot(p);
                 }
                 // 3.1.2 no new root
                 else {
-                    replace(iP, CiP, newChild);
-                    replace(PiP, iP, CiP);
-                    replace(newParent, newChild, iP);
+                    replace(p, CiP, newChild);
+                    replace(PiP, p, CiP);
+                    replace(newParent, newChild, p);
                 }
 
-                iP.setHeight(newHeight);
+                p.setHeight(newHeight);
 
                 // 3.1.3 count the hypothetical sources of this destination.
                 final int possibleSources = intersectingEdges(newChild, oldHeight, null);
@@ -155,7 +155,7 @@ public class SubtreeSlide extends TreeOperator {
 
             } else {
                 // just change the node height
-                iP.setHeight(newHeight);
+                p.setHeight(newHeight);
                 logq = 0.0;
             }
         }
@@ -183,25 +183,25 @@ public class SubtreeSlide extends TreeOperator {
                 final Node newChild = newChildren.get(childIndex);
                 final Node newParent = newChild.getParent();
 
-                // 4.1.1 if iP was root
-                if (iP.isRoot()) {
+                // 4.1.1 if p was root
+                if (p.isRoot()) {
                     // new root is CiP
-                    replace(iP, CiP, newChild);
-                    replace(newParent, newChild, iP);
+                    replace(p, CiP, newChild);
+                    replace(newParent, newChild, p);
 
                     CiP.setParent(null);
                     tree.setRoot(CiP);
 
                 } else {
-                    replace(iP, CiP, newChild);
-                    replace(PiP, iP, CiP);
-                    replace(newParent, newChild, iP);
+                    replace(p, CiP, newChild);
+                    replace(PiP, p, CiP);
+                    replace(newParent, newChild, p);
                 }
 
-                iP.setHeight(newHeight);
+                p.setHeight(newHeight);
                 if( markClades ) {
                     // make dirty the path from the (down) moved node back up to former parent.
-                    Node n = iP;
+                    Node n = p;
                     while( n != CiP ) {
                         n.makeDirty(Tree.IS_FILTHY); // JH
                         n = n.getParent();
@@ -210,7 +210,7 @@ public class SubtreeSlide extends TreeOperator {
 
                 logq = Math.log(possibleDestinations);
             } else {
-                iP.setHeight(newHeight);
+                p.setHeight(newHeight);
                 logq = 0.0;
             }
         }

@@ -65,7 +65,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	List<?> list = (List<?>) input.get();
     	Collections.sort(list, (Object o1, Object o2) -> {
 				if (o1 instanceof BEASTInterface && o2 instanceof BEASTInterface) {
-					String iD1 = ((BEASTInterface)o1).getID();
+					String d1 = ((BEASTInterface)o1).getID();
 					String id2 = ((BEASTInterface)o2).getID();
 					// first the tree priors
 					if (o1 instanceof TreeDistribution) {
@@ -78,14 +78,14 @@ public class PriorListInputEditor extends ListInputEditor {
 							if (tree2 == null) {
 								tree2 = ((TreeDistribution)o2).treeIntervalsInput.get().treeInput.get();
 							}
-							return iD1.compareTo(id2);
+							return d1.compareTo(id2);
 						} else {
 							return -1;
 						}
 					} else if (o1 instanceof MRCAPrior) {
 						// last MRCA priors
 						if (o2 instanceof MRCAPrior) {
-							return iD1.compareTo(id2);
+							return d1.compareTo(id2);
 						} else {
 							return 1;
 						}
@@ -97,12 +97,12 @@ public class PriorListInputEditor extends ListInputEditor {
 							return -1;
 						}
 						if (o1 instanceof Prior) {
-							iD1 = ((Prior) o1).getParameterName(); 
+							d1 = ((Prior) o1).getParameterName(); 
 						}
 						if (o2 instanceof Prior) {
 							id2 = ((Prior) o2).getParameterName(); 
 						}
-						return iD1.compareTo(id2);
+						return d1.compareTo(id2);
 					}
 				}
 				return 0;
@@ -223,20 +223,20 @@ public class PriorListInputEditor extends ListInputEditor {
                     trees.add((Tree) node);
                 }
             }
-            int iTree = 0;
+            int treeIndex = 0;
             if (trees.size() > 1) {
                 String[] treeIDs = new String[trees.size()];
                 for (int j = 0; j < treeIDs.length; j++) {
                     treeIDs[j] = trees.get(j).getID();
                 }
-                iTree = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
+                treeIndex = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                         treeIDs, trees.get(0));
             }
-            if (iTree < 0) {
+            if (treeIndex < 0) {
                 return null;
             }
-            prior.treeInput.setValue(trees.get(iTree), prior);
+            prior.treeInput.setValue(trees.get(treeIndex), prior);
             TaxonSet taxonSet = new TaxonSet();
 
             TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);

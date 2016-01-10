@@ -539,42 +539,42 @@ public class NexusParser {
                 break;
             }
 
-            int iStart = 0, iEnd;
+            int start = 0, end;
             final String taxon;
-            while (Character.isWhitespace(str.charAt(iStart))) {
-                iStart++;
+            while (Character.isWhitespace(str.charAt(start))) {
+                start++;
             }
-            if (str.charAt(iStart) == '\'' || str.charAt(iStart) == '\"') {
-                final char c = str.charAt(iStart);
-                iStart++;
-                iEnd = iStart;
-                while (str.charAt(iEnd) != c) {
-                    iEnd++;
+            if (str.charAt(start) == '\'' || str.charAt(start) == '\"') {
+                final char c = str.charAt(start);
+                start++;
+                end = start;
+                while (str.charAt(end) != c) {
+                    end++;
                 }
-                taxon = str.substring(iStart, iEnd);
+                taxon = str.substring(start, end);
                 seqLen = 0;
-                iEnd++;
+                end++;
             } else {
-                iEnd = iStart;
-                while (iEnd < str.length() && !Character.isWhitespace(str.charAt(iEnd))) {
-                    iEnd++;
+                end = start;
+                while (end < str.length() && !Character.isWhitespace(str.charAt(end))) {
+                    end++;
                 }
-                if (iEnd < str.length()) {
-                    taxon = str.substring(iStart, iEnd);
+                if (end < str.length()) {
+                    taxon = str.substring(start, end);
                     seqLen = 0;
-                } else if ((prevTaxon == null || seqLen == charCount) && iEnd == str.length()) {
-                    taxon = str.substring(iStart, iEnd);
+                } else if ((prevTaxon == null || seqLen == charCount) && end == str.length()) {
+                    taxon = str.substring(start, end);
                     seqLen = 0;
                 } else {
                     taxon = prevTaxon;
                     if (taxon == null) {
                         throw new IOException("Could not recognise taxon");
                     }
-                    iEnd = iStart;
+                    end = start;
                 }
             }
             prevTaxon = taxon;
-            final String data = str.substring(iEnd);
+            final String data = str.substring(end);
             for (int k = 0; k < data.length(); k++) {
             	if (!Character.isWhitespace(data.charAt(k))) {
             		seqLen++;
@@ -826,13 +826,13 @@ public class NexusParser {
             return null;
         }
         if (str.contains("[")) {
-            final int iStart = str.indexOf('[');
-            int iEnd = str.indexOf(']', iStart);
-            while (iEnd < 0) {
+            final int start = str.indexOf('[');
+            int end = str.indexOf(']', start);
+            while (end < 0) {
                 str += readLine(fin);
-                iEnd = str.indexOf(']', iStart);
+                end = str.indexOf(']', start);
             }
-            str = str.substring(0, iStart) + str.substring(iEnd + 1);
+            str = str.substring(0, start) + str.substring(end + 1);
             if (str.matches("^\\s*$")) {
                 return nextLine(fin);
             }
@@ -854,8 +854,8 @@ public class NexusParser {
         }
         String att = matcher.group(1);
         if (att.startsWith("\"") && att.endsWith("\"")) {
-            final int iStart = matcher.start(1);
-            att = str.substring(iStart + 1, str.indexOf('"', iStart + 1));
+            final int start = matcher.start(1);
+            att = str.substring(start + 1, str.indexOf('"', start + 1));
         }
         return att;
     }

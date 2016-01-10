@@ -353,21 +353,21 @@ public class Alignment extends Map<String> {
 
         if (isAscertained) {
             //From AscertainedAlignment
-            int iFrom = excludefromInput.get();
-            int iTo = excludetoInput.get();
-            int iEvery = excludeeveryInput.get();
+            int from = excludefromInput.get();
+            int to = excludetoInput.get();
+            int every = excludeeveryInput.get();
             excludedPatterns = new HashSet<>();
-            for (int i = iFrom; i < iTo; i += iEvery) {
-                int iPattern = patternIndex[i];
+            for (int i = from; i < to; i += every) {
+                int patternIndex_ = patternIndex[i];
                 // reduce weight, so it does not confuse the tree likelihood
-                patternWeight[iPattern] = 0;
-                excludedPatterns.add(iPattern);
+                patternWeight[patternIndex_] = 0;
+                excludedPatterns.add(patternIndex_);
             }
         } else {
         	// sanity check
-            int iFrom = excludefromInput.get();
-            int iTo = excludetoInput.get();
-            if (iFrom != excludefromInput.defaultValue || iTo != excludetoInput.defaultValue) {
+            int from = excludefromInput.get();
+            int to = excludetoInput.get();
+            if (from != excludefromInput.defaultValue || to != excludetoInput.defaultValue) {
             	Log.warning.println("WARNING: excludefrom or excludeto is specified, but 'ascertained' flag is not set to true");
             	Log.warning.println("WARNING: to suppress this warning, remove the excludefrom or excludeto attributes (if no astertainment correction is required)");
             	Log.warning.println("WARNING: or set the 'ascertained' flag to true on element with id=" + getID());
@@ -459,23 +459,23 @@ public class Alignment extends Map<String> {
         return sitePatterns.length;
     }
 
-    public int[] getPattern(int iPattern) {
-        return sitePatterns[iPattern];
+    public int[] getPattern(int patternIndex_) {
+        return sitePatterns[patternIndex_];
     }
 
-    public int getPattern(int taxonIndex, int iPattern) {
-        return sitePatterns[iPattern][taxonIndex];
+    public int getPattern(int taxonIndex, int patternIndex_) {
+        return sitePatterns[patternIndex_][taxonIndex];
     }
 
     /**
      * Retrieve the "weight" of a particular pattern: the number of sites
      * having that pattern.
      *
-     * @param iPattern Index into pattern array.
+     * @param patternIndex_ Index into pattern array.
      * @return pattern weight
      */
-    public int getPatternWeight(int iPattern) {
-        return patternWeight[iPattern];
+    public int getPatternWeight(int patternIndex_) {
+        return patternWeight[patternIndex_];
     }
 
     public int getMaxStateCount() {
@@ -485,11 +485,11 @@ public class Alignment extends Map<String> {
     /**
      * Retrieve index of pattern corresponding to a particular site.
      *
-     * @param iSite Index of site.
+     * @param site Index of site.
      * @return Index of pattern.
      */
-    public int getPatternIndex(int iSite) {
-        return patternIndex[iSite];
+    public int getPatternIndex(int site) {
+        return patternIndex[site];
     }
 
     /**
@@ -616,10 +616,10 @@ public class Alignment extends Map<String> {
             int removedSites = 0;
             for (int i = 0; i < patterns; i++) {
                 int[] pattern = sitePatterns[i];
-                int iValue = pattern[0];
+                int value = pattern[0];
                 boolean isInvariant = true;
                 for (int k = 1; k < pattern.length; k++) {
-                    if (pattern[k] != iValue) {
+                    if (pattern[k] != value) {
                         isInvariant = false;
                         break;
                     }
@@ -628,7 +628,7 @@ public class Alignment extends Map<String> {
                     removedSites += patternWeight[i];
                     patternWeight[i] = 0;
 
-                    if (log) Log.info.print(" <" + iValue + "> ");
+                    if (log) Log.info.print(" <" + value + "> ");
                 }
             }
             if (log) Log.info.println(" removed " + removedSites + " sites ");
@@ -677,22 +677,22 @@ public class Alignment extends Map<String> {
         return builder.toString();
     }
 
-    public double[] getTipLikelihoods(int iTaxon, int iPattern) {
-    	if (iTaxon >= tipLikelihoods.size() || tipLikelihoods.get(iTaxon) == null) { 
+    public double[] getTipLikelihoods(int taxonIndex, int patternIndex_) {
+    	if (taxonIndex >= tipLikelihoods.size() || tipLikelihoods.get(taxonIndex) == null) { 
     		return null; 
     	} else { 
-    		return tipLikelihoods.get(iTaxon)[iPattern];
+    		return tipLikelihoods.get(taxonIndex)[patternIndex_];
     	}
     	
     }
     /**
      * returns an array containing the non-ambiguous states that this state represents.
      */
-    public boolean[] getStateSet(int iState) {
-        return m_dataType.getStateSet(iState);
-//        if (!isAmbiguousState(iState)) {
+    public boolean[] getStateSet(int state) {
+        return m_dataType.getStateSet(state);
+//        if (!isAmbiguousState(state)) {
 //            boolean[] stateSet = new boolean[m_nMaxStateCount];
-//            stateSet[iState] = true;
+//            stateSet[state] = true;
 //            return stateSet;
 //        } else {
 //        }

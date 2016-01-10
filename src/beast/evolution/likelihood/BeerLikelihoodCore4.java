@@ -13,8 +13,8 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
      * Calculates partial likelihoods at a node when both children have states.
      */
     @Override
-	protected void calculateStatesStatesPruning(int[] iStates1, double[] matrices1,
-                                                int[] iStates2, double[] matrices2,
+	protected void calculateStatesStatesPruning(int[] stateIndex1, double[] matrices1,
+                                                int[] stateIndex2, double[] matrices2,
                                                 double[] partials3) {
         int v = 0;
 
@@ -22,8 +22,8 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 
             for (int k = 0; k < nrOfPatterns; k++) {
 
-                int state1 = iStates1[k];
-                int state2 = iStates2[k];
+                int state1 = stateIndex1[k];
+                int state2 = stateIndex2[k];
 
                 int w = l * matrixSize;
 
@@ -92,7 +92,7 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
      * Calculates partial likelihoods at a node when one child has states and one has partials.
      */
     @Override
-	protected void calculateStatesPartialsPruning(int[] iStates1, double[] matrices1,
+	protected void calculateStatesPartialsPruning(int[] stateIndex1, double[] matrices1,
                                                   double[] partials2, double[] matrices2,
                                                   double[] partials3) {
 
@@ -104,7 +104,7 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
         for (int l = 0; l < nrOfMatrices; l++) {
             for (int k = 0; k < nrOfPatterns; k++) {
 
-                int state1 = iStates1[k];
+                int state1 = stateIndex1[k];
 
                 int w = l * matrixSize;
 
@@ -249,9 +249,9 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 
 //
 //	@Override
-//    public void calcRootPseudoRootPartials(double[] frequencies, int iNode, double [] pseudoPartials) {
+//    public void calcRootPseudoRootPartials(double[] frequencies, int nodeIndex, double [] pseudoPartials) {
 //		int u = 0;
-//		double [] inPartials = m_fPartials[m_iCurrentPartials[iNode]][iNode];
+//		double [] inPartials = m_fPartials[m_iCurrentPartials[nodeIndex]][nodeIndex];
 //		for (int k = 0; k < m_nPatterns * m_nMatrices; k++) {
 //			pseudoPartials[u] = inPartials[u] * frequencies[0];
 //			pseudoPartials[u+1] = inPartials[u+1] * frequencies[1];
@@ -262,10 +262,10 @@ public class BeerLikelihoodCore4 extends BeerLikelihoodCore {
 //    }
 //    
 //	@Override
-//    public void calcPseudoRootPartials(double [] parentPseudoPartials, int iNode, double [] pseudoPartials) {
+//    public void calcPseudoRootPartials(double [] parentPseudoPartials, int nodeIndex, double [] pseudoPartials) {
 //		int v = 0;
 //		int u = 0;
-//		double [] matrices = m_fMatrices[m_iCurrentMatrices[iNode]][iNode];
+//		double [] matrices = m_fMatrices[m_iCurrentMatrices[nodeIndex]][nodeIndex];
 //		for (int k = 0; k < m_nPatterns; k++) {
 //			for (int l = 0; l < m_nMatrices; l++) {
 //				int w = l * m_nMatrixSize;

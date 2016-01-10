@@ -37,10 +37,10 @@ public class SimpleTreePriorTest extends BeautiBase {
 		warning("Change to Coalescent - BPS");
 		beautiFrame.comboBox("TreeDistribution").selectItem("Coalescent Bayesian Skyline");
 		printBeautiState(f);
-		assertStateEquals("Tree.t:anolis", "isPopSizes.t:anolis", "isGroupSizes.t:anolis");
+		assertStateEquals("Tree.t:anolis", "bPopSizes.t:anolis", "bGroupSizes.t:anolis");
 		assertOperatorsEqual("BayesianSkylineTreeScaler.t:anolis", "BayesianSkylineTreeRootScaler.t:anolis", "BayesianSkylineUniformOperator.t:anolis", "BayesianSkylineSubtreeSlide.t:anolis", "BayesianSkylineNarrow.t:anolis", "BayesianSkylineWide.t:anolis", "BayesianSkylineWilsonBalding.t:anolis", "popSizesScaler.t:anolis", "groupSizesDelta.t:anolis");
 		assertPriorsEqual("BayesianSkyline.t:anolis", "MarkovChainedPopSizes.t:anolis");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BayesianSkyline.t:anolis", "isPopSizes.t:anolis", "isGroupSizes.t:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BayesianSkyline.t:anolis", "bPopSizes.t:anolis", "bGroupSizes.t:anolis");
 		
 		warning("Change to Yule");
 		beautiFrame.comboBox("TreeDistribution").selectItem("Yule Model");

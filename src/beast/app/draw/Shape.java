@@ -139,8 +139,8 @@ abstract public class Shape {
 
     String XMLnormalizeAtt(String str) {
         StringBuffer str2 = new StringBuffer();
-        for (int iStr = 0; iStr < str.length(); iStr++) {
-            switch (str.charAt(iStr)) {
+        for (int strIndex = 0; strIndex < str.length(); strIndex++) {
+            switch (str.charAt(strIndex)) {
                 case '<':
                     str2.append("&lt;");
                     break;
@@ -162,7 +162,7 @@ abstract public class Shape {
                     str2.append("&#xD;&#xA;");
                     break;
                 default:
-                    str2.append(str.charAt(iStr));
+                    str2.append(str.charAt(strIndex));
             }
         }
         return str2.toString();
@@ -193,26 +193,26 @@ abstract public class Shape {
     }
 
     Color string2Color(String color) {
-        int iSpace = color.indexOf(' ');
-        if (iSpace < 0) {
+        int space = color.indexOf(' ');
+        if (space < 0) {
             return new Color(128, 128, 128);
         }
-        int iStart = 0;
-        String rStr = color.substring(iStart, iSpace);
+        int start = 0;
+        String rStr = color.substring(start, space);
         int r = (new Integer(rStr)).intValue();
-        iStart = iSpace + 1;
-        iSpace = color.indexOf(' ', iStart);
-        if (iSpace < 0) {
+        start = space + 1;
+        space = color.indexOf(' ', start);
+        if (space < 0) {
             return new Color(128, 128, 128);
         }
-        String gStr = color.substring(iStart, iSpace);
+        String gStr = color.substring(start, space);
         int g = (new Integer(gStr)).intValue();
-        iStart = iSpace + 1;
-        iSpace = color.indexOf(' ', iStart);
-        if (iSpace < 0) {
-            iSpace = color.length();
+        start = space + 1;
+        space = color.indexOf(' ', start);
+        if (space < 0) {
+            space = color.length();
         }
-        String isStr = color.substring(iStart, iSpace);
+        String isStr = color.substring(start, space);
         int b = (new Integer(isStr)).intValue();
         return new Color(r, g, b);
     } // string2Color

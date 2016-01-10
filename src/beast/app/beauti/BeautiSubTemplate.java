@@ -79,10 +79,10 @@ public class BeautiSubTemplate extends BEASTObject {
         // make sure there are no comments in the XML: this screws up any XML when saved to file
         if (xml.contains("<!--")) {
             while (xml.contains("<!--")) {
-                int iStart = xml.indexOf("<!--");
+                int start = xml.indexOf("<!--");
                 // next line is guaranteed to find something, things we already checked this is valid XML
-                int iEnd = xml.indexOf("-->", iStart);
-                xml = xml.substring(0, iStart) + xml.substring(iEnd + 3);
+                int end = xml.indexOf("-->", start);
+                xml = xml.substring(0, start) + xml.substring(end + 3);
             }
         }
         //m_sXMLInput.get().m_sValue.setValue("<![CDATA[" + m_sXML + "]]>", m_sXMLInput.get());
@@ -286,15 +286,15 @@ public class BeautiSubTemplate extends BEASTObject {
         return o;
     }
 
-    public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int iItem, boolean init) throws Exception {
-        removeSubNet(list.get(iItem));
+    public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int item, boolean init) throws Exception {
+        removeSubNet(list.get(item));
         if (xml == null) {
             // this is the NULL_TEMPLATE
-            list.set(iItem, null);
+            list.set(item, null);
             return null;
         }
         BEASTInterface o = createSubNet(partition, doc.pluginmap, init);
-        list.set(iItem, o);
+        list.set(item, o);
         return o;
     }
 
@@ -310,12 +310,12 @@ public class BeautiSubTemplate extends BEASTObject {
 
     BEASTInterface createSubNet(Alignment data, BeautiDoc doc, boolean init) {
         String partition = data.getID();
-        HashMap<String, BEASTInterface> iDMap = doc.pluginmap;//new HashMap<>();
-        iDMap.put(partition, data);
-        return createSubNet(new PartitionContext(partition), iDMap, init);
+        HashMap<String, BEASTInterface> idMap = doc.pluginmap;//new HashMap<>();
+        idMap.put(partition, data);
+        return createSubNet(new PartitionContext(partition), idMap, init);
     }
 
-    private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> iDMap, boolean init) {
+    private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> idMap, boolean init) {
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -332,7 +332,7 @@ public class BeautiSubTemplate extends BEASTObject {
         parser.setRequiredInputProvider(doc, context);
         List<BEASTInterface> beastObjects = null;
         try {
-            beastObjects = parser.parseTemplate(_sXML, iDMap, true);
+            beastObjects = parser.parseTemplate(_sXML, idMap, true);
             for (BEASTInterface beastObject : beastObjects) {
                 doc.addPlugin(beastObject);
                 try {

@@ -116,8 +116,8 @@ public class Node extends BEASTObject {
         return labelNr;
     }
 
-    public void setNr(final int iLabel) {
-        labelNr = iLabel;
+    public void setNr(final int labelIndex) {
+        labelNr = labelIndex;
     }
 
     public double getHeight() {
@@ -368,20 +368,20 @@ public class Node extends BEASTObject {
      * in a clade. Print node numbers (m_iLabel) incremented by 1
      * for leaves and internal nodes with non-null IDs.
      */
-    String toSortedNewick(final int[] iMaxNodeInClade) {
-        return toSortedNewick(iMaxNodeInClade, false);
+    String toSortedNewick(final int[] maxNodeInClade) {
+        return toSortedNewick(maxNodeInClade, false);
     }
 
-    public String toSortedNewick(int[] iMaxNodeInClade, boolean printMetaData) {
+    public String toSortedNewick(int[] maxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
             buf.append("(");
-            String child1 = getLeft().toSortedNewick(iMaxNodeInClade, printMetaData);
-            int iChild1 = iMaxNodeInClade[0];
+            String child1 = getLeft().toSortedNewick(maxNodeInClade, printMetaData);
+            int child1Index = maxNodeInClade[0];
             if (getRight() != null) {
-                String child2 = getRight().toSortedNewick(iMaxNodeInClade, printMetaData);
-                int iChild2 = iMaxNodeInClade[0];
-                if (iChild1 > iChild2) {
+                String child2 = getRight().toSortedNewick(maxNodeInClade, printMetaData);
+                int child2Index = maxNodeInClade[0];
+                if (child1Index > child2Index) {
                     buf.append(child2);
                     buf.append(",");
                     buf.append(child1);
@@ -389,7 +389,7 @@ public class Node extends BEASTObject {
                     buf.append(child1);
                     buf.append(",");
                     buf.append(child2);
-                    iMaxNodeInClade[0] = iChild1;
+                    maxNodeInClade[0] = child1Index;
                 }
             } else {
                 buf.append(child1);
@@ -399,7 +399,7 @@ public class Node extends BEASTObject {
                 buf.append(labelNr+1);
             }
         } else {
-            iMaxNodeInClade[0] = labelNr;
+            maxNodeInClade[0] = labelNr;
             buf.append(labelNr + 1);
         }
 
@@ -532,20 +532,20 @@ public class Node extends BEASTObject {
      * but internal nodes are left to zero. After labeling internal
      * nodes, m_iLabel uniquely identifies a node in a beast.tree.
      *
-     * @param iLabel
+     * @param labelIndex
      * @return
      */
-    public int labelInternalNodes(int iLabel) {
+    public int labelInternalNodes(int labelIndex) {
         if (isLeaf()) {
-            return iLabel;
+            return labelIndex;
         } else {
-            iLabel = getLeft().labelInternalNodes(iLabel);
+            labelIndex = getLeft().labelInternalNodes(labelIndex);
             if (getRight() != null) {
-                iLabel = getRight().labelInternalNodes(iLabel);
+                labelIndex = getRight().labelInternalNodes(labelIndex);
             }
-            labelNr = iLabel++;
+            labelNr = labelIndex++;
         }
-        return iLabel;
+        return labelIndex;
     } // labelInternalNodes
 
     /**
@@ -707,15 +707,15 @@ public class Node extends BEASTObject {
         return children.size();
     }
 
-    public Node getChild(final int iChild) {
-        return children.get(iChild);
+    public Node getChild(final int childIndex) {
+        return children.get(childIndex);
     }
 
-    public void setChild(final int iChild, final Node node) {
-        while (children.size() < iChild) {
+    public void setChild(final int childIndex, final Node node) {
+        while (children.size() < childIndex) {
             children.add(null);
         }
-        children.set(iChild, node);
+        children.set(childIndex, node);
     }
 
 

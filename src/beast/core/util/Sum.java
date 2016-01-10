@@ -62,8 +62,8 @@ public class Sum extends CalculationNode implements Function, Loggable {
     }
 
     @Override
-    public double getArrayValue(int iDim) {
-        if (iDim == 0) {
+    public double getArrayValue(int dim) {
+        if (dim == 0) {
             return getArrayValue();
         }
         return Double.NaN;

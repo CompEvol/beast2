@@ -133,8 +133,8 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     }
 
     @Override
-    public double getArrayValue(final int iDim) {
-        if (iDim == 0) return getArrayValue();
+    public double getArrayValue(final int dim) {
+        if (dim == 0) return getArrayValue();
         return 0;
     }
     

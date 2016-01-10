@@ -396,15 +396,15 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         	double[] tipProbabilities = data.getTipLikelihoods(taxon,i);
             if (tipProbabilities != null) {
-            	for (int iState = 0; iState < m_nStateCount; iState++) {
-            		partials[v++] = tipProbabilities[iState];
+            	for (int state = 0; state < m_nStateCount; state++) {
+            		partials[v++] = tipProbabilities[state];
             	}
             }
             else {
             	int stateCount = data.getPattern(taxon, i);
                 boolean[] stateSet = data.getStateSet(stateCount);
-                for (int iState = 0; iState < m_nStateCount; iState++) {
-                	 partials[v++] = (stateSet[iState] ? 1.0 : 0.0);                
+                for (int state = 0; state < m_nStateCount; state++) {
+                	 partials[v++] = (stateSet[state] ? 1.0 : 0.0);                
                 }
             }
         }

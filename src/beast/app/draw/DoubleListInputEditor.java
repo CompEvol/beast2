@@ -396,7 +396,7 @@ public class DoubleListInputEditor extends ListInputEditor {
                 if (c instanceof BeautiPanel) {
                     BeautiPanel panel = (BeautiPanel) c;
                     BeautiPanelConfig cfgPanel = panel.config;
-                    cfgPanel.sync(panel.iPartition);
+                    cfgPanel.sync(panel.partitionIndex);
                 }
             }
         }

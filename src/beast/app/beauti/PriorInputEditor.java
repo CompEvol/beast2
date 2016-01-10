@@ -64,7 +64,7 @@ public class PriorInputEditor extends InputEditor.Base {
             List<?> list = (List<?>) m_input.get();
 
             BeautiSubTemplate template = (BeautiSubTemplate) comboBox1.getSelectedItem();
-            //String id = ((BEASTObject) list.get(iItem)).getID();
+            //String id = ((BEASTObject) list.get(item)).getID();
             //String partition = BeautiDoc.parsePartition(id);
             PartitionContext context = doc.getContextFor((BEASTInterface) list.get(itemNr));
             Prior prior1 = (Prior) list.get(itemNr);

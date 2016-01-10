@@ -55,11 +55,11 @@ public class CompoundValuable extends CalculationNode implements Function {
     }
 
     @Override
-    public double getArrayValue(int iDim) {
+    public double getArrayValue(int dim) {
         if (m_bRecompute) {
             recompute();
         }
-        return m_fValues[iDim];
+        return m_fValues[dim];
     }
 
     /**

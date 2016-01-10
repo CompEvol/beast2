@@ -97,8 +97,8 @@ public class OperatorSchedule extends BEASTObject {
      * @return
      */
     public Operator selectOperator() {
-        final int iOperator = Randomizer.randomChoice(cumulativeProbs);
-        return operators.get(iOperator);
+        final int operatorIndex = Randomizer.randomChoice(cumulativeProbs);
+        return operators.get(operatorIndex);
     }
 
     private static final String TUNING = "Tuning";

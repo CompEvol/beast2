@@ -147,10 +147,10 @@ public class BeautiPanelConfig extends BEASTObject {
      * based on the path Input.
      */
     @SuppressWarnings("unchecked")
-    final public Input<?> resolveInput(BeautiDoc doc, int iPartition) {
+    final public Input<?> resolveInput(BeautiDoc doc, int partitionIndex) {
         try {
 //            if (parentBEASTObjects != null && parentBEASTObjects.size() > 0 && _input != null)
-//                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
+//                System.err.println("sync " + parentBEASTObjects.get(partitionIndex) + "[?] = " + _input.get());
 
             List<BEASTInterface> beastObjects;
             if (hasPartitionsInput.get() == Partition.none) {
@@ -246,9 +246,9 @@ public class BeautiPanelConfig extends BEASTObject {
                 _input = new FlexibleInput<>(new ArrayList<>());
             }
             _input.setRule(Validate.REQUIRED);
-            syncTo(iPartition);
+            syncTo(partitionIndex);
 //            if (parentBEASTObjects != null && parentBEASTObjects.size() > 0)
-//                System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[?] = " + _input.get());
+//                System.err.println("sync " + parentBEASTObjects.get(partitionIndex) + "[?] = " + _input.get());
 
 
             if (isList) {
@@ -282,9 +282,9 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     @SuppressWarnings("unchecked")
-    public void sync(int iPartition) {
+    public void sync(int partitionIndex) {
         if (parentInputs.size() > 0 && _input.get() != null) {
-            final Input<?> input = parentInputs.get(iPartition);
+            final Input<?> input = parentInputs.get(partitionIndex);
             if (isList) {
                 List<Object> list = (List<Object>) _input.get();
                 List<Object> targetList = ((List<Object>) input.get());
@@ -297,13 +297,13 @@ public class BeautiPanelConfig extends BEASTObject {
                 // sync outputs of items in list
                 for (Object o : list) {
                 	if (o instanceof BEASTInterface) {
-                		((BEASTInterface)o).getOutputs().add(parentBEASTObjects.get(iPartition));
+                		((BEASTInterface)o).getOutputs().add(parentBEASTObjects.get(partitionIndex));
                 	}
                 }
             } else {
                 try {
-                    //System.err.println("sync " + parentBEASTObjects.get(iPartition) + "[" + input.getName() + "] = " + _input.get());
-                    input.setValue(_input.get(), parentBEASTObjects.get(iPartition));
+                    //System.err.println("sync " + parentBEASTObjects.get(partitionIndex) + "[" + input.getName() + "] = " + _input.get());
+                    input.setValue(_input.get(), parentBEASTObjects.get(partitionIndex));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -314,7 +314,7 @@ public class BeautiPanelConfig extends BEASTObject {
     /**
      * initialise m_input, and either m_beastObject or m_pluginList *
      */
-    public void syncTo(int iPartition) {
+    public void syncTo(int partitionIndex) {
         _input.setType(type);
         try {
             if (isList) {
@@ -323,7 +323,7 @@ public class BeautiPanelConfig extends BEASTObject {
                 }
             } else {
             	if (inputs.size() > 0) {
-	                BEASTInterface beastObject = inputs.get(iPartition);
+	                BEASTInterface beastObject = inputs.get(partitionIndex);
 	                _input.setValue(beastObject, this);
             	}
             }

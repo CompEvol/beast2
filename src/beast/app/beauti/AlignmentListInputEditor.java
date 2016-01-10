@@ -301,17 +301,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		int[] selected = getTableRowSelection();
 		// do the actual linking
 		for (int i = 1; i < selected.length; i++) {
-			int iRow = selected[i];
-			Object old = tableData[iRow][columnNr];
-			tableData[iRow][columnNr] = tableData[selected[0]][columnNr];
+			int rowNr = selected[i];
+			Object old = tableData[rowNr][columnNr];
+			tableData[rowNr][columnNr] = tableData[selected[0]][columnNr];
 			try {
-				updateModel(columnNr, iRow);
+				updateModel(columnNr, rowNr);
 			} catch (Exception ex) {
 				Log.warning.println(ex.getMessage());
 				// unlink if we could not link
-				tableData[iRow][columnNr] = old;
+				tableData[rowNr][columnNr] = old;
 				try {
-					updateModel(columnNr, iRow);
+					updateModel(columnNr, rowNr);
 				} catch (Exception ex2) {
 					// ignore
 				}
@@ -322,10 +322,10 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	private void unlink(int columnNr) {
 		int[] selected = getTableRowSelection();
 		for (int i = 1; i < selected.length; i++) {
-			int iRow = selected[i];
-			tableData[iRow][columnNr] = getDoc().partitionNames.get(iRow).partition;
+			int rowNr = selected[i];
+			tableData[rowNr][columnNr] = getDoc().partitionNames.get(rowNr).partition;
 			try {
-				updateModel(columnNr, iRow);
+				updateModel(columnNr, rowNr);
 			} catch (Exception ex) {
 				Log.err.println(ex.getMessage());
 				ex.printStackTrace();
@@ -338,9 +338,9 @@ public class AlignmentListInputEditor extends ListInputEditor {
         return table.getSelectedRows();
 	}
 
-	/** set partition of type columnNr to partition model nr iRow **/
-	void updateModel(int columnNr, int iRow) throws Exception {
-		Log.warning.println("updateModel: " + iRow + " " + columnNr + " " + table.getSelectedRow() + " "
+	/** set partition of type columnNr to partition model nr rowNr **/
+	void updateModel(int columnNr, int rowNr) throws Exception {
+		Log.warning.println("updateModel: " + rowNr + " " + columnNr + " " + table.getSelectedRow() + " "
 				+ table.getSelectedColumn());
 		for (int i = 0; i < partitionCount; i++) {
 			Log.warning.println(i + " " + tableData[i][0] + " " + tableData[i][SITEMODEL_COLUMN] + " "
@@ -348,7 +348,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 
 		getDoc();
-		String partition = (String) tableData[iRow][columnNr];
+		String partition = (String) tableData[rowNr][columnNr];
 
 		// check if partition needs renaming
 		String oldName = null;
@@ -357,14 +357,14 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			switch (columnNr) {
 			case SITEMODEL_COLUMN:
 				if (!doc.pluginmap.containsKey("SiteModel.s:" + partition)) {
-					String id = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
+					String id = ((BEASTInterface)likelihoods[rowNr].siteModelInput.get()).getID();
 					oldName = BeautiDoc.parsePartition(id);
 					doc.renamePartition(BeautiDoc.SITEMODEL_PARTITION, oldName, partition);
 					isRenaming = true;
 				}
 				break;
 			case CLOCKMODEL_COLUMN: {
-				String id = likelihoods[iRow].branchRateModelInput.get().getID();
+				String id = likelihoods[rowNr].branchRateModelInput.get().getID();
 				String clockModelName = id.substring(0, id.indexOf('.')) + ".c:" + partition;
 				if (!doc.pluginmap.containsKey(clockModelName)) {
 					oldName = BeautiDoc.parsePartition(id);
@@ -375,7 +375,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				break;
 			case TREE_COLUMN:
 				if (!doc.pluginmap.containsKey("Tree.t:" + partition)) {
-					String id = likelihoods[iRow].treeInput.get().getID();
+					String id = likelihoods[rowNr].treeInput.get().getID();
 					oldName = BeautiDoc.parsePartition(id);
 					doc.renamePartition(BeautiDoc.TREEMODEL_PARTITION, oldName, partition);
 					isRenaming = true;
@@ -384,7 +384,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Cannot rename item: " + e.getMessage());
-			tableData[iRow][columnNr] = oldName;
+			tableData[rowNr][columnNr] = oldName;
 			return;
 		}
 		if (isRenaming) {
@@ -414,28 +414,28 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			treeLikelihood = likelihoods[partitionNr];
 		}
 		// (TreeLikelihood) doc.pluginmap.get("treeLikelihood." +
-		// tableData[iRow][NAME_COLUMN]);
+		// tableData[rowNr][NAME_COLUMN]);
 
 		boolean needsRePartition = false;
 		
-		PartitionContext oldContext = new PartitionContext(this.likelihoods[iRow]);
+		PartitionContext oldContext = new PartitionContext(this.likelihoods[rowNr]);
 
 		switch (columnNr) {
 		case SITEMODEL_COLUMN: {
 			SiteModelInterface siteModel = null;
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.SITEMODEL_PARTITION) !=
-											// iRow) {
+											// rowNr) {
 				siteModel = treeLikelihood.siteModelInput.get();
 			} else {
 				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + partition);
-				if (siteModel != likelihoods[iRow].siteModelInput.get()) {
-					PartitionContext context = getPartitionContext(iRow);
-					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].siteModelInput.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+				if (siteModel != likelihoods[rowNr].siteModelInput.get()) {
+					PartitionContext context = getPartitionContext(rowNr);
+					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[rowNr].siteModelInput.get(),
+							likelihoods[rowNr], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
-			SiteModelInterface target = this.likelihoods[iRow].siteModelInput.get();
+			SiteModelInterface target = this.likelihoods[rowNr].siteModelInput.get();
 			if (target instanceof SiteModel.Base && siteModel instanceof SiteModel.Base) {
 				if (!((SiteModel.Base)target).substModelInput.canSetValue(((SiteModel.Base)siteModel).substModelInput.get(), (SiteModel.Base) target)) {
 					throw new IllegalArgumentException("Cannot link site model: substitution models are incompatible");
@@ -443,26 +443,26 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			} else {
 				throw new IllegalArgumentException("Don't know how to link this site model");
 			}
-			needsRePartition = (this.likelihoods[iRow].siteModelInput.get() != siteModel);
-			this.likelihoods[iRow].siteModelInput.setValue(siteModel, this.likelihoods[iRow]);
+			needsRePartition = (this.likelihoods[rowNr].siteModelInput.get() != siteModel);
+			this.likelihoods[rowNr].siteModelInput.setValue(siteModel, this.likelihoods[rowNr]);
 
-			partition = ((BEASTInterface)likelihoods[iRow].siteModelInput.get()).getID();
+			partition = ((BEASTInterface)likelihoods[rowNr].siteModelInput.get()).getID();
 			partition = BeautiDoc.parsePartition(partition);
-			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, iRow, partition);
+			getDoc().setCurrentPartition(BeautiDoc.SITEMODEL_PARTITION, rowNr, partition);
 		}
 			break;
 		case CLOCKMODEL_COLUMN: {
 			BranchRateModel clockModel = null;
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.CLOCKMODEL_PARTITION)
-											// != iRow) {
+											// != rowNr) {
 				clockModel = treeLikelihood.branchRateModelInput.get();
 			} else {
 				clockModel = getDoc().getClockModel(partition);
-				if (clockModel != likelihoods[iRow].branchRateModelInput.get()) {
-					PartitionContext context = getPartitionContext(iRow);
-					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].branchRateModelInput.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+				if (clockModel != likelihoods[rowNr].branchRateModelInput.get()) {
+					PartitionContext context = getPartitionContext(rowNr);
+					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[rowNr].branchRateModelInput.get(),
+							likelihoods[rowNr], (MCMC) doc.mcmc.get(), context, doc, null);
 				}
 			}
 			// make sure that *if* the clock model has a tree as input, it is
@@ -475,28 +475,28 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				}
 
 			}
-			if (tree != null && tree != this.likelihoods[iRow].treeInput.get()) {
+			if (tree != null && tree != this.likelihoods[rowNr].treeInput.get()) {
 				throw new IllegalArgumentException("Cannot link clock model with different trees");
 			}
 
-			needsRePartition = (this.likelihoods[iRow].branchRateModelInput.get() != clockModel);
-			this.likelihoods[iRow].branchRateModelInput.setValue(clockModel, this.likelihoods[iRow]);
-			partition = likelihoods[iRow].branchRateModelInput.get().getID();
+			needsRePartition = (this.likelihoods[rowNr].branchRateModelInput.get() != clockModel);
+			this.likelihoods[rowNr].branchRateModelInput.setValue(clockModel, this.likelihoods[rowNr]);
+			partition = likelihoods[rowNr].branchRateModelInput.get().getID();
 			partition = BeautiDoc.parsePartition(partition);
-			getDoc().setCurrentPartition(BeautiDoc.CLOCKMODEL_PARTITION, iRow, partition);
+			getDoc().setCurrentPartition(BeautiDoc.CLOCKMODEL_PARTITION, rowNr, partition);
 		}
 			break;
 		case TREE_COLUMN: {
 			TreeInterface tree = null;
 			if (treeLikelihood != null) { // getDoc().getPartitionNr(partition,
 											// BeautiDoc.TREEMODEL_PARTITION) !=
-											// iRow) {
+											// rowNr) {
 				tree = treeLikelihood.treeInput.get();
 			} else {
 				tree = (TreeInterface) doc.pluginmap.get("Tree.t:" + partition);
-				if (tree != likelihoods[iRow].treeInput.get()) {
-					PartitionContext context = getPartitionContext(iRow);
-					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
+				if (tree != likelihoods[rowNr].treeInput.get()) {
+					PartitionContext context = getPartitionContext(rowNr);
+					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[rowNr].treeInput.get(), likelihoods[rowNr],
 							(MCMC) doc.mcmc.get(), context, doc, null);
 					
 					State state = ((MCMC) doc.mcmc.get()).startStateInput.get();
@@ -505,19 +505,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					for (StateNode s : stateNodes) {
 						if (s.getID().endsWith(".t:" + oldContext.tree) && !(s instanceof TreeInterface)) {
 							@SuppressWarnings("unused")
-							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[rowNr], (MCMC) doc.mcmc.get(), context, doc, null);
 						}
 					}
 				}
 			}
 			// sanity check: make sure taxon sets are compatible
 			Taxon.assertSameTaxa(tree.getID(), tree.getTaxonset().getTaxaNames(),
-					likelihoods[iRow].dataInput.get().getID(), likelihoods[iRow].dataInput.get().getTaxaNames());
+					likelihoods[rowNr].dataInput.get().getID(), likelihoods[rowNr].dataInput.get().getTaxaNames());
 
-			needsRePartition = (this.likelihoods[iRow].treeInput.get() != tree);
+			needsRePartition = (this.likelihoods[rowNr].treeInput.get() != tree);
 			Log.warning.println("needsRePartition = " + needsRePartition);			
 			if (needsRePartition) {
-				TreeInterface oldTree = this.likelihoods[iRow].treeInput.get();
+				TreeInterface oldTree = this.likelihoods[rowNr].treeInput.get();
 				List<TreeInterface> tModels = new ArrayList<>();
 				for (GenericTreeLikelihood likelihood : likelihoods) {
 					if (likelihood.treeInput.get() == oldTree) {
@@ -554,19 +554,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 					}
 				}
 			}
-			likelihoods[iRow].treeInput.setValue(tree, likelihoods[iRow]);
+			likelihoods[rowNr].treeInput.setValue(tree, likelihoods[rowNr]);
 			// TreeDistribution d = getDoc().getTreePrior(partition);
 			// CompoundDistribution prior = (CompoundDistribution)
 			// doc.pluginmap.get("prior");
 			// if (!getDoc().posteriorPredecessors.contains(d)) {
 			// prior.pDistributions.setValue(d, prior);
 			// }
-			partition = likelihoods[iRow].treeInput.get().getID();
+			partition = likelihoods[rowNr].treeInput.get().getID();
 			partition = BeautiDoc.parsePartition(partition);
-			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, iRow, partition);
+			getDoc().setCurrentPartition(BeautiDoc.TREEMODEL_PARTITION, rowNr, partition);
 		}
 		}
-		tableData[iRow][columnNr] = partition;
+		tableData[rowNr][columnNr] = partition;
 		if (needsRePartition) {
 			List<BeautiSubTemplate> templates = new ArrayList<>();
 			templates.add(doc.beautiConfig.partitionTemplate.get());
@@ -589,12 +589,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		updateStatus();
 	}
 
-	private PartitionContext getPartitionContext(int iRow) {
+	private PartitionContext getPartitionContext(int rowNr) {
 		PartitionContext context = new PartitionContext(
-				tableData[iRow][NAME_COLUMN].toString(),
-				tableData[iRow][SITEMODEL_COLUMN].toString(),
-				tableData[iRow][CLOCKMODEL_COLUMN].toString(),
-				tableData[iRow][TREE_COLUMN].toString());
+				tableData[rowNr][NAME_COLUMN].toString(),
+				tableData[rowNr][SITEMODEL_COLUMN].toString(),
+				tableData[rowNr][CLOCKMODEL_COLUMN].toString(),
+				tableData[rowNr][TREE_COLUMN].toString());
 		return context;
 	}
 
@@ -777,8 +777,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			}
 
 			@Override
-			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow,
-					int iCol) {
+			public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowNr,
+					int colNr) {
 				return null;
 			}
 
@@ -829,8 +829,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() > 1) {
 					try {
-						int iAlignmemt = table.rowAtPoint(e.getPoint());
-						Alignment alignment = alignments.get(iAlignmemt);
+						int alignmemt = table.rowAtPoint(e.getPoint());
+						Alignment alignment = alignments.get(alignmemt);
 						int best = 0;
 						BeautiAlignmentProvider provider = null;
 						for (BeautiAlignmentProvider provider2 : doc.beautiConfig.alignmentProvider) {
@@ -1083,19 +1083,19 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 		// do the actual deleting
 		for (int i = selected.length - 1; i >= 0; i--) {
-			int iRow = selected[i];
+			int rowNr = selected[i];
 			
 			// before deleting, unlink site model, clock model and tree
 			
 			// check whether any of the models are linked
-			BranchRateModel.Base clockModel = likelihoods[iRow].branchRateModelInput.get();
-			SiteModelInterface siteModel = likelihoods[iRow].siteModelInput.get();
-			TreeInterface tree = likelihoods[iRow].treeInput.get();
+			BranchRateModel.Base clockModel = likelihoods[rowNr].branchRateModelInput.get();
+			SiteModelInterface siteModel = likelihoods[rowNr].siteModelInput.get();
+			TreeInterface tree = likelihoods[rowNr].treeInput.get();
 			List<GenericTreeLikelihood> cModels = new ArrayList<>();
 			List<GenericTreeLikelihood> models = new ArrayList<>();
 			List<GenericTreeLikelihood> tModels = new ArrayList<>();
 			for (GenericTreeLikelihood likelihood : likelihoods) {
-				if (likelihood != likelihoods[iRow]) {
+				if (likelihood != likelihoods[rowNr]) {
 				if (likelihood.branchRateModelInput.get() == clockModel) {
 					cModels.add(likelihood);
 				}
@@ -1111,43 +1111,43 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			try {
 				if (cModels.size() > 0) {
 					// clock model is linked, so we need to unlink
-					if (doc.getPartitionNr(clockModel) != iRow) {
-						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(iRow).partition;
+					if (doc.getPartitionNr(clockModel) != rowNr) {
+						tableData[rowNr][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(rowNr).partition;
 					} else {
-						int iFreePartition = doc.getPartitionNr(cModels.get(0));
-						tableData[iRow][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
+						int freePartition = doc.getPartitionNr(cModels.get(0));
+						tableData[rowNr][CLOCKMODEL_COLUMN] = getDoc().partitionNames.get(freePartition).partition;
 					}
-					updateModel(CLOCKMODEL_COLUMN, iRow);
+					updateModel(CLOCKMODEL_COLUMN, rowNr);
 				}
 				
 				if (models.size() > 0) {
 					// site model is linked, so we need to unlink
-					if (doc.getPartitionNr((BEASTInterface) siteModel) != iRow) {
-						tableData[iRow][SITEMODEL_COLUMN] = getDoc().partitionNames.get(iRow).partition;
+					if (doc.getPartitionNr((BEASTInterface) siteModel) != rowNr) {
+						tableData[rowNr][SITEMODEL_COLUMN] = getDoc().partitionNames.get(rowNr).partition;
 					} else {
-						int iFreePartition = doc.getPartitionNr(models.get(0));
-						tableData[iRow][SITEMODEL_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
+						int freePartition = doc.getPartitionNr(models.get(0));
+						tableData[rowNr][SITEMODEL_COLUMN] = getDoc().partitionNames.get(freePartition).partition;
 					}
-					updateModel(SITEMODEL_COLUMN, iRow);
+					updateModel(SITEMODEL_COLUMN, rowNr);
 				}
 				
 				if (tModels.size() > 0) {
 					// tree is linked, so we need to unlink
-					if (doc.getPartitionNr((BEASTInterface) tree) != iRow) {
-						tableData[iRow][TREE_COLUMN] = getDoc().partitionNames.get(iRow).partition;
+					if (doc.getPartitionNr((BEASTInterface) tree) != rowNr) {
+						tableData[rowNr][TREE_COLUMN] = getDoc().partitionNames.get(rowNr).partition;
 					} else {
-						int iFreePartition = doc.getPartitionNr(tModels.get(0));
-						tableData[iRow][TREE_COLUMN] = getDoc().partitionNames.get(iFreePartition).partition;
+						int freePartition = doc.getPartitionNr(tModels.get(0));
+						tableData[rowNr][TREE_COLUMN] = getDoc().partitionNames.get(freePartition).partition;
 					}
-					updateModel(TREE_COLUMN, iRow);
+					updateModel(TREE_COLUMN, rowNr);
 				}
-				getDoc().delAlignmentWithSubnet(alignments.get(iRow));
-				alignments.remove(iRow);
+				getDoc().delAlignmentWithSubnet(alignments.get(rowNr));
+				alignments.remove(rowNr);
 			    // remove deleted likelihood from likelihoods array
 				GenericTreeLikelihood[] tmp = new GenericTreeLikelihood[likelihoods.length - 1];
 				int k = 0;
 				for (int j = 0; j < likelihoods.length; j++) {
-					if (j != iRow) {
+					if (j != rowNr) {
 						tmp[k] = likelihoods[j];
 						k++;
 					}
@@ -1201,8 +1201,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		}
 
 		for (int i = selected.length - 1; i >= 0; i--) {
-			int iRow = selected[i];
-			Alignment alignment = alignments.remove(iRow);
+			int rowNr = selected[i];
+			Alignment alignment = alignments.remove(rowNr);
 			getDoc().delAlignmentWithSubnet(alignment);
 			try {
 				for (int j = 0; j < filters.length; j++) {

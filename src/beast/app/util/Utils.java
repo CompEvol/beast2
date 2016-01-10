@@ -291,8 +291,8 @@ public class Utils {
         reader.close();
         return out.toString();
     }
-	public static ImageIcon getIcon(int iPanel, BeautiPanelConfig config) {
-	    String iconLocation = BeautiPanel.ICONPATH + iPanel + ".png";
+	public static ImageIcon getIcon(int panelIndex, BeautiPanelConfig config) {
+	    String iconLocation = BeautiPanel.ICONPATH + panelIndex + ".png";
 	    if (config != null) {
 	        iconLocation = BeautiPanel.ICONPATH + config.getIcon();
 	    }

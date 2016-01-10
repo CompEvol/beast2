@@ -12,7 +12,7 @@ import java.util.List;
  * getInitialisedStateNodes() reports back which nodes has been initialized, but this is currently only used to
  * check for multiple initialiser for the same object.
  *  <p/>
- * Like any other iBEASTObject, a state initialiser must have an initAndValidate(), which is called once.
+ * Like any other isEASTObject, a state initialiser must have an initAndValidate(), which is called once.
  * getInitialisedStateNodes(), on the other hand,  may be called multiple times as its inputs change while the system
  * tries to establish a valid starting state. initAndValidate is executed in order that the XML parser see objects,
  * so the inputs are not guaranteed to be initialized at this time. initStateNodes is executed in order of appearance

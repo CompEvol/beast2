@@ -193,7 +193,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         int i = 0;
         try {
             while (i < args.length) {
-                int iOld = i;
+                int old = i;
                 if (args[i].equals("")) {
                     i += 1;
                 } else if (args[i].equals("-h") || args[i].equals("-help")) {
@@ -261,7 +261,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     i += 1;
                 }
 
-                if (i == iOld) {
+                if (i == old) {
                     throw new IllegalArgumentException("Wrong argument: " + args[i]);
                 }
             }
@@ -561,8 +561,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
                                     // find mergewith elements
                                     NodeList nodes = doc.getElementsByTagName("mergewith");
-                                    for (int iMergeElement = 0; iMergeElement < nodes.getLength(); iMergeElement++) {
-                                        Node mergeElement = nodes.item(iMergeElement);
+                                    for (int mergeElementIndex = 0; mergeElementIndex < nodes.getLength(); mergeElementIndex++) {
+                                        Node mergeElement = nodes.item(mergeElementIndex);
                                         String mergePoint = mergeElement.getAttributes().getNamedItem("point")
                                                 .getNodeValue();
                                         if (!mergePoints.containsKey(mergePoint)) {
@@ -572,8 +572,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                         } else {
                                             String xml = "";
                                             NodeList children = mergeElement.getChildNodes();
-                                            for (int iChild = 0; iChild < children.getLength(); iChild++) {
-                                                xml += nodeToString(children.item(iChild));
+                                            for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+                                                xml += nodeToString(children.item(childIndex));
                                             }
                                             String str = mergePoints.get(mergePoint);
                                             str += xml;
@@ -631,8 +631,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         NodeList nodes = doc.getElementsByTagName("beauticonfig");
         Node topNode = doc.getElementsByTagName("*").item(0);
         String nameSpaceStr = XMLParser.getAttribute(topNode, "namespace");
-        for (int iConfigElement = 0; iConfigElement < nodes.getLength(); iConfigElement++) {
-            Node configElement = nodes.item(iConfigElement);
+        for (int configElementIndex = 0; configElementIndex < nodes.getLength(); configElementIndex++) {
+            Node configElement = nodes.item(configElementIndex);
             String xml = nodeToString(configElement);
             XMLParser parser = new XMLParser();
             parser.setNameSpace(nameSpaceStr);
@@ -847,9 +847,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //		PluginPanel.addPluginToMap(MCMC, this);
 
 //		if (xml.indexOf(XMLProducer.DO_NOT_EDIT_WARNING) > 0) {
-//			int iStart = xml.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
-//			int iEnd = xml.lastIndexOf("-->");
-//			xml = xml.substring(iStart, iEnd);
+//			int start = xml.indexOf(XMLProducer.DO_NOT_EDIT_WARNING);
+//			int end = xml.lastIndexOf("-->");
+//			xml = xml.substring(start, end);
 //			xml = xml.replaceAll(XMLProducer.DO_NOT_EDIT_WARNING, "");
 //			xml = "<beast namespace='" + XMLProducer.DEFAULT_NAMESPACE + "'>" + xml + "</beast>";
 //			List<BEASTObject> beastObjects = parser.parseBareFragments(xml, true);
@@ -1632,8 +1632,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         for (int i = 0; i < 3; i++) {
             boolean[] usedPartition = new boolean[partitionCount];
             for (int j = 0; j < partitionCount; j++) {
-                int iPartition = currentPartitions[i].get(j);// getPartitionNr(m_pPartitionByAlignments[i].get(j));
-                usedPartition[iPartition] = true;
+                int partitionIndex = currentPartitions[i].get(j);// getPartitionNr(m_pPartitionByAlignments[i].get(j));
+                usedPartition[partitionIndex] = true;
             }
             for (int j = 0; j < partitionCount; j++) {
                 if (usedPartition[j]) {
@@ -1717,9 +1717,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return pPartition[2];
     }
 
-    public void setCurrentPartition(int iCol, int iRow, String partition) {
-        int currentPartion = getPartitionNr(partition, iCol);
-        currentPartitions[iCol].set(iRow, currentPartion);
+    public void setCurrentPartition(int colNr, int rowNr, String partition) {
+        int currentPartion = getPartitionNr(partition, colNr);
+        currentPartitions[colNr].set(rowNr, currentPartion);
     }
 
     @Override

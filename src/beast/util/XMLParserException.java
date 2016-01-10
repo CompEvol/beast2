@@ -58,7 +58,7 @@ public class XMLParserException extends Exception {
         super(msg);
         _node = node;
         msg = "";
-        errorNr = errorNr;
+        this.errorNr = errorNr;
     }
 
     // format message and resolve parent

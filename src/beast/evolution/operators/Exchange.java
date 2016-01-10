@@ -112,19 +112,19 @@ public class Exchange extends TreeOperator {
                 return Double.NEGATIVE_INFINITY;
             }
 
-            Node iGrandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
-            while (iGrandParent.getLeft().isLeaf() && iGrandParent.getRight().isLeaf()) {
-                iGrandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
+            Node grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
+            while (grandParent.getLeft().isLeaf() && grandParent.getRight().isLeaf()) {
+                grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
             }
 
-            Node iParent = iGrandParent.getLeft();
-            Node iUncle = iGrandParent.getRight();
-            if (iParent.getHeight() < iUncle.getHeight()) {
-                iParent = iGrandParent.getRight();
-                iUncle = iGrandParent.getLeft();
+            Node parentIndex = grandParent.getLeft();
+            Node uncle = grandParent.getRight();
+            if (parentIndex.getHeight() < uncle.getHeight()) {
+                parentIndex = grandParent.getRight();
+                uncle = grandParent.getLeft();
             }
 
-            if( iParent.isLeaf() ) {
+            if( parentIndex.isLeaf() ) {
                 // tree with dated tips
                 return Double.NEGATIVE_INFINITY;
             }
@@ -136,12 +136,12 @@ public class Exchange extends TreeOperator {
                 }
             }
 
-            final int c2 = sisg(iParent) + sisg(iUncle);
+            final int c2 = sisg(parentIndex) + sisg(uncle);
 
-            final Node i = (Randomizer.nextBoolean() ? iParent.getLeft() : iParent.getRight());
-            exchangeNodes(i, iUncle, iParent, iGrandParent);
+            final Node i = (Randomizer.nextBoolean() ? parentIndex.getLeft() : parentIndex.getRight());
+            exchangeNodes(i, uncle, parentIndex, grandParent);
 
-            final int validGPafter = validGP - c2 + sisg(iParent) + sisg(iUncle);
+            final int validGPafter = validGP - c2 + sisg(parentIndex) + sisg(uncle);
 
             return Math.log((float)validGP/validGPafter);
         } else {
@@ -154,20 +154,20 @@ public class Exchange extends TreeOperator {
                 i = tree.getNode(Randomizer.nextInt(nodeCount));
             }
 
-            final Node iParent = i.getParent();
-            final Node iGrandParent = iParent.getParent();
-            Node iUncle = iGrandParent.getLeft();
-            if (iUncle.getNr() == iParent.getNr()) {
-                iUncle = iGrandParent.getRight();
-                assert (iUncle.getNr() != iParent.getNr());
+            final Node parentIndex = i.getParent();
+            final Node grandParent = parentIndex.getParent();
+            Node uncle = grandParent.getLeft();
+            if (uncle.getNr() == parentIndex.getNr()) {
+                uncle = grandParent.getRight();
+                assert (uncle.getNr() != parentIndex.getNr());
             }
-            assert iUncle == getOtherChild(iGrandParent, iParent);
+            assert uncle == getOtherChild(grandParent, parentIndex);
 
-            assert i.getHeight() <= iGrandParent.getHeight();
+            assert i.getHeight() <= grandParent.getHeight();
 
-            if (//i.getHeight() < iUncle.getHeight() &&
-                    iUncle.getHeight() < iParent.getHeight()) {
-                exchangeNodes(i, iUncle, iParent, iGrandParent);
+            if (//i.getHeight() < uncle.getHeight() &&
+                    uncle.getHeight() < parentIndex.getHeight()) {
+                exchangeNodes(i, uncle, parentIndex, grandParent);
                 return 0;
             } else {
                 // Couldn't find valid narrow move on this beast.tree!!
@@ -195,21 +195,21 @@ public class Exchange extends TreeOperator {
             j = tree.getNode(Randomizer.nextInt(nodeCount));
         }
 
-        final Node iP = i.getParent();
+        final Node p = i.getParent();
         final Node jP = j.getParent();
 
-        if ((iP != jP) && (i != jP) && (j != iP)
-                && (j.getHeight() < iP.getHeight())
+        if ((p != jP) && (i != jP) && (j != p)
+                && (j.getHeight() < p.getHeight())
                 && (i.getHeight() < jP.getHeight())
-//                && ((iP.getHeight() < jP.getHeight() && i.getHeight() < j.getHeight()) ||
-//                (iP.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
+//                && ((p.getHeight() < jP.getHeight() && i.getHeight() < j.getHeight()) ||
+//                (p.getHeight() > jP.getHeight() && i.getHeight() > j.getHeight()))
                 ) {
-            exchangeNodes(i, j, iP, jP);
+            exchangeNodes(i, j, p, jP);
 
             // All the nodes on the path from i/j to the common ancestor of i/j parents had a topology change,
             // so they need to be marked FILTHY.
             if( markCladesInput.get() ) {
-                Node iup = iP;
+                Node iup = p;
                 Node jup = jP;
                 while (iup != jup) {
                     if( iup.getHeight() < jup.getHeight() ) {
@@ -235,10 +235,10 @@ public class Exchange extends TreeOperator {
     /* exchange sub-trees whose root are i and j */
 
     protected void exchangeNodes(Node i, Node j,
-                                 Node iP, Node jP) {
-        // precondition iP -> i & jP -> j
-        replace(iP, i, j);
+                                 Node p, Node jP) {
+        // precondition p -> i & jP -> j
+        replace(p, i, j);
         replace(jP, j, i);
-        // postcondition iP -> j & iP -> i
+        // postcondition p -> j & p -> i
     }
 }

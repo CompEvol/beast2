@@ -136,7 +136,7 @@ public interface Parameter<T> extends Function {
 
         /**
          * @param index dimension to check
-         * @return true if the iParam-th element has changed
+         * @return true if the param-th element has changed
          */
         public boolean isDirty(final int index) {
             return m_bIsDirty[index];
@@ -226,8 +226,8 @@ public interface Parameter<T> extends Function {
         }
 
         @Override
-        public T getValue(final int iParam) {
-            return values[iParam];
+        public T getValue(final int param) {
+            return values[param];
         }
 
         @Override
@@ -250,23 +250,23 @@ public interface Parameter<T> extends Function {
         }
 
         @Override
-        public void setValue(final int iParam, final T value) {
+        public void setValue(final int param, final T value) {
             startEditing(null);
 
-            values[iParam] = value;
-            m_bIsDirty[iParam] = true;
-            m_nLastDirty = iParam;
+            values[param] = value;
+            m_bIsDirty[param] = true;
+            m_nLastDirty = param;
 
         }
 
         @Override
-        public void swap(final int iLeft, final int iRight) {
+        public void swap(final int left, final int right) {
             startEditing(null);
-            final T tmp = values[iLeft];
-            values[iLeft] = values[iRight];
-            values[iRight] = tmp;
-            m_bIsDirty[iLeft] = true;
-            m_bIsDirty[iRight] = true;
+            final T tmp = values[left];
+            values[left] = values[right];
+            values[right] = tmp;
+            m_bIsDirty[left] = true;
+            m_bIsDirty[right] = true;
         }
 
         /**
@@ -346,8 +346,8 @@ public interface Parameter<T> extends Function {
             if (valueCount == 1) {
                 out.print(getID() + "\t");
             } else {
-                for (int iValue = 0; iValue < valueCount; iValue++) {
-                    out.print(getID() + (iValue + 1) + "\t");
+                for (int value = 0; value < valueCount; value++) {
+                    out.print(getID() + (value + 1) + "\t");
                 }
             }
         }

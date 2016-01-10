@@ -183,27 +183,27 @@ public class XMLProducer extends XMLParser {
     			}
     		}
    			String [] strs2 = split(ss[0]);
-   			int iSpec = 0;
-   			while (iSpec < strs2.length && !strs2[iSpec].startsWith("spec=")) {
-   				iSpec++;
+   			int spec = 0;
+   			while (spec < strs2.length && !strs2[spec].startsWith("spec=")) {
+   				spec++;
    			}
-   			int iID = 0;
-   			while (iID < strs2.length && !strs2[iID].startsWith("id=")) {
-   				iID++;
+   			int iD = 0;
+   			while (iD < strs2.length && !strs2[iD].startsWith("id=")) {
+   				iD++;
    			}
 			bf.append('<');
 			if (strs2[0] != null)
 				bf.append(strs2[0]);
-			if (iID < strs2.length) {
+			if (iD < strs2.length) {
 				bf.append(' ');
-				bf.append(strs2[iID]);
+				bf.append(strs2[iD]);
 			}
-			if (iSpec < strs2.length) {
+			if (spec < strs2.length) {
 				bf.append(' ');
-				bf.append(strs2[iSpec]);
+				bf.append(strs2[spec]);
 			}
 			for (int j = 1; j < strs2.length; j++) {
-				if (j != iID && j != iSpec) {
+				if (j != iD && j != spec) {
 	    			bf.append(' ');
 	    			if (strs2[j] != null)
 	    				bf.append(strs2[j]);

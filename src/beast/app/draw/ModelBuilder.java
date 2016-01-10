@@ -1554,21 +1554,21 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     case MODE_ARROW:
                         Arrow arrow = (Arrow) m_drawShape;
                         if (m_drawShape == null) {
-                            int iSelection = -1;
-                            for (int i = 0; iSelection < 0
+                            int selectionIndex = -1;
+                            for (int i = 0; selectionIndex < 0
                                     && i < m_doc.m_objects.size(); i++) {
                                 Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing
                                         && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
                                     m_nPosY = shape.offsetY(me.getY());
-                                    iSelection = i;
+                                    selectionIndex = i;
                                 }
                             }
-                            if (iSelection < 0) {
+                            if (selectionIndex < 0) {
                                 return;
                             }
-                            Shape shape = m_doc.m_objects.get(iSelection);
+                            Shape shape = m_doc.m_objects.get(selectionIndex);
                             if (shape instanceof Arrow) {
                                 return;
                             }
@@ -1662,35 +1662,35 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 // otherwise, assume left click
                 switch (m_nMode) {
                     case MODE_SELECT:
-                        int iSelection = -1;
-                        for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
+                        int selectionIndex = -1;
+                        for (int i = m_doc.m_objects.size() - 1; selectionIndex < 0 && i >= 0; i--) {
                             Shape shape = m_doc.m_objects.get(i);
                             if (shape.m_bNeedsDrawing && !(shape instanceof Arrow) && shape.intersects(me.getX(), me.getY())) {
                                 m_nPosX = shape.offsetX(me.getX());
                                 m_nPosY = shape.offsetY(me.getY());
-                                iSelection = i;
+                                selectionIndex = i;
                             }
                         }
-                        if (iSelection < 0) {
-                            for (int i = m_doc.m_objects.size() - 1; iSelection < 0 && i >= 0; i--) {
+                        if (selectionIndex < 0) {
+                            for (int i = m_doc.m_objects.size() - 1; selectionIndex < 0 && i >= 0; i--) {
                                 Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
                                     m_nPosY = shape.offsetY(me.getY());
-                                    iSelection = i;
+                                    selectionIndex = i;
                                 }
                             }
-                            if (iSelection < 0) {
+                            if (selectionIndex < 0) {
                                 return;
                             }
                         }
                         if ((me.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
-                            m_Selection.toggleSelection(iSelection);
+                            m_Selection.toggleSelection(selectionIndex);
                         } else if ((me.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) {
-                            m_Selection.addToSelection(iSelection);
+                            m_Selection.addToSelection(selectionIndex);
                         } else {
                             m_Selection.clear();
-                            m_Selection.setSingleSelection(iSelection);
+                            m_Selection.setSingleSelection(selectionIndex);
                         }
                         updateStatus();
                         break;
@@ -1740,8 +1740,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                 JPopupMenu popupMenu = new JPopupMenu("Choose a value");
 
                 if (!m_Selection.hasSelection()) {
-                    int iSelection = -1;
-                    for (int i = 0; iSelection < 0
+                    int selectionIndex = -1;
+                    for (int i = 0; selectionIndex < 0
                             && i < m_doc.m_objects.size(); i++) {
                         Shape shape = m_doc.m_objects.get(i);
                         if (shape.m_bNeedsDrawing
@@ -1946,23 +1946,23 @@ public class ModelBuilder extends JPanel implements ComponentListener {
                     case MODE_ARROW:
                         Arrow arrow = (Arrow) m_drawShape;
                         if (m_drawShape != null) {
-                            int iSelection = -1;
-                            for (int i = 0; iSelection < 0
+                            int selectionIndex = -1;
+                            for (int i = 0; selectionIndex < 0
                                     && i < m_doc.m_objects.size(); i++) {
                                 Shape shape = m_doc.m_objects.get(i);
                                 if (shape.m_bNeedsDrawing
                                         && shape.intersects(me.getX(), me.getY())) {
                                     m_nPosX = shape.offsetX(me.getX());
                                     m_nPosY = shape.offsetY(me.getY());
-                                    iSelection = i;
+                                    selectionIndex = i;
                                 }
                             }
-                            if (iSelection < 0) {
+                            if (selectionIndex < 0) {
                                 m_drawShape = null;
                                 repaint();
                                 return;
                             }
-                            Shape target = m_doc.m_objects.get(iSelection);
+                            Shape target = m_doc.m_objects.get(selectionIndex);
                             if (!(target instanceof InputShape)) {
                                 // only connect to inputs of functions
                                 m_drawShape = null;

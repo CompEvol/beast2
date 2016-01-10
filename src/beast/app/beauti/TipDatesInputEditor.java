@@ -328,12 +328,12 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
 
             @Override
-            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int iRow, int iCol) {
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowNr, int colNr) {
                 if (!isSelected) {
                     return null;
                 }
-                m_iRow = iRow;
-                m_iCol = iCol;
+                m_iRow = rowNr;
+                m_iCol = colNr;
                 m_textField.setText((String) value);
                 return m_textField;
             }
@@ -414,7 +414,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
             String taxonID = normalize(strs[0]);
             int taxonIndex = taxa.indexOf(taxonID);
-//            if (iTaxon < 0) {
+//            if (taxonIndex < 0) {
 //                throw new Exception("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
 //            }
             if (taxonIndex >= 0) {

@@ -308,19 +308,19 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             int states = data.getDataType().getStateCount();
             double[] partials = new double[patternCount * states];
             int k = 0;
-            int iTaxon = getTaxonIndex(node.getID(), data);
-            for (int iPattern = 0; iPattern < patternCount; iPattern++) {                
-                double[] tipLikelihoods = data.getTipLikelihoods(iTaxon,iPattern);
+            int taxonIndex = getTaxonIndex(node.getID(), data);
+            for (int patternIndex_ = 0; patternIndex_ < patternCount; patternIndex_++) {                
+                double[] tipLikelihoods = data.getTipLikelihoods(taxonIndex,patternIndex_);
                 if (tipLikelihoods != null) {
-                	for (int iState = 0; iState < states; iState++) {
-                		partials[k++] = tipLikelihoods[iState];
+                	for (int state = 0; state < states; state++) {
+                		partials[k++] = tipLikelihoods[state];
                 	}
                 }
                 else {
-                	int stateCount = data.getPattern(iTaxon, iPattern);
+                	int stateCount = data.getPattern(taxonIndex, patternIndex_);
 	                boolean[] stateSet = data.getStateSet(stateCount);
-	                for (int iState = 0; iState < states; iState++) {
-	                	 partials[k++] = (stateSet[iState] ? 1.0 : 0.0);                
+	                for (int state = 0; state < states; state++) {
+	                	 partials[k++] = (stateSet[state] ? 1.0 : 0.0);                
 	                }
                 }
             }
@@ -395,22 +395,22 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
         int update = (node.isDirty() | hasDirt);
 
-        final int iNode = node.getNr();
+        final int nodeIndex = node.getNr();
 
         final double branchRate = branchRateModel.getRateForBranch(node);
         final double branchTime = node.getLength() * branchRate;
 
         // First update the transition probability matrix(ices) for this branch
-        //if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[iNode])) {
-        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_branchLengths[iNode])) {
-            m_branchLengths[iNode] = branchTime;
+        //if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_StoredBranchLengths[nodeIndex])) {
+        if (!node.isRoot() && (update != Tree.IS_CLEAN || branchTime != m_branchLengths[nodeIndex])) {
+            m_branchLengths[nodeIndex] = branchTime;
             final Node parent = node.getParent();
-            likelihoodCore.setNodeMatrixForUpdate(iNode);
+            likelihoodCore.setNodeMatrixForUpdate(nodeIndex);
             for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
                 final double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
                 substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, probabilities);
                 //System.out.println(node.getNr() + " " + Arrays.toString(m_fProbabilities));
-                likelihoodCore.setNodeMatrix(iNode, i, probabilities);
+                likelihoodCore.setNodeMatrix(nodeIndex, i, probabilities);
             }
             update |= Tree.IS_DIRTY;
         }
@@ -431,14 +431,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 final int childNum1 = child1.getNr();
                 final int childNum2 = child2.getNr();
 
-                likelihoodCore.setNodePartialsForUpdate(iNode);
+                likelihoodCore.setNodePartialsForUpdate(nodeIndex);
                 update |= (update1 | update2);
                 if (update >= Tree.IS_FILTHY) {
-                    likelihoodCore.setNodeStatesForUpdate(iNode);
+                    likelihoodCore.setNodeStatesForUpdate(nodeIndex);
                 }
 
                 if (m_siteModel.integrateAcrossCategories()) {
-                    likelihoodCore.calculatePartials(childNum1, childNum2, iNode);
+                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeIndex);
                 } else {
                     throw new RuntimeException("Error TreeLikelihood 201: Site categories not supported");
                     //m_pLikelihoodCore->calculatePartials(childNum1, childNum2, nodeNum, siteCategories);

@@ -54,7 +54,7 @@ public class LogCombiner extends LogAnalyser {
         m_sLogFileName = new ArrayList<>();
         try {
             while (i < args.length) {
-                int iOld = i;
+                int old = i;
                 if (i < args.length) {
                     if (args[i].equals("")) {
                         i += 1;
@@ -95,7 +95,7 @@ public class LogCombiner extends LogAnalyser {
                         m_nSampleInterval = -1;
                         i++;
                     }
-                    if (i == iOld) {
+                    if (i == old) {
                         throw new IllegalArgumentException("Unrecognised argument");
                     }
                 }
@@ -311,7 +311,7 @@ public class LogCombiner extends LogAnalyser {
                 while (k < tree.length()) {
                     char c = tree.charAt(k);
                     if (Character.isDigit(c)) {
-                        int iStart = k;
+                        int start = k;
                         while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                         }
                         if (k < tree.length() && tree.charAt(k) == '.') {
@@ -325,12 +325,12 @@ public class LogCombiner extends LogAnalyser {
                                 if (k < tree.length() && Character.isDigit(tree.charAt(k))) {
                                     while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                                     }
-                                    int iEnd = k;
-                                    String number = tree.substring(iStart, iEnd);
+                                    int end = k;
+                                    String number = tree.substring(start, end);
                                     double d = Double.parseDouble(number);
                                     number = format.format(d);
-                                    tree = tree.substring(0, iStart) + number + tree.substring(iEnd);
-                                    k = iStart + number.length();
+                                    tree = tree.substring(0, start) + number + tree.substring(end);
+                                    k = start + number.length();
                                 }
                             }
                         }
@@ -346,19 +346,19 @@ public class LogCombiner extends LogAnalyser {
                 while (k < tree.length()) {
                     char c = tree.charAt(k);
                     if (Character.isDigit(c)) {
-                        int iStart = k;
+                        int start = k;
                         while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                         }
                         if (k < tree.length() && tree.charAt(k) == '.') {
                             while (++k < tree.length() && Character.isDigit(tree.charAt(k))) {
                             }
                             if (k < tree.length() && tree.charAt(k) != '-' && tree.charAt(k) != 'E' && tree.charAt(k) != 'e') {
-                                int iEnd = k;
-                                String number = tree.substring(iStart, iEnd);
+                                int end = k;
+                                String number = tree.substring(start, end);
                                 double d = Double.parseDouble(number);
                                 number = format.format(d);
-                                tree = tree.substring(0, iStart) + number + tree.substring(iEnd);
-                                k = iStart + number.length();
+                                tree = tree.substring(0, start) + number + tree.substring(end);
+                                k = start + number.length();
                             }
                         }
                     } else {

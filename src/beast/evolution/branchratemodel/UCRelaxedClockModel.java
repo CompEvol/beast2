@@ -301,7 +301,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    class TreeLikelihoodD extends TreeLikelihood {
 //    
 //    	double calcDistance(Node node) {
-//    		int iNode = node.getNr();
+//    		int nodeIndex = node.getNr();
 //    		int patterncount = dataInput.get().getPatternCount();
 //    		int statecount = dataInput.get().getDataType().getStateCount();
 //            double [] parentPartials = new double[patterncount * statecount];
@@ -309,7 +309,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    		if (node.isLeaf()) {
 //        		// distance of leaf to its parent, ignores ambiguities
 //    			int [] states = new int[patterncount ];
-//        		likelihoodCore.getNodeStates(iNode, states);
+//        		likelihoodCore.getNodeStates(nodeIndex, states);
 //        		double distance = 0;
 //        		for (int i = 0; i < patterncount; i++) {
 //        			int k = states[i];
@@ -327,7 +327,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 //    		} else {
 //        		// L1 distance of internal node partials to its parent partials
 //                double [] partials = new double[parentPartials.length];
-//        		likelihoodCore.getNodePartials(iNode, partials);
+//        		likelihoodCore.getNodePartials(nodeIndex, partials);
 //        		double distance = 0;
 //        		for (int i = 0; i < patterncount; i++) {
 //        			double d = 0;

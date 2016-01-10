@@ -141,33 +141,33 @@ public class State extends BEASTObject {
 
         /**
          * get entry from Trie, return null if no entry is present yet *
-         * @param iPos
+         * @param pos
          */
-        List<CalculationNode> get(final int iPos) {
-            if (iPos == 0) {
+        List<CalculationNode> get(final int pos) {
+            if (pos == 0) {
                 return list;
             }
-            final Trie child = children[changeStateNodes[iPos - 1]];
+            final Trie child = children[changeStateNodes[pos - 1]];
             if (child == null) {
                 return null;
             }
-            return child.get(iPos - 1);
+            return child.get(pos - 1);
         }
 
         /**
          * set entry int Trie, create new entries if no entry is present yet *
          */
-        void set(final List<CalculationNode> list, final int iPos) {
-            if (iPos == 0) {
+        void set(final List<CalculationNode> list, final int pos) {
+            if (pos == 0) {
                 this.list = list;
                 return;
             }
-            Trie child = children[changeStateNodes[iPos - 1]];
+            Trie child = children[changeStateNodes[pos - 1]];
             if (child == null) {
                 child = new Trie();
-                children[changeStateNodes[iPos - 1]] = child;
+                children[changeStateNodes[pos - 1]] = child;
             }
-            child.set(list, iPos - 1);
+            child.set(list, pos - 1);
         }
     }
 
@@ -211,8 +211,8 @@ public class State extends BEASTObject {
      * changing it. To change a StateNode, say from an Operator,
      * getEditableStateNode() should be called. *
      */
-    public StateNode getStateNode(final int iD) {
-        return stateNode[iD];
+    public StateNode getStateNode(final int _id) {
+        return stateNode[_id];
     }
 
     /**
@@ -224,14 +224,14 @@ public class State extends BEASTObject {
      * change the particular StateNode through the Input.get(Operator)
      * method on the input associated with this StateNode.
      */
-    protected StateNode getEditableStateNode(int iD, Operator operator) {
+    protected StateNode getEditableStateNode(int _id, Operator operator) {
         for (int i = 0; i < nrOfChangedStateNodes; i++) {
-            if (changeStateNodes[i] == iD) {
-                return stateNode[iD];
+            if (changeStateNodes[i] == _id) {
+                return stateNode[_id];
             }
         }
-        changeStateNodes[nrOfChangedStateNodes++] = iD;
-        return stateNode[iD];
+        changeStateNodes[nrOfChangedStateNodes++] = _id;
+        return stateNode[_id];
     }
 
     /**
@@ -242,10 +242,10 @@ public class State extends BEASTObject {
      * <p/>
      * Also, store the state to disk for resumption of analysis later on.
      *
-     * @param iSample chain state number
+     * @param sample chain state number
      * @return  true if stored  to disk
      */
-    public void store(final int iSample) {
+    public void store(final int sample) {
         //Arrays.fill(changeStateNodes, -1);
         nrOfChangedStateNodes = 0;
     }
@@ -318,12 +318,12 @@ public class State extends BEASTObject {
      * Print state to file. This is called either periodically or at the end
      * of an MCMC chain, so that the state can be resumed later on.
      *
-     * @param iSample TODO
+     * @param sample TODO
      */
-    public void storeToFile(final int iSample) {
+    public void storeToFile(final int sample) {
         try {
             PrintStream out = new PrintStream(stateFileName + ".new");
-            out.print(toXML(iSample));
+            out.print(toXML(sample));
             //out.print(new XMLProducer().toXML(this));
             out.close();
             File newStateFile = new File(stateFileName + ".new");
@@ -340,11 +340,11 @@ public class State extends BEASTObject {
      * convert state to XML string,
      * The state can be reconstructed using the fromXML() method
      *
-     * @param iSample TODO*
+     * @param sample TODO*
      */
-    public String toXML(final int iSample) {
+    public String toXML(final int sample) {
         final StringBuilder buf = new StringBuilder();
-        buf.append("<itsabeastystatewerein version='2.0' sample='").append(iSample).append("'>\n");
+        buf.append("<itsabeastystatewerein version='2.0' sample='").append(sample).append("'>\n");
         for (final StateNode node : stateNode) {
             buf.append(node.toXML());
         }

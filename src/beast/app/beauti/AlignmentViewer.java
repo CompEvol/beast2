@@ -173,8 +173,8 @@ public class AlignmentViewer extends JPanel {
         Object[][] colorMap = setupColorMap();
         try {
             for (int i = 0; i < siteCount; i++) {
-                int iPattern = m_alignment.getPatternIndex(i);
-                int[] pattern = m_alignment.getPattern(iPattern);
+                int patternIndex_ = m_alignment.getPatternIndex(i);
+                int[] pattern = m_alignment.getPattern(patternIndex_);
                 String patternString = dataType.state2string(pattern);
                 headerChar[i] = mostFrequentCharInPattern(patternString);
                 for (int j = 0; j < taxonCount; j++) {
@@ -240,14 +240,14 @@ public class AlignmentViewer extends JPanel {
         for (int i = 0; i < pattern.length(); i++) {
             counts[pattern.charAt(i)]++;
         }
-        int iMax = 0, max = 0;
+        int maxIndex = 0, max = 0;
         for (int i = 0; i < counts.length; i++) {
             if (counts[i] > max) {
-                iMax = i;
+                maxIndex = i;
                 max = counts[i];
             }
         }
-        return (char) iMax;
+        return (char) maxIndex;
     }
 
     public void showInDialog() {

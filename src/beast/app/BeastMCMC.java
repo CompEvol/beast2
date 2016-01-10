@@ -109,7 +109,7 @@ public class BeastMCMC {
 
         try {
             while (i < args.length) {
-                int iOld = i;
+                int old = i;
                 if (i < args.length) {
                     if (args[i].equals("")) {
                         i += 1;
@@ -145,7 +145,7 @@ public class BeastMCMC {
                         System.setProperty("file.name.prefix", args[i + 1].trim());
                         i += 2;
                     }
-                    if (i == iOld) {
+                    if (i == old) {
                         if (i == args.length - 1) {
                             beastFile = new File(args[i]);
                             i++;

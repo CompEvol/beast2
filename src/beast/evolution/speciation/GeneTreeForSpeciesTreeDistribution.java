@@ -106,9 +106,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             if (speciesID == null) {
                 throw new IllegalArgumentException("Cannot find species for lineage " + gtNodes[i].getID());
             }
-            for (int iSpecies = 0; iSpecies < speciesCount; iSpecies++) {
-                if (speciesID.equals(sptNodes[iSpecies].getID())) {
-                    nrOfLineageToSpeciesMap[i] = iSpecies;
+            for (int species = 0; species < speciesCount; species++) {
+                if (speciesID.equals(sptNodes[species].getID())) {
+                    nrOfLineageToSpeciesMap[i] = species;
                     break;
                 }
             }
@@ -121,8 +121,8 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         nrOfLineages = new int[speciesCount];
 //        for (final Node node : gtNodes) {
 //            if (node.isLeaf()) {
-//                final int iSpecies = m_nLineageToSpeciesMap[node.getNr()];
-//                m_nLineages[iSpecies]++;
+//                final int species = m_nLineageToSpeciesMap[node.getNr()];
+//                m_nLineages[species]++;
 //            }
 //        }
 
@@ -188,15 +188,15 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             traverseSpeciesTree(node.getRight());
         }
         // calculate contribution of a branch in the species tree to the log probability
-        final int iNode = node.getNr();
+        final int nodeIndex = node.getNr();
 
         // k, as defined in the paper
         //System.err.println(Arrays.toString(m_nLineages));
-        final int k = intervalsInput[iNode].size();
+        final int k = intervalsInput[nodeIndex].size();
         final double[] times = new double[k + 2];
         times[0] = node.getHeight();
         for (int i = 1; i <= k; i++) {
-            times[i] = intervalsInput[iNode].poll();
+            times[i] = intervalsInput[nodeIndex].poll();
         }
         if (!node.isRoot()) {
             times[k + 1] = node.getParent().getHeight();
@@ -215,21 +215,21 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
             }
         }
 
-        final int lineagesBottom = nrOfLineages[iNode];
+        final int lineagesBottom = nrOfLineages[nodeIndex];
 
         switch (isConstantPopFunction) {
             case constant:
-                calcConstantPopSizeContribution(lineagesBottom, popSizesBottom.getValue(iNode), times, k);
+                calcConstantPopSizeContribution(lineagesBottom, popSizesBottom.getValue(nodeIndex), times, k);
                 break;
             case linear:
-                logP += calcLinearPopSizeContributionJH(lineagesBottom, iNode, times, k, node);
+                logP += calcLinearPopSizeContributionJH(lineagesBottom, nodeIndex, times, k, node);
                 break;
             case linear_with_constant_root:
                 if (node.isRoot()) {
                     final double popSize = getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr());
                     calcConstantPopSizeContribution(lineagesBottom, popSize, times, k);
                 } else {
-                    logP += calcLinearPopSizeContribution(lineagesBottom, iNode, times, k, node);
+                    logP += calcLinearPopSizeContribution(lineagesBottom, nodeIndex, times, k, node);
                 }
                 break;
         }
@@ -246,23 +246,23 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         for (int i = 0; i <= k; i++) {
             logP += -((lineagesBottom - i) * (lineagesBottom - i - 1.0) / 2.0) * (times[i + 1] - times[i]) / popSize;
         }
-//		System.err.println(" " + logP + " " + Arrays.toString(times) + " " + iNode + " " + k);
+//		System.err.println(" " + logP + " " + Arrays.toString(times) + " " + nodeIndex + " " + k);
     }
 
     /* the contribution of a branch in the species tree to
       * the log probability, for linear population function.
       */
-    private double calcLinearPopSizeContribution(final int lineagesBottom, final int iNode, final double[] times,
+    private double calcLinearPopSizeContribution(final int lineagesBottom, final int nodeIndex, final double[] times,
                                                  final int k, final Node node) {
         double lp = 0.0;
         final double popSizeBottom;
         if (node.isLeaf()) {
-            popSizeBottom = popSizesBottom.getValue(iNode) * ploidy;
+            popSizeBottom = popSizesBottom.getValue(nodeIndex) * ploidy;
         } else {
             // use sum of left and right child branches for internal nodes
             popSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr())) * ploidy;
         }
-        final double popSizeTop = getTopPopSize(iNode) * ploidy;
+        final double popSizeTop = getTopPopSize(nodeIndex) * ploidy;
         final double a = (popSizeTop - popSizeBottom) / (times[k + 1] - times[0]);
         final double b = popSizeBottom;
         for (int i = 0; i < k; i++) {
@@ -283,19 +283,19 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
         return lp;
     }
 
-    private double calcLinearPopSizeContributionJH(final int lineagesBottom, final int iNode, final double[] times,
+    private double calcLinearPopSizeContributionJH(final int lineagesBottom, final int nodeIndex, final double[] times,
                                                    final int k, final Node node) {
         double lp = 0.0;
         double popSizeBottom;
         if (node.isLeaf()) {
-            popSizeBottom = popSizesBottom.getValue(iNode);
+            popSizeBottom = popSizesBottom.getValue(nodeIndex);
         } else {
             // use sum of left and right child branches for internal nodes
             popSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr()));
         }
         popSizeBottom *= ploidy;
 
-        final double popSizeTop = getTopPopSize(iNode) * ploidy;
+        final double popSizeTop = getTopPopSize(nodeIndex) * ploidy;
         final double d5 = popSizeTop - popSizeBottom;
         final double time0 = times[0];
         final double a = d5 / (times[k + 1] - time0);
@@ -340,9 +340,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      */
     private int traverseLineageTree(final Node[] speciesNodes, final Node node) {
         if (node.isLeaf()) {
-            final int iSpecies = nrOfLineageToSpeciesMap[node.getNr()];
-            nrOfLineages[iSpecies]++;
-            return iSpecies;
+            final int species = nrOfLineageToSpeciesMap[node.getNr()];
+            nrOfLineages[species]++;
+            return species;
         } else {
             int speciesLeft = traverseLineageTree(speciesNodes, node.getLeft());
             int speciesRight = traverseLineageTree(speciesNodes, node.getRight());
@@ -372,9 +372,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
       * of m_fPopSizesTop, then the root node can be numbered with a lower number
       * and we can use that entry in m_fPopSizesTop for the rogue internal node.
       */
-    private double getTopPopSize(final int iNode) {
-        if (iNode < popSizesTop.getDimension()) {
-            return popSizesTop.getArrayValue(iNode);
+    private double getTopPopSize(final int nodeIndex) {
+        if (nodeIndex < popSizesTop.getDimension()) {
+            return popSizesTop.getArrayValue(nodeIndex);
         }
         return popSizesTop.getArrayValue(speciesTreeInput.get().getRoot().getNr());
     }

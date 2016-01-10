@@ -275,7 +275,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public void saveFile(String fileName) {
         try {
             if (currentTab != null) {
-                currentTab.config.sync(currentTab.iPartition);
+                currentTab.config.sync(currentTab.partitionIndex);
             } else {
                 panels[0].config.sync(0);
             }
@@ -532,17 +532,17 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         private static final long serialVersionUID = 1L;
         int m_iPanel;
 
-        ViewPanelCheckBoxMenuItem(int iPanel) {
+        ViewPanelCheckBoxMenuItem(int panelIndex) {
             super("Show "
-                    + doc.beautiConfig.panels.get(iPanel).nameInput.get()
+                    + doc.beautiConfig.panels.get(panelIndex).nameInput.get()
                     + " panel",
-                    doc.beautiConfig.panels.get(iPanel).isVisibleInput.get());
-            m_iPanel = iPanel;
+                    doc.beautiConfig.panels.get(panelIndex).isVisibleInput.get());
+            m_iPanel = panelIndex;
             if (m_viewPanelCheckBoxMenuItems == null) {
                 m_viewPanelCheckBoxMenuItems = new ViewPanelCheckBoxMenuItem[doc.beautiConfig.panels
                         .size()];
             }
-            m_viewPanelCheckBoxMenuItems[iPanel] = this;
+            m_viewPanelCheckBoxMenuItems[panelIndex] = this;
         } // c'tor
 
         void doAction() {
@@ -869,9 +869,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	void setUpViewMenu() {
         m_viewPanelCheckBoxMenuItems = null;
         viewMenu.removeAll();
-        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
+        for (int panelIndex = 0; panelIndex < doc.beautiConfig.panels.size(); panelIndex++) {
             final ViewPanelCheckBoxMenuItem viewPanelAction = new ViewPanelCheckBoxMenuItem(
-                    iPanel);
+                    panelIndex);
             viewPanelAction.addActionListener(ae -> {
                     viewPanelAction.doAction();
                 });
@@ -1036,11 +1036,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     // hide panels as indicated in the hidepanels attribute in the XML template,
     // or use default tabs to hide otherwise.
     public void hidePanels() {
-        // for (int iPanel = 0; iPanel < BeautiConfig.g_panels.size(); iPanel++)
+        // for (int panelIndex = 0; panelIndex < BeautiConfig.g_panels.size(); panelIndex++)
         // {
-        // BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(iPanel);
+        // BeautiPanelConfig panelConfig = BeautiConfig.g_panels.get(panelIndex);
         // if (!panelConfig.m_bIsVisibleInput.get()) {
-        // toggleVisible(iPanel);
+        // toggleVisible(panelIndex);
         // }
         // }
     } // hidePanels
@@ -1055,22 +1055,22 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             isPaneIsVisible = new boolean[doc.beautiConfig.panels.size()];
             Arrays.fill(isPaneIsVisible, true);
         }
-        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-            isPaneIsVisible[iPanel] = panelConfig.isVisibleInput.get();
+        for (int panelIndex = 0; panelIndex < doc.beautiConfig.panels.size(); panelIndex++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(panelIndex);
+            isPaneIsVisible[panelIndex] = panelConfig.isVisibleInput.get();
         }
         // add panels according to BeautiConfig
         panels = new BeautiPanel[doc.beautiConfig.panels.size()];
-        for (int iPanel = 0; iPanel < doc.beautiConfig.panels.size(); iPanel++) {
-            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(iPanel);
-            panels[iPanel] = new BeautiPanel(iPanel, this.doc, panelConfig);
+        for (int panelIndex = 0; panelIndex < doc.beautiConfig.panels.size(); panelIndex++) {
+            BeautiPanelConfig panelConfig = doc.beautiConfig.panels.get(panelIndex);
+            panels[panelIndex] = new BeautiPanel(panelIndex, this.doc, panelConfig);
             addTab(doc.beautiConfig.getButtonLabel(this, panelConfig.getName()),
-                    null, panels[iPanel], panelConfig.getTipText());
+                    null, panels[panelIndex], panelConfig.getTipText());
         }
 
-        for (int iPanel = doc.beautiConfig.panels.size() - 1; iPanel >= 0; iPanel--) {
-            if (!isPaneIsVisible[iPanel]) {
-                removeTabAt(iPanel);
+        for (int panelIndex = doc.beautiConfig.panels.size() - 1; panelIndex >= 0; panelIndex--) {
+            if (!isPaneIsVisible[panelIndex]) {
+                removeTabAt(panelIndex);
             }
         }
         isInitialising = false;
@@ -1208,7 +1208,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     if (beauti.currentTab != null) {
                         if (!beauti.isInitialising) {
                             beauti.currentTab.config
-                                    .sync(beauti.currentTab.iPartition);
+                                    .sync(beauti.currentTab.partitionIndex);
                         }
                         BeautiPanel panel = (BeautiPanel) beauti
                                 .getSelectedComponent();

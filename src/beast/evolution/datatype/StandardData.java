@@ -78,9 +78,9 @@ public class StandardData extends DataType.Base {
     }
     
     @Override
-    public int[] getStatesForCode(int iState) {
-    	if (iState >= 0) {
-    		return mapCodeToStateSet[iState];
+    public int[] getStatesForCode(int state) {
+    	if (state >= 0) {
+    		return mapCodeToStateSet[state];
     	} else {
     		return mapCodeToStateSet[mapCodeToStateSet.length - 1];
     	}

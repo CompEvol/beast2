@@ -46,11 +46,11 @@ public class TipDatesScaler extends TreeOperator {
             taxonIndices = new int[nrOfTaxa];
             int k = 0;
             for (String taxon : set) {
-                int iTaxon = taxaNames.indexOf(taxon);
-                if (iTaxon < 0) {
+                int taxonIndex = taxaNames.indexOf(taxon);
+                if (taxonIndex < 0) {
                     throw new IllegalArgumentException("Cannot find taxon " + taxon + " in tree");
                 }
-                taxonIndices[k++] = iTaxon;
+                taxonIndices[k++] = taxonIndex;
             }
         } else {
             taxonIndices = new int[treeInput.get().getTaxaNames().length];

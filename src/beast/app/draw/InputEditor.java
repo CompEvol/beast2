@@ -443,7 +443,7 @@ public abstract class Base extends JPanel implements InputEditor {
             if (c instanceof BeautiPanel) {
                 BeautiPanel panel = (BeautiPanel) c;
                 BeautiPanelConfig cfgPanel = panel.config;
-                cfgPanel.sync(panel.iPartition);
+                cfgPanel.sync(panel.partitionIndex);
             }
         }
     }

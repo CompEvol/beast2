@@ -41,13 +41,13 @@ public interface DataType {
      * returns an array of length getStateCount() containing the (possibly ambiguous) states
      * that this state represents.
      */
-    public boolean[] getStateSet(int iState);
+    public boolean[] getStateSet(int state);
 
     /**
      * returns an array with all non-ambiguous states represented by
      * a state.
      */
-    public int[] getStatesForCode(int iState);
+    public int[] getStatesForCode(int state);
 
     boolean isAmbiguousState(int state);
 
@@ -190,9 +190,9 @@ public interface DataType {
                     String[] codes = codeMap.toUpperCase().split(",");
                     for (String code : data.split(",")) {
                         boolean isFound = false;
-                        for (int iCode = 0; iCode < codes.length; iCode++) {
-                            if (code.equals(codes[iCode])) {
-                                sequence.add(iCode);
+                        for (int codeIndex = 0; codeIndex < codes.length; codeIndex++) {
+                            if (code.equals(codes[codeIndex])) {
+                                sequence.add(codeIndex);
                                 isFound = true;
                                 break;
                             }
@@ -222,8 +222,8 @@ public interface DataType {
         public String state2string(int[] nrOfStates) {
             StringBuffer buf = new StringBuffer();
             if (codeMap != null) {
-                for (int iState : nrOfStates) {
-                    String code = codeMap.substring(iState * codeLength, iState * codeLength + codeLength);
+                for (int state : nrOfStates) {
+                    String code = codeMap.substring(state * codeLength, state * codeLength + codeLength);
                     buf.append(code);
                 }
             } else {
@@ -238,8 +238,8 @@ public interface DataType {
 
 
         @Override
-        public int[] getStatesForCode(int iState) {
-            return mapCodeToStateSet[iState];
+        public int[] getStatesForCode(int state) {
+            return mapCodeToStateSet[state];
         }
 
         @Override

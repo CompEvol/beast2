@@ -89,7 +89,7 @@ public class WilsonBalding extends TreeOperator {
         do {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
-        final Node iP = i.getParent();
+        final Node p = i.getParent();
 
         // choose another random node to insert i above
         Node j;
@@ -102,19 +102,19 @@ public class WilsonBalding extends TreeOperator {
         } while ((jP != null && jP.getHeight() <= i.getHeight()) || (i.getNr() == j.getNr()));
 
         // disallow moves that change the root.
-        if (j.isRoot() || iP.isRoot()) {
+        if (j.isRoot() || p.isRoot()) {
             return Double.NEGATIVE_INFINITY;
         }
 
         assert jP != null;  // j != root tested above
-        final int iPnr = iP.getNr();
+        final int pnr = p.getNr();
         final int jPnr = jP.getNr();
-        if ( jPnr == iPnr || j.getNr() == iPnr || jPnr == i.getNr())
+        if ( jPnr == pnr || j.getNr() == pnr || jPnr == i.getNr())
             return Double.NEGATIVE_INFINITY;
 
-        final Node CiP = getOtherChild(iP, i);
+        final Node CiP = getOtherChild(p, i);
 
-        final Node PiP = iP.getParent();
+        final Node PiP = p.getParent();
 
         newMinAge = Math.max(i.getHeight(), j.getHeight());
         newRange = jP.getHeight() - newMinAge;
@@ -136,44 +136,44 @@ public class WilsonBalding extends TreeOperator {
 
         //update
 //        if (j.isRoot()) {
-//            // 1. remove edges <iP, CiP>
-//            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+//            // 1. remove edges <p, CiP>
+//            // 2. add edges <k, p>, <p, j>, <PiP, CiP>
 //
-//            replace(iP, CiP, j);
-//            replace(PiP, iP, CiP);
+//            replace(p, CiP, j);
+//            replace(PiP, p, CiP);
 //
-//            // iP is the new root
-//            iP.setParent(null);
-//            tree.setRoot(iP);
+//            // p is the new root
+//            p.setParent(null);
+//            tree.setRoot(p);
 //
-//        } else if (iP.isRoot()) {
-//            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
-//            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+//        } else if (p.isRoot()) {
+//            // 1. remove edges <k, j>, <p, CiP>, <PiP, p>
+//            // 2. add edges <k, p>, <p, j>, <PiP, CiP>
 //
-//            replace(jP, j, iP);
-//            //replace(iP, CiP, iP);
-//            replace(iP, CiP, j);
+//            replace(jP, j, p);
+//            //replace(p, CiP, p);
+//            replace(p, CiP, j);
 //
 //            // CiP is the new root
 //            CiP.setParent(null);
 //            tree.setRoot(CiP);
 //
 //        } else {
-//            // 1. remove edges <k, j>, <iP, CiP>, <PiP, iP>
-            // 2. add edges <k, iP>, <iP, j>, <PiP, CiP>
+//            // 1. remove edges <k, j>, <p, CiP>, <PiP, p>
+            // 2. add edges <k, p>, <p, j>, <PiP, CiP>
 
-            // disconnect iP
-            final Node iPP = iP.getParent();
-            replace(iPP, iP, CiP);
-            // re-attach, first child node to iP
-            replace(iP, CiP, j);
-            // then parent node of j to iP
-            replace(jP, j, iP);
+            // disconnect p
+            final Node pP = p.getParent();
+            replace(pP, p, CiP);
+            // re-attach, first child node to p
+            replace(p, CiP, j);
+            // then parent node of j to p
+            replace(jP, j, p);
 
         // mark paths to common ancestor as changed
             if( markCladesInput.get() ) {
-                Node iup = iPP;
-                Node jup = iP;
+                Node iup = pP;
+                Node jup = p;
                 while (iup != jup) {
                     if( iup.getHeight() < jup.getHeight() ) {
                         assert !iup.isRoot();
@@ -189,7 +189,7 @@ public class WilsonBalding extends TreeOperator {
 
 //        }
 
-        iP.setHeight(newAge);
+        p.setHeight(newAge);
 
         return Math.log(hastingsRatio);
     }

@@ -207,13 +207,13 @@ public class TreeAnnotator {
                 return null;
             }
             if (str.contains("[")) {
-                final int iStart = str.indexOf('[');
-                int iEnd = str.indexOf(']', iStart);
-                while (iEnd < 0) {
+                final int start = str.indexOf('[');
+                int end = str.indexOf(']', start);
+                while (end < 0) {
                     str += readLine();
-                    iEnd = str.indexOf(']', iStart);
+                    end = str.indexOf(']', start);
                 }
-                str = str.substring(0, iStart) + str.substring(iEnd + 1);
+                str = str.substring(0, start) + str.substring(end + 1);
                 if (str.matches("^\\s*$")) {
                     return nextLine();
                 }

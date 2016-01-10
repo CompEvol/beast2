@@ -318,9 +318,9 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public Node getNode(final int iNodeNr) {
-        return m_nodes[iNodeNr];
-        //return getNode(iNodeNr, root);
+	public Node getNode(final int nodeNr) {
+        return m_nodes[nodeNr];
+        //return getNode(nodeNr, root);
     }
 
     /**
@@ -553,28 +553,28 @@ public class Tree extends StateNode implements TreeInterface {
         }
         root = m_nodes[tree.root.getNr()];
         final Node[] otherNodes = tree.m_nodes;
-        final int iRoot = root.getNr();
-        assignFrom(0, iRoot, otherNodes);
-        root.height = otherNodes[iRoot].height;
+        final int rootNr = root.getNr();
+        assignFrom(0, rootNr, otherNodes);
+        root.height = otherNodes[rootNr].height;
         root.parent = null;
-        if (otherNodes[iRoot].getLeft() != null) {
-            root.setLeft(m_nodes[otherNodes[iRoot].getLeft().getNr()]);
+        if (otherNodes[rootNr].getLeft() != null) {
+            root.setLeft(m_nodes[otherNodes[rootNr].getLeft().getNr()]);
         } else {
             root.setLeft(null);
         }
-        if (otherNodes[iRoot].getRight() != null) {
-            root.setRight(m_nodes[otherNodes[iRoot].getRight().getNr()]);
+        if (otherNodes[rootNr].getRight() != null) {
+            root.setRight(m_nodes[otherNodes[rootNr].getRight().getNr()]);
         } else {
             root.setRight(null);
         }
-        assignFrom(iRoot + 1, nodeCount, otherNodes);
+        assignFrom(rootNr + 1, nodeCount, otherNodes);
     }
 
     /**
      * helper to assignFromFragile *
      */
-    private void assignFrom(final int iStart, final int iEnd, final Node[] otherNodes) {
-        for (int i = iStart; i < iEnd; i++) {
+    private void assignFrom(final int start, final int end, final Node[] otherNodes) {
+        for (int i = start; i < end; i++) {
             Node sink = m_nodes[i];
             Node src = otherNodes[i];
             sink.height = src.height;
@@ -758,8 +758,8 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public double getArrayValue(int iValue) {
-        return m_nodes[iValue].height;
+	public double getArrayValue(int value) {
+        return m_nodes[value].height;
     }
 
     /**
@@ -786,15 +786,15 @@ public class Tree extends StateNode implements TreeInterface {
 
 
     /**
-     * Stores nodes with index i, for iStart <= i < iEnd
-     * (i.e. including iStart but not including iEnd)
+     * Stores nodes with index i, for start <= i < end
+     * (i.e. including start but not including end)
      *
-     * @param iStart the first index to be stored
-     * @param iEnd   nodes are stored up to but not including this index
+     * @param start the first index to be stored
+     * @param end   nodes are stored up to but not including this index
      */
-    private void storeNodes(final int iStart, final int iEnd) {
+    private void storeNodes(final int start, final int end) {
         // Use direct members for speed (we are talking 5-7% or more from total time for large trees :)
-        for (int i = iStart; i < iEnd; i++) {
+        for (int i = start; i < end; i++) {
             final Node sink = m_storedNodes[i];
             final Node src = m_nodes[i];
             sink.height = src.height;

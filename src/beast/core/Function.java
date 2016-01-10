@@ -17,13 +17,13 @@ public interface Function {
     /**
      * @return main value. For a 1 dimensional Function, this is the only
      *         value, but for a Tree this can be the root height, while the individual
-     *         values obtained from getValue(iDim) return the node heights.
+     *         values obtained from getValue(dim) return the node heights.
      */
     public double getArrayValue();
 
     /**
-     * @param iDim requested dimention
-     * @return iDim'th value (if any)
+     * @param dim requested dimension
+     * @return dim'th value (if any)
      */
-    public double getArrayValue(int iDim);
+    public double getArrayValue(int dim);
 }

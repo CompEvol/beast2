@@ -81,8 +81,8 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
     }
 
     @Override
-    public double getArrayValue(int iValue) {
-        return (values[iValue] ? 1 : 0);
+    public double getArrayValue(int value) {
+        return (values[value] ? 1 : 0);
     }
 
     /**

@@ -182,21 +182,21 @@ public class TreeSetParser {
 				str = str.replaceAll(",", "");
 				str = str.replaceAll("^\\s+", "");
 				String[] strs = str.split("\\s+");
-				int iLabel = new Integer(strs[0]).intValue();
+				int labelIndex = new Integer(strs[0]).intValue();
 				String label = strs[1];
-				if (m_sLabels.size() < iLabel) {
+				if (m_sLabels.size() < labelIndex) {
 					//m_sLabels.add("__dummy__");
 					m_nOffset = 1;
 				}
 				// check if there is geographic info in the name
 				if (label.contains("(")) {
-					int iStr = label.indexOf('(');
-					int iStr2 = label.indexOf('x', iStr);
-					if (iStr2 >= 0) {
-						int iStr3 = label.indexOf(')', iStr2);
-						if (iStr3 >= 0) {
-							float lat = Float.parseFloat(label.substring(iStr+1, iStr2));// + 180;
-							float _long = Float.parseFloat(label.substring(iStr2+1, iStr3));// + 360)%360;
+					int strIndex = label.indexOf('(');
+					int str2 = label.indexOf('x', strIndex);
+					if (str2 >= 0) {
+						int str3 = label.indexOf(')', str2);
+						if (str3 >= 0) {
+							float lat = Float.parseFloat(label.substring(strIndex+1, str2));// + 180;
+							float _long = Float.parseFloat(label.substring(str2+1, str3));// + 360)%360;
 							if (lat!=0 || _long!=0) {
 								m_fMinLat = Math.min(m_fMinLat, lat);
 								m_fMaxLat = Math.max(m_fMaxLat, lat);

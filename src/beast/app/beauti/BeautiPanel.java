@@ -65,12 +65,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     /**
      * panel number *
      */
-    int iPanel;
+    int panelIndex;
 
     /**
      * partition currently on display *
      */
-    public int iPartition = 0;
+    public int partitionIndex = 0;
 
     /**
      * box containing the list of partitions, to make (in)visible on update *
@@ -95,9 +95,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     public BeautiPanel() {
     }
 
-    public BeautiPanel(int iPanel, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
+    public BeautiPanel(int panelIndex, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
         this.doc = doc;
-        this.iPanel = iPanel;
+        this.panelIndex = panelIndex;
 
         setLayout(new BorderLayout());
 
@@ -111,12 +111,12 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
 
         refreshPanel();
-        addPartitionPanel(this.config.hasPartition(), iPanel);
+        addPartitionPanel(this.config.hasPartition(), panelIndex);
 
         setOpaque(false);
     } // c'tor
 
-    void addPartitionPanel(Partition hasPartition, int iPanel) {
+    void addPartitionPanel(Partition hasPartition, int panelIndex) {
         Box box = Box.createVerticalBox();
         if (splitPane != null && hasPartition != Partition.none) {
             box.add(createList());
@@ -124,11 +124,11 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             return;
         }
         box.add(Box.createVerticalGlue());
-        box.add(new JLabel(Utils.getIcon(iPanel, config)));
+        box.add(new JLabel(Utils.getIcon(panelIndex, config)));
 
         splitPane.add(box, JSplitPane.LEFT);
         if (listOfPartitions != null) {
-            listOfPartitions.setSelectedIndex(iPartition);
+            listOfPartitions.setSelectedIndex(partitionIndex);
         }
     }
 
@@ -192,8 +192,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             }
             listModel.addElement(partitionID);
         }
-        if (iPartition >= 0 && listModel.size() > 0)
-            listOfPartitions.setSelectedIndex(iPartition);
+        if (partitionIndex >= 0 && listModel.size() > 0)
+            listOfPartitions.setSelectedIndex(partitionIndex);
     }
 
     
@@ -213,7 +213,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
                 doc.getPartitions(config.hasPartitionsInput.get().toString()).size() > 1) {
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
             add(splitPane,BorderLayout.CENTER);
-            addPartitionPanel(config.hasPartition(), iPanel);
+            addPartitionPanel(config.hasPartition(), panelIndex);
         }
         if (splitPane != null && (config.hasPartition() == Partition.none ||
                 doc.getPartitions(config.hasPartitionsInput.get().toString()).size() <= 1)) {
@@ -282,7 +282,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.labelWidthInput.get();
         BEASTInterface beastObject = config;
-        final Input<?> input = config.resolveInput(doc, iPartition);
+        final Input<?> input = config.resolveInput(doc, partitionIndex);
 
         boolean addButtons = config.addButtons();
         ExpandOption forceExpansion = config.forceExpansion();
@@ -302,7 +302,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 
     	String type = config.hasPartitionsInput.get().toString();
     	java.util.List<BEASTInterface> list = doc.getPartitions(type);
-    	int iSource = -1, iTarget = -1;
+    	int source = -1, target = -1;
         for (int i = 0; i < list.size(); i++) {
         	BEASTInterface partition = list.get(i);
         	if (type.equals("SiteModel")) {
@@ -318,20 +318,20 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             	partitionID = partitionID.substring(2);
             }
             if (partitionID.equals(sourceID)) {
-            	iSource = i;
+            	source = i;
             }
             if (partitionID.equals(targetID)) {
-            	iTarget = i;
+            	target = i;
             }
         } 
-    	if (iTarget == -1) {
+    	if (target == -1) {
     		throw new RuntimeException("Programmer error: sourceID and targetID should be in list");
     	}
     	
 		CompoundDistribution likelihoods = (CompoundDistribution) doc.pluginmap.get("likelihood");
 		
-		GenericTreeLikelihood likelihoodSource = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iSource);
-		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(iTarget);
+		GenericTreeLikelihood likelihoodSource = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(source);
+		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(target);
 		PartitionContext context = doc.getContextFor(likelihood);
 		// this ensures the config.sync does not set any input value
 		config._input.setValue(null, config);
@@ -441,9 +441,9 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     public void valueChanged(ListSelectionEvent e) {
         //System.err.print("BeautiPanel::valueChanged " + m_iPartition + " => ");
         if (e != null) {
-            config.sync(iPartition);
+            config.sync(partitionIndex);
             if (listOfPartitions != null) {
-                iPartition = Math.max(0, listOfPartitions.getSelectedIndex());
+                partitionIndex = Math.max(0, listOfPartitions.getSelectedIndex());
             }
         }
 //        BeautiPanel.playSound("woosh.wav");

@@ -83,8 +83,8 @@ public class RealParameter extends Parameter.Base<Double> {
     public void log(final int sample, final PrintStream out) {
         final RealParameter var = (RealParameter) getCurrent();
         final int values = var.getDimension();
-        for (int iValue = 0; iValue < values; iValue++) {
-            out.print(var.getValue(iValue) + "\t");
+        for (int value = 0; value < values; value++) {
+            out.print(var.getValue(value) + "\t");
         }
     }
 

@@ -332,40 +332,40 @@ public class LogAnalyser {
         return getGeometricMean(indexof(label));
     }
 
-    public double getMean(int iColumn) {
-        return m_fMean[iColumn];
+    public double getMean(int column) {
+        return m_fMean[column];
     }
 
-    public double getStdDev(int iColumn) {
-        return m_fStdDev[iColumn];
+    public double getStdDev(int column) {
+        return m_fStdDev[column];
     }
 
-    public double getStdError(int iColumn) {
-        return m_fStdError[iColumn];
+    public double getStdError(int column) {
+        return m_fStdError[column];
     }
 
-    public double getMedian(int iColumn) {
-        return m_fMedian[iColumn];
+    public double getMedian(int column) {
+        return m_fMedian[column];
     }
 
-    public double get95HPDup(int iColumn) {
-        return m_f95HPDup[iColumn];
+    public double get95HPDup(int column) {
+        return m_f95HPDup[column];
     }
 
-    public double get95HPDlow(int iColumn) {
-        return m_f95HPDlow[iColumn];
+    public double get95HPDlow(int column) {
+        return m_f95HPDlow[column];
     }
 
-    public double getESS(int iColumn) {
-        return m_fESS[iColumn];
+    public double getESS(int column) {
+        return m_fESS[column];
     }
 
-    public double getACT(int iColumn) {
-        return m_fACT[iColumn];
+    public double getACT(int column) {
+        return m_fACT[column];
     }
 
-    public double getGeometricMean(int iColumn) {
-        return m_fGeometricMean[iColumn];
+    public double getGeometricMean(int column) {
+        return m_fGeometricMean[column];
     }
 
     public double getMean(Double[] trace) {

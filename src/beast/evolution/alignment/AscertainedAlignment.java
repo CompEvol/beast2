@@ -35,26 +35,26 @@ public class AscertainedAlignment extends Alignment {
     public void initAndValidate() throws Exception {
         super.initAndValidate();
 
-        int iFrom = excludefromInput.get();
-        int iTo = excludetoInput.get();
-        int iEvery = excludeeveryInput.get();
+        int from = excludefromInput.get();
+        int to = excludetoInput.get();
+        int every = excludeeveryInput.get();
         excludedPatterns = new HashSet<>();
-        for (int i = iFrom; i < iTo; i += iEvery) {
-            int iPattern = patternIndex[i];
+        for (int i = from; i < to; i += every) {
+            int patternIndex_ = patternIndex[i];
             // reduce weight, so it does not confuse the tree likelihood
-            patternWeight[iPattern] = 0;
-            excludedPatterns.add(iPattern);
+            patternWeight[patternIndex_] = 0;
+            excludedPatterns.add(patternIndex_);
         }
 
-//		iFrom = m_includefrom.get();
-//		iTo = m_includeto.get();
-//		iEvery = m_includeevery.get();
+//		from = m_includefrom.get();
+//		to = m_includeto.get();
+//		every = m_includeevery.get();
 //		m_nIncluded = new ArrayList<>();
-//		for (int i = iFrom; i < iTo; i += iEvery) {
-//			int iPattern = m_nPatternIndex[i];
+//		for (int i = from; i < to; i += every) {
+//			int patternIndex_ = m_nPatternIndex[i];
 //			// reduce weight, so it does not confuse the tree likelihood
-//			m_nWeight[iPattern] = 0;
-//			m_nIncluded.add(iPattern);
+//			m_nWeight[patternIndex_] = 0;
+//			m_nIncluded.add(patternIndex_);
 //		}
     } // initAndValidate
 

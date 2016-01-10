@@ -438,28 +438,28 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
         final int lineages = nti.getIntervalCount();
         assert lineages >= ttimes[nt].length : lineages + " " + ttimes[nt].length;
 
-        int iCount = 0;
+        int count = 0;
         for (int k = 0; k < ttimes[nt].length; ++k) {
-            double timeToCoal = nti.getInterval(iCount);
-            while (nti.getIntervalType(iCount) != IntervalType.COALESCENT) {
-                ++iCount;
-                timeToCoal += nti.getInterval(iCount);
+            double timeToCoal = nti.getInterval(count);
+            while (nti.getIntervalType(count) != IntervalType.COALESCENT) {
+                ++count;
+                timeToCoal += nti.getInterval(count);
             }
 
-            int linAtStart = nti.getLineageCount(iCount);
-            ++iCount;
+            int linAtStart = nti.getLineageCount(count);
+            ++count;
 
-            assert !(iCount == lineages && linAtStart != 2);
+            assert !(count == lineages && linAtStart != 2);
 
-            int linAtEnd = (iCount == lineages) ? 1 : nti.getLineageCount(iCount);
+            int linAtEnd = (count == lineages) ? 1 : nti.getLineageCount(count);
 
             while (linAtStart <= linAtEnd) {
-                ++iCount;
-                timeToCoal += nti.getInterval(iCount);
+                ++count;
+                timeToCoal += nti.getInterval(count);
 
                 linAtStart = linAtEnd;
-                ++iCount;
-                linAtEnd = nti.getLineageCount(iCount);
+                ++count;
+                linAtEnd = nti.getLineageCount(count);
             }
             ttimes[nt][k] = timeToCoal + (k == 0 ? 0 : ttimes[nt][k - 1]);
         }

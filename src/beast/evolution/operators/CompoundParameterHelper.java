@@ -40,42 +40,42 @@ public class CompoundParameterHelper<T> {
         return parameterIndex.length;
     }
 
-    public void setValue(final int iParam, final T value) {
-        final Parameter<T> para = parameterList.get(getY(iParam));
-        para.setValue(getX(iParam), value);
+    public void setValue(final int param, final T value) {
+        final Parameter<T> para = parameterList.get(getY(param));
+        para.setValue(getX(param), value);
     }
 
-    public T getValue(final int iParam) {
-        return parameterList.get(getY(iParam)).getValue(getX(iParam));
+    public T getValue(final int param) {
+        return parameterList.get(getY(param)).getValue(getX(param));
     }
 
-    public T getLower(final int iParam) {
-        return parameterList.get(getY(iParam)).getLower();
+    public T getLower(final int param) {
+        return parameterList.get(getY(param)).getLower();
     }
 
-    public T getUpper(final int iParam) {
-        return parameterList.get(getY(iParam)).getUpper();
+    public T getUpper(final int param) {
+        return parameterList.get(getY(param)).getUpper();
     }
 
-    // given {{?,?,?,?}{?,?}{?,?,?}}, parameterIndex[] is 0 0 0 0 1 1 2 2 2, iParam starts from 0;
-    // if iParam < 4, then getX(iParam) = iParam;
-    // if iParam >= 4, then getX(iParam) = iParam - the sum of previous dimensions
-    // for example, iParam = 7, then getX = 7 - (4 + 2) = 1
-    protected int getX(final int iParam) {
+    // given {{?,?,?,?}{?,?}{?,?,?}}, parameterIndex[] is 0 0 0 0 1 1 2 2 2, param starts from 0;
+    // if param < 4, then getX(param) = param;
+    // if param >= 4, then getX(param) = param - the sum of previous dimensions
+    // for example, param = 7, then getX = 7 - (4 + 2) = 1
+    protected int getX(final int param) {
         int sumPrevDim = parameterList.get(0).getDimension();
-        if (iParam < sumPrevDim) {
-            return iParam;
+        if (param < sumPrevDim) {
+            return param;
         }
-        for (int y = 1; y < getY(iParam); y++) {
+        for (int y = 1; y < getY(param); y++) {
             sumPrevDim += parameterList.get(y).getDimension();
         }
 
-        return iParam - sumPrevDim;
+        return param - sumPrevDim;
     }
 
     // the index of parameter list
-    protected int getY(final int iParam) {
-        return parameterIndex[iParam];
+    protected int getY(final int param) {
+        return parameterIndex[param];
     }
 
 }

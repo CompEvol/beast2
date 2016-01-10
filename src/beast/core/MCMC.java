@@ -364,8 +364,8 @@ public class MCMC extends Runnable {
             final int currentState = sampleNr;
 
             state.store(currentState);
-//            if (m_nStoreEvery > 0 && iSample % m_nStoreEvery == 0 && iSample > 0) {
-//                state.storeToFile(iSample);
+//            if (m_nStoreEvery > 0 && sample % m_nStoreEvery == 0 && sample > 0) {
+//                state.storeToFile(sample);
 //            	operatorSchedule.storeToFile();
 //            }
 
@@ -513,7 +513,7 @@ public class MCMC extends Runnable {
         }
     }
 
-    protected void callUserFunction(final int iSample) {
+    protected void callUserFunction(final int sample) {
     }
 
 
