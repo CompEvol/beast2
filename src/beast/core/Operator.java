@@ -73,7 +73,7 @@ public abstract class Operator extends BEASTObject {
      * always be accepted, the method should return Double.POSITIVE_INFINITY.
      *
      * @param evaluator An evaluator object that can be use to repetitively
-     *                  used to evaluate the distributribution returned by getEvaluatorDistribution().
+     *                  used to evaluate the distribution returned by getEvaluatorDistribution().
      * @return log of Hastings Ratio, or Double.NEGATIVE_INFINITY if proposal
      * should not be accepted (because the proposal is invalid) or
      * Double.POSITIVE_INFINITY if the proposal should always be accepted
@@ -239,7 +239,7 @@ public abstract class Operator extends BEASTObject {
      * need to override this method to store the tuning information associated
      * with their sub-operators by generating nested JSON, for example
      * <p>
-     * {"id":"metaoperator", "p":0.5, "accept":396, "reject":355, "acceptFC":50, "rejectFC":45,
+     * {"id":"metaOperator", "p":0.5, "accept":396, "reject":355, "acceptFC":50, "rejectFC":45,
      * operators [
      * {"id":"kappaScaler1", "p":0.5, "accept":39, "reject":35, "acceptFC":0, "rejectFC":0}
      * {"id":"kappaScaler2", "p":0.5, "accept":39, "reject":35, "acceptFC":0, "rejectFC":0}
@@ -286,7 +286,7 @@ public abstract class Operator extends BEASTObject {
 
     /**
      * Restore tuning information from file
-     * Override this method fo meta-operators (see also storeToFile).
+     * Override this method for meta-operators (see also storeToFile).
      */
     public void restoreFromFile(JSONObject o) {
     	try {
@@ -309,7 +309,7 @@ public abstract class Operator extends BEASTObject {
 
 
     /**
-     * indicates that the state needs to be initialises so that
+     * indicates that the state needs to be initialised so that
      * BEASTObjects can be identified that need updating. This
      * almost always needs to happen, except for cases where the
      * operator already initialised the state, e.g. for delayed
