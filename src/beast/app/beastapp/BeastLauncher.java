@@ -39,16 +39,6 @@ public class BeastLauncher {
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
 		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
-
-		// TODO remove following debugging code
-		try {
-			FileWriter outfile = new FileWriter("/tmp/beast.log");
-			outfile.write("jardir = " + launcherJar);
-			outfile.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		Log.warning.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
 		boolean foundOne = false;
