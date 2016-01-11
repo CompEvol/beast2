@@ -35,7 +35,7 @@ computeHPD <- function(x, alpha=0.95, sorted=FALSE) {
         y <- sort(x)
 
     n <- length(y)
-    m <- ceiling(alpha*n)
+    m <- round(alpha*n)
 
     i <- 1
     delta <- y[n] - y[1]
