@@ -206,9 +206,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	        		taxonSet.initAndValidate();
 	        	}
 	            for (final String taxonID : taxonSet.asStringList()) {
-
 	                if (!taxa.contains(taxonID)) {
-	                    throw new IllegalArgumentException("Taxon <" + taxonID + "> could not be found in list of taxa. Choose one of " + taxa.toArray(new String[0]));
+	                    throw new IllegalArgumentException("Taxon <" + taxonID + "> could not be found in list of taxa. Choose one of " + taxa);
 	                }
 	                usedTaxa.add(taxonID);
 	            }

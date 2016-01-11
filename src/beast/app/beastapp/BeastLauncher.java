@@ -1,7 +1,7 @@
 package beast.app.beastapp;
 
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
