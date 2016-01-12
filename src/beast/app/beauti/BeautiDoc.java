@@ -1743,7 +1743,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * @throws Exception
      */
     static public BEASTInterface deepCopyPlugin(BEASTInterface plugin, BEASTInterface parent, MCMC mcmc,
-                                             PartitionContext partitionContext, BeautiDoc doc, List<BEASTInterface> tabooList)
+    										PartitionContext oldContext,
+                                            PartitionContext newContext, BeautiDoc doc, List<BEASTInterface> tabooList)
             throws Exception {
         /** taboo = list of plugins that should not be copied **/
         Set<BEASTInterface> taboo = new HashSet<BEASTInterface>();
@@ -1825,9 +1826,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // now the ancestors contain all plugins to be copied
         // make a copy of all individual Pluings, before connecting them up
         Map<String, BEASTInterface> copySet = new HashMap<>();
+
         for (BEASTInterface plugin2 : ancestors) {
             String id = plugin2.getID();
-            String copyID = renameId(id, partitionContext);
+            String copyID = renameId(id, oldContext, newContext);
             if (!id.equals(copyID)) {
 	            if (doc.pluginmap.containsKey(copyID)) {
 	            	BEASTInterface org = doc.pluginmap.get(copyID);
@@ -1855,7 +1857,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     	//((List)copy.getInput(input.getName())).clear();
                         for (Object o : (List<?>) input.get()) {
                             if (o instanceof BEASTInterface) {
-                            	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, partitionContext, doc);
+                            	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, oldContext, newContext, doc);
                             	// make sure it is not already in the list
                             	Object o2 = copy.getInput(input.getName()).get();
                             	boolean alreadyInList = false;
@@ -1885,14 +1887,14 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                         }
                     } else if (input.get() instanceof BEASTInterface) {
                         // handle Plugin
-                    	BEASTInterface value = getCopyValue((BEASTInterface) input.get(), copySet, partitionContext, doc);
+                    	BEASTInterface value = getCopyValue((BEASTInterface) input.get(), copySet, oldContext, newContext, doc);
                         copy.setInputValue(input.getName(), value);
                     } else if (input.get() instanceof String) {
                 		// may need to replace partition info
                 		String s = (String) input.get();
-                		s = s.replaceAll("\\.c:[a-zA-Z0-9_]*", ".c:" + partitionContext.clockModel);
-                		s = s.replaceAll("\\.s:[a-zA-Z0-9_]*", ".s:" + partitionContext.siteModel);
-                		s = s.replaceAll("\\.t:[a-zA-Z0-9_]*", ".t:" + partitionContext.tree);
+                		s = s.replaceAll("\\.c:[a-zA-Z0-9_]*", ".c:" + newContext.clockModel);
+                		s = s.replaceAll("\\.s:[a-zA-Z0-9_]*", ".s:" + newContext.siteModel);
+                		s = s.replaceAll("\\.t:[a-zA-Z0-9_]*", ".t:" + newContext.tree);
                 		copy.setInputValue(input.getName(), s);
                 	} else {
                         // it is a primitive value
@@ -1904,7 +1906,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             // set outputs
             for (Object output : plugin2.getOutputs()) {
                 if (taboo.contains(output) && output != parent) {
-                	BEASTInterface output2 = getCopyValue((BEASTInterface)output, copySet, partitionContext, doc);
+                	BEASTInterface output2 = getCopyValue((BEASTInterface)output, copySet, oldContext, newContext, doc);
                     for (Input<?> input : ((BEASTInterface)output).listInputs()) {
                         // do not add state node initialisers automatically
                         if (input.get() instanceof List &&
@@ -1972,7 +1974,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return deepCopy;
     } // deepCopyPlugin
 
-    private static BEASTInterface getCopyValue(BEASTInterface value, Map<String, BEASTInterface> copySet, PartitionContext partitionContext, BeautiDoc doc) {
+    private static BEASTInterface getCopyValue(BEASTInterface value, Map<String, BEASTInterface> copySet, PartitionContext oldContext, PartitionContext partitionContext, BeautiDoc doc) {
         if (copySet.containsKey(value.getID())) {
             value = copySet.get(value.getID());
             return value;
@@ -1982,7 +1984,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             return value;
         }
         if (valueID.indexOf('.') >= 0) {
-            String valueCopyID = renameId(valueID, partitionContext);
+            String valueCopyID = renameId(valueID, oldContext, partitionContext);
             if (doc.pluginmap.containsKey(valueCopyID)) {
                 value = doc.pluginmap.get(valueCopyID);
             }
@@ -1992,28 +1994,36 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return value;
     }
 
-    public static String renameId(String sID, PartitionContext context) {
-        String sOldPartition = sID.substring(sID.indexOf('.') + 1);
-        String sNewPartition = null;
-        if (sOldPartition.indexOf(':') >= 0) {
-            char c = sOldPartition.charAt(0);
+    public static String renameId(String id, PartitionContext oldContext, PartitionContext newContext) {
+        String oldPartition = id.substring(id.indexOf('.') + 1);
+        String newPartition = null;
+        if (oldPartition.indexOf(':') >= 0) {
+            char c = oldPartition.charAt(0);
             switch (c) {
                 case 's':
-                    sNewPartition = context.siteModel;
+                    newPartition = newContext.siteModel;
+                    oldPartition  = oldContext.siteModel;
                     break;
                 case 'c':
-                    sNewPartition = context.clockModel;
+                    newPartition = newContext.clockModel;
+                    oldPartition  = oldContext.clockModel;
                     break;
                 case 't':
-                    sNewPartition = context.tree;
+                    newPartition = newContext.tree;
+                    oldPartition  = oldContext.tree;
                     break;
             }
-            sOldPartition = sOldPartition.substring(sOldPartition.indexOf(':') + 1);
+            //oldPartition = oldPartition.substring(oldPartition.indexOf(':') + 1);
         } else {
-            sNewPartition = context.partition;
+            newPartition = newContext.partition;
+            oldPartition = oldContext.partition;
         }
-        sID = sID.substring(0, sID.length() - sOldPartition.length()) + sNewPartition;
-        return sID;
+        if (id.indexOf('.') < 0 || !(id.endsWith(oldPartition))) {
+        	// original id does not contain partition info
+        	return id;
+        }
+        id = id.substring(0, id.length() - oldPartition.length()) + newPartition;
+        return id;
     }
 
     static public void collectPredecessors(BEASTInterface plugin, List<BEASTInterface> predecessors) {
@@ -2345,9 +2355,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public BEASTInterface getUnlinkCandidate(Input<?> input, BEASTInterface parent) throws Exception {
-        PartitionContext context = getContextFor(parent);
-        BEASTInterface plugin = deepCopyPlugin((BEASTInterface) input.get(), parent, (MCMC) mcmc.get(), context, this, null);
-        return plugin;
+        PartitionContext oldContext = getContextFor((BEASTInterface)input.get());
+        PartitionContext newContext = getContextFor(parent);
+        BEASTInterface beastObject = deepCopyPlugin((BEASTInterface) input.get(), parent, (MCMC) mcmc.get(), oldContext, newContext, this, null);
+        return beastObject;
     }
 
     public void setBeauti(Beauti beauti) {

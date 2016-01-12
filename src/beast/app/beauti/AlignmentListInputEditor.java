@@ -415,7 +415,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (siteModel != likelihoods[iRow].siteModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].siteModelInput.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+							likelihoods[iRow], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
 				}
 			}
 			SiteModelInterface target = this.likelihoods[iRow].siteModelInput.get();
@@ -445,7 +445,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (clockModel != likelihoods[iRow].branchRateModelInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[iRow].branchRateModelInput.get(),
-							likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+							likelihoods[iRow], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+
 				}
 			}
 			// make sure that *if* the clock model has a tree as input, it is
@@ -480,14 +481,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (tree != likelihoods[iRow].treeInput.get()) {
 					PartitionContext context = getPartitionContext(iRow);
 					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[iRow].treeInput.get(), likelihoods[iRow],
-							(MCMC) doc.mcmc.get(), context, doc, null);
+							(MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+
 					
 					State state = ((MCMC) doc.mcmc.get()).startStateInput.get();
 					List<StateNode> stateNodes = new ArrayList<>();
 					stateNodes.addAll(state.stateNodeInput.get());
 					for (StateNode s : stateNodes) {
 						if (s.getID().endsWith(".t:" + oldContext.tree) && !(s instanceof TreeInterface)) {
-							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[iRow], (MCMC) doc.mcmc.get(), context, doc, null);
+							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[iRow], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
 						}
 					}
 				}
