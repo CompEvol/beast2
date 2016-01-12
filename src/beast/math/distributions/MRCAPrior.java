@@ -53,6 +53,7 @@ public class MRCAPrior extends Distribution {
     // flag indicating taxon set is monophyletic
     boolean isMonophyletic = false;
     boolean onlyUseTips = false;
+    boolean useRoot = false;
     boolean useOriginate = false;
     
     boolean initialised = false;
@@ -94,7 +95,8 @@ public class MRCAPrior extends Distribution {
         if (useOriginate && onlyUseTips) {
         	throw new IllegalArgumentException("'useOriginate' and 'tipsOnly' cannot be both true");
         }
-        if (useOriginate && nrOfTaxa == tree.getLeafNodeCount()) {
+        useRoot = nrOfTaxa == tree.getLeafNodeCount();
+        if (useOriginate && useRoot) {
         	throw new IllegalArgumentException("Cannot use originate of root. You can set useOriginate to false to fix this");
         }
         initialised = false;
@@ -196,6 +198,12 @@ public class MRCAPrior extends Distribution {
                 logP += dist.logDensity(MRCATime);
             }
             return logP;
+        } else if (useRoot) {
+        	if (dist != null) {
+                MRCATime = tree.getRoot().getDate();
+                logP += dist.logDensity(MRCATime);
+        	}
+    		return logP;
         } else {
             // internal node
             if( false) {
