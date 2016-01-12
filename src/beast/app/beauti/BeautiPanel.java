@@ -332,7 +332,8 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 		
 		GenericTreeLikelihood likelihoodSource = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(source);
 		GenericTreeLikelihood likelihood = (GenericTreeLikelihood) likelihoods.pDistributions.get().get(target);
-		PartitionContext context = doc.getContextFor(likelihood);
+		PartitionContext oldContext = doc.getContextFor(likelihoodSource);
+		PartitionContext newContext = doc.getContextFor(likelihood);
 		// this ensures the config.sync does not set any input value
 		config._input.setValue(null, config);
 
@@ -341,7 +342,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			SiteModelInterface  siteModel = null;
 			try {
 				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) siteModelSource,
-					likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
+					likelihood, (MCMC) doc.mcmc.get(), oldContext, newContext, doc, null);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
 				return;
@@ -353,7 +354,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     		BranchRateModel clockModel = null;
 			try {
 				clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin((BEASTInterface) clockModelSource,
-						likelihood, (MCMC) doc.mcmc.get(), context, doc, null);
+						likelihood, (MCMC) doc.mcmc.get(), oldContext, newContext, doc, null);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
 				return;
@@ -388,7 +389,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			TreeInterface treeSource = likelihoodSource.treeInput.get();
 			try {
 			tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) treeSource, likelihood,
-							(MCMC) doc.mcmc.get(), context, doc, null);
+							(MCMC) doc.mcmc.get(), oldContext, newContext, doc, null);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
 					return;
