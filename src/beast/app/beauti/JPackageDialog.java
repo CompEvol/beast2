@@ -50,7 +50,7 @@ public class JPackageDialog extends JPanel {
         setLayout(new BorderLayout());
 
 		createTable();
-        // update pacakges using a 30 second time out
+        // update packages using a 30 second time out
         isRunning = true;
         t = new Thread() {
         	public void run() {
@@ -137,15 +137,14 @@ public class JPackageDialog extends JPanel {
         packages.clear();
         try {
             packages = getPackages();
-        } catch (IOException e) {
-        	final String msg = "<html>" + NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>") + "</html>";
+        } catch (PackageListRetrievalException e) {
+        	StringBuilder msgBuilder = new StringBuilder("<html>" + e.getMessage() + "<br>");
+            if (e.getCause() instanceof IOException)
+                msgBuilder.append(NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>"));
+            msgBuilder.append("</html>");
+
         	try {
-        	SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-		        	JOptionPane.showMessageDialog(null, msg);
-				}
-			});
+        	SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, msgBuilder));
         	} catch (Exception e0) {
         		e0.printStackTrace();
         	}
@@ -187,10 +186,10 @@ public class JPackageDialog extends JPanel {
             	// first get rid of existing packages
             	StringBuilder removedPackageNames = new StringBuilder();
             	doUninstall(removedPackageNames);
-            	
+
                 int[] selectedRows = dataTable.getSelectedRows();
                 StringBuilder installedPackageNames = new StringBuilder();
-                                
+
                 for (int selRow : selectedRows) {
                     Package selPackage = getSelectedPackage(selRow);
                     if (selPackage != null) {
@@ -209,7 +208,7 @@ public class JPackageDialog extends JPanel {
                                 installedPackageNames.append("'")
                                         .append(selPackage.packageName)
                                         .append("'");
-                                
+
                                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //                            }
                             resetPackages();
@@ -219,7 +218,7 @@ public class JPackageDialog extends JPanel {
                         }
                     }
                 }
-                
+
                 if (installedPackageNames.length()>0)
                     JOptionPane.showMessageDialog(null, "Package(s) "
                             + installedPackageNames.toString() + " installed. "
