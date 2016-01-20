@@ -97,7 +97,7 @@ public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     //configuration file
-    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + beastVersion.getVersion() + ".xml";
+    public final static String PACKAGES_XML = "https://raw.gihubusercontent.com/CompEvol/CBAN/master/packages" + beastVersion.getVersion() + ".xml";
 
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "un-installed";
@@ -106,7 +106,23 @@ public class AddOnManager {
     		+ "The BEAST Package Manager needs internet access in order to list available packages and download them for installation. "
     		+ "Possibly, some software (like security software, or a firewall) blocks the BEAST Package Manager.  "
     		+ "If so, you need to reconfigure such software to allow access.";
-    		
+
+
+    /**
+     * Exception thrown when reading a package repository fails.
+     */
+    public static class PackageListRetrievalException extends Exception {
+
+        /**
+         * Constructor for new exception.
+         *
+         * @param message Message explaining what went wrong
+         * @param cause First exception thrown when processing package repositories
+         */
+        public PackageListRetrievalException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
     /**
      * flag indicating add ons have been loaded at least once *
@@ -213,28 +229,44 @@ public class AddOnManager {
      * parsed.
      *
      * @return list of packages, encoded as pairs of description, urls.
-     * @throws java.io.IOException
-     * @throws javax.xml.parsers.ParserConfigurationException
-     * @throws org.xml.sax.SAXException
+     * @throws PackageListRetrievalException
+     * @throws  MalformedURLException
      */
-    public static List<Package> getPackages() throws IOException, ParserConfigurationException, SAXException {
+    public static List<Package> getPackages() throws PackageListRetrievalException, MalformedURLException {
 
         List<Package> packages = new ArrayList<>();
         List<String> uRLs = getPackagesURL();
 
-        for (String uRL : uRLs) {
-            URL url = new URL(uRL);
-            InputStream is = url.openStream(); // throws an IOException
 
-            if (uRL.endsWith(".xml")) {
-                addPackages(is, packages);
-            } 
+        List<String> brokenPackageRepositories = new ArrayList<>();
+        Exception firstException = null;
 
-            is.close();
+        for (String sURL : uRLs) {
+            URL url = new URL(sURL);
 
+            try (InputStream is = url.openStream()) {
+
+                if (sURL.endsWith(".xml")) {
+                    addPackages(is, packages);
+                }
+
+            } catch (IOException | ParserConfigurationException | SAXException e) {
+                if (brokenPackageRepositories.isEmpty())
+                    firstException = e;
+
+                brokenPackageRepositories.add(sURL);
+            }
 //            write package xml page, if received from internet
         }
-        
+
+        if (!brokenPackageRepositories.isEmpty()) {
+            String message = "Error reading the following package repository URLs:";
+            for (String url : brokenPackageRepositories)
+                message += " " + url;
+
+            throw new PackageListRetrievalException(message, firstException);
+        }
+
         // Ensure package list is in alphabetical order
         Collections.sort(packages, (p1, p2) -> p1.packageName.toLowerCase().compareTo(p2.packageName.toLowerCase()));
         
@@ -1176,9 +1208,10 @@ public class AddOnManager {
             List<Package> packages = null;
             try {
             	packages = AddOnManager.getPackages();
-            } catch (IOException e) {
+            } catch (PackageListRetrievalException e) {
             	Log.warning.println(e.getMessage());
-            	Log.warning.println(NO_CONNECTION_MESSAGE);
+                if (e.getCause() instanceof IOException)
+                    Log.warning.println(NO_CONNECTION_MESSAGE);
             	return;
             }
             Log.debug.println("Done!\n");
