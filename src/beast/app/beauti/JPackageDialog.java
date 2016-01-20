@@ -157,7 +157,7 @@ public class JPackageDialog extends JPanel {
         packages.clear();
         try {
             packages = getPackages();
-        } catch (PackageListRetrievalException e) {
+        } catch (AddOnManager.PackageListRetrievalException e) {
         	StringBuilder msgBuilder = new StringBuilder("<html>" + e.getMessage() + "<br>");
             if (e.getCause() instanceof IOException)
                 msgBuilder.append(NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>"));
