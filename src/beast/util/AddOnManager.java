@@ -118,8 +118,8 @@ public class AddOnManager {
         List<String> URLs = new ArrayList<>();
         // hack for v2.3.2 only -- to share repository file, saving lots of edits for package releases
         // next version should have single package file to cover all version
-        URLs.add(PACKAGES_XML.replaceAll("2.3.3", "2.3.1"));
-        URLs.add(PACKAGES_XML.replaceAll("2.3.2", "2.3.1"));
+
+        URLs.add(PACKAGES_XML.replaceAll(beastVersion.getVersion(), "2.3.1"));
 
         File beastProps = new File(getPackageUserDir() + "/beauti.properties");
         // check beast.properties file exists in package directory
