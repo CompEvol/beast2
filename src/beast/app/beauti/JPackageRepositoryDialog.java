@@ -30,13 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -70,74 +64,73 @@ public class JPackageRepositoryDialog extends JDialog {
         
         // ADD URL
         JButton addURLButton = new JButton("Add URL");
-        addURLButton.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String newURL = (String)JOptionPane.showInputDialog(frame,
-                        "Enter package repository URL",
-                        "Add repository URL",JOptionPane.PLAIN_MESSAGE, null, null, "http://");
-                
-                if (newURL == null)
-                    return; // User canceled
-                
-                if (!repoTableModel.URLs.contains(newURL)) {
-                    
-                    // Check that URL is accessible:
-                    try {
-                        URL url = new URL(newURL);
-                        if (url.getHost() == null)
-                            return;
-                        
-                        InputStream is = url.openStream();
-                        is.close();
-                      
-                    } catch (MalformedURLException ex) {
-                        JOptionPane.showMessageDialog(frame, "Invalid URL.");
-                        return;
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(frame, "Could not access URL.");
-                        return;
-                    }
+        addURLButton.addActionListener(e -> {
+            String newURL = (String)JOptionPane.showInputDialog(frame,
+                    "Enter package repository URL",
+                    "Add repository URL",JOptionPane.PLAIN_MESSAGE, null, null, "http://");
 
-                    // Add to table:                        
-                    repoTableModel.URLs.add(newURL);
-                    repoTableModel.fireTableDataChanged();  
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Repository already exists!");
+            if (newURL == null)
+                return; // User canceled
+
+            if (!repoTableModel.URLs.contains(newURL)) {
+
+                // Check that URL is accessible:
+                try {
+                    URL url = new URL(newURL);
+                    if (url.getHost() == null)
+                        return;
+
+                    InputStream is = url.openStream();
+                    is.close();
+
+                } catch (MalformedURLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Invalid URL.");
+                    return;
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(frame, "Could not access URL.");
+                    return;
                 }
+
+                // Add to table:
+                repoTableModel.URLs.add(newURL);
+                repoTableModel.fireTableDataChanged();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Repository already exists!");
             }
         });
         box.add(addURLButton);
         
         // DELETE URL
         JButton deleteURLButton = new JButton("Delete selected URL");
-        deleteURLButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (repoTable.getSelectedRow()>0) {
-                    if (JOptionPane.showConfirmDialog(frame, "Really delete this repository?") ==JOptionPane.YES_OPTION) {
-                        repoTableModel.URLs.remove(repoTable.getSelectedRow());
-                        repoTableModel.fireTableDataChanged();
-                    }
-                }
+        deleteURLButton.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(frame, "Really delete this repository?") ==JOptionPane.YES_OPTION) {
+                repoTableModel.URLs.remove(repoTable.getSelectedRow());
+                repoTableModel.fireTableDataChanged();
             }
         });
+        deleteURLButton.setEnabled(false);
         box.add(deleteURLButton);
         
         // DONE
         JButton OKButton = new JButton("Done");
-        OKButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AddOnManager.savePackageURLs(repoTableModel.URLs);
-                setVisible(false);
-            }
+        OKButton.addActionListener(e -> {
+            AddOnManager.savePackageURLs(repoTableModel.URLs);
+            setVisible(false);
         });
         box.add(OKButton);
         getContentPane().add(box, BorderLayout.PAGE_END);
+
+        // Action listeners to disable/enable delete button
+        ListSelectionModel listSelectionModel = repoTable.getSelectionModel();
+        listSelectionModel.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+
+            if (listSelectionModel.isSelectedIndex(0))
+                deleteURLButton.setEnabled(false);
+            else
+                deleteURLButton.setEnabled(true);
+        });
 
         // Set size and location of dialog
         Dimension dim = scrollPane.getPreferredSize();
