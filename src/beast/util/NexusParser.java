@@ -435,7 +435,7 @@ public class NexusParser {
         //reading CHARSTATELABELS block
         if (str.toLowerCase().contains("charstatelabels")) {
             if (!alignment.dataTypeInput.get().equals("standard")) {
-                new Exception("If CHATSTATELABELS block is specified then DATATYPE has to be Standard");
+                new Exception("If CHARSTATELABELS block is specified then DATATYPE has to be Standard");
             }
             StandardData standardDataType = (StandardData)alignment.userDataTypeInput.get();
             int[] maxNumberOfStates = new int[] {0};
