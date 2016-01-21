@@ -1,7 +1,6 @@
 package beast.app.beauti;
 
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -103,7 +102,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 });
             Box box2 = Box.createHorizontalBox();
             box2.add(useTipDates);
-            box2.add(Box.createGlue());
+            box2.add(Box.createHorizontalGlue());
             box.add(box2);
 
             if (traitSet != null) {
@@ -124,6 +123,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         Box samplingBox = Box.createHorizontalBox();
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"no tips sampling", "sample tips from taxon set:"});// ,"sample tips with individual priors"});
 
+        comboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboBox.getPreferredSize().height));
+
         // determine mode
         m_iMode = NO_TIP_SAMPLING;
         // count nr of TipDateScalers with weight > 0
@@ -136,9 +137,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
         m_iMode = Math.min(m_iMode, 2);
         comboBox.setSelectedIndex(m_iMode);
-        comboBox.addActionListener(e -> {
-                selectMode(e);
-            });
+        comboBox.addActionListener(this::selectMode);
         samplingBox.add(comboBox);
 
         taxonsets = new ArrayList<>();
@@ -153,7 +152,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 taxonSetIDs.add(taxon.getID());
             }
         }
-        JComboBox<String> comboBox2 = new JComboBox<String>(taxonSetIDs.toArray(new String[]{}));
+        JComboBox<String> comboBox2 = new JComboBox<>(taxonSetIDs.toArray(new String[]{}));
+
+        comboBox2.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboBox2.getPreferredSize().height));
         
         if (operator == null) {
         	comboBox.setEnabled(false);
@@ -166,9 +167,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 	            comboBox2.setSelectedIndex(i);
 	        }
 	
-	        comboBox2.addActionListener(e -> {
-	                selectTaxonSet(e);
-	            });
+	        comboBox2.addActionListener(this::selectTaxonSet);
         }
         samplingBox.add(comboBox2);
 
@@ -532,7 +531,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         Box buttonBox = Box.createHorizontalBox();
 
         JLabel label = new JLabel("Dates specified as: ");
-        label.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
+        label.setMaximumSize(label.getPreferredSize());
         buttonBox.add(label);
         unitsComboBox = new JComboBox<>(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
@@ -545,7 +544,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     ex.printStackTrace();
                 }
             });
-        unitsComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 22));
+        unitsComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, unitsComboBox.getPreferredSize().height));
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox<>(new String[]{"Since some time in the past", "Before the present"});
@@ -567,9 +566,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 }
                 convertTraitToTableData();
             });
-        relativeToComboBox.setMaximumSize(MAX_SIZE);//new Dimension(1024, 20));
+        relativeToComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, relativeToComboBox.getPreferredSize().height));
         buttonBox.add(relativeToComboBox);
-        buttonBox.add(Box.createGlue());
+
+        buttonBox.add(Box.createHorizontalGlue());
 
         JButton guessButton = new JButton("Guess");
         guessButton.setName("Guess");
