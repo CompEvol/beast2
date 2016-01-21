@@ -6,6 +6,7 @@
 \title{Extended Bayesian Skyline Plot tutorial\\for BEAST 2}
 
 \author{Joseph Heled\\(updated for BEAST 2 by Tim Vaughan)}
+\date{}
 
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
@@ -41,9 +42,9 @@ loci/genes into BEAUti. The simplest way to do so is to prepare one NEXUS file
 for each alignment. Taxa names in each alignment have to be unique, but
 duplicates across alignments are fine.
 
-Start BEAUti and click File|Import, or hold the control key and press `I'.
-Navigate to the data directory, select all the files you wish included in the
-analysis and click `Open’ (Figure~\ref{fig:importAlignment}).
+Start BEAUti, open the File menu and select `Import Alignment`.  Navigate to
+the data directory, select all the files you wish included in the analysis and
+click `Open' (Figure~\ref{fig:importAlignment}).
 
 \begin{figure}[h!]
     \centering
@@ -59,12 +60,12 @@ analysis and click `Open’ (Figure~\ref{fig:importAlignment}).
         \end{center}
     \end{minipage}
     \caption{Loading multiple alignments into BEAUti.}
-    \label{fig:importAlignment}
+\label{fig:importAlignment}
 \end{figure}
 
-\subsection{Site models}
+\subsection{Site model}
 
-Open the \textsc{Site Models} pane. Here we choose, for every gene, the
+Open the \textsc{Site Model} pane. Here we choose, for every gene, the
 evolutionary models specifying how characters evolve at each site (one aligned
 position). Do not automatically choose the most general models possible (GTR,
 Gamma + Invariant Sites, Partitioned Codon positions etc.). Please remember
@@ -85,10 +86,10 @@ Repeat for each loci. Please note that I know absolutely nothing about
 this particular data, and it is entirely possible using the GTR or partitioning
 is the better choice.
 
-\subsection{Clock models}
+\subsection{Clock model}
 
-Now move to the \textsc{Clock Models} pane. Here you choose the molecular clock
-model for each gene. The same considerations as in the site models apply: stay
+Now move to the \textsc{Clock Model} pane. Here you choose the molecular clock
+model for each gene. The same considerations as in the site model apply: stay
 with the strict clock unless you know otherwise.
 
 You may have noticed that exactly two of the three genes are marked as
@@ -108,7 +109,7 @@ the `Mode' menu and deselect `Automatic set clock rate', as shown below:
 
 Then, select each of the loci names in turn from the list on the left hand side
 of the screen, making sure that `estimate' is checked for X and nuclear but
-checked for mt, as shown in figures below:
+unchecked for mt, as shown in figures below:
 
 \begin{center}
     \includegraphics[width=0.8\textwidth]{figures/clock_model2.png}
@@ -133,9 +134,9 @@ To make a smoother start you should change the other starting rates – say to
 0.005.  Note that we set the reference rate to a known fixed value, but that
 can be relaxed too. It is possible to let the rate vary (by checking it's
 `Estimate' box as well), and place a prior on the rate parameter in the priors
-section (which is clockRate.c:m in this specific case). You have to realize
-that the rate will not be estimated – there is no data here to make that
-possible – it will simply follow the prior. But the uncertainty regarding the
+section (which is clockRate.c:mt in this specific case). You have to realize
+that the rate will not be estimated---there is no data here to make that
+possible---it will simply follow the prior. But the uncertainty regarding the
 exact value will be reflected in all other estimates.
 
 \subsection{Priors}
@@ -283,14 +284,14 @@ to R, you'll probably find a menu option to set the current working directory.)
 Then execute the following from the R command line:
 \begin{verbatim}
     >source("../scripts/plotEBSP.R")
-    >plotEBSP("ebsp.log", useHPD=FALSE, log='y')
+    >plotEBSP("ebsp.log", useHPD=FALSE, log="y")
 \end{verbatim}
 
 The first line loads the functions defined in the R script (which is located in
 the `scripts' directory in the tutorial folder). The second produces a visual
 representation of the EBSP posterior samples contained in the file `ebsp.log`.
 The `useHPD=FALSE' option causes plotEBSP to display 95\% Central Posterior
-Density (CPD) intervals instead of HPD intervals, while the log='y' option
+Density (CPD) intervals instead of HPD intervals, while the `log="y"' option
 causes the y axis to be displayed using a log scale.  A figure similar to the
 following will be produced:\\
 \includegraphics[width=\textwidth]{figures/mystery1.pdf}
@@ -321,7 +322,7 @@ considering that I used only 32 sequences out of a about 128. For the purpose
 of this analysis the effort in sequencing this large number is wasted:
 sequencing more genes, if possible, would greatly improve the results.
 
-Secondly, recall that in the EBSP prior allows the population (or rather its
+Secondly, recall that the EBSP prior allows the population (or rather its
 slope in the case of the linear variety) to change only at points which
 correspond to events on one of the gene trees.  Because these points are
 generated by something akin to a coalescent process, they are not at all evenly
@@ -354,11 +355,11 @@ following command replaces the uniform grey shading with faint renderings of
 individual population trajectories:
 
 \begin{verbatim}
-    >plotEBSP("ebsp.log", useHPD=FALSE, plotPopFunctions=TRUE, log='y')
+    >plotEBSP("ebsp.log", useHPD=FALSE, plotPopFunctions=TRUE, log="y")
 \end{verbatim}
 
 Note that the transparency of the population function lines can be adjusted
-using the `popFunctionAlpha' parameter. 
+using the `popFunctionAlpha' parameter.
 
 This produces the following figure, which is a full view of the posterior --
 all of the samples that are summarized by the median and credible interval
