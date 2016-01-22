@@ -749,9 +749,9 @@ public class MersenneTwisterFast implements Serializable {
      * Sample from a Poissonian distribution.
      *
      * @param lambda mean of Poissonian distribution
-     * @return Draw from Pois(lambda).
+     * @return Draw from Pois(lambda). Note: returns a double for historical reasons.
      */
-    public long nextPoisson(double lambda) {
+    public double nextPoisson(double lambda) {
         if (lambda<12)
             return poissonian_icdf(lambda);
 
