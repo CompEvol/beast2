@@ -247,9 +247,9 @@ public class Randomizer {
      * a default instance of this class, access is synchronized.
      * 
      * @param lambda mean of Poissonian distribution
-     * @return sample
+     * @return sample (as double for historical reasons)
      */
-    public static long nextPoisson(double lambda) {
+    public static double nextPoisson(double lambda) {
         synchronized (random) {
             return random.nextPoisson(lambda);
         }
