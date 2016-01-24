@@ -82,7 +82,7 @@ processEBSPdata <- function(df, isLinear) {
         theseChangePops <- NULL
         p <- 0
         for (j in 1:nTimes) {
-            pair = strsplit(df[i,1+j], ":")[[1]]
+            pair = strsplit(as.character(df[i,1+j]), ":")[[1]]
             time <- as.double(pair[1])
             allTimes[j] <- allTimes[j] + time
 
