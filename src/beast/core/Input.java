@@ -387,7 +387,6 @@ public class Input<T> {
      *
      * @param value
      * @param beastObject
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public void setValue(final Object value, final BEASTInterface beastObject) {
@@ -501,9 +500,8 @@ public class Input<T> {
      * is assigned instead
      *
      * @param beastObject whose type is to be determined
-     * @throws Exception
      */
-    public void determineClass(final Object beastObject) throws Exception {
+    public void determineClass(final Object beastObject) {
         try {
             final Field[] fields = beastObject.getClass().getFields();
             // find this input in the beastObject
@@ -698,9 +696,8 @@ public class Input<T> {
     /**
      * validate input according to validation rule *
      *
-     * @throws Exception when validation fails. why not return a string?
      */
-    public void validate() throws Exception {
+    public void validate() {
         if (possibleValues != null) {
             // it is an enumeration, check the value is in the list
             boolean found = false;

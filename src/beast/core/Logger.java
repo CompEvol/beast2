@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -325,7 +326,7 @@ public class Logger extends BEASTObject {
 	}
 
 
-	boolean openLogFile() throws Exception {
+	boolean openLogFile() throws IOException {
         if (isLoggingToStdout()) {
             m_out = System.out;
             return true;

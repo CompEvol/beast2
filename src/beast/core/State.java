@@ -27,6 +27,7 @@ package beast.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -34,10 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import beast.core.util.Log;
 
@@ -383,9 +386,12 @@ public class State extends BEASTObject {
     }
 
     /**
-     * restore a state from file for resuming an MCMC chain *
+     * restore a state from file for resuming an MCMC chain 
+     * @throws ParserConfigurationException 
+     * @throws IOException 
+     * @throws SAXException *
      */
-    public void restoreFromFile() throws Exception {
+    public void restoreFromFile() throws SAXException, IOException, ParserConfigurationException  {
         Log.info.println("Restoring from file");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc = factory.newDocumentBuilder().parse(new File(stateFileName));
@@ -459,7 +465,7 @@ public class State extends BEASTObject {
      * NB the output map only contains outputs on a path to the posterior BEASTObject!
      */
     @SuppressWarnings("unchecked")
-    public void setPosterior(BEASTObject posterior) throws Exception {
+    public void setPosterior(BEASTObject posterior) {
         // first, calculate output map that maps BEASTObjects on a path
         // to the posterior to the list of output BEASTObjects. Strictly
         // speaking, this is a bit of overkill, since only
@@ -547,8 +553,10 @@ public class State extends BEASTObject {
      * Collect all CalculationNodes on a path from any StateNode that is changed (as
      * indicated by m_changedStateNodeCode) to the posterior. Return the list in
      * partial order as determined by the BEASTObjects input relations.
+     * @throws IllegalAccessException 
+     * @throws IllegalArgumentException 
      */
-    private List<CalculationNode> calculateCalcNodePath() throws Exception {
+    private List<CalculationNode> calculateCalcNodePath() throws IllegalArgumentException, IllegalAccessException {
         final List<CalculationNode> calcNodes = new ArrayList<>();
 //    	for (int i = 0; i < stateNode.length; i++) {
 //    		if (m_changedStateNodeCode.get(i)) {

@@ -64,7 +64,7 @@ abstract public class BEASTObject implements BEASTInterface{
 				for (Input<?> input : listInputs()) {
 					inputcache.put(input.getName(), input);
 				}
-			} catch (IllegalArgumentException | IllegalAccessException e) {
+			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 				throw new RuntimeException("Problem getting inputs " + e.getClass().getName() + e.getMessage());
 			}

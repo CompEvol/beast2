@@ -372,9 +372,6 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			if (tree != null && tree != likelihood.treeInput.get()) {
 				//likelihood.treeInput.setValue(tree, likelihood);

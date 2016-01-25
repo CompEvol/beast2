@@ -177,15 +177,19 @@ public interface BEASTInterface {
     /**
      * create list of inputs to this plug-in *
      */
-    default public List<Input<?>> listInputs() throws IllegalArgumentException, IllegalAccessException {
+    default public List<Input<?>> listInputs() { 
         final List<Input<?>> inputs = new ArrayList<>();
         
         // First, collect all Inputs
         final Field[] fields = getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
-                final Input<?> input = (Input<?>) field.get(this);
-                inputs.add(input);
+            	try {
+            		final Input<?> input = (Input<?>) field.get(this);
+            		inputs.add(input);
+            	} catch (IllegalAccessException e) {
+            		// not a publicly accessible input, ignore
+            	}
             }
         }
         
@@ -303,7 +307,7 @@ public interface BEASTInterface {
     /**
      * check whether the input is an Integer, Double, Boolean or String *
      */
-    default public boolean isPrimitive(final String name) throws Exception {
+    default public boolean isPrimitive(final String name) {
         final Input<?> input = getInput(name);
         final Class<?> inputType = input.getType();
 
@@ -323,7 +327,7 @@ public interface BEASTInterface {
     /**
      * get value of an input by input name *
      */
-    default public Object getInputValue(final String name) throws Exception {
+    default public Object getInputValue(final String name) {
         final Input<?> input = getInput(name);
         return input.get();
     } // getInputValue
@@ -331,7 +335,7 @@ public interface BEASTInterface {
     /**
      * set value of an input by input name *
      */
-    default public void setInputValue(final String name, final Object value) throws Exception {
+    default public void setInputValue(final String name, final Object value) {
         final Input<?> input = getInput(name);
         if (!input.canSetValue(value, this)) {
             throw new RuntimeException("Cannot set input value of " + name);
@@ -342,7 +346,7 @@ public interface BEASTInterface {
     /**
      * get input by input name *
      */
-    default public Input<?> getInput(final String name) throws Exception {
+    default public Input<?> getInput(final String name) {
     	
     	Map<String, Input<?>> inputs = getInputs();
     	if (inputs.containsKey(name)) {
@@ -363,7 +367,7 @@ public interface BEASTInterface {
      *
      * @throws Exception when validation fails
      */
-    default public void validateInputs() throws Exception {
+    default public void validateInputs() {
         for (final Input<?> input : listInputs()) {
             input.validate();
         }
