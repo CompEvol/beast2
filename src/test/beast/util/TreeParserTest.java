@@ -1,12 +1,11 @@
 package test.beast.util;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import beast.util.TreeParser;
-import junit.framework.TestCase;
 
-
-public class TreeParserTest extends TestCase {
+public class TreeParserTest {
 
     @Test
     public void testFullyLabelledWithIntegers() {
@@ -20,13 +19,12 @@ public class TreeParserTest extends TestCase {
             TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 0);
             treeParser.offsetInput.setValue(0, treeParser);
 
-            assertEquals(newick.split(";")[0], treeParser.getRoot().toShortNewick(true));
+            Assert.assertEquals(newick.split(";")[0], treeParser.getRoot().toShortNewick(true));
 
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.  \
-            assertTrue("Exception!", false);
+            Assert.assertTrue("Exception!", false);
         }
-
 
     }
 
@@ -35,20 +33,11 @@ public class TreeParserTest extends TestCase {
 
         String newick = "((A:1.0,B:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
 
-//        try {
-
         boolean isLabeled = true;
 
         TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
         System.out.println("adfgad");
-        assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
-        // fix condition for adding the taxa and fix tree parse test
-
-//        } catch (Exception e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.  \
-//            assertTrue("Exception!", false);
-//        }
-
+        Assert.assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
 
     }
 
@@ -64,7 +53,7 @@ public class TreeParserTest extends TestCase {
         
         String newick2 = treeParser.getRoot().toNewick();
         
-        assertEquals(newick.replaceAll(";", ""), newick2);
+        Assert.assertEquals(newick.replaceAll(";", ""), newick2);
     }
 
     @Test
@@ -78,11 +67,11 @@ public class TreeParserTest extends TestCase {
 
             TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
 
-            assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
+            Assert.assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
 
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.  \
-            assertTrue("Exception!", false);
+            Assert.assertTrue("Exception!", false);
         }
 
 
@@ -105,8 +94,20 @@ public class TreeParserTest extends TestCase {
             exceptionRaised = true;
         }
 
-        assertTrue(exceptionRaised);
+        Assert.assertTrue(exceptionRaised);
     }
 
+    @Test
+    public void testMultifurcations() throws Exception {
+
+        String newick = "((A:1.0,B:1.0,C:1.0):1.0,(D:1.0,E:1.0,F:1.0,G:1.0):1.0):0.0;";
+        String binaryNewick = "((A:1.0,(B:1.0,C:1.0):0.0):1.0,(D:1.0,(E:1.0,(F:1.0,G:1.0):0.0):0.0):1.0):0.0;";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        Assert.assertEquals(binaryNewick.split(";")[0], treeParser.getRoot().toNewick());
+
+    }
 
 }

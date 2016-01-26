@@ -523,8 +523,26 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
                 throw new ParseCancellationException("Node with single child found.");
 
-            if (node.getChildCount()>2)
-                throw new ParseCancellationException("Node with two or more children found.");
+            // Use length-zero edges to binarize multifurcations.
+            if (node.getChildCount()>2) {
+                List<Node> children = new ArrayList<>(node.getChildren());
+                Node prevDummy = node;
+                for (int i=1; i<children.size()-1; i++) {
+                    Node child = children.get(i);
+
+                    Node dummyNode = newNode();
+                    dummyNode.setNr(-1);
+                    dummyNode.setHeight(0);
+                    prevDummy.addChild(dummyNode);
+
+                    node.removeChild(child);
+                    dummyNode.addChild(child);
+
+                    prevDummy = dummyNode;
+                }
+                node.removeChild(children.get(children.size()-1));
+                prevDummy.addChild(children.get(children.size()-1));
+            }
 
             return node;
         }
@@ -648,4 +666,5 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             stateNodes.add(m_initial.get());
         }
     }
+
 }
