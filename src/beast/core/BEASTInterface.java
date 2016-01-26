@@ -257,9 +257,8 @@ public interface BEASTInterface {
      *
      * @return list of all active plug-ins
      * @throws IllegalAccessException
-     * @throws IllegalArgumentException
      */
-    default public List<BEASTInterface> listActiveBEASTObjects() throws IllegalArgumentException, IllegalAccessException {
+    default public List<BEASTInterface> listActiveBEASTObjects() {
         final List<BEASTInterface> beastObjects = new ArrayList<>();
 
         for (Input<?> input : getInputs().values()) {
@@ -363,9 +362,9 @@ public interface BEASTInterface {
 
 
     /**
-     * check validation rules for all its inputs *
-     *
-     * @throws Exception when validation fails
+     * check validation rules for all its inputs
+     * 
+     * @throws IllegalArgumentException when validation fails
      */
     default public void validateInputs() {
         for (final Input<?> input : listInputs()) {
@@ -384,14 +383,10 @@ public interface BEASTInterface {
 
     default public void getPredecessors(final List<BEASTInterface> predecessors) {
         predecessors.add(this);
-        try {
-            for (final BEASTInterface beastObject2 : listActiveBEASTObjects()) {
-                if (!predecessors.contains(beastObject2)) {
-                    beastObject2.getPredecessors(predecessors);
-                }
+        for (final BEASTInterface beastObject2 : listActiveBEASTObjects()) {
+            if (!predecessors.contains(beastObject2)) {
+                beastObject2.getPredecessors(predecessors);
             }
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 

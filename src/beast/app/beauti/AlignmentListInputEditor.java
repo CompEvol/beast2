@@ -339,7 +339,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 	}
 
 	/** set partition of type columnNr to partition model nr rowNr **/
-	void updateModel(int columnNr, int rowNr) throws Exception {
+	void updateModel(int columnNr, int rowNr) {
 		Log.warning.println("updateModel: " + rowNr + " " + columnNr + " " + table.getSelectedRow() + " "
 				+ table.getSelectedColumn());
 		for (int i = 0; i < partitionCount; i++) {
@@ -431,8 +431,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				siteModel = (SiteModel) doc.pluginmap.get("SiteModel.s:" + partition);
 				if (siteModel != likelihoods[rowNr].siteModelInput.get()) {
 					PartitionContext context = getPartitionContext(rowNr);
+					try {
 					siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[rowNr].siteModelInput.get(),
 							likelihoods[rowNr], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+					} catch (RuntimeException e) {
+						JOptionPane.showMessageDialog(this, "Could not clone site model: " + e.getMessage());
+						return;
+					}
 				}
 			}
 			SiteModelInterface target = this.likelihoods[rowNr].siteModelInput.get();
@@ -461,8 +466,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				clockModel = getDoc().getClockModel(partition);
 				if (clockModel != likelihoods[rowNr].branchRateModelInput.get()) {
 					PartitionContext context = getPartitionContext(rowNr);
-					clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[rowNr].branchRateModelInput.get(),
+					try {
+						clockModel = (BranchRateModel) BeautiDoc.deepCopyPlugin(likelihoods[rowNr].branchRateModelInput.get(),
 							likelihoods[rowNr], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+					} catch (RuntimeException e) {
+						JOptionPane.showMessageDialog(this, "Could not clone clock model: " + e.getMessage());
+						return;
+					}
 				}
 			}
 			// make sure that *if* the clock model has a tree as input, it is
@@ -496,16 +506,27 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				tree = (TreeInterface) doc.pluginmap.get("Tree.t:" + partition);
 				if (tree != likelihoods[rowNr].treeInput.get()) {
 					PartitionContext context = getPartitionContext(rowNr);
-					tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[rowNr].treeInput.get(), likelihoods[rowNr],
+					try {
+						tree = (TreeInterface) BeautiDoc.deepCopyPlugin((BEASTInterface) likelihoods[rowNr].treeInput.get(), likelihoods[rowNr],
 							(MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+					} catch (RuntimeException e) {
+						JOptionPane.showMessageDialog(this, "Could not clone tree model: " + e.getMessage());
+						return;
+					}
 					
 					State state = ((MCMC) doc.mcmc.get()).startStateInput.get();
 					List<StateNode> stateNodes = new ArrayList<>();
 					stateNodes.addAll(state.stateNodeInput.get());
 					for (StateNode s : stateNodes) {
 						if (s.getID().endsWith(".t:" + oldContext.tree) && !(s instanceof TreeInterface)) {
-							@SuppressWarnings("unused")
-							StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[rowNr], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+							try {
+								@SuppressWarnings("unused")
+								StateNode copy = (StateNode) BeautiDoc.deepCopyPlugin(s, likelihoods[rowNr], (MCMC) doc.mcmc.get(), oldContext, context, doc, null);
+							} catch (RuntimeException e) {
+								JOptionPane.showMessageDialog(this, "Could not clone tree model: " + e.getMessage());
+								return;
+							}
+
 						}
 					}
 				}

@@ -463,7 +463,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
     */
     
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         out.print(getID() + ".size\t");
     }
 

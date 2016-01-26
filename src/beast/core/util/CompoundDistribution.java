@@ -199,7 +199,7 @@ public class CompoundDistribution extends Distribution {
     }
 
     @Override
-    public List<BEASTInterface> listActiveBEASTObjects() throws IllegalArgumentException, IllegalAccessException {
+    public List<BEASTInterface> listActiveBEASTObjects() {
     	if (ignoreInput.get()) {
     		return new ArrayList<>();
     	} else {

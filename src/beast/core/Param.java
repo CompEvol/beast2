@@ -9,6 +9,17 @@ import java.lang.annotation.Target;
 /**
  * This annotation should be used to provide information about parameters in the constructor of a BEAST object,
  * as an alternative way to represent inputs.
+ * 
+ * Note that any object with a constructor with Param annotations should also have a 
+ * public default constructor without arguments to facilitate cloning models in BEAUti.
+ * 
+ * Furthermore, every Param annotation should come with a public getter and setter, using 
+ * camelcase for name, with annotation CTor(@Param(name="shape",...) double shape) these 
+ * getter and setter signatures should be in the class: 
+ * 
+ * public double getShape() 
+ * public void setShape(double shape)
+ * 
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)

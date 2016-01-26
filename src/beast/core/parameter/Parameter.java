@@ -193,7 +193,7 @@ public interface Parameter<T> extends Function {
             }
         }
 
-        public void setMinorDimension(final int dimension) throws Exception {
+        public void setMinorDimension(final int dimension) {
             minorDimension = dimension;
             if (minorDimension > 0 && dimensionInput.get() % minorDimension > 0) {
                 throw new IllegalArgumentException("Dimension must be divisible by stride");

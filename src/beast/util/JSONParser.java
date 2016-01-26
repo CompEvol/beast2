@@ -25,9 +25,11 @@
 package beast.util;
 
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
@@ -854,7 +856,7 @@ public class JSONParser {
 				beastObject.validateInputs();
 				objectsWaitingToInit.add(new BEASTObjectWrapper(beastObject, node));
 				// beastObject.initAndValidate();
-			} catch (Exception e) {
+			} catch (IllegalArgumentException e) {
 				// next lines for debugging only
 				// beastObject.validateInputs();
 				// beastObject.initAndValidate();
@@ -1353,7 +1355,13 @@ public class JSONParser {
 			BEASTInterface beastObject = parser.parseFile(new File(args[0]));
 			// restore stdout
 			System.setOut(out);
-			System.out.println(new XMLProducer().toXML(beastObject));
+			if (args.length > 1) {
+		        FileWriter outfile = new FileWriter(args[1]);
+		        outfile.write(new XMLProducer().toXML(beastObject));
+		        outfile.close();
+			} else {
+				System.out.println(new XMLProducer().toXML(beastObject));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

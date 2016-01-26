@@ -343,7 +343,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 			try {
 				siteModel = (SiteModel.Base) BeautiDoc.deepCopyPlugin((BEASTInterface) siteModelSource,
 					likelihood, (MCMC) doc.mcmc.get(), oldContext, newContext, doc, null);
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				JOptionPane.showMessageDialog(this, "Could not clone " + sourceID + " to " + targetID + " " + e.getMessage());
 				return;
 			}

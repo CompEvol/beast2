@@ -146,7 +146,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
 
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
         if (dim == 1)
             out.print(this.getID() + "\t");
         else

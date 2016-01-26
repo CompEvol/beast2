@@ -462,7 +462,7 @@ public class ListInputEditor extends InputEditor.Base {
                 BEASTInterface beastObject = (BEASTInterface) ((List<?>) m_input.get()).get(i);
                 beastObject.validateInputs();
                 m_validateLabels.get(i).setVisible(false);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 if (m_validateLabels.size() > i) {
                     m_validateLabels.get(i).setToolTipText(e.getMessage());
                     m_validateLabels.get(i).setVisible(true);

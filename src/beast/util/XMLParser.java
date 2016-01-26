@@ -724,7 +724,7 @@ public class XMLParser {
                 beastObject.validateInputs();
                 beastObjectsWaitingToInit.add(beastObject);
                 nodesWaitingToInit.add(node);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 // next lines for debugging only
                 //beastObject.validateInputs();
                 //beastObject.initAndValidate();

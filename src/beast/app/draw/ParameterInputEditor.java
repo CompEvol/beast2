@@ -131,8 +131,9 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 									BEASTInterface candidate = doc.getUnlinkCandidate(m_input, m_beastObject);
 									m_input.setValue(candidate, m_beastObject);
 									doc.deLink(m_input);
-								} catch (Exception e2) {
+								} catch (RuntimeException e2) {
 									e2.printStackTrace();
+									JOptionPane.showMessageDialog(this, "Could not unlink: " + e2.getMessage());
 								}
 								
 							} else {

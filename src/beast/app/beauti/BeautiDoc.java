@@ -1257,7 +1257,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return sb.toString();
     }
 
-    void applyBeautiRules(List<BeautiSubTemplate> templates, boolean isInitial, PartitionContext context) throws Exception {
+    void applyBeautiRules(List<BeautiSubTemplate> templates, boolean isInitial, PartitionContext context) {
         for (BeautiSubTemplate template : templates) {
             String templateID = translatePartitionNames(template.getMainID(), context);
             BEASTInterface beastObject = pluginmap.get(templateID);
@@ -1390,7 +1390,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      *
      * @throws Exception *
      */
-    public void connect(BeautiConnector connector, PartitionContext context) throws Exception {
+    public void connect(BeautiConnector connector, PartitionContext context) {
         if (!connector.isRegularConnector) {
             return;
         }
@@ -1769,12 +1769,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * @param beastObject
      * @param parent
      * @return
-     * @throws Exception
      */
     static public BEASTInterface deepCopyPlugin(BEASTInterface beastObject, BEASTInterface parent, MCMC mcmc,
     										PartitionContext oldContext,
                                             PartitionContext newContext, BeautiDoc doc, List<BEASTInterface> tabooList)
-            throws Exception {
+          {
         /** taboo = list of beastObjects that should not be copied **/
         Set<BEASTInterface> taboo = new HashSet<>();
         taboo.add(parent);
@@ -1863,9 +1862,15 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	            	BEASTInterface org = doc.pluginmap.get(copyID);
 	                copySet.put(id, org);
 	            } else {
-	            	BEASTInterface copy = beastObject2.getClass().newInstance();
-	            	copy.setID(copyID);
-	                copySet.put(id, copy);
+	            	BEASTInterface copy;
+					try {
+						copy = beastObject2.getClass().newInstance();
+		            	copy.setID(copyID);
+		                copySet.put(id, copy);
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+						throw new RuntimeException("Programmer error: every object in the model should have a default constructor that is publicly accessible");
+					}
 	            }
             }
             Log.warning.println("Copy: " + id + " -> " + copyID);
@@ -2065,8 +2070,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             }
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -2381,7 +2384,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return list;
     }
 
-    public BEASTInterface getUnlinkCandidate(Input<?> input, BEASTInterface parent) throws Exception {
+    public BEASTInterface getUnlinkCandidate(Input<?> input, BEASTInterface parent) {
         PartitionContext oldContext = getContextFor((BEASTInterface)input.get());
         PartitionContext newContext = getContextFor(parent);
         BEASTInterface beastObject = deepCopyPlugin((BEASTInterface) input.get(), parent, (MCMC) mcmc.get(), oldContext, newContext, this, null);

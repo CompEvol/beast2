@@ -94,7 +94,7 @@ public class Sum extends CalculationNode implements Function, Loggable {
      * Loggable interface implementation follows
      */
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         out.print("sum(" + ((BEASTObject) functionInput.get()).getID() + ")\t");
     }
 
