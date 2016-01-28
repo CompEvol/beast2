@@ -28,10 +28,10 @@ public interface Function {
     public double getArrayValue(int dim);
 
     /**
-     * @return all values as a Double[]
+     * @return all values as a double[]
      */
-    default Double[] getValues() {
-        Double[] values = new Double[getDimension()];
+    default double[] getDoubleValues() {
+        double[] values = new double[getDimension()];
         for (int i = 0; i < values.length; i++) {
             values[i] = getArrayValue(i);
         }
