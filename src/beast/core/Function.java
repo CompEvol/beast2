@@ -26,4 +26,15 @@ public interface Function {
      * @return dim'th value (if any)
      */
     public double getArrayValue(int dim);
+
+    /**
+     * @return all values as a Double[]
+     */
+    default Double[] getValues() {
+        Double[] values = new Double[getDimension()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = getArrayValue(i);
+        }
+        return values;
+    }
 }
