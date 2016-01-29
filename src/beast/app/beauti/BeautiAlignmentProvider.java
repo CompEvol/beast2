@@ -54,7 +54,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	 * return amount to which the provided matches an alignment 
 	 * The provider with the highest match will be used to edit the alignment 
 	 * */
-	int matches(Alignment alignment) {
+	protected int matches(Alignment alignment) {
 		return 1;
 	}
 	
