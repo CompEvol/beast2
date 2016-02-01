@@ -8,9 +8,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 
-
-
-@Description("Gamma distribution.    for x>0  g(x;alpha,beta) = \\frac{beta^{alpha}}{Gamma(alpha)} x^{alpha-1} e^{-beta {x}}" +
+@Description("Gamma distribution. for x>0  g(x;alpha,beta) = 1/Gamma(alpha) beta^alpha} x^{alpha - 1} e^{-\frac{x}{beta}}" +
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Gamma extends ParametricDistribution {
@@ -53,6 +51,6 @@ public class Gamma extends ParametricDistribution {
 
     @Override
     public double getMean() {
-    	return offsetInput.get() + m_dist.getAlpha() / m_dist.getBeta();
+    	return offsetInput.get() + m_dist.getAlpha() * m_dist.getBeta();
     }
 } // class Gamma
