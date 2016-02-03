@@ -10,6 +10,7 @@ import org.junit.Test;
 import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Taxon;
 import beast.util.JSONParser;
 import beast.util.JSONProducer;
@@ -31,7 +32,24 @@ public class JSONTest extends TestCase {
 				actual);
     }
 
-	
+    @Test
+    public void testJSONFragmentParsing() throws Exception {
+    	JSONParser parser = new JSONParser();
+    	String json = "{version: \"2.3\",\n" + 
+    			"\n" + 
+    			"beast: [\n" + 
+    			"{spec:\"beast.core.parameter.RealParameter\",\n" +
+    			" value:\"2.345\"\n" +
+    			"}\n" +
+    			"]\n" +
+    			"}\n";
+    			;
+		List<Object> objects = parser.parseFragment(json, true);
+		assertEquals(1, objects.size());
+		RealParameter p = (RealParameter) objects.get(0);
+		assertEquals(2.345, p.getValue(), 1e-13);
+    }
+    	
     @Test
     public void testAnnotatedConstructor() throws Exception {
     	List<Taxon> taxa = new ArrayList<>();

@@ -26,6 +26,8 @@ package beast.util;
 
 
 
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -408,59 +410,58 @@ public class JSONParser {
 	} // unrollPlate
 	
 
-	// /**
-	// * Parse an XML fragment representing a Plug-in
-	// * Only the run element or if that does not exist the last child element
-	// of
-	// * the top level <beast> element is considered.
-	// */
-	// public BEASTObject parseFragment(String xml, boolean initialise) throws
-	// Exception {
-	// m_bInitialize = initialise;
-	// // parse the XML fragment into a DOM document
-	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	// doc = factory.newDocumentBuilder().parse(new InputSource(new
-	// StringReader(xml)));
-	// doc.normalize();
-	// processPlates();
-	//
-	// IDMap = new HashMap<>();
-	// likelihoodMap = new HashMap<>();
-	// IDNodeMap = new HashMap<>();
-	//
-	// // find top level beast element
-	// NodeList nodes = doc.getElementsByTagName("*");
-	// if (nodes == null || nodes.getLength() == 0) {
-	// throw new Exception("Expected top level beast element in XML");
-	// }
-	// Node topNode = nodes.item(0);
-	// initIDNodeMap(topNode);
-	// parseNameSpaceAndMap(topNode);
-	//
-	// NodeList children = topNode.getChildNodes();
-	// if (children.getLength() == 0) {
-	// throw new Exception("Need at least one child element");
-	// }
-	// int i = children.getLength() - 1;
-	// while (i >= 0 && (children.item(i).getNodeType() != Node.ELEMENT_NODE ||
-	// !children.item(i).getNodeName().equals("run"))) {
-	// i--;
-	// }
-	// if (i < 0) {
-	// i = children.getLength() - 1;
-	// while (i >= 0 && children.item(i).getNodeType() != Node.ELEMENT_NODE) {
-	// i--;
-	// }
-	// }
-	// if (i < 0) {
-	// throw new Exception("Need at least one child element");
-	// }
-	//
-	// BEASTObject beastObject = createObject(children.item(i), PLUGIN_CLASS, null);
-	// initPlugins();
-	// return beastObject;
-	// } // parseFragment
-	//
+	 /**
+	 * Parse an JSON fragment representing a list of BEASTObjects
+	 */
+    public List<Object> parseFragment(final String json, final boolean initialise) throws Exception {
+        this.initialise = initialise;
+		doc = new JSONObject(json);
+
+		// find top level beast element
+		JSONObject nodes = doc;
+		if (nodes == null || nodes.keySet().size() == 0) {
+			throw new JSONParserException(doc, "Expected top level 'beast' element in JSON fragment", 1001);
+		}
+		double version = getAttributeAsDouble(nodes, "version");
+		if (version < 2.0 || version == Double.MAX_VALUE) {
+			throw new JSONParserException(nodes, "Wrong version: only versions > 2.0 are supported", 101);
+		}
+
+		initIDNodeMap(doc);
+
+		parseNameSpaceAndMap(doc);
+  
+		List<Object> objects = new ArrayList<>();
+		try {
+			// find beast element
+			Object o = doc.get(XMLParser.BEAST_ELEMENT);
+			if (o == null) {
+				throw new JSONParserException(nodes, "Expected " + XMLParser.BEAST_ELEMENT + " top level object in file", 102);
+			}
+			if (!(o instanceof JSONArray)) {
+				throw new JSONParserException(nodes, "Expected " + XMLParser.BEAST_ELEMENT + " to be a list", 1020);
+			}
+			JSONArray analysis = (JSONArray) o;
+			for (int i = 0; i < analysis.length(); i++) {
+				o = analysis.get(i);
+				if (!(o instanceof JSONObject)) {
+					throw new JSONParserException(nodes, XMLParser.BEAST_ELEMENT + " should only contain objects", 1021);
+				}
+				JSONObject node = (JSONObject) o;
+				o = createObject(node, Object.class.getName());
+				objects.add(o);
+			}
+		} catch (JSONException e) {
+			throw new JSONParserException(nodes, e.getMessage(), 1004);
+		}
+		
+		if (initialise) {
+			initBEASTObjects();
+		}
+        return objects;
+    } // parseFragment
+
+    //
 	// /**
 	// * Parse XML fragment that will be wrapped in a beast element
 	// * before parsing. This allows for ease of creating BEASTObject objects,
@@ -520,7 +521,7 @@ public class JSONParser {
 		// find top level beast element
 		JSONObject nodes = doc;
 		if (nodes == null || nodes.keySet().size() == 0) {
-			throw new JSONParserException(doc, "Expected top level beast element in XML", 1001);
+			throw new JSONParserException(doc, "Expected top level beast element in JSON", 1001);
 		}
 		double version = getAttributeAsDouble(nodes, "version");
 		if (version < 2.0 || version == Double.MAX_VALUE) {
