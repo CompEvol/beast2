@@ -32,42 +32,49 @@ import static beast.util.AddOnManager.beastVersion;
  *
  */
 
+import beast.app.util.Version;
 import beast.core.Description;
 
 /**
  * modified by Walter Xie
  */
 @Description("BEAUti beastObject dependency class")
-public class PackageDependency implements Comparable<Object> {
-    String packageName;
-    String dependson;
-    Double atLeast;
-    Double atMost;
+public class PackageDependency {
+    public final String dependencyName;
+    public final PackageVersion atLeast, atMost;
 
-    public void setAtLest(String atLeastString) {
-        if (atLeastString == null || atLeastString.length() == 0) {
-            atLeast = 0.0;
-        } else {
-            atLeast = beastVersion.parseVersion(atLeastString);
-        }
+    public PackageDependency(String dependencyName,
+                             PackageVersion minimumVersion,
+                             PackageVersion maximumVersion) {
+        this.dependencyName = dependencyName;
+        atLeast = minimumVersion;
+        atMost = maximumVersion;
     }
 
-    public void setAtMost(String atMostString) {
-        if (atMostString == null || atMostString.length() == 0) {
-            atMost = Double.POSITIVE_INFINITY;
-        } else {
-            atMost = beastVersion.parseVersion(atMostString);
-        }
+    /**
+     * Test to see whether given version of package satisfies
+     * version range of this package dependency.
+     *
+     * @param version version of package to check
+     * @return true iff version meets criterion
+     */
+    public boolean isMetBy(PackageVersion version) {
+        return (atLeast == null || version.compareTo(atLeast)>=0)
+                && (atMost == null || version.compareTo(atMost)<=0);
     }
 
-    @Override
-    public int compareTo(Object o) {
-        return dependson.toUpperCase().compareTo(o.toString().toUpperCase());
+    public String getRangeString() {
+        if (atLeast != null && atMost != null)
+            return "versions " + atLeast + " to " + atMost;
+
+        if (atLeast != null)
+            return "version " + atLeast + " or greater";
+
+        return "version " + atMost + " or lesser";
     }
 
     @Override
 	public String toString() {
-        return dependson;
+        return dependencyName + " " + getRangeString();
     }
-
 }

@@ -1,43 +1,24 @@
 package beast.app.beauti;
 
-import static beast.util.AddOnManager.NO_CONNECTION_MESSAGE;
-import static beast.util.AddOnManager.beastVersion;
-import static beast.util.AddOnManager.getPackageSystemDir;
-import static beast.util.AddOnManager.getPackageUserDir;
-import static beast.util.AddOnManager.getPackages;
-import static beast.util.AddOnManager.getToDeleteListFile;
-import static beast.util.AddOnManager.installPackage;
-import static beast.util.AddOnManager.uninstallPackage;
-
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-
 import beast.core.Description;
 import beast.util.AddOnManager;
 import beast.util.Package;
+import beast.util.PackageVersion;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static beast.util.AddOnManager.*;
 
 /**
  * dialog for managing Package.
@@ -52,11 +33,11 @@ public class JPackageDialog extends JPanel {
     JScrollPane scrollPane;
     JLabel jLabel;
     Box buttonBox;
-    JCheckBox allDepCheckBox = new JCheckBox("install/uninstall all dependencies", null, true);
     JFrame frame;
-    JTable dataTable = null;
+    PackageTable dataTable = null;
 
-    List<Package> packages = new ArrayList<>();
+    TreeMap<String, Package> packageMap = new TreeMap<>(String::compareToIgnoreCase);
+    List<Package> packageList = null;
 
     boolean isRunning;
     Thread t;
@@ -93,7 +74,7 @@ public class JPackageDialog extends JPanel {
 	    			}
 				} catch (InterruptedException e) {
 				}
-    		};
+    		}
     	};
     	t2.start();
         
@@ -119,7 +100,7 @@ public class JPackageDialog extends JPanel {
 
     private void createTable() {
         DataTableModel dataTableModel = new DataTableModel();
-        dataTable = new JTable(dataTableModel);
+        dataTable = new PackageTable(dataTableModel);
         
         double [] widths = new double[dataTable.getColumnCount()];
         //double total = 0;
@@ -154,9 +135,17 @@ public class JPackageDialog extends JPanel {
     }
 
     private void resetPackages() {
-        packages.clear();
+        packageMap.clear();
         try {
-            packages = getPackages();
+            addAvailablePackages(packageMap);
+            addInstalledPackages(packageMap);
+
+            // Create list of packages excluding beast2
+            packageList = new ArrayList<>();
+            for (Package pkg : packageMap.values())
+                if (!pkg.getName().equals("beast2"))
+                    packageList.add(pkg);
+
         } catch (AddOnManager.PackageListRetrievalException e) {
         	StringBuilder msgBuilder = new StringBuilder("<html>" + e.getMessage() + "<br>");
             if (e.getCause() instanceof IOException)
@@ -180,93 +169,140 @@ public class JPackageDialog extends JPanel {
     }
 
     private Package getSelectedPackage(int selectedRow) {
-        if (packages.size() <= selectedRow)
+        if (packageList.size() <= selectedRow)
             throw new IllegalArgumentException("Incorrect row " + selectedRow +
-                    " is selected from package list, size = " + packages.size());
-        return packages.get(selectedRow);
+                    " is selected from package list, size = " + packageMap.size());
+        return packageList.get(selectedRow);
     }
 
     private void showDetail(Package aPackage) {
         //custom title, no icon
         JOptionPane.showMessageDialog(null,
                 aPackage.toHTML(),
-                aPackage.packageName,
+                aPackage.getName(),
                 JOptionPane.PLAIN_MESSAGE);
     }
 
     private Box createButtonBox() {
         Box box = Box.createHorizontalBox();
-        box.add(allDepCheckBox);
-        box.add(Box.createGlue());
         JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(e -> {
-            	// first get rid of existing packages
-            	StringBuilder removedPackageNames = new StringBuilder();
-            	doUninstall(removedPackageNames);
+            // first get rid of existing packages
+            int[] selectedRows = dataTable.getSelectedRows();
+            String installedPackageNames = "";
 
-                int[] selectedRows = dataTable.getSelectedRows();
-                StringBuilder installedPackageNames = new StringBuilder();
+            setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-                for (int selRow : selectedRows) {
-                    Package selPackage = getSelectedPackage(selRow);
-                    if (selPackage != null) {
-                        try {
-//                            if (selPackage.isInstalled()) {
-//                                //TODO upgrade version
-//                            } else {
-                                setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                                if (allDepCheckBox.isSelected()) {
-                                    installPackage(selPackage, false, null, packages);
-                                } else {
-                                    installPackage(selPackage, false, null, null);
-                                }
-                                if (installedPackageNames.length()>0)
-                                    installedPackageNames.append(", ");
-                                installedPackageNames.append("'")
-                                        .append(selPackage.packageName)
-                                        .append("'");
+            Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
+            for (int selRow : selectedRows) {
+                Package selPackage = getSelectedPackage(selRow);
+                if (selPackage != null)
+                    packagesToInstall.put(selPackage, selPackage.getLatestVersion());
+            }
 
-                                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//                            }
-                            resetPackages();
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Install failed because: " + ex.getMessage());
-                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                        }
-                    }
+            try {
+                populatePackagesToInstall(packageMap, packagesToInstall);
+
+                prepareForInstall(packagesToInstall, false, null);
+
+                if (getToDeleteListFile().exists()) {
+                    JOptionPane.showMessageDialog(frame,
+                            "<html><body><p style='width: 200px'>Upgrading packages on your machine requires BEAUti " +
+                                    "to restart. Shutting down now.</p></body></html>");
+                    System.exit(0);
                 }
 
-                if (installedPackageNames.length()>0)
-                    JOptionPane.showMessageDialog(null, "Package(s) "
-                            + installedPackageNames.toString() + " installed. "
-                            + "Note that any changes to the BEAUti "
-                            + "interface will\n not appear until a "
-                            + "new document is created or BEAUti is "
-                            + "restarted.");
-            });
+                installPackages(packagesToInstall, false, null);
+
+                // Refresh classes:
+                loadExternalJars();
+
+                installedPackageNames = String.join(",",
+                        packagesToInstall.keySet().stream()
+                                .map(Package::toString)
+                                .collect(Collectors.toList()));
+
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+            } catch (DependencyResolutionException | IOException ex) {
+                JOptionPane.showMessageDialog(null, "Install failed because: " + ex.getMessage());
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+
+            resetPackages();
+            dataTable.setRowSelectionInterval(selectedRows[0], selectedRows[0]);
+
+            if (installedPackageNames.length()>0)
+                JOptionPane.showMessageDialog(null, "Package(s) "
+                        + installedPackageNames + " installed. "
+                        + "Note that any changes to the BEAUti "
+                        + "interface will\n not appear until a "
+                        + "new document is created or BEAUti is "
+                        + "restarted.");
+        });
         box.add(installButton);
 
         JButton uninstallButton = new JButton("Uninstall");
         uninstallButton.addActionListener(e -> {
-            	StringBuilder removedPackageNames = new StringBuilder();
-            	boolean toDeleteFileExists = doUninstall(removedPackageNames);
-                resetPackages();
+            StringBuilder removedPackageNames = new StringBuilder();
+            int[] selectedRows = dataTable.getSelectedRows();
 
-                if (toDeleteFileExists) {
-                    JOptionPane.showMessageDialog(null, "<html>To complete uninstalling the package, BEAUti need to be restarted<br><br>Exiting now.</html>");
-                    System.exit(0);
+            for (int selRow : selectedRows) {
+                Package selPackage = getSelectedPackage(selRow);
+                if (selPackage != null) {
+                    try {
+                        if (selPackage.isInstalled()) {
+                            setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                            List<String> deps = getInstalledDependencyNames(selPackage, packageMap);
+
+                            if (deps.isEmpty()) {
+                                String result = uninstallPackage(selPackage, false, null);
+
+                                if (result != null) {
+                                    if (removedPackageNames.length() > 0)
+                                        removedPackageNames.append(", ");
+                                    removedPackageNames.append("'")
+                                            .append(selPackage.getName())
+                                            .append("'");
+                                }
+                            } else {
+                                throw new DependencyResolutionException("package " + selPackage
+                                        + " is used by the following packages: "
+                                + String.join(", ", deps) + "\n"
+                                + "Remove those packages first.");
+                            }
+
+                            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                        }
+
+                        resetPackages();
+                        dataTable.setRowSelectionInterval(selectedRows[0], selectedRows[0]);
+                    } catch (IOException | DependencyResolutionException ex) {
+                        JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
+                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    }
                 }
+            }
 
-                if (removedPackageNames.length()>0)
-                    JOptionPane.showMessageDialog(null, "Package(s) "
-                            + removedPackageNames.toString() + " removed. "
-                            + "Note that any changes to the BEAUti "
-                            + "interface will\n not appear until a "
-                            + "new document is created or BEAUti is "
-                            + "restarted.");
-            });
+            if (getToDeleteListFile().exists()) {
+                JOptionPane.showMessageDialog(frame,
+                        "<html><body><p style='width: 200px'>Removing packages on your machine requires BEAUti " +
+                                "to restart. Shutting down now.</p></body></html>");
+                System.exit(0);
+            }
+
+            if (removedPackageNames.length()>0)
+                JOptionPane.showMessageDialog(null, "Package(s) "
+                        + removedPackageNames.toString() + " removed. "
+                        + "Note that any changes to the BEAUti "
+                        + "interface will\n not appear until a "
+                        + "new document is created or BEAUti is "
+                        + "restarted.");
+        });
         box.add(uninstallButton);
-        
+
+        box.add(Box.createHorizontalGlue());
+
         JButton packageRepoButton = new JButton("Package repositories");
         packageRepoButton.addActionListener(e -> {
                 JPackageRepositoryDialog dlg = new JPackageRepositoryDialog(frame);
@@ -274,6 +310,8 @@ public class JPackageDialog extends JPanel {
                 resetPackages();
             });
         box.add(packageRepoButton);
+
+        box.add(Box.createGlue());
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> {
@@ -283,9 +321,7 @@ public class JPackageDialog extends JPanel {
             		setVisible(false);
             	}
             });
-        box.add(Box.createGlue());
         box.add(closeButton);
-        box.add(Box.createGlue());
 
         JButton button = new JButton("?");
         button.setToolTipText(getPackageUserDir() + " " + getPackageSystemDir());
@@ -300,45 +336,6 @@ public class JPackageDialog extends JPanel {
         return box;
     }
 
-    protected boolean doUninstall(StringBuilder removedPackageNames) {
-        int[] selectedRows = dataTable.getSelectedRows();
-        
-        boolean toDeleteFileExists = false;
-        for (int selRow : selectedRows) {
-            Package selPackage = getSelectedPackage(selRow);
-            if (selPackage != null) {
-                try {
-                    if (selPackage.isInstalled()) {
-//                    if (JOptionPane.showConfirmDialog(null, "Are you sure you want to uninstall " +
-//                    AddOnManager.URL2PackageName(package.url) + "?", "Uninstall Add On",
-//                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                        uninstallPackage(selPackage, false, null, packages, allDepCheckBox.isSelected());
-                        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-                        File toDeleteFile = getToDeleteListFile();
-                        if (toDeleteFile.exists()) {
-                            toDeleteFileExists = true;
-                        }
-
-                        if (removedPackageNames.length()>0)
-                            removedPackageNames.append(", ");
-                        removedPackageNames.append("'")
-                                .append(selPackage.packageName)
-                                .append("'");
-//                    }
-                    } else {
-                        //TODO ?
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Uninstall failed because: " + ex.getMessage());
-                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                }
-            }
-        }	
-        return toDeleteFileExists;
-	}
-
 	class DataTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 
@@ -351,23 +348,23 @@ public class JPackageDialog extends JPanel {
 
         @Override
 		public int getRowCount() {
-            return packages.size();
+            return packageList.size();
         }
 
         @Override
 		public Object getValueAt(int row, int col) {
-            Package aPackage = packages.get(row);
+            Package aPackage = packageList.get(row);
             switch (col) {
                 case 0:
-                    return aPackage.packageName;
+                    return aPackage.getName();
                 case 1:
-                    return aPackage.getStatus();
+                    return aPackage.getStatusString();
                 case 2:
-                    return aPackage.getLatestVersion();
+                    return aPackage.isAvailable() ? aPackage.getLatestVersion() : "not available";
                 case 3:
                     return aPackage.getDependenciesString();
                 case 4:
-                    return aPackage.description;
+                    return aPackage.getDescription();
                 default:
                     throw new IllegalArgumentException("unknown column, " + col);
             }
@@ -402,8 +399,8 @@ public class JPackageDialog extends JPanel {
         }
     }
 
-	
-	
+
+
 	public JDialog asDialog(JFrame frame) {
 		if (frame == null) {
 	        frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -434,4 +431,48 @@ public class JPackageDialog extends JPanel {
 			super.setCursor(cursor);
 		}
 	}
+
+    class PackageTable extends JTable {
+
+        Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
+
+        public PackageTable(TableModel dm) {
+            super(dm);
+        }
+
+        @Override
+        public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+            Component c =  super.prepareRenderer(renderer, row, column);
+
+            Font font = c.getFont();
+            font.getFamily();
+            Font boldFont = new Font(font.getName(), Font.BOLD | Font.ITALIC, font.getSize());
+
+            Package pkg = packageList.get(row);
+
+            if (! isRowSelected(row)) {
+                if (pkg.newVersionAvailable()) {
+                    if (pkg.isInstalled())
+                        c.setFont(boldFont);
+
+                    if (column == 2) {
+                        packagesToInstall.clear();
+                        packagesToInstall.put(pkg, pkg.getLatestVersion());
+                        try {
+                            populatePackagesToInstall(packageMap, packagesToInstall);
+                            c.setForeground(new Color(0, 150, 0));
+                        } catch (DependencyResolutionException ex) {
+                            c.setForeground(new Color(150, 0, 0));
+                        }
+                    } else {
+                        c.setForeground(Color.BLACK);
+                    }
+                } else {
+                    c.setForeground(Color.BLACK);
+                }
+            }
+
+            return c;
+        }
+    }
 }

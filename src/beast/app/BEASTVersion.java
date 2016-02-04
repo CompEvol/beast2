@@ -5,7 +5,7 @@ import beast.app.util.Version;
 /**
  * This class provides a mechanism for returning the version number of the
  * dr software. It relies on the administrator of the dr source using the
- * module tagging system in CVS. The method getVersionString() will return
+ * module tagging system in CVS. The method getVersion() will return
  * the version of dr under the following condition: <BR>
  * 1. the dr source has been checked out *by tag* before being packaged for
  * distribution.

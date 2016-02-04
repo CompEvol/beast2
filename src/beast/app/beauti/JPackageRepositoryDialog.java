@@ -47,17 +47,23 @@ public class JPackageRepositoryDialog extends JDialog {
         setTitle("BEAST 2 Package Repository Manager");
         
         // Get current list of URLs:
-        List<String> URLs;
+        List<URL> urls;
         try {
-            URLs = AddOnManager.getPackagesURL();
+            urls = AddOnManager.getRepositoryURLs();
         } catch (MalformedURLException exception) {
-            URLs = new ArrayList<>();
-            URLs.add(AddOnManager.PACKAGES_XML);
+            urls = new ArrayList<>();
+            try {
+                urls.add(new URL(AddOnManager.PACKAGES_XML));
+            } catch (MalformedURLException e) {
+                // Hard-coded URL is broken. Should never happen!
+                e.printStackTrace();
+            }
         }
 
         // Assemble table
-        final RepoTableModel repoTableModel = new RepoTableModel(URLs);
+        final RepoTableModel repoTableModel = new RepoTableModel(urls);
         final JTable repoTable = new JTable(repoTableModel);
+        repoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(repoTable);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
         
@@ -67,38 +73,41 @@ public class JPackageRepositoryDialog extends JDialog {
         // ADD URL
         JButton addURLButton = new JButton("Add URL");
         addURLButton.addActionListener(e -> {
-            String newURL = (String)JOptionPane.showInputDialog(frame,
+            String newURLString = (String)JOptionPane.showInputDialog(frame,
                     "Enter package repository URL",
                     "Add repository URL",JOptionPane.PLAIN_MESSAGE, null, null, "http://");
 
-            if (newURL == null)
+            if (newURLString == null)
                 return; // User canceled
 
-            if (!repoTableModel.URLs.contains(newURL)) {
-
-                // Check that URL is accessible:
-                try {
-                    URL url = new URL(newURL);
-                    if (url.getHost() == null)
-                        return;
-
-                    InputStream is = url.openStream();
-                    is.close();
-
-                } catch (MalformedURLException ex) {
-                    JOptionPane.showMessageDialog(frame, "Invalid URL.");
-                    return;
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(frame, "Could not access URL.");
-                    return;
-                }
-
-                // Add to table:
-                repoTableModel.URLs.add(newURL);
-                repoTableModel.fireTableDataChanged();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Repository already exists!");
+            URL newURL = null;
+            try {
+                newURL = new URL(newURLString);
+            } catch (MalformedURLException exception) {
+                JOptionPane.showMessageDialog(frame, "Invalid URL.");
+                return;
             }
+
+            if (repoTableModel.urls.contains(newURL)) {
+                JOptionPane.showMessageDialog(frame, "Repository already exists!");
+                return;
+            }
+
+            try {
+                if (newURL.getHost() == null)
+                    return;
+
+                InputStream is = newURL.openStream();
+                is.close();
+
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(frame, "Could not access URL.");
+                return;
+            }
+
+            // Add to table:
+            repoTableModel.urls.add(newURL);
+            repoTableModel.fireTableDataChanged();
         });
         box.add(addURLButton);
         
@@ -106,7 +115,7 @@ public class JPackageRepositoryDialog extends JDialog {
         JButton deleteURLButton = new JButton("Delete selected URL");
         deleteURLButton.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(frame, "Really delete this repository?") ==JOptionPane.YES_OPTION) {
-                repoTableModel.URLs.remove(repoTable.getSelectedRow());
+                repoTableModel.urls.remove(repoTable.getSelectedRow());
                 repoTableModel.fireTableDataChanged();
             }
         });
@@ -116,7 +125,7 @@ public class JPackageRepositoryDialog extends JDialog {
         // DONE
         JButton OKButton = new JButton("Done");
         OKButton.addActionListener(e -> {
-            AddOnManager.savePackageURLs(repoTableModel.URLs);
+            AddOnManager.saveRepositoryURLs(repoTableModel.urls);
             setVisible(false);
         });
         box.add(OKButton);
@@ -150,15 +159,15 @@ public class JPackageRepositoryDialog extends JDialog {
     class RepoTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		
-		public List<String> URLs;
+		public List<URL> urls;
 
-        public RepoTableModel(List<String> URLs) {
-            this.URLs = URLs;
+        public RepoTableModel(List<URL> urls) {
+            this.urls = urls;
         }
 
         @Override
         public int getRowCount() {
-            return URLs.size();
+            return urls.size();
         }
 
         @Override
@@ -173,7 +182,7 @@ public class JPackageRepositoryDialog extends JDialog {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return URLs.get(rowIndex);
+            return urls.get(rowIndex);
         }
     }
 

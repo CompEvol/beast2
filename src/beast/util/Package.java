@@ -1,18 +1,9 @@
 package beast.util;
 
 import static beast.util.AddOnManager.NOT_INSTALLED;
-import static beast.util.AddOnManager.getBeastDirectories;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.net.URL;
+import java.util.*;
 
 import beast.core.Description;
 
@@ -25,119 +16,165 @@ import beast.core.Description;
  */
 @Description("BEAUti package managed by package manager, also named as add-on previously")
 public class Package {
-    public String description = "";
-    public String url = "";
-    public String packageName = "";
-    public String installedVersion = ""; // get from local /version.xml
-    public String latestVersion = ""; // get from packages.xml
+    protected String packageName, description;
+    protected PackageVersion installedVersion;
+    protected Set<PackageDependency> installedVersionDeps;
+    protected TreeMap<PackageVersion, URL> availableVersionURLs;
+    protected TreeMap<PackageVersion, Set<PackageDependency>> availableVersionDeps;
 
-    public Set<PackageDependency> dependencies = new TreeSet<>();
+    public Package(String name) {
+        this.packageName = name;
+        this.description = "";
 
-    public Package(Element packageE) {
-        url = packageE.getAttribute("url");
-//        packageName = URL2PackageName(url);
-        packageName = packageE.getAttribute("name");
-        latestVersion = packageE.getAttribute("version");
-        description = packageE.getAttribute("description");
-
-        NodeList nodes = packageE.getElementsByTagName("depends");
-        setVersionDependencies(nodes);
+        availableVersionURLs = new TreeMap<>();
+        availableVersionDeps = new TreeMap<>();
     }
 
-    public void setVersionDependencies(NodeList nodes) {
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element depend_on = (Element) nodes.item(i);
-
-            installedVersion = getVersionDependencyFromLocal(packageName, dependencies);
-
-            if (installedVersion == null) {
-                installedVersion = "";
-                PackageDependency dep = getPackageDependency(packageName, depend_on);
-                dependencies.add(dep);
-            }
-        }
+    public String getName() {
+        return packageName;
     }
 
-    public String getVersionDependencyFromLocal(String packageName, Set<PackageDependency> dependencies) {
-        List<String> beastDirs = getBeastDirectories();
-
-        // gather dependency info for this package
-        for (String dirName : beastDirs) {
-            File f = new File(dirName + "/" + packageName);
-            if (f.exists()) {
-                File vf = new File(dirName + "/" + packageName + "/version.xml");
-
-                if (vf.exists()) {
-                    try {
-                        // parse installed version.xml
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        Document doc = factory.newDocumentBuilder().parse(vf);
-                        doc.normalize();
-                        // get name and version of package
-                        Element packageE = doc.getDocumentElement();
-//                        String packageName = packageE.getAttribute("name");
-                        String installedVersion = packageE.getAttribute("version");
-
-                        // get dependencies of add-n
-                        NodeList nodes = doc.getElementsByTagName("depends");
-                        for (int i = 0; i < nodes.getLength(); i++) {
-                            Element depend_on = (Element) nodes.item(i);
-
-                            PackageDependency dep = getPackageDependency(packageName, depend_on);
-                            dependencies.add(dep);
-                        }
-
-                        return installedVersion;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        return null;
+    public String getDescription() {
+        return description;
     }
 
-    private PackageDependency getPackageDependency(String packageName, Element depend_on) {
-        PackageDependency dep = new PackageDependency();
-        dep.packageName = packageName;
-        dep.dependson = depend_on.getAttribute("on");
-
-        String atLeastString = depend_on.getAttribute("atleast");
-        dep.setAtLest(atLeastString);
-        String atMostString = depend_on.getAttribute("atmost");
-        dep.setAtMost(atMostString);
-        return dep;
-    }
-
-    public boolean isInstalled() {
-        return installedVersion.trim().length() > 0;
-    }
-
-    public String getStatus() {
-        return isInstalled() ? installedVersion : NOT_INSTALLED;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
-     * the latest package info is online
-     * @return
+     * @return true iff package is available online.
      */
-    public String getLatestVersion() {
-        return latestVersion;
+    public boolean isAvailable() {
+        return !availableVersionURLs.isEmpty();
     }
 
-    public boolean dependsOn(String packageName) {
-        for (PackageDependency packageDependency : dependencies) {
-            if (packageDependency.compareTo(packageName) == 0)
+    /**
+     * @param version version of package
+     * @return true iff version of package is available
+     */
+    public boolean isAvailable(PackageVersion version) {
+        return availableVersionURLs.containsKey(version);
+    }
+
+    public void addAvailableVersion(PackageVersion version, URL url, Set<PackageDependency> dependencies) {
+        availableVersionURLs.put(version, url);
+        availableVersionDeps.put(version, dependencies);
+    }
+
+    public void setInstalled(PackageVersion version, Set<PackageDependency> dependencies) {
+        installedVersion = version;
+        installedVersionDeps = dependencies;
+    }
+
+    public PackageVersion getInstalledVersion() {
+        return installedVersion;
+    }
+
+    public boolean isInstalled() {
+        return installedVersion != null;
+    }
+
+    /**
+     * @return true if a newer version is available.
+     */
+    public boolean newVersionAvailable() {
+        return isAvailable() &&
+                (!isInstalled() || getLatestVersion().compareTo(getInstalledVersion()) > 0);
+    }
+
+    public Set<PackageDependency> getInstalledVersionDependencies() {
+        return installedVersionDeps;
+    }
+
+    public String getStatusString() {
+        return isInstalled() ? installedVersion.getVersionString() : NOT_INSTALLED;
+    }
+
+    /**
+     * @return latest available version of package.
+     */
+    public PackageVersion getLatestVersion() {
+        return availableVersionURLs.isEmpty()
+                ? null
+                : availableVersionURLs.lastKey();
+    }
+
+    /**
+     * @return URL corresponding to latest available version of package.
+     */
+    public URL getLatestVersionURL() {
+        return isAvailable()
+                ? availableVersionURLs.lastEntry().getValue()
+                : null;
+    }
+
+    /**
+     * Retrieve URL corresponding to particular available version of package.
+     *
+     * @param version version of package
+     * @return URL
+     */
+    public URL getVersionURL(PackageVersion version) {
+        return isAvailable(version)
+                ? availableVersionURLs.get(version)
+                : null;
+    }
+
+    public Set<PackageDependency> getLatestVersionDependencies() {
+        return isAvailable()
+                ? availableVersionDeps.lastEntry().getValue()
+                : null;
+    }
+
+    public Set<PackageDependency> getDependencies(PackageVersion version) {
+        return availableVersionDeps.get(version);
+    }
+
+    /**
+     * @return list of available package versions, sorted in order of decreasing version.
+     */
+    public List<PackageVersion> getAvailableVersions() {
+        List<PackageVersion> versionList = new ArrayList<>(availableVersionURLs.keySet());
+        Collections.sort(versionList);
+        Collections.reverse(versionList);
+        return versionList;
+    }
+
+    public boolean latestVersionDependsOn(Package pkg) {
+
+        if (!isAvailable())
+            throw new IllegalStateException("Requested latest available version dependencies " +
+                    "when there is no available version.");
+
+        for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
+            if (packageDependency.dependencyName.equals(pkg.packageName))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean installedVersionDependsOn(Package pkg) {
+
+        if (!isInstalled())
+            throw new IllegalStateException("Requested installed version dependencies " +
+                    "when there is no installed version.");
+
+        for (PackageDependency packageDependency : installedVersionDeps) {
+            if (packageDependency.dependencyName.equals(pkg.packageName))
                 return true;
         }
         return false;
     }
 
     public String getDependenciesString() {
+
+        if (availableVersionDeps.isEmpty())
+            return "";
+
         String depString = "";
-        for (PackageDependency packageDependency : dependencies) {
-            String s = packageDependency.dependson;
+        for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
+            String s = packageDependency.dependencyName;
             if (!s.equalsIgnoreCase("beast2")) {
                 depString +=  s + ", ";
             }
@@ -150,14 +187,14 @@ public class Package {
 
     @Override
 	public String toString() {
-        return description;
+        return packageName;
     }
 
     public String toHTML() {
         String html = "<html>";
         html += "<h1>" + packageName + "</h1>";
-        html += "<p>Installed version: " + (isInstalled() ? installedVersion : "not installed") + "</p>";
-        html += "<p>Latestversion: " + latestVersion + "</p>";
+        html += "<p>Installed version: " + getStatusString() + "</p>";
+        html += "<p>Latestversion: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
         html += "<p>" + description +"</p>";
         html += "</html>";
         return html;
