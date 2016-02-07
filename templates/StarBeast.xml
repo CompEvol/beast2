@@ -397,6 +397,7 @@
 			<log idref="speciescoalescent"/>
 			<log idref="birthRate.t:Species"/>
 			<log idref="YuleModel.t:Species"/>
+			<log idref="popMean"/>
             <log id='TreeHeight.Species' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:Species'/>
         </logger>
 
