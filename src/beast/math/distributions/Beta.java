@@ -51,4 +51,8 @@ public class Beta extends ParametricDistribution {
         return m_dist;
     }
 
+    @Override
+    public double getMean() {
+    	return m_dist.getAlpha() / (m_dist.getAlpha() + m_dist.getBeta());
+    }
 } // class Beta

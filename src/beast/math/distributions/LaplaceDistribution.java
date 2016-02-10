@@ -89,5 +89,10 @@ public class LaplaceDistribution extends ParametricDistribution {
             return Math.log(c) - (Math.abs(x - mu) / scale);
         }
     } // class LaplaceImpl
+    
+    @Override
+    public double getMean() {
+    	return mu;
+    }
 
 } // class

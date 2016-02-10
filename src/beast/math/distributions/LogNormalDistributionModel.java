@@ -132,7 +132,10 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     			return offsetInput.get();
     		}
     	} else {
-    		throw new RuntimeException("Not implemented yet");
+    		double s = SParameterInput.get().getValue();
+    		double m = MParameterInput.get().getValue();
+    		return Math.exp(m + s * s/2.0);
+    		//throw new RuntimeException("Not implemented yet");
     	}
     }
 }

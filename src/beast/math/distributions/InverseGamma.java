@@ -95,4 +95,9 @@ public class InverseGamma extends ParametricDistribution {
     } // class OneOnXImpl
 
 
+    @Override
+    public double getMean() {
+    	return betaInput.get().getValue() / (alphaInput.get().getValue() - 1.0);
+    }
+    
 } // class InverseGamma
