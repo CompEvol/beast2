@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
+import beast.core.*;
 import beast.core.Input.Validate;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
@@ -25,7 +21,11 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.RandomTree;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.math.distributions.MRCAPrior;
 import beast.util.ClusterTree;
 
 /**
@@ -88,9 +88,26 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
     @Override
     public void initStateNodes() throws Exception {
 
+        final Set<BEASTInterface> treeOutputs = speciesTreeInput.get().getOutputs();
+        List<MRCAPrior> calibrations = new ArrayList<>();
+        for (final Object plugin : treeOutputs ) {
+            if( plugin instanceof MRCAPrior ) {
+                calibrations.add((MRCAPrior) plugin);
+            }
+        }
+
         if( hasCalibrations ) {
+            if( calibrations.size() > 0 ) {
+                throw new IllegalArgumentException("Not implemented: mix of calibrated yule and MRCA priors: " +
+                        "place all priors in the calibrated Yule");
+            }
             initWithCalibrations();
         } else {
+            if( calibrations.size() > 0 )  {
+                initWithMRCACalibrations(calibrations);
+                return;
+            }
+
             final Method method = initMethod.get();
 
             switch( method ) {
@@ -392,6 +409,25 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         randomInitGeneTrees(rootHeight);
 
         cYule.initAndValidate();
+    }
+
+    private void initWithMRCACalibrations(List<MRCAPrior> calibrations) throws Exception {
+        final Tree spTree = speciesTreeInput.get();
+        final RandomTree rnd = new RandomTree();
+        rnd.setInputValue("taxonset", spTree.getTaxonset());
+
+        for( final MRCAPrior cal : calibrations ) {
+          rnd.setInputValue("constraint", cal);
+        }
+        ConstantPopulation pf = new ConstantPopulation();
+        pf.setInputValue("popSize", new RealParameter("1.0"));
+
+        rnd.setInputValue("populationModel", pf);
+        rnd.initAndValidate();
+        spTree.assignFromWithoutID((Tree)rnd);
+
+        final double rootHeight = spTree.getRoot().getHeight();
+        randomInitGeneTrees(rootHeight);
     }
 
     @Override
