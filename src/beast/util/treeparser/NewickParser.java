@@ -1,24 +1,13 @@
-// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/Newick.g4 by ANTLR 4.5.1
+// Generated from Newick.g4 by ANTLR 4.5.1
 package beast.util.treeparser;
-import java.util.List;
-
-import org.antlr.v4.runtime.NoViableAltException;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.RuntimeMetaData;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.Vocabulary;
-import org.antlr.v4.runtime.VocabularyImpl;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NewickParser extends Parser {
@@ -99,7 +88,7 @@ public class NewickParser extends Parser {
 		public NodeContext node() {
 			return getRuleContext(NodeContext.class,0);
 		}
-		public TerminalNode EOF() { return getToken(Recognizer.EOF, 0); }
+		public TerminalNode EOF() { return getToken(NewickParser.EOF, 0); }
 		public TreeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -270,7 +259,7 @@ public class NewickParser extends Parser {
 				setState(45);
 				match(T__4);
 				setState(46);
-				_localctx.length = number();
+				((PostContext)_localctx).length = number();
 				}
 			}
 
@@ -423,7 +412,7 @@ public class NewickParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(64);
-			_localctx.attribKey = match(STRING);
+			((AttribContext)_localctx).attribKey = match(STRING);
 			setState(65);
 			match(T__7);
 			setState(66);

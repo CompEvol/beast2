@@ -1,4 +1,4 @@
-// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/Newick.g4 by ANTLR 4.5.1
+// Generated from Newick.g4 by ANTLR 4.5.1
 package beast.util.treeparser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
