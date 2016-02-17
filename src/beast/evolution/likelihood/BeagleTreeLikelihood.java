@@ -81,6 +81,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     boolean m_bUseAmbiguities, m_bUseTipLikelihoods;
     int m_nStateCount;
     int m_nNodeCount;
+    
+    private int invariantCategory = -1;
 
     @Override
     public void initAndValidate() throws Exception {
@@ -115,7 +117,31 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         eigenCount = 1;//this.branchSubstitutionModel.getEigenCount();
 
-        this.categoryCount = m_siteModel.getCategoryCount();
+        double[] categoryRates = m_siteModel.getCategoryRates(null);
+        // check for invariant rates category
+        if (m_siteModel.hasPropInvariantCategory) {
+	        for (int i = 0; i < categoryRates.length; i++) {
+	        	if (categoryRates[i] == 0) {
+	        		proportionInvariant = m_siteModel.getRateForCategory(i, null);
+	                int stateCount = dataInput.get().getMaxStateCount();
+	                int patterns = dataInput.get().getPatternCount();
+	                calcConstantPatternIndices(patterns, stateCount);
+	                invariantCategory = i;
+	                
+	                double [] tmp = new double [categoryRates.length - 1];
+	                for (int k = 0; k < invariantCategory; k++) {
+	                	tmp[k] = categoryRates[k];
+	                }
+	                for (int k = invariantCategory + 1; k < categoryRates.length; k++) {
+	                	tmp[k-1] = categoryRates[k];
+	                }
+	                categoryRates = tmp;
+	        		break;
+	        	}
+	        }
+        }        
+
+        this.categoryCount = m_siteModel.getCategoryCount() - (invariantCategory >= 0 ? 1 : 0);
         tipCount = treeInput.get().getLeafNodeCount();
 
         internalNodeCount = m_nNodeCount - tipCount;
@@ -321,22 +347,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         // some subst models (e.g. WAG) never become dirty, so set up subst models right now
         setUpSubstModel();
         // set up sitemodel
-        double[] categoryRates = m_siteModel.getCategoryRates(null);
+        
         beagle.setCategoryRates(categoryRates);
 
-
-//            m_fProportionInvariant = m_siteModel.getProportianInvariant();
-//            double [] proportionInvariantCorrection = new double[m_nPatternCount * m_nStateCount];
-//            if (!SiteModel.g_bUseOriginal && m_fProportionInvariant > 0) {
-//            	calcConstantPatternIndices(m_nPatternCount, m_nStateCount);
-//            	for (int i : m_iConstantPattern) {
-//            		proportionInvariantCorrection[i] = m_fProportionInvariant;
-//            	}
-//            }
-//            beagle.setProportionInvariantCorrection(proportionInvariantCorrection);
         return true;
     }
 
+    
     private static List<Integer> parseSystemPropertyIntegerArray(String propertyName) {
         List<Integer> order = new ArrayList<>();
         String r = System.getProperty(propertyName);
@@ -614,6 +631,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
         if (updateSiteModel) {
             double[] categoryRates = m_siteModel.getCategoryRates(null);
+            if (constantPattern != null) {
+	            double [] tmp = new double [categoryRates.length - 1];
+	            for (int k = 0; k < invariantCategory; k++) {
+	            	tmp[k] = categoryRates[k];
+	            }
+	            for (int k = invariantCategory + 1; k < categoryRates.length; k++) {
+	            	tmp[k-1] = categoryRates[k];
+	            }
+	            categoryRates = tmp;
+	        }
             beagle.setCategoryRates(categoryRates);
         }
 
@@ -650,6 +677,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             int rootIndex = partialBufferHelper.getOffsetIndex(root.getNr());
 
             double[] categoryWeights = m_siteModel.getCategoryProportions(null);
+            if (constantPattern != null) {
+	            double [] tmp = new double [categoryWeights.length - 1];
+	            for (int k = 0; k < invariantCategory; k++) {
+	            	tmp[k] = categoryWeights[k];
+	            }
+	            for (int k = invariantCategory + 1; k < categoryWeights.length; k++) {
+	            	tmp[k-1] = categoryWeights[k];
+	            }
+	            categoryWeights = tmp;
+            }
             double[] frequencies = substitutionModel.getFrequencies();
 
             int cumulateScaleBufferIndex = Beagle.NONE;
@@ -682,7 +719,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 // Need to correct for ascertainedSitePatterns
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
                 logL = getAscertainmentCorrectedLogLikelihood(dataInput.get(),
-                        patternLogLikelihoods, dataInput.get().getWeights());
+                        patternLogLikelihoods, dataInput.get().getWeights(), frequencies);
+            } else if (invariantCategory >= 0) {
+                beagle.getSiteLogLikelihoods(patternLogLikelihoods);
+                int [] patternWeights = dataInput.get().getWeights();
+                proportionInvariant = m_siteModel.getProportionInvariant();
+                for (int k : constantPattern) {
+                	int i = k / m_nStateCount;
+                	int j = k % m_nStateCount;
+                	logL += patternWeights[i] * (Math.log(Math.exp(patternLogLikelihoods[i]) + proportionInvariant * frequencies[j]) - patternLogLikelihoods[i]);
+                }
             }
 
             if (Double.isNaN(logL) || Double.isInfinite(logL)) {
@@ -748,7 +794,17 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     private double getAscertainmentCorrectedLogLikelihood(Alignment patternList,
                                                           double[] patternLogLikelihoods,
-                                                          int[] patternWeights) {
+                                                          int[] patternWeights,
+                                                          double [] frequencies) {
+    	if (constantPattern != null) {
+	        proportionInvariant = m_siteModel.getProportionInvariant();
+	        for (int k : constantPattern) {
+	        	int i = k / m_nStateCount;
+	        	int j = k % m_nStateCount;
+	        	patternLogLikelihoods[i] = (Math.log(Math.exp(patternLogLikelihoods[i]) + proportionInvariant * frequencies[j]));
+	        }
+    	}
+    	
         double logL = 0.0;
         double ascertainmentCorrection = patternList.getAscertainmentCorrection(patternLogLikelihoods);
         for (int i = 0; i < patternCount; i++) {
