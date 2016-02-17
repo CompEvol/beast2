@@ -2,15 +2,20 @@ package beast.app.beastapp;
 
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 
 import javax.swing.JOptionPane;
 
+import beast.app.BEASTVersion;
+import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.util.Log;
 
 
@@ -36,17 +41,28 @@ public class BeastLauncher {
 	 **/
 	static protected void loadBEASTJars() throws IOException, NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		BeastLauncher clu = new BeastLauncher();
+
+		// first try beast from the package_user_dir/lib/beast.jar
+		String beastUserDir = getPackageUserDir();
+		String pathDelimiter = isWindows() ? "\\\\" : "/";
+		beastUserDir +=  pathDelimiter + "beast" + pathDelimiter;
+		String beastJar = beastUserDir + "lib";
+		boolean foundOne = checkForBEAST(new File(beastJar), clu);
+		
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
 		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
 		Log.warning.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
-		boolean foundOne = false;
 		while ((!foundOne) && (jarDir0 != null)) { // && jarDir0.exists() &&
 											// jarDir0.isDirectory()) {
 			foundOne = checkForBEAST(jarDir0, clu);
 			foundOne = foundOne ||
 			    checkForBEAST((isWindows() ? new File(jarDir0.getAbsolutePath() + "\\lib") : new File(jarDir0.getAbsolutePath() + "/lib")), clu);
+			
+			if (foundOne) {
+				createBeastPackage(jarDir0, pathDelimiter);
+			}
 			
 			jarDir0 = jarDir0.getParentFile();
 		}
@@ -60,6 +76,38 @@ public class BeastLauncher {
 		// initialise beast.jar
         Method method = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
         method.invoke(null);
+
+	}
+
+	private static void createBeastPackage(File jarDir0, String pathDelimiter) {
+		try {
+			// create package user dir, if it not already exists
+	        File dir = new File(getPackageUserDir() + pathDelimiter + "beast" + pathDelimiter + "lib");
+	        if (!dir.exists()) {
+	            if (!dir.mkdirs()) {
+	            	// cannot create dir, let alone create a beast package
+	            	return;
+	            }
+	        }
+	        
+	        File beastJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.jar");
+	        File target = new File(dir + pathDelimiter + "beast.jar");
+	        Files.copy(beastJar.toPath(), target.toPath());
+	        
+	        String version = "<addon name='beast' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
+	        		"</addon>";
+	        FileWriter outfile = new FileWriter(getPackageUserDir() + pathDelimiter + "beast" + pathDelimiter + "version.xml");
+	        outfile.write(version);
+	        outfile.close();
+
+	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.src.jar");
+	        File srcTarget = new File(dir + pathDelimiter + "beast.src.jar");
+	        Files.copy(beastSrcJar.toPath(), srcTarget.toPath());
+
+		} catch (Exception e) {
+			// do net let exceptions hold up launch of beast & friends
+			e.printStackTrace();
+		}
 
 	}
 
@@ -138,4 +186,18 @@ public class BeastLauncher {
 		return true;
 	}
 
+    public static String getPackageUserDir() {
+        
+        if (System.getProperty("beast.user.package.dir") != null)
+            return System.getProperty("beast.user.package.dir");
+        
+        if (Utils.isWindows()) {
+            return System.getProperty("user.home") + "\\BEAST\\" + (new BEASTVersion()).getMajorVersion();
+        }
+        if (Utils.isMac()) {
+            return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + (new BEASTVersion()).getMajorVersion();
+        }
+        // Linux and unices
+        return System.getProperty("user.home") + "/.beast/" + (new BEASTVersion()).getMajorVersion();
+    }
 }
