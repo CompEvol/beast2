@@ -342,6 +342,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             final MRCAPrior p = calibrations.get(k);
             if( p.isMonophyleticInput.get() ) {
                 final TaxonSet taxonSet = p.taxonsetInput.get();
+                if (taxonSet == null) {
+                	throw new IllegalArgumentException("Something is wrong with constraint " + p.getID() + " -- a taxonset must be specified if a monophyletic constraint is enforced.");
+                }
                 final Set<String> usedTaxa = new HashSet<>();
                 usedTaxa.addAll(taxonSet.asStringList());
                 /* int c = */ traverse(root, usedTaxa, taxonSet.getTaxonCount(), new int[1]);
