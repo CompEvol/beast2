@@ -45,7 +45,7 @@ public class BeastLauncher {
 		// first try beast from the package_user_dir/lib/beast.jar
 		String beastUserDir = getPackageUserDir();
 		String pathDelimiter = isWindows() ? "\\\\" : "/";
-		beastUserDir +=  pathDelimiter + "beast" + pathDelimiter;
+		beastUserDir +=  pathDelimiter + "BEAST" + pathDelimiter;
 		String beastJar = beastUserDir + "lib";
 		boolean foundOne = checkForBEAST(new File(beastJar), clu);
 		
@@ -82,7 +82,7 @@ public class BeastLauncher {
 	private static void createBeastPackage(File jarDir0, String pathDelimiter) {
 		try {
 			// create package user dir, if it not already exists
-	        File dir = new File(getPackageUserDir() + pathDelimiter + "beast" + pathDelimiter + "lib");
+	        File dir = new File(getPackageUserDir() + pathDelimiter + "BEAST" + pathDelimiter + "lib");
 	        if (!dir.exists()) {
 	            if (!dir.mkdirs()) {
 	            	// cannot create dir, let alone create a beast package
@@ -94,7 +94,7 @@ public class BeastLauncher {
 	        File target = new File(dir + pathDelimiter + "beast.jar");
 	        Files.copy(beastJar.toPath(), target.toPath());
 	        
-	        String version = "<addon name='beast' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
+	        String version = "<addon name='BEAST' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
 	        		"</addon>";
 	        FileWriter outfile = new FileWriter(getPackageUserDir() + pathDelimiter + "beast" + pathDelimiter + "version.xml");
 	        outfile.write(version);

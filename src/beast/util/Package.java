@@ -194,7 +194,7 @@ public class Package {
         String html = "<html>";
         html += "<h1>" + packageName + "</h1>";
         html += "<p>Installed version: " + getStatusString() + "</p>";
-        html += "<p>Latestversion: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
+        html += "<p>Latest version: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
         html += "<p>" + description +"</p>";
         html += "</html>";
         return html;
