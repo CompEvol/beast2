@@ -1,5 +1,7 @@
 package beast.evolution.substitutionmodel;
 
+import java.lang.reflect.InvocationTargetException;
+
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
@@ -36,7 +38,7 @@ public class GTR extends GeneralSubstitutionModel {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (ratesInput.get() != null) {
             throw new IllegalArgumentException("the rates attribute should not be used. Use the individual rates rateAC, rateCG, etc, instead.");
         }
@@ -48,7 +50,12 @@ public class GTR extends GeneralSubstitutionModel {
             throw new IllegalArgumentException("Frequencies has wrong size. Expected 4, but got " + nrOfStates);
         }
 
-        eigenSystem = createEigenSystem();
+        try {
+			eigenSystem = createEigenSystem();
+		} catch (SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[nrOfStates * (nrOfStates - 1)];
         storedRelativeRates = new double[nrOfStates * (nrOfStates - 1)];
@@ -61,7 +68,7 @@ public class GTR extends GeneralSubstitutionModel {
         rateGT = getParameter(rateGTInput);
     }
 
-    private Function getParameter(Input<Function> parameterInput) throws Exception {
+    private Function getParameter(Input<Function> parameterInput) {
         if (parameterInput.get() != null) {
             return parameterInput.get();
         }

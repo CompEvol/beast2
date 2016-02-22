@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.math.MathException;
+
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Distribution;
@@ -93,7 +95,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
         type = correctionTypeInput.get();
@@ -278,7 +280,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         }
     }
 
-    public Tree compatibleInitialTree() throws Exception {
+    public Tree compatibleInitialTree() throws MathException {
         final int calCount = orderedCalibrations.length;
         final double[] lowBound = new double[calCount];
         final double[] cladeHeight = new double[calCount];

@@ -62,7 +62,7 @@ public class HKY extends SubstitutionModel.NucleotideBase {
     protected boolean updateMatrix = true;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         kappaInput.get().setBounds(Math.max(0.0, kappaInput.get().getLower()), kappaInput.get().getUpper());
 

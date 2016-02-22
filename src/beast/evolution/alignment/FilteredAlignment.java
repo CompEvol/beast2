@@ -46,7 +46,7 @@ public class FilteredAlignment extends Alignment {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         parseFilterSpec();
         calcFilter();
         Alignment data = alignmentInput.get();

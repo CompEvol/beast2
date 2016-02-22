@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -8,8 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -18,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
@@ -65,7 +70,8 @@ public class BeautiSubTemplate extends BEASTObject {
     String shortClassName;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
+    	try {
         _class = Class.forName(classInput.get());
         shortClassName = classInput.get().substring(classInput.get().lastIndexOf('.') + 1);
         instance = _class.newInstance();
@@ -73,8 +79,14 @@ public class BeautiSubTemplate extends BEASTObject {
         mainID = mainInput.get();
         // sanity check: make sure the XML is parseable
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast xmlns:beauti='http://beast2.org'>" + xml + "</beast>")));
-        xml = processDoc(doc);
+        Document doc;
+		try {
+			doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader("<beast xmlns:beauti='http://beast2.org'>" + xml + "</beast>")));
+	        xml = processDoc(doc);
+		} catch (SAXException | IOException | ParserConfigurationException | TransformerException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+       
         
         // make sure there are no comments in the XML: this screws up any XML when saved to file
         if (xml.contains("<!--")) {
@@ -89,6 +101,9 @@ public class BeautiSubTemplate extends BEASTObject {
         xMLInput.setValue("<![CDATA[" + xml + "]]>", this);
 
         connectors = connectorsInput.get();
+    	} catch (IllegalAccessException | ClassNotFoundException | InstantiationException e) {
+    		throw new IllegalArgumentException(e.getMessage());
+    	}
 //		int connectors = connections.get().size();
 //		srcIDs = new String[connectors];
 //		targetIDs = new String[connectors];
@@ -108,7 +123,7 @@ public class BeautiSubTemplate extends BEASTObject {
      * pick up items that should be translated to BeautiConnectors
      * Remove any connector related code from DOM and return resulting XML as String
      */
-    private String processDoc(Document doc) throws Exception {
+    private String processDoc(Document doc) throws TransformerException {
         // find top level beast element
         final NodeList nodes = doc.getElementsByTagName("*");
         if (nodes == null || nodes.getLength() == 0) {

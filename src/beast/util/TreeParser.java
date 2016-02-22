@@ -112,7 +112,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * Ensure the class behaves properly, even when inputs are not specified.
      */
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	boolean sortNodesAlphabetically = false;
 
         if (dataInput.get() != null) {

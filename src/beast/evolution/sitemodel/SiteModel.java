@@ -66,7 +66,7 @@ public class SiteModel extends SiteModelInterface.Base {
     boolean useBeast1StyleGamma;
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	useBeast1StyleGamma = true; //useBeast1StyleGammaInput.get();
         muParameter = muParameterInput.get();
         if (muParameter == null) {

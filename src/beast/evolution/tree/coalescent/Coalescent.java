@@ -28,7 +28,7 @@ public class Coalescent extends TreeDistribution {
     TreeIntervals intervals;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         intervals = treeIntervalsInput.get();
         if (intervals == null) {
             throw new IllegalArgumentException("Expected treeIntervals to be specified");
@@ -41,7 +41,7 @@ public class Coalescent extends TreeDistribution {
      * do the actual calculation *
      */
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
 
         logP = calculateLogLikelihood(intervals, popSizeInput.get());
 

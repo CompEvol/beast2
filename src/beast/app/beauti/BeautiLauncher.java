@@ -1,6 +1,9 @@
 package beast.app.beauti;
 
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import beast.app.beastapp.BeastLauncher;
 import beast.app.util.Utils6;
 
@@ -12,7 +15,7 @@ import beast.app.util.Utils6;
  * **/
 public class BeautiLauncher extends BeastLauncher {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		Utils6.startSplashScreen();
 		if (javaVersionCheck("BEAUti")) {
 			loadBEASTJars();

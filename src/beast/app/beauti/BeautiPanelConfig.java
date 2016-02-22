@@ -93,7 +93,7 @@ public class BeautiPanelConfig extends BEASTObject {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         pathComponents = pathInput.get().split("/");
         if (pathComponents[0].equals("")) {
             pathComponents = new String[0];

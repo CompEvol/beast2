@@ -31,7 +31,7 @@ public class MergeDataWith extends BEASTObject {
 	File templateFile;
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		templateFile = new File(templateFileInput.get());
 		if (!(templateFile.exists())) {
 			throw new RuntimeException("Template file " + templateFileInput.get() + " does not exist"); 

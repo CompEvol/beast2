@@ -20,7 +20,7 @@ public interface Distance {
 	    public static final double MAX_DISTANCE = 5.0;
 	
 	    @Override
-	    public void initAndValidate() throws Exception {
+	    public void initAndValidate() {
 	        // nothing to do
 	    }
 	

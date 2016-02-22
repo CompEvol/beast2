@@ -64,7 +64,7 @@ public class BayesianSkyline extends TreeDistribution {
     // }
 
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         if (treeInput.get() != null) {
             throw new IllegalArgumentException("only tree intervals (not tree) should not be specified");
         }
@@ -172,7 +172,7 @@ public class BayesianSkyline extends TreeDistribution {
      * a demographic model.
      */
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         if (!m_bIsPrepared) {
             prepare();
         }

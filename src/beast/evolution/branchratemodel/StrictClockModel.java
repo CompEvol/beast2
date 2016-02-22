@@ -16,7 +16,7 @@ public class StrictClockModel extends BranchRateModel.Base {
     RealParameter muParameter;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         muParameter = meanRateInput.get();
         if (muParameter != null) {
             muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());

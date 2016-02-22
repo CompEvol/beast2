@@ -107,7 +107,7 @@ public class TN93 extends SubstitutionModel.NucleotideBase {
 
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
         kappa1Variable.get().setBounds(Math.max(0.0, kappa1Variable.get().getLower()), kappa1Variable.get().getUpper());

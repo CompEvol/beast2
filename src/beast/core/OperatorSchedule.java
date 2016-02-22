@@ -65,7 +65,7 @@ public class OperatorSchedule extends BEASTObject {
     boolean detailedRejection = false;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         transform = transformInput.get();
         autoOptimise = autoOptimiseInput.get();
         autoOptimizeDelay = autoOptimizeDelayInput.get();

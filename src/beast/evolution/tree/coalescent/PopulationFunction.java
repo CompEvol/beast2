@@ -125,7 +125,7 @@ public interface PopulationFunction extends UnivariateRealFunction {
 
         // general functions
         @Override
-		public void initAndValidate() throws Exception {
+		public void initAndValidate() {
             prepare();
         }
 

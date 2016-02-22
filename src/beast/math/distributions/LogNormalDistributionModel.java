@@ -24,7 +24,7 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     LogNormalImpl dist = new LogNormalImpl(0, 1);
 
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         hasMeanInRealSpace = hasMeanInRealSpaceInput.get();
         if (MParameterInput.get() != null) {
             if (MParameterInput.get().getLower() == null) {

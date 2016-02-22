@@ -91,7 +91,7 @@ public class Node extends BEASTObject {
     public Node() {
     }
 
-    public Node(final String id) throws Exception {
+    public Node(final String id) {
         setID(id);
         initAndValidate();
     }
@@ -101,7 +101,7 @@ public class Node extends BEASTObject {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // do nothing
     }
 
@@ -651,7 +651,7 @@ public class Node extends BEASTObject {
      *
      * @param scale scale factor
      */
-    public void scale(final double scale) throws Exception {
+    public void scale(final double scale) {
         startEditing();
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf() && !isFake()) {

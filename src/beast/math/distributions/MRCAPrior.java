@@ -59,7 +59,7 @@ public class MRCAPrior extends Distribution {
     boolean initialised = false;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         dist = distInput.get();
         tree = treeInput.get();
         final List<String> taxaNames = new ArrayList<>();
@@ -183,7 +183,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
     	if (!initialised) {
     		initialise();
     	}

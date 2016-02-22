@@ -86,7 +86,7 @@ public interface Parameter<T> extends Function {
 
         @SuppressWarnings("unchecked")
 		@Override
-        public void initAndValidate() throws Exception {
+        public void initAndValidate() {
             T[] valuesString = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
 
             int dimension = Math.max(dimensionInput.get(), valuesString.length);

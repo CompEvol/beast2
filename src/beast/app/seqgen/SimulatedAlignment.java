@@ -1,5 +1,6 @@
 package beast.app.seqgen;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import beast.core.Description;
@@ -74,7 +75,7 @@ public class SimulatedAlignment extends Alignment {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         m_tree = m_treeInput.get();
         m_siteModel = m_pSiteModelInput.get();
         m_branchRateModel = m_pBranchRateModelInput.get();
@@ -90,9 +91,14 @@ public class SimulatedAlignment extends Alignment {
         
         // Write simulated alignment to disk if requested:
         if (m_outputFileName != null) {
-            PrintStream pstream = new PrintStream(m_outputFileName);
-            pstream.println(new XMLProducer().toRawXML(this));
-            pstream.close();
+            PrintStream pstream;
+			try {
+				pstream = new PrintStream(m_outputFileName);
+	            pstream.println(new XMLProducer().toRawXML(this));
+	            pstream.close();
+			} catch (FileNotFoundException e) {
+				throw new IllegalArgumentException(e.getMessage());
+			}
         }
         
         super.initAndValidate();
@@ -106,7 +112,7 @@ public class SimulatedAlignment extends Alignment {
      * @return Sequence
      * @throws Exception
      */
-    Sequence intArray2Sequence(int[] seq, Node node) throws Exception {
+    Sequence intArray2Sequence(int[] seq, Node node) {
         DataType dataType = m_data.get().getDataType();
         String seqString = dataType.state2string(seq);
 //    	StringBuilder seq = new StringBuilder();
@@ -132,7 +138,7 @@ public class SimulatedAlignment extends Alignment {
      *         leaves of the tree
      * @throws Exception
      */
-    public void simulate() throws Exception {
+    public void simulate() {
         Node root = m_tree.getRoot();
 
 
@@ -165,7 +171,7 @@ public class SimulatedAlignment extends Alignment {
      * @param alignment
      * @throws Exception
      */
-    void traverse(Node node, int[] parentSequence, int[] category) throws Exception {
+    void traverse(Node node, int[] parentSequence, int[] category) {
         for (int childIndex = 0; childIndex < 2; childIndex++) {
             Node child = (childIndex == 0 ? node.getLeft() : node.getRight());
             for (int i = 0; i < m_categoryCount; i++) {

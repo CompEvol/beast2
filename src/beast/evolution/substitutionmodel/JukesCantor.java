@@ -28,7 +28,7 @@ public class JukesCantor extends SubstitutionModel.Base {
     EigenDecomposition eigenDecomposition;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         double[] eval = new double[]{0.0, -1.3333333333333333, -1.3333333333333333, -1.3333333333333333};
         double[] evec = new double[]{1.0, 2.0, 0.0, 0.5, 1.0, -2.0, 0.5, 0.0, 1.0, 2.0, 0.0, -0.5, 1.0, -2.0, -0.5, 0.0};
         double[] ivec = new double[]{0.25, 0.25, 0.25, 0.25, 0.125, -0.125, 0.125, -0.125, 0.0, 1.0, 0.0, -1.0, 1.0, 0.0, -1.0, 0.0};

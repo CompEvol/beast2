@@ -58,14 +58,14 @@ public class BeautiConnector extends BEASTObject {
 
     public BeautiConnector() {}
 
-    public BeautiConnector(String sourceID, String targetID, String inputName, String condition) throws Exception {
+    public BeautiConnector(String sourceID, String targetID, String inputName, String condition) {
 		initByName("srcID", sourceID, "targetID", targetID, "inputName", inputName, 
 				"if", condition);
     }
 
 
 	@Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         sourceID = sourceIDInput.get();
         targetID = targetIDInput.get();
         targetInput = inputNameInput.get();
@@ -119,8 +119,13 @@ public class BeautiConnector extends BEASTObject {
         	String fullMethod = methodnput.get();
         	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
         	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
-        	Class<?> class_ = Class.forName(className);
-        	method = class_.getMethod(methodName, BeautiDoc.class);
+        	Class<?> class_;
+			try {
+				class_ = Class.forName(className);
+	        	method = class_.getMethod(methodName, BeautiDoc.class);
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+				throw new IllegalArgumentException(e.getMessage());
+			}
             isRegularConnector = false;
         }
 

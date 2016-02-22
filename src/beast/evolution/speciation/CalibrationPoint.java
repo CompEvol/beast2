@@ -32,7 +32,7 @@ public class CalibrationPoint extends BEASTObject {
     public CalibrationPoint() {}
 
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         t = taxonsetInput.get();
         forPar = forParentInput.get();
         pd = distInput.get();

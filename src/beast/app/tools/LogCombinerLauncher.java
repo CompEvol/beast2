@@ -1,5 +1,8 @@
 package beast.app.tools;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import beast.app.beastapp.BeastLauncher;
 
 /** Launches log-combiner 
@@ -7,7 +10,7 @@ import beast.app.beastapp.BeastLauncher;
  * **/
 public class LogCombinerLauncher extends BeastLauncher {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("LogCombiner")) {
 			loadBEASTJars();
 			LogCombiner.main(args);

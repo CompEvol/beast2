@@ -73,7 +73,7 @@ public class Tree extends StateNode implements TreeInterface {
     protected boolean traitsProcessed = false;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (m_initial.get() != null && !(this instanceof StateNodeInitialiser)) {
         	throw new RuntimeException("initial-input should be specified for tree that is not a StateNodeInitialiser");
 //            final Tree other = m_initial.get();
@@ -617,7 +617,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-    public int scale(final double scale) throws Exception {
+    public int scale(final double scale) {
         root.scale(scale);
         return getInternalNodeCount()- getDirectAncestorNodeCount();
     }

@@ -48,7 +48,7 @@ public class SpeciesTreePrior extends TreeDistribution {
     private Gamma gamma4Prior;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         popFunction = popFunctionInput.get();
         popSizesBottom = popSizesBottomInput.get();
         popSizesTop = popSizesTopInput.get();

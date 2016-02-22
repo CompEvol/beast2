@@ -57,7 +57,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * If x is multidimensional, the components of x are assumed to be independent,
      * so the sum of log probabilities of all elements of x is returned as the prior.
      */
-    public double calcLogP(final Function fun) throws Exception {
+    public double calcLogP(final Function fun) {
         final double offset = offsetInput.get();
         double logP = 0;
         for (int i = 0; i < fun.getDimension(); i++) {
@@ -72,7 +72,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
      * This implementation is only suitable for univariate distributions.
      * Must be overwritten for multivariate ones.
      */
-    public Double[][] sample(final int size) throws Exception {
+    public Double[][] sample(final int size) throws MathException {
         final Double[][] sample = new Double[size][];
         for (int i = 0; i < sample.length; i++) {
             final double p = Randomizer.nextDouble();

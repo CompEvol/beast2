@@ -28,13 +28,13 @@ public class Prior extends Distribution {
     protected ParametricDistribution dist;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         dist = distInput.get();
         calculateLogP();
     }
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         Function x = m_x.get();
         if (x instanceof RealParameter || x instanceof IntegerParameter) {
         	// test that parameter is inside its bounds

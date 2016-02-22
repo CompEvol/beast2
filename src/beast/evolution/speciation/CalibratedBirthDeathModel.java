@@ -104,7 +104,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
         type = correctionTypeInput.get();

@@ -50,7 +50,7 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     //
 
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         if (popSizeParameterInput.get() != null) {
             popSizeParameterInput.get().setBounds(
             		Math.max(0.0, popSizeParameterInput.get().getLower()), 

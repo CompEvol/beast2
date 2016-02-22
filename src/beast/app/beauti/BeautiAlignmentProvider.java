@@ -44,7 +44,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 
 	
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 	}
 	
 	/** 

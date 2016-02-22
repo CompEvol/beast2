@@ -2400,7 +2400,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     }
 
     /** create taxonset, one taxon for each sequence in the alignment

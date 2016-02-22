@@ -31,7 +31,7 @@ public class TipDatesScaler extends TreeOperator {
     int[] taxonIndices;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         scaleFactor = scaleFactorInput.get();
 
         // determine taxon set to choose from

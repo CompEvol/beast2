@@ -210,7 +210,7 @@ public class Alignment extends Map<String> {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         if (sequenceInput.get().size() == 0 && defaultInput.get().size() == 0) {
             throw new IllegalArgumentException("Either a sequence input must be specified, or a map of strings must be specified");
@@ -236,11 +236,16 @@ public class Alignment extends Map<String> {
             // seems to spend forever in there??
             List<String> dataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String dataTypeName : dataTypes) {
-                DataType dataType = (DataType) Class.forName(dataTypeName).newInstance();
-                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
-                    m_dataType = dataType;
-                    break;
-                }
+                DataType dataType;
+				try {
+					dataType = (DataType) Class.forName(dataTypeName).newInstance();
+	                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
+	                    m_dataType = dataType;
+	                    break;
+	                }
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
             }
         }
 

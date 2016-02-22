@@ -27,7 +27,7 @@ public class StandardData extends DataType.Base {
 
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
         if (maxNrOfStatesInput.get() != null && maxNrOfStatesInput.get() != 0) {
             stateCount = maxNrOfStatesInput.get();
         } else {
@@ -88,7 +88,7 @@ public class StandardData extends DataType.Base {
 
 
     @Override
-    public List<Integer> string2state(String data) throws Exception {
+    public List<Integer> string2state(String data) {
         List<Integer> sequence;
         sequence = new ArrayList<>();
         // remove spaces

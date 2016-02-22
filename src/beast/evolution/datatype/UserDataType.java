@@ -52,7 +52,7 @@ public class UserDataType extends Base {
     }
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         stateCount = stateCountInput.get();
         codeLength = codeLengthInput.get();
 

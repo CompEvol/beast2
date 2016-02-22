@@ -67,7 +67,7 @@ public class JointOperator extends Operator {
     }
     
     @Override
-    public List<StateNode> listStateNodes() throws Exception {
+    public List<StateNode> listStateNodes() {
         List<StateNode> stateNodeList = new ArrayList<>();
         
         for (Operator op : operatorsInput.get())

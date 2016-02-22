@@ -114,7 +114,7 @@ public class Logger extends BEASTObject {
     int startSample;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         fileName = fileNameInput.get();
 

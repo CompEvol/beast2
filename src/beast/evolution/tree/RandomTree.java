@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.math.MathException;
+
 import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Input;
@@ -107,7 +109,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         taxa = new LinkedHashSet<>();
         if (taxaInput.get() != null) {
@@ -150,7 +152,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     @SuppressWarnings("unchecked")
 	@Override
-    public void initStateNodes() throws Exception {
+    public void initStateNodes() {
         // find taxon sets we are dealing with
         taxonSets = new ArrayList<>();
         m_bounds = new ArrayList<>();
@@ -219,8 +221,12 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	        		for (int i = beastObjects.size() - 1; i >= 0 ; i--) {
 	        			beastObjects.get(i).initAndValidate();
 	        		}
-	                bounds.lower = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
-	                bounds.upper = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();
+	                try {
+						bounds.lower = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
+		                bounds.upper = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();
+					} catch (MathException e) {
+						Log.warning.println("At RandomTree::initStateNodes, bound on MRCAPrior could not be set " + e.getMessage());
+					}
 	            }
 	
 	            if (prior.isMonophyleticInput.get()) {

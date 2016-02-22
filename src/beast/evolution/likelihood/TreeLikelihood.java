@@ -119,7 +119,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     List<Integer> constantPattern = null;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // sanity check: alignment should have same #taxa as tree
         if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
             throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
@@ -342,7 +342,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     int X = 100;
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         if (beagle != null) {
             logP = beagle.calculateLogP();
             return logP;
@@ -380,7 +380,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         return logP;
     }
 
-    void calcLogP() throws Exception {
+    void calcLogP() {
         logP = 0.0;
         if (useAscertainedSitePatterns) {
             final double ascertainmentCorrection = dataInput.get().getAscertainmentCorrection(patternLogLikelihoods);
@@ -395,7 +395,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     }
 
     /* Assumes there IS a branch rate model as opposed to traverse() */
-    int traverse(final Node node) throws Exception {
+    int traverse(final Node node) {
 
         int update = (node.isDirty() | hasDirt);
 

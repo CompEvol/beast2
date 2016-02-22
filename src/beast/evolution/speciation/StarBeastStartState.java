@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.math.MathException;
+
 import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
@@ -79,14 +81,14 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
     private boolean hasCalibrations;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // what does this do and is it dangerous to call it or not to call it at the start or at the end??????
         super.initAndValidate();
         hasCalibrations = calibratedYule.get() != null;
     }
 
     @Override
-    public void initStateNodes() throws Exception {
+    public void initStateNodes() {
 
         final Set<BEASTInterface> treeOutputs = speciesTreeInput.get().getOutputs();
         List<MRCAPrior> calibrations = new ArrayList<>();
@@ -101,7 +103,11 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 throw new IllegalArgumentException("Not implemented: mix of calibrated yule and MRCA priors: " +
                         "place all priors in the calibrated Yule");
             }
-            initWithCalibrations();
+            try {
+				initWithCalibrations();
+			} catch (MathException e) {
+				throw new IllegalArgumentException(e);
+			}
         } else {
             if( calibrations.size() > 0 )  {
                 initWithMRCACalibrations(calibrations);
@@ -167,7 +173,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
     }
 
 
-    private void fullInit() throws Exception {
+    private void fullInit() {
         // Build gene trees from  alignments
 
         final Function muInput = this.muInput.get();
@@ -358,7 +364,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         }
     }
 
-    private void randomInit() throws Exception {
+    private void randomInit() {
         double lam = 1;
         final RealParameter lambda = birthRate.get();
         if( lambda != null ) {
@@ -380,7 +386,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
 //        }
     }
 
-    private void initWithCalibrations() throws Exception {
+    private void initWithCalibrations() throws MathException {
         final CalibratedYuleModel cYule = calibratedYule.get();
         final Tree spTree = (Tree) cYule.treeInput.get();
 
@@ -411,7 +417,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         cYule.initAndValidate();
     }
 
-    private void initWithMRCACalibrations(List<MRCAPrior> calibrations) throws Exception {
+    private void initWithMRCACalibrations(List<MRCAPrior> calibrations) {
         final Tree spTree = speciesTreeInput.get();
         final RandomTree rnd = new RandomTree();
         rnd.setInputValue("taxonset", spTree.getTaxonset());

@@ -85,7 +85,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private int invariantCategory = -1;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
         if (forceJava) {
         	return;
@@ -93,7 +93,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         initialize();
     }
 
-    private boolean initialize() throws Exception {
+    private boolean initialize() {
         m_nNodeCount = treeInput.get().getNodeCount();
         m_bUseAmbiguities = m_useAmbiguities.get();
         m_bUseTipLikelihoods = m_useTipLikelihoods.get();
@@ -570,7 +570,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * @return the log likelihood.
      */
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
 
         if (patternLogLikelihoods == null) {
             patternLogLikelihoods = new double[patternCount];

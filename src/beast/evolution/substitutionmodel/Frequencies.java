@@ -59,7 +59,7 @@ public class Frequencies extends CalculationNode {
 
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         update();
         double sum = getSumOfFrequencies(getFreqs());
         // sanity check

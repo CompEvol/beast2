@@ -36,7 +36,19 @@ public class JPackageDialog extends JPanel {
     JFrame frame;
     PackageTable dataTable = null;
 
-    TreeMap<String, Package> packageMap = new TreeMap<>(String::compareToIgnoreCase);
+    TreeMap<String, Package> packageMap = new TreeMap<>((s1,s2)->{
+    	if (s1.equals(AddOnManager.BEAST_PACKAGE)) {
+    		if (s2.equals(AddOnManager.BEAST_PACKAGE)) {
+    			return 0;
+    		}
+    		return -1;
+    	}
+    	if (s2.equals(AddOnManager.BEAST_PACKAGE)) {
+    		return 1;
+    	}
+    	return s1.compareToIgnoreCase(s2);
+    });
+
     List<Package> packageList = null;
 
     boolean isRunning;
@@ -433,6 +445,7 @@ public class JPackageDialog extends JPanel {
 	}
 
     class PackageTable extends JTable {
+		private static final long serialVersionUID = 1L;
 
         Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
 

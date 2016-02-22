@@ -34,7 +34,7 @@ public class NodeReheight extends TreeOperator {
     int nrOfSpecies;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         /** maps gene taxa names to species number **/
         final Map<String, Integer> taxonMap = new HashMap<>();
         final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();

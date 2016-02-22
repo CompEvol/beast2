@@ -43,9 +43,8 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      *         Note that some efficiency can be gained by testing whether the
      *         Distribution is dirty, and if not, call getCurrentLogP() instead
      *         of recalculating.
-     * @throws Exception an exception
      */
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0;
         return logP;
     }
@@ -82,7 +81,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // nothing to do
     }
 
@@ -157,7 +156,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * 
      * @return logP if not stochastic, zero otherwise
      */
-	public double getNonStochasticLogP() throws Exception {
+	public double getNonStochasticLogP() {
 		if (isStochastic()) {
 			return 0;
 		} else {

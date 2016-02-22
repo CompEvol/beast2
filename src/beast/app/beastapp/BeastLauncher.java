@@ -27,7 +27,7 @@ import beast.core.util.Log;
  * **/
 public class BeastLauncher {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("BEAST")) {
 			loadBEASTJars();
 			BeastMain.main(args);
@@ -104,6 +104,9 @@ public class BeastLauncher {
 	        File srcTarget = new File(dir + pathDelimiter + "beast.src.jar");
 	        Files.copy(beastSrcJar.toPath(), srcTarget.toPath());
 
+	        // TODO: include templates?
+	        // if so, how to prevent clashes with templates in package and in installation dir?
+	        // TODO: what about examples?
 		} catch (Exception e) {
 			// do net let exceptions hold up launch of beast & friends
 			e.printStackTrace();

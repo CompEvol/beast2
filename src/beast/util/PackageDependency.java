@@ -1,6 +1,5 @@
 package beast.util;
 
-import static beast.util.AddOnManager.beastVersion;
 
 /*
  * File PackageDependency.java
@@ -32,7 +31,6 @@ import static beast.util.AddOnManager.beastVersion;
  *
  */
 
-import beast.app.util.Version;
 import beast.core.Description;
 
 /**
@@ -46,7 +44,11 @@ public class PackageDependency {
     public PackageDependency(String dependencyName,
                              PackageVersion minimumVersion,
                              PackageVersion maximumVersion) {
+    	if (dependencyName.equals("beast2")) {
+    		dependencyName = AddOnManager.BEAST_PACKAGE;
+    	}
         this.dependencyName = dependencyName;
+        
         atLeast = minimumVersion;
         atMost = maximumVersion;
     }

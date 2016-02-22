@@ -67,7 +67,7 @@ public class BirthDeathGernhard08Model extends YuleModel {
             new Input<>("sampleProbability", "sample probability, rho in birth/death model");
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         final String typeName = typeInput.get().toLowerCase();
         if (typeName.equals("unscaled")) {

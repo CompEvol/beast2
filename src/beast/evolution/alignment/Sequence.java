@@ -58,21 +58,21 @@ public class Sequence extends BEASTObject {
      * @param sequence
      * @throws Exception
      */
-    public Sequence(String taxon, String sequence) throws Exception {
+    public Sequence(String taxon, String sequence) {
         taxonInput.setValue(taxon, this);
         dataInput.setValue(sequence, this);
         initAndValidate();
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	if (uncertainInput.get() != null)  {
     		uncertain = uncertainInput.get();    		
     		if (uncertain) initProbabilities();    		
     	}
     } // initAndValidate
     
-    public void initProbabilities() throws Exception {
+    public void initProbabilities() {
     	   	
     	String data = dataInput.get();
         // remove spaces
@@ -91,7 +91,7 @@ public class Sequence extends BEASTObject {
 		}
     }
 
-    public List<Integer> getSequence(DataType dataType) throws Exception {
+    public List<Integer> getSequence(DataType dataType) {
         
     	List<Integer> sequence;
     	if (uncertain) {
