@@ -852,7 +852,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     // log likelihood and clades heights
 
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
         out.print(getID() + "\t");
         if (calcCalibrations) {
             for (final CalibrationPoint cp : orderedCalibrations) {

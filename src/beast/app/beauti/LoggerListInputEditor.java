@@ -43,7 +43,7 @@ public class LoggerListInputEditor extends ListInputEditor {
     	super.addSingleItem(beastObject);
     }
     
-    public InputEditor createFileNameEditor() throws Exception {
+    public InputEditor createFileNameEditor() {
         final Input<?> input = currentLogger.fileNameInput;
         StringInputEditor fileNameEditor = new StringInputEditor(doc);
         fileNameEditor.init(input, currentLogger, -1, ExpandOption.FALSE, true);

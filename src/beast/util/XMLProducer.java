@@ -27,6 +27,7 @@ package beast.util;
 
 
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -52,6 +54,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -449,7 +452,7 @@ public class XMLProducer extends XMLParser {
     }
 
     // compress parts into plates
-    String findPlates(String xml) throws Exception {
+    String findPlates(String xml) throws SAXException, IOException, ParserConfigurationException, TransformerException  {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
         doc.normalize();
@@ -774,9 +777,10 @@ public class XMLProducer extends XMLParser {
      * produce elements for a beast object with name name, putting results in buf.
      * It tries to create XML conforming to the XML transformation rules (see XMLParser)
      * that is moderately readable.
+     * @throws ClassNotFoundException 
      */
     @SuppressWarnings("rawtypes")
-    void beastObjectToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws Exception {
+    void beastObjectToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws ClassNotFoundException {
         // determine element name, default is input, otherswise find one of the defaults
         String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
@@ -910,9 +914,9 @@ public class XMLProducer extends XMLParser {
      * @param beastObject: beast object to produce this input XML for
      * @param buf:    gets XML results are appended
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
-     * @throws Exception
+     * @throws ClassNotFoundException 
      */
-    void inputToXML(Input<?> input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws Exception {
+    void inputToXML(Input<?> input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws ClassNotFoundException {
     	//if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name

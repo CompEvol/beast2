@@ -252,7 +252,7 @@ public abstract class Base extends JPanel implements InputEditor {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void setValue(Object o) throws Exception {
+	protected void setValue(Object o) {
     	if (itemNr < 0) {
     		m_input.setValue(o, m_beastObject);
     	} else {
@@ -380,7 +380,7 @@ public abstract class Base extends JPanel implements InputEditor {
 
     /* Recurse in any of the input beastObjects
       * and validate its inputs */
-    void validateRecursively(Input<?> input, Set<Input<?>> done) throws Exception {
+    void validateRecursively(Input<?> input, Set<Input<?>> done) {
         if (done.contains(input)) {
             // this prevent cycles to lock up validation
             return;

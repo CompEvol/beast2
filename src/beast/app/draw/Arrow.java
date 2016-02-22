@@ -98,7 +98,7 @@ public class Arrow extends Shape {
     }
 
     /* set all parameters properly at end of dragging when mouse is released */
-    public boolean setHead(InputShape shape, List<Shape> objects, Document doc) throws Exception {
+    public boolean setHead(InputShape shape, List<Shape> objects, Document doc) {
         m_sHeadID = shape.getID();
         m_headShape = shape;
         adjustCoordinates();

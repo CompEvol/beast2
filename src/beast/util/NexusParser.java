@@ -125,7 +125,7 @@ public class NexusParser {
         }
     } // parseFile
 
-    private void parseTreesBlock(final BufferedReader fin) throws Exception {
+    private void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
         String str = fin.readLine().trim();
@@ -288,7 +288,7 @@ public class NexusParser {
     /**
      * parse calibrations block and create TraitSet *
      */
-    TraitSet parseCalibrationsBlock(final BufferedReader fin) throws Exception {
+    TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
         final TraitSet traitSet = new TraitSet();
         traitSet.traitNameInput.setValue("date", traitSet);
         String str;
@@ -337,7 +337,7 @@ public class NexusParser {
     /**
      * parse data block and create Alignment *
      */
-    public Alignment parseDataBlock(final BufferedReader fin) throws Exception {
+    public Alignment parseDataBlock(final BufferedReader fin) throws IOException {
 
         final Alignment alignment = new Alignment();
 
@@ -708,7 +708,7 @@ public class NexusParser {
      * end;
      * 
      */
-    void parseAssumptionsBlock(final BufferedReader fin) throws Exception {
+    void parseAssumptionsBlock(final BufferedReader fin) throws IOException {
         String str;
         do {
             str = nextLine(fin);

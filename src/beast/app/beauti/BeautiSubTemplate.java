@@ -12,7 +12,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -254,14 +253,14 @@ public class BeautiSubTemplate extends BEASTObject {
         this.doc = doc;
     }
 
-    void removeSubNet(BeautiSubTemplate template, PartitionContext context) throws Exception {
+    void removeSubNet(BeautiSubTemplate template, PartitionContext context)  {
         // disconnect all connection points in the template
         for (BeautiConnector connector : template.connectors) {
             doc.disconnect(connector, context);
         }
     }
     
-    void removeSubNet(Object o) throws Exception {
+    void removeSubNet(Object o)  {
         if (o == null) {
             // nothing to do
             return;
@@ -289,7 +288,7 @@ public class BeautiSubTemplate extends BEASTObject {
         removeSubNet(template, context);
     }
 
-    public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface beastObject, Input<?> input, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, BEASTInterface beastObject, Input<?> input, boolean init)  {
         removeSubNet(input.get());
         if (xml == null) {
             // this is the NULL_TEMPLATE
@@ -301,7 +300,7 @@ public class BeautiSubTemplate extends BEASTObject {
         return o;
     }
 
-    public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int item, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, List<BEASTInterface> list, int item, boolean init)  {
         removeSubNet(list.get(item));
         if (xml == null) {
             // this is the NULL_TEMPLATE
@@ -313,7 +312,7 @@ public class BeautiSubTemplate extends BEASTObject {
         return o;
     }
 
-    public BEASTInterface createSubNet(PartitionContext partition, boolean init) throws Exception {
+    public BEASTInterface createSubNet(PartitionContext partition, boolean init)  {
         if (xml == null) {
             // this is the NULL_TEMPLATE
             return null;

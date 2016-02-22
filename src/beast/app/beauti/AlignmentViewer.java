@@ -49,7 +49,7 @@ public class AlignmentViewer extends JPanel {
     /**
      * constructor processes alignment and sets up table with first column fixed *
      */
-    public AlignmentViewer(Alignment data) throws Exception {
+    public AlignmentViewer(Alignment data) {
         m_alignment = data;
         int siteCount = data.getSiteCount();
         int taxonCount = data.getTaxonCount();

@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +115,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 		}
 	}
 
-    public InputEditor createMutationRateEditor() throws Exception {
+    public InputEditor createMutationRateEditor() {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
         final Input<?> input = sitemodel.muParameterInput;
         ParameterInputEditor mutationRateEditor = new ParameterInputEditor(doc);
@@ -123,7 +124,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         return mutationRateEditor;
     }
 	
-	public InputEditor createGammaCategoryCountEditor() throws Exception {
+	public InputEditor createGammaCategoryCountEditor() {
     	SiteModel sitemodel = ((SiteModel) m_input.get()); 
         final Input<?> input = sitemodel.gammaCategoryCount;
         categoryCountEditor = new IntegerInputEditor(doc) {
@@ -175,14 +176,14 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         }
     }
 
-    public InputEditor createShapeEditor() throws Exception {
+    public InputEditor createShapeEditor() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final Input<?> input = ((SiteModel) m_input.get()).shapeParameterInput;
         gammaShapeEditor = doc.getInputEditorFactory().createInputEditor(input, (BEASTInterface) m_input.get(), doc);
         gammaShapeEditor.getComponent().setVisible(((SiteModel) m_input.get()).gammaCategoryCount.get() >= 2);
         return gammaShapeEditor;
     }
 
-    public InputEditor createProportionInvariantEditor() throws Exception {
+    public InputEditor createProportionInvariantEditor() {
         final Input<?> input = ((SiteModel) m_input.get()).invarParameterInput;
         inVarEditor = new ParameterInputEditor(doc) {
 			private static final long serialVersionUID = 1L;

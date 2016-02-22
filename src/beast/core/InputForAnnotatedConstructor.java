@@ -151,10 +151,10 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
      * or it this types differs, just assign as string.
      *
      * @param valueString value representation
-     * @throws Exception when all conversions fail
+     * @throws IllegalArgumentException when all conversions fail
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setStringValue(final String valueString) throws Exception {
+    private void setStringValue(final String valueString) {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
         if (value instanceof List<?>) {
             List list = (List) get();

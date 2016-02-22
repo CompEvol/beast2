@@ -7,6 +7,7 @@ package beast.app.beauti;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +19,12 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
@@ -326,7 +329,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return null;
 	}
 
-	private static BEASTInterface parseBeast1XML(String ID, String xml) throws Exception {
+	private static BEASTInterface parseBeast1XML(String ID, String xml) throws SAXException, IOException, ParserConfigurationException  {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		Document doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
 		doc.normalize();

@@ -20,6 +20,7 @@ package beast.evolution.tree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,9 +221,9 @@ public class TreeTraceAnalysis {
          * get list of trees from file
          * @param treeFile
          * @return
-         * @throws Exception
+         * @throws IOException 
          */
-        public static List<Tree> getTrees (File treeFile) throws Exception {
+        public static List<Tree> getTrees (File treeFile) throws IOException {
             NexusParser parser = new NexusParser();
             parser.parseFile(treeFile);
             return parser.trees;

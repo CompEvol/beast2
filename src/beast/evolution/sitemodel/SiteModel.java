@@ -345,13 +345,12 @@ public class SiteModel extends SiteModelInterface.Base {
      * @param shape shape parameter
      * @param scale scale parameter
      * @return icdf value
-     * @throws Exception if arguments out of range
      */
-    protected double GammaDistributionQuantile(double y, double shape, double scale) throws Exception {
+    protected double GammaDistributionQuantile(double y, double shape, double scale) {
         return 0.5 * scale * pointChi2(y, 2.0 * shape);
     }
 
-    double pointChi2(double prob, double v) throws Exception {
+    double pointChi2(double prob, double v) {
         // Returns z so that Prob{x<z}=prob where x is Chi2 distributed with df
         // = v
         // RATNEST FORTRAN by
@@ -463,9 +462,8 @@ public class SiteModel extends SiteModelInterface.Base {
      * @param x        argument
      * @param lnGammaA precomputed lnGamma(a)
      * @return function value
-     * @throws Exception if illegal arguments given
      */
-    double GammaFunctionincompleteGammaP(double a, double x, double lnGammaA) throws Exception {
+    double GammaFunctionincompleteGammaP(double a, double x, double lnGammaA) {
         return incompleteGamma(x, a, lnGammaA);
     }
 
@@ -478,9 +476,8 @@ public class SiteModel extends SiteModelInterface.Base {
      * @param alpha          shape parameter
      * @param ln_gamma_alpha the log gamma function for alpha
      * @return the incomplete gamma ratio
-     * @throws Exception if illegal arguments given
      */
-    double incompleteGamma(double x, double alpha, double ln_gamma_alpha) throws Exception {
+    double incompleteGamma(double x, double alpha, double ln_gamma_alpha) {
         // (1) series expansion     if (alpha>x || x<=1)
         // (2) continued fraction   otherwise
         // RATNEST FORTRAN by
@@ -558,7 +555,7 @@ public class SiteModel extends SiteModelInterface.Base {
         return gin;
     }
 
-    double NormalDistributionQuantile(double z, double m, double sd) throws Exception {
+    double NormalDistributionQuantile(double z, double m, double sd) {
         return m + Math.sqrt(2.0) * sd * ErrorFunctionInverseErf(2.0 * z - 1.0);
     }
 
@@ -567,9 +564,8 @@ public class SiteModel extends SiteModelInterface.Base {
      *
      * @param z argument
      * @return function value
-     * @throws Exception argument out of range
      */
-    double ErrorFunctionInverseErf(double z) throws Exception {
+    double ErrorFunctionInverseErf(double z) {
         return ErrorFunctionPointNormal(0.5 * z + 0.5) / Math.sqrt(2.0);
     }
 
@@ -578,7 +574,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
     // Returns z so that Prob{x<z}=prob where x ~ N(0,1) and (1e-12) < prob<1-(1e-12)
 
-    double ErrorFunctionPointNormal(double prob) throws Exception {
+    double ErrorFunctionPointNormal(double prob) {
         // Odeh RE & Evans JO (1974) The percentage points of the normal distribution.
         // Applied Statistics 22: 96-97 (AS70)
 

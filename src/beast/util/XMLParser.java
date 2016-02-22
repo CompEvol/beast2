@@ -294,9 +294,12 @@ public class XMLParser {
     /**
      * extract all elements (runnable or not) from an XML fragment.
      * Useful for retrieving all non-runnable elements when a template
-     * is instantiated by Beauti *
+     * is instantiated by Beauti 
+     * @throws ParserConfigurationException 
+     * @throws IOException 
+     * @throws SAXException *
      */
-    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> idMap, final boolean initialise) throws Exception {
+    public List<BEASTInterface> parseTemplate(final String xml, final HashMap<String, BEASTInterface> idMap, final boolean initialise) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         needsInitialisation = initialise;
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -427,7 +430,7 @@ public class XMLParser {
      * Tree tree = (Tree) new XMLParser().parseBareFragment("<tree spec='beast.util.TreeParser' newick='((1:1,3:1):1,2:2)'/>");
      * to create a simple tree.
      */
-    public BEASTInterface parseBareFragment(String xml, final boolean initialise) throws Exception {
+    public BEASTInterface parseBareFragment(String xml, final boolean initialise) throws XMLParserException {
         // get rid of XML processing instruction
         xml = xml.replaceAll("<\\?xml[^>]*>", "");
         if (xml.contains("<beast")) {
@@ -437,7 +440,7 @@ public class XMLParser {
         }
     }
 
-    public List<BEASTInterface> parseBareFragments(final String xml, final boolean initialise) throws Exception {
+    public List<BEASTInterface> parseBareFragments(final String xml, final boolean initialise) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         needsInitialisation = initialise;
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -469,8 +472,6 @@ public class XMLParser {
     /**
      * parse BEAST file as DOM document
      * @throws XMLParserException 
-     *
-     * @throws Exception
      */
     public void parse() throws XMLParserException {
         // find top level beast element
@@ -498,7 +499,7 @@ public class XMLParser {
      * Throw exception when a duplicate id is encountered
      *
      * @param node
-     * @throws Exception
+     * @throws XMLParserException
      */
     void initIDNodeMap(final Node node) throws XMLParserException {
         final String id = getID(node);
@@ -1139,11 +1140,11 @@ public class XMLParser {
         }
     }
 
-    public static String getID(final Node node) { // throws Exception {
+    public static String getID(final Node node) { 
         return getAttribute(node, "id");
     } // getID
 
-    public static String getIDRef(final Node node) {// throws Exception {
+    public static String getIDRef(final Node node) {
         return getAttribute(node, "idref");
     } // getIDRef
 
@@ -1151,7 +1152,7 @@ public class XMLParser {
      * get string value of attribute with given name
      * as opposed to double or integer value (see methods below) *
      */
-    public static String getAttribute(final Node node, final String attName) { // throws Exception {
+    public static String getAttribute(final Node node, final String attName) { 
         final NamedNodeMap atts = node.getAttributes();
         if (atts == null) {
             return null;
@@ -1168,7 +1169,7 @@ public class XMLParser {
     /**
      * get integer value of attribute with given name *
      */
-    public static int getAttributeAsInt(final Node node, final String attName) { //throws Exception {
+    public static int getAttributeAsInt(final Node node, final String attName) { 
         final String att = getAttribute(node, attName);
         if (att == null) {
             return -1;
@@ -1179,7 +1180,7 @@ public class XMLParser {
     /**
      * get double value of attribute with given name *
      */
-    public static double getAttributeAsDouble(final Node node, final String attName) { // throws Exception {
+    public static double getAttributeAsDouble(final Node node, final String attName) { 
         final String att = getAttribute(node, attName);
         if (att == null) {
             return Double.MAX_VALUE;

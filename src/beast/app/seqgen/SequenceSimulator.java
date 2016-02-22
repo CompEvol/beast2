@@ -3,7 +3,9 @@ package beast.app.seqgen;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
+import beast.util.XMLParserException;
 import beast.util.XMLProducer;
 
 
@@ -94,7 +97,7 @@ public class SequenceSimulator extends beast.core.Runnable {
     }
 
     @Override
-    public void run() throws Exception {
+    public void run() throws IllegalArgumentException, IllegalAccessException, IOException, XMLParserException {
     	for (int i = 0; i < iterationsInput.get(); i++) {
 	        Alignment alignment = simulate();
 	        
@@ -117,9 +120,9 @@ public class SequenceSimulator extends beast.core.Runnable {
      * @param seq  integer representation of the sequence
      * @param node used to determine taxon for sequence
      * @return Sequence
-     * @throws Exception
+     * @
      */
-    Sequence intArray2Sequence(int[] seq, Node node) throws Exception {
+    Sequence intArray2Sequence(int[] seq, Node node)  {
         DataType dataType = m_data.get().getDataType();
         String seqString = dataType.state2string(seq);
 //    	StringBuilder seq = new StringBuilder();
@@ -144,9 +147,9 @@ public class SequenceSimulator extends beast.core.Runnable {
      *
      * @return alignment containing randomly generated sequences for the nodes in the
      *         leaves of the tree
-     * @throws Exception
+     * @
      */
-    public Alignment simulate() throws Exception {
+    public Alignment simulate()  {
         Node root = m_tree.getRoot();
 
 
@@ -181,9 +184,9 @@ public class SequenceSimulator extends beast.core.Runnable {
      * @param parentSequence randomly generated sequence of the parent node
      * @param category       array of categories for each of the sites
      * @param alignment
-     * @throws Exception
+     * @
      */
-    void traverse(Node node, int[] parentSequence, int[] category, Alignment alignment) throws Exception {
+    void traverse(Node node, int[] parentSequence, int[] category, Alignment alignment)  {
         for (int childIndex = 0; childIndex < 2; childIndex++) {
             Node child = (childIndex == 0 ? node.getLeft() : node.getRight());
             for (int i = 0; i < m_categoryCount; i++) {
@@ -238,7 +241,7 @@ public class SequenceSimulator extends beast.core.Runnable {
     /**
      * find a treelikelihood object among the plug-ins by recursively inspecting plug-ins *
      */
-    static TreeLikelihood getTreeLikelihood(BEASTInterface beastObject) throws Exception {
+    static TreeLikelihood getTreeLikelihood(BEASTInterface beastObject)  {
         for (BEASTInterface beastObject2 : beastObject.listActiveBEASTObjects()) {
             if (beastObject2 instanceof TreeLikelihood) {
                 return (TreeLikelihood) beastObject2;

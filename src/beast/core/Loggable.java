@@ -17,9 +17,8 @@ public interface Loggable {
      * or Nexus tree preamble
      *
      * @param out log stream
-     * @throws Exception
      */
-    void init(PrintStream out) throws Exception;
+    void init(PrintStream out);
 
     /**
      * log this sample for current state to PrintStream,

@@ -56,10 +56,9 @@ public class BayesianSkyline extends TreeDistribution {
     // * @param populationSize
     // * @param groupSizes
     // * @param tree
-    // * @throws Exception
     // */
     // public void init(RealParameter populationSize, IntegerParameter
-    // groupSizes, Tree tree) throws Exception {
+    // groupSizes, Tree tree) {
     // super.init(populationSize, groupSizes, tree);
     // }
 

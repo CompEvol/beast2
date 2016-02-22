@@ -26,7 +26,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.RandomTree;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.math.distributions.MRCAPrior;
 import beast.util.ClusterTree;
 

@@ -213,7 +213,7 @@ public class JSONParser {
 	 * Beauti *
 	 */
 	// public List<BEASTObject> parseTemplate(String xml, HashMap<String, BEASTObject>
-	// idMap, boolean initialise) throws Exception {
+	// idMap, boolean initialise) {
 	// m_bInitialize = initialise;
 	// // parse the XML file into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -305,7 +305,6 @@ public class JSONParser {
 	 *  {"part":"Nuc"}
 	 *  {"otherpart":"Nuc.$(m)"}
 	 *  {"yetotherpart":"xyzNuc"}
-	 * @throws Exception 
 	 * 
 	 */
 	void processPlates(JSONObject node) throws IOException, JSONException, JSONParserException {
@@ -413,7 +412,7 @@ public class JSONParser {
 	 /**
 	 * Parse an JSON fragment representing a list of BEASTObjects
 	 */
-    public List<Object> parseFragment(final String json, final boolean initialise) throws Exception {
+    public List<Object> parseFragment(final String json, final boolean initialise) throws JSONParserException, JSONException {
         this.initialise = initialise;
 		doc = new JSONObject(json);
 
@@ -482,7 +481,7 @@ public class JSONParser {
 	// }
 	//
 	// public List<BEASTObject> parseBareFragments(String xml, boolean initialise)
-	// throws Exception {
+    //{
 	// m_bInitialize = initialise;
 	// // parse the XML fragment into a DOM document
 	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -515,7 +514,7 @@ public class JSONParser {
 	/**
 	 * parse BEAST file as DOM document
 	 * 
-	 * @throws Exception
+	 * @throws JSONParserException
 	 */
 	public void parse() throws JSONParserException {
 		// find top level beast element
@@ -542,7 +541,7 @@ public class JSONParser {
 	 * Throw exception when a duplicate id is encountered
 	 * 
 	 * @param node
-	 * @throws Exception
+	 * @throws JSONParserException
 	 */
 	void initIDNodeMap(JSONObject node) throws JSONParserException {
 		String ID = getID(node);
@@ -1143,7 +1142,7 @@ public class JSONParser {
 	} // setInputs
 
 	
-	private void processInput(String name, JSONObject node, List<NameValuePair> map, List<InputType> inputs) throws Exception {
+	private void processInput(String name, JSONObject node, List<NameValuePair> map, List<InputType> inputs) throws JSONParserException, JSONException {
 		if (node.has(name)) {
 			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
 				Object o = node.get(name);
@@ -1303,7 +1302,7 @@ public class JSONParser {
 		partitionContext = context;
 	}
 
-	String getClassName(JSONObject child, String name, BEASTInterface parent) throws Exception {
+	String getClassName(JSONObject child, String name, BEASTInterface parent) {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
 			final Input<?> input = parent.getInput(name);
@@ -1320,7 +1319,7 @@ public class JSONParser {
 		return className;
 	}
 
-	private String getClassName(JSONObject child, String name, List<InputType> inputs) throws Exception {
+	private String getClassName(JSONObject child, String name, List<InputType> inputs) {
 		String className = getAttribute(child, "spec");
 		if (className == null) {
 			// derive type from Input

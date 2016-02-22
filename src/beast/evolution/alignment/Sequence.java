@@ -56,7 +56,6 @@ public class Sequence extends BEASTObject {
      *
      * @param taxon
      * @param sequence
-     * @throws Exception
      */
     public Sequence(String taxon, String sequence) {
         taxonInput.setValue(taxon, this);

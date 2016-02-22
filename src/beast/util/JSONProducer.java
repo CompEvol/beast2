@@ -1,6 +1,7 @@
 package beast.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import beast.app.BEASTVersion;
 import beast.core.BEASTInterface;
@@ -148,7 +153,7 @@ public class JSONProducer {
      * It tries to create JSON conforming to the JSON transformation rules (see JSONParser)
      * that is moderately readable.
      */
-    void beastObjectToJSON(BEASTInterface beastObject, Class<?> defaultType, StringBuffer buf, String name, boolean isTopLevel) throws Exception {
+    void beastObjectToJSON(BEASTInterface beastObject, Class<?> defaultType, StringBuffer buf, String name, boolean isTopLevel) {
         // determine element name, default is input, otherwise find one of the defaults
 
     	String indent = "";
@@ -268,10 +273,9 @@ public class JSONProducer {
      * @param beastObject: beastObject to produce this input JSON for
      * @param buf:    gets JSON results are appended
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
-     * @throws Exception
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void inputToJSON(Input input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) throws Exception {
+    private void inputToJSON(Input input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort, String indent) {
         if (value != null) {
         	
             // distinguish between Map, List, BEASTObject and primitive input types
@@ -410,7 +414,7 @@ public class JSONProducer {
     
 
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
 		// convert BEAST 2 XML to BEAST JSON file
 		XMLParser parser = new XMLParser();
 		BEASTInterface beastObject = parser.parseFile(new File(args[0]));

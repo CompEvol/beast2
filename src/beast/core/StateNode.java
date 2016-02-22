@@ -155,10 +155,10 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      *         for the different types of StateNodes. For example, for real
      *         valued n-dimensional parameters, it is n, for a tree it is the
      *         number of internal nodes being scaled.
-     * @throws Exception when StateNode become not valid, e.g. has
+     * @throws IllegalArgumentException when StateNode become not valid, e.g. has
      *                   values outside bounds or negative branch lengths.
      */
-    abstract public int scale(double scale) throws Exception;
+    abstract public int scale(double scale);
 
     /**
      * Pointer to state, null if not part of a State.

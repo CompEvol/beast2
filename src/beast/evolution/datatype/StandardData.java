@@ -181,7 +181,7 @@ public class StandardData extends DataType.Base {
 //        public ArrayList<String> getStateNames() { return stateNames; }
 //
 //        @Override
-//        public void initAndValidate() throws Exception {
+//        public void initAndValidate() {
 //        }
 //
 //    }

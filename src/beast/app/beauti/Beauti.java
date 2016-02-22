@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -179,7 +180,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_viewModel = new ActionViewModel();
 
     @Override
-    public void docHasChanged() throws Exception {
+    public void docHasChanged() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         setUpPanels();
         setUpViewMenu();
         setTitle();
@@ -1045,7 +1046,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         // }
     } // hidePanels
 
-    public void setUpPanels() throws Exception {
+    public void setUpPanels() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         isInitialising = true;
         // remove any existing tabs
         if (getTabCount() > 0) {

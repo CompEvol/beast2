@@ -2,6 +2,7 @@ package beast.app.draw;
 
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,19 +126,19 @@ public class InputEditorFactory {
     } // addInputs
 
 
-    public InputEditor createInputEditor(Input<?> input, BEASTInterface beastObject, BeautiDoc doc) throws Exception {
+    public InputEditor createInputEditor(Input<?> input, BEASTInterface beastObject, BeautiDoc doc) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return createInputEditor(input, beastObject, true, InputEditor.ExpandOption.FALSE, ButtonStatus.ALL, null, doc);
     }
 
     public InputEditor createInputEditor(Input<?> input, BEASTInterface beastObject, boolean addButtons,
                                                 ExpandOption forceExpansion, ButtonStatus buttonStatus,
-                                                InputEditor editor, BeautiDoc doc) throws Exception {
+                                                InputEditor editor, BeautiDoc doc) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	return createInputEditor(input, -1, beastObject, addButtons, forceExpansion, buttonStatus, editor, doc);
     }
     
     public InputEditor createInputEditor(Input<?> input, int listItemNr, BEASTInterface beastObject, boolean addButtons,
                 ExpandOption forceExpansion, ButtonStatus buttonStatus,
-                InputEditor editor, BeautiDoc doc) throws Exception {
+                InputEditor editor, BeautiDoc doc) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (input.getType() == null) {
             input.determineClass(beastObject);
         }

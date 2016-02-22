@@ -105,7 +105,7 @@ public class MRCAPrior extends Distribution {
     boolean [] nodesTraversed;
     int nseen;
 
-    private Node getCommonAncestor(Node n1, Node n2) {
+    protected Node getCommonAncestor(Node n1, Node n2) {
         // assert n1.getTree() == n2.getTree();
         if( ! nodesTraversed[n1.getNr()] ) {
             nodesTraversed[n1.getNr()] = true;
@@ -240,7 +240,7 @@ public class MRCAPrior extends Distribution {
         return logP;
     }
 
-    private void initialise() {
+    protected void initialise() {
         // determine which taxa are in the set
     	
         List<String> set = null;
@@ -348,7 +348,7 @@ public class MRCAPrior extends Distribution {
      * Loggable interface implementation follows *
      */
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
     	if (!initialised) {
     		initialise();
     	}

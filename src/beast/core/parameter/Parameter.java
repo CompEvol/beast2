@@ -341,7 +341,7 @@ public interface Parameter<T> extends Function {
          * of values happens in derived classes) *
          */
         @Override
-        public void init(final PrintStream out) throws Exception {
+        public void init(final PrintStream out) {
             final int valueCount = getDimension();
             if (valueCount == 1) {
                 out.print(getID() + "\t");

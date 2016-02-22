@@ -422,7 +422,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
             List<Integer> keys);
 
     @Override
-    public int scale(double scale) throws Exception {
+    public int scale(double scale) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

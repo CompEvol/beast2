@@ -581,7 +581,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
     }
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         // interval sizes
         out.print("popsSize0\t");
         for (int i = 0; i < alltimes.length; i++) {

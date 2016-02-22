@@ -610,7 +610,7 @@ public class Document {
         shape.toggleFilled();
     }
 
-    void setInputValue(BEASTObjectShape beastObjectShape, String input, String valueString) throws Exception {
+    void setInputValue(BEASTObjectShape beastObjectShape, String input, String valueString) {
         addUndoAction(new SetInputAction(beastObjectShape, input, valueString));
         //beastObjectShape.m_beastObject.setInputValue(input, valueString);
     }

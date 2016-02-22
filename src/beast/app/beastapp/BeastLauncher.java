@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 
 import beast.app.BEASTVersion;
 import beast.app.util.Utils;
-import beast.app.util.Utils6;
 import beast.core.util.Log;
 
 

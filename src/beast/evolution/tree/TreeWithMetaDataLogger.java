@@ -56,7 +56,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         treeInput.get().init(out);
     }
 

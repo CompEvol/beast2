@@ -85,7 +85,7 @@ public class TreeSetParser {
 	long fileMarked = 0;
 
 	
-	public Node [] parseFile(String fileName) throws Exception {
+	public Node [] parseFile(String fileName) throws IOException {
 		//List<String> newickTrees = new List<>();
 		List<Node> trees = new ArrayList<>();
 		m_nOffset = 0;
@@ -323,7 +323,7 @@ public class TreeSetParser {
 	/** Try to map str into an index. First, assume it is a number.
 	 * If that does not work, look in list of labels to see whether it is there.
 	 */
-	private int getLabelIndex(String str) throws Exception {
+	private int getLabelIndex(String str) {
 		if (!m_bIsLabelledNewick) {
 			try {
 				return Integer.parseInt(str) - m_nOffset;
@@ -421,7 +421,7 @@ public class TreeSetParser {
 		 return UNKNOWN;
 	 }
 
-	 public Node parseNewick(String str) throws Exception {
+	 public Node parseNewick(String str) {
 		 try {
 		if (str == null || str.length() == 0) {
 			return null;

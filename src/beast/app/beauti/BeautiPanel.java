@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
@@ -95,7 +96,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     public BeautiPanel() {
     }
 
-    public BeautiPanel(int panelIndex, BeautiDoc doc, BeautiPanelConfig config) throws Exception {
+    public BeautiPanel(int panelIndex, BeautiDoc doc, BeautiPanelConfig config) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         this.doc = doc;
         this.panelIndex = panelIndex;
 
@@ -201,7 +202,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
     // AR remove globals (doesn't seem to be used anywhere)...
 //	static BeautiPanel g_currentPanel = null;
 
-    public void refreshPanel() throws Exception {
+    public void refreshPanel() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (doc.alignments.size() == 0) {
             refreshInputPanel();
             return;
@@ -229,7 +230,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
 //		g_currentPanel = this;
     }
     
-    void refreshInputPanel(BEASTInterface beastObject, Input<?> input, boolean addButtons, InputEditor.ExpandOption forceExpansion) throws Exception {
+    void refreshInputPanel(BEASTInterface beastObject, Input<?> input, boolean addButtons, InputEditor.ExpandOption forceExpansion) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (centralComponent != null) {
             remove(centralComponent);
         }
@@ -278,7 +279,7 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
         }
     }
 
-    void refreshInputPanel() throws Exception {
+    void refreshInputPanel() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         doc.currentInputEditors.clear();
         InputEditor.Base.g_nLabelWidth = config.labelWidthInput.get();
         BEASTInterface beastObject = config;

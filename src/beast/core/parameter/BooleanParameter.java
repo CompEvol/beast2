@@ -49,7 +49,7 @@ public class BooleanParameter extends Parameter.Base<java.lang.Boolean> {
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public BooleanParameter(String value) throws Exception {
+    public BooleanParameter(String value) {
         init(value, 1);
         m_fUpper = true;
     }

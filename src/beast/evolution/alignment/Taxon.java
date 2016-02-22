@@ -53,7 +53,7 @@ public class Taxon extends BEASTObject {
 //     * @return a list of Taxon objects with corresponding names
 //     */
 //    @Deprecated
-//    public static List<Taxon> createSortedTaxonList(final List<String> taxaNames) throws Exception {
+//    public static List<Taxon> createSortedTaxonList(final List<String> taxaNames) {
 //        final List<Taxon> taxa = new ArrayList<>();
 //        for (final String taxaName : taxaNames) {
 //            taxa.add(new Taxon(taxaName));

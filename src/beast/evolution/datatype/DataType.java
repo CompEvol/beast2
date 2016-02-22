@@ -283,7 +283,7 @@ public interface DataType {
         }
         
         /** return state associated with a character */
-        public Integer char2state(String character) throws Exception {
+        public Integer char2state(String character) {
         	return string2state(character).get(0);
         }
     } // class Base

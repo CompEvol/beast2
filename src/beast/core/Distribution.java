@@ -104,7 +104,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * Loggable interface implementation follows *
      */
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
         out.print(getID() + "\t");
     }
 

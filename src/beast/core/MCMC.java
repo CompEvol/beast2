@@ -24,10 +24,15 @@
 */
 package beast.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
@@ -253,7 +258,7 @@ public class MCMC extends Runnable {
     protected List<Logger> loggers;
 
     @Override
-    public void run() throws Exception {
+    public void run() throws IOException, SAXException, ParserConfigurationException {
         // set up state (again). Other beastObjects may have manipulated the
         // StateNodes, e.g. set up bounds or dimensions
         state.initAndValidate();
@@ -354,9 +359,10 @@ public class MCMC extends Runnable {
 
 
     /**
-     * main MCMC loop *
+     * main MCMC loop 
+     * @throws IOException *
      */
-    protected void doLoop() throws Exception {
+    protected void doLoop() throws IOException {
         int corrections = 0;
         final boolean isStochastic = posterior.isStochastic();
         

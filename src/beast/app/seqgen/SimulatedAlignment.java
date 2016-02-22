@@ -110,7 +110,6 @@ public class SimulatedAlignment extends Alignment {
      * @param seq  integer representation of the sequence
      * @param node used to determine taxon for sequence
      * @return Sequence
-     * @throws Exception
      */
     Sequence intArray2Sequence(int[] seq, Node node) {
         DataType dataType = m_data.get().getDataType();
@@ -136,7 +135,6 @@ public class SimulatedAlignment extends Alignment {
      *
      * @return alignment containing randomly generated sequences for the nodes in the
      *         leaves of the tree
-     * @throws Exception
      */
     public void simulate() {
         Node root = m_tree.getRoot();
@@ -169,7 +167,6 @@ public class SimulatedAlignment extends Alignment {
      * @param parentSequence randomly generated sequence of the parent node
      * @param category       array of categories for each of the sites
      * @param alignment
-     * @throws Exception
      */
     void traverse(Node node, int[] parentSequence, int[] category) {
         for (int childIndex = 0; childIndex < 2; childIndex++) {

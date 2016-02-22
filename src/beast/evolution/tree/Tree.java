@@ -203,7 +203,7 @@ public class Tree extends StateNode implements TreeInterface {
     /**
      * Construct a tree from newick string -- will not automatically adjust tips to zero.
      */
-    public Tree(final String newick) throws Exception {
+    public Tree(final String newick) {
         this(new TreeParser(newick).getRoot());
     }
 
@@ -629,9 +629,8 @@ public class Tree extends StateNode implements TreeInterface {
 //     * @param scaleSNodes if true all sampled nodes are scaled. Note, the most recent node is considered to
 //     *                    have height 0.
 //     * @return
-//     * @throws Exception
 //     */
-//    public int scale(double scale, boolean scaleSNodes) throws Exception {
+//    public int scale(double scale, boolean scaleSNodes) {
 //        ((ZeroBranchSANode)root).scale(scale, scaleSNodes);
 //        if (scaleSNodes) {
 //            return getNodeCount() - 1 - getDirectAncestorNodeCount();
@@ -686,7 +685,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public void init(PrintStream out) throws Exception {
+	public void init(PrintStream out) {
         Node node = getRoot();
         out.println("#NEXUS\n");
         out.println("Begin taxa;");

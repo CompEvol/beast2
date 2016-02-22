@@ -184,12 +184,11 @@ public class Alignment extends Map<String> {
      * @param sequences
      * @param stateCount
      * @param dataType
-     * @throws Exception when validation fails
      * @deprecated This is the deprecated legacy form and will be removed
      * at some point. Use {@link #Alignment(List, String)} instead.
      */
     @Deprecated
-    public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) throws Exception {
+    public Alignment(List<Sequence> sequences, Integer stateCount, String dataType) {
         this(sequences, dataType);
     }
 
@@ -198,10 +197,8 @@ public class Alignment extends Map<String> {
      *
      * @param sequences
      * @param dataType
-     * @throws Exception when validation fails
      */
-    public Alignment(List<Sequence> sequences, String dataType) throws Exception {
-
+    public Alignment(List<Sequence> sequences, String dataType) {
         for (Sequence sequence : sequences) {
             sequenceInput.setValue(sequence, this);
         }
