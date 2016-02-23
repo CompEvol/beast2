@@ -90,6 +90,7 @@
         <delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
         <delete file="${build}/beast/app/util/Utils6.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
+        <delete file="${build}/beast/app/util/Version.class" />
         <javac source="1.6"
                target="1.6"
                bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
@@ -103,6 +104,7 @@
             <include name="beast/**/*Launcher.java" />
             <include name="beast/**/Utils6.java" />
             <include name="beast/**/BEASTVersion.java" />
+            <include name="beast/**/Version.java" />
         </javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties" />
@@ -111,7 +113,7 @@
         <echo message="Successfully compiled." />
     </target>
 
-    <!-- make the beast.jar and beauti.jar -->
+    <!-- make the beast.jar -->
     <target name="dist_all_BEAST" depends="compile-all" description="create BEAST jar">
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}" />
@@ -140,6 +142,7 @@
                 <include name="beast/**/*Launcher.class" />
                 <include name="beast/**/Utils6*.class" />
                 <include name="beast/**/BEASTVersion.class" />
+                <include name="beast/**/Version.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
             </fileset>
         </jar>
@@ -160,7 +163,7 @@
         <copy file="${dist}/beast.jar" todir="${release_dir}/package/lib/"/>
         <copy file="../beast2/version.xml" todir="${release_dir}/package/"/>
 
-        <jar jarfile="${release_dir}/package/beast.package.${version}.jar">
+        <jar jarfile="${release_dir}/package/beast.package.${version}.zip">
             <fileset dir="${release_dir}/package">
                 <include name="version.xml" />
                 <include name="lib/beast.jar" />

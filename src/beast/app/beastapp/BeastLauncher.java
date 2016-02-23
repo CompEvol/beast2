@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 
 import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
-import beast.core.util.Log;
 
 
 /**
@@ -51,7 +50,7 @@ public class BeastLauncher {
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
 		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
-		Log.warning.println("jardir = " + launcherJar);
+		System.err.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
 		while ((!foundOne) && (jarDir0 != null)) { // && jarDir0.exists() &&
 											// jarDir0.isDirectory()) {
@@ -67,7 +66,7 @@ public class BeastLauncher {
 		}
 		
 		if (!foundOne) {
-			Log.warning.println("WARNING: could not find beast.jar");
+			System.err.println("WARNING: could not find beast.jar");
 			// if beast.jar or its classes are not already in the class path (as is when launched e.g. as developer)
 			// the next line will fail
 		}
@@ -114,7 +113,7 @@ public class BeastLauncher {
 	}
 
 	private static boolean checkForBEAST(File jarDir, Object clu) throws IOException {
-		Log.warning.println("Checking out " + jarDir.getAbsolutePath());
+		System.err.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
 		if (jarDir.exists()) {
 			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
@@ -127,7 +126,7 @@ public class BeastLauncher {
 					Method method = sysclass.getDeclaredMethod("addURL", parameters);
 					method.setAccessible(true);
 					method.invoke(sysLoader, new Object[] { url });
-					Log.warning.println("Loaded URL " + url);
+					System.err.println("Loaded URL " + url);
 					foundOne = true;
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -171,7 +170,7 @@ public class BeastLauncher {
 					} else {
 						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<br>", "\n");
 						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<[^<]*>", "");
-						Log.warning.println(JAVA_VERSION_MSG);
+						System.err.println(JAVA_VERSION_MSG);
 					}
 					return true;
 				}
