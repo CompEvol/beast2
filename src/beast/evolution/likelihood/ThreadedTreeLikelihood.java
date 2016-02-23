@@ -73,7 +73,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     final public Input<Scaling> scalingInput = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
     
     /** private list of likelihoods, to notify framework of TreeLikelihoods being created in initAndValidate() **/
-    final private Input<List<TreeLikelihood>> likelihoodsInput = new Input<>("xxx","",new ArrayList<>());
+    final private Input<List<TreeLikelihood>> likelihoodsInput = new Input<>("*","",new ArrayList<>());
     
     @Override
     public List<Input<?>> listInputs() {
