@@ -1081,6 +1081,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * record number of frames. If the last frame is closed, exit the app. *
      */
     static int BEAUtiIntances = 0;
+    static public boolean isInBeauti() {
+    	return BEAUtiIntances > 0;
+    }
 
     public static Beauti main2(String[] args) {
         try {

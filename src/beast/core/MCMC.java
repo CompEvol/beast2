@@ -509,8 +509,8 @@ public class MCMC extends Runnable {
     }
 
     private boolean isTooDifferent(double logLikelihood, double originalLogP) {
-    	return Math.abs((logLikelihood - originalLogP)/originalLogP) > 1e-6;
-    	//return Math.abs(logLikelihood - originalLogP) > 1e-6;
+    	//return Math.abs((logLikelihood - originalLogP)/originalLogP) > 1e-6;
+    	return Math.abs(logLikelihood - originalLogP) > 1e-6;
 	}
 
 
