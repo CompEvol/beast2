@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import javax.swing.JOptionPane;
 
 import beast.app.BEASTVersion;
-import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.util.Log;
 
 
@@ -189,14 +189,13 @@ public class BeastLauncher {
 	}
 
     public static String getPackageUserDir() {
-        
         if (System.getProperty("beast.user.package.dir") != null)
             return System.getProperty("beast.user.package.dir");
         
-        if (Utils.isWindows()) {
+        if (Utils6.isWindows()) {
             return System.getProperty("user.home") + "\\BEAST\\" + (new BEASTVersion()).getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils6.isMac()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + (new BEASTVersion()).getMajorVersion();
         }
         // Linux and unices
