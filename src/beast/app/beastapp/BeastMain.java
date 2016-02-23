@@ -261,10 +261,10 @@ public class BeastMain {
                         new Arguments.Option("java", "Use Java only, no native implementations"),
                         new Arguments.Option("noerr", "Suppress all output to standard error"),
                         new Arguments.StringOption("loglevel", "LEVEL", "error,warning,info,debug,trace"),
+                        new Arguments.IntegerOption("instances", "divide site patterns amongst number of threads (use with -threads option)"),
                         new Arguments.Option("beagle", "Use beagle library if available"),
                         new Arguments.Option("beagle_info", "BEAGLE: show information on available resources"),
                         new Arguments.StringOption("beagle_order", "order", "BEAGLE: set order of resource use"),
-                        new Arguments.IntegerOption("beagle_instances", "BEAGLE: divide site patterns amongst instances"),
                         new Arguments.Option("beagle_CPU", "BEAGLE: use CPU instance"),
                         new Arguments.Option("beagle_GPU", "BEAGLE: use GPU instance if available"),
                         new Arguments.Option("beagle_SSE", "BEAGLE: use SSE extensions if available"),
@@ -326,8 +326,7 @@ public class BeastMain {
                 arguments.hasOption("beagle_SSE") ||
                 arguments.hasOption("beagle_double") ||
                 arguments.hasOption("beagle_single") ||
-                arguments.hasOption("beagle_order") ||
-                arguments.hasOption("beagle_instances");
+                arguments.hasOption("beagle_order");
 
         if (arguments.hasOption("beagle_scaling")) {
             System.setProperty("beagle.scaling", arguments.getStringOption("beagle_scaling"));
@@ -335,14 +334,21 @@ public class BeastMain {
 
         boolean beagleShowInfo = arguments.hasOption("beagle_info");
 
+        
+        boolean useSSE = true;
         if (arguments.hasOption("beagle_CPU")) {
             beagleFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
+            useSSE = false;
         }
         if (arguments.hasOption("beagle_GPU")) {
             beagleFlags |= BeagleFlag.PROCESSOR_GPU.getMask();
+            useSSE = false;
         }
         if (arguments.hasOption("beagle_SSE")) {
             beagleFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
+            useSSE = true;
+        }
+        if (useSSE) {
             beagleFlags |= BeagleFlag.VECTOR_SSE.getMask();
         }
         if (arguments.hasOption("beagle_double")) {
@@ -364,8 +370,8 @@ public class BeastMain {
             System.setProperty("beagle.resource.order", arguments.getStringOption("beagle_order"));
         }
 
-        if (arguments.hasOption("beagle_instances")) {
-            System.setProperty("beagle.instance.count", Integer.toString(arguments.getIntegerOption("beagle_instances")));
+        if (arguments.hasOption("instances")) {
+            System.setProperty("beast.instance.count", Integer.toString(arguments.getIntegerOption("instances")));
         }
 
         if (arguments.hasOption("beagle_scaling")) {
@@ -374,11 +380,10 @@ public class BeastMain {
 
         if (arguments.hasOption("threads")) {
             threadCount = arguments.getIntegerOption("threads");
-            if (threadCount < 0) {
-                printTitle();
-                Log.err.println("The number of threads should be >= 0");
-                System.exit(1);
-            }
+        }
+        if (threadCount <= 0) {
+        	threadCount = Runtime.getRuntime().availableProcessors();
+        	Log.warning.println("Setting number of threads to " + threadCount);
         }
 
         if (arguments.hasOption("seed")) {
