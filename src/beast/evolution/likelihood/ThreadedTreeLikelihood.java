@@ -36,7 +36,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import beast.app.BeastMCMC;
@@ -76,8 +78,8 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     @Override
     public List<Input<?>> listInputs() {
     	List<Input<?>> list =  super.listInputs();
-    	if (!Beauti.isInBeauti()) {
-    		// do not expose internal likelihoods
+    	if (!Beauti.isInBeauti() && System.getProperty("beast.is.junit.testing") == null) {
+    		// do not expose internal likelihoods to BEAUti or junit tests
     		list.add(likelihoodsInput);
     	}
     	return list;
@@ -85,10 +87,13 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     
     /** calculation engine **/
     private TreeLikelihood [] treelikelihood;
-    
+
+    private ExecutorService pool = null;
+    private final List<Callable<Double>> likelihoodCallers = new ArrayList<Callable<Double>>();
+
     
     /** number of threads to use, changes when threading causes problems **/
-    private int m_nThreads;
+    private int threadCount;
     private double [] logPByThread;
 	
 	
@@ -98,26 +103,31 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 	
     @Override
     public void initAndValidate() {
-		m_nThreads = BeastMCMC.m_nThreads;
+		threadCount = BeastMCMC.m_nThreads;
 
 		if (maxNrOfThreadsInput.get() > 0) {
-			m_nThreads = Math.min(maxNrOfThreadsInput.get(), BeastMCMC.m_nThreads);
+			threadCount = Math.min(maxNrOfThreadsInput.get(), BeastMCMC.m_nThreads);
 		}
-		logPByThread = new double[m_nThreads];
+        String instanceCount = System.getProperty("beast.instance.count");
+        if (instanceCount != null && instanceCount.length() > 0) {
+        	threadCount = Integer.parseInt(instanceCount);
+        }
+        
+        logPByThread = new double[threadCount];
 
     	// sanity check: alignment should have same #taxa as tree
     	if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
     		throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
     	}
     	
-    	treelikelihood = new TreeLikelihood[m_nThreads];
+    	treelikelihood = new TreeLikelihood[threadCount];
     	
     	if (dataInput.get().isAscertained) {
     		Log.warning.println("Note, because the alignment is ascertained -- can only use single trhead per alignment");
-    		m_nThreads = 1;
+    		threadCount = 1;
     	}
     	
-    	if (m_nThreads == 1) {    		
+    	if (threadCount <= 1) {    		
     		treelikelihood[0] = new TreeLikelihood();
     		treelikelihood[0].setID(getID() + "0");
     		treelikelihood[0].initByName("data", dataInput.get(), 
@@ -130,9 +140,10 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     		treelikelihood[0].getOutputs().add(this);
     		likelihoodsInput.get().add(treelikelihood[0]);
     	} else {
+        	pool = Executors.newFixedThreadPool(threadCount);
     		
         	calcPatternPoints(dataInput.get().getSiteCount());
-        	for (int i = 0; i < m_nThreads; i++) {
+        	for (int i = 0; i < threadCount; i++) {
         		Alignment data = dataInput.get();
         		String filterSpec = (patternPoints[i] +1) + "-" + (patternPoints[i + 1]);
         		if (data.isAscertained) {
@@ -161,6 +172,8 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
         				"useAmbiguities", useAmbiguitiesInput.get(),
 						"scaling" , scalingInput.get() + ""
         				);
+        		
+        		likelihoodCallers.add(new TreeLikelihoodCaller(treelikelihood[i], i));
         	}
     	}
     }
@@ -210,17 +223,17 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 	}
 
 	private void calcPatternPoints(int nPatterns) {
-		patternPoints = new int[m_nThreads + 1];
+		patternPoints = new int[threadCount + 1];
 		if (proportionsInput.get() == null) {
-			int range = nPatterns / m_nThreads;
-			for (int i = 0; i < m_nThreads - 1; i++) {
+			int range = nPatterns / threadCount;
+			for (int i = 0; i < threadCount - 1; i++) {
 				patternPoints[i+1] = range * (i+1);
 			}
-			patternPoints[m_nThreads] = nPatterns;
+			patternPoints[threadCount] = nPatterns;
 		} else {
 			String [] strs = proportionsInput.get().split("\\s+");
-			double [] proportions = new double[m_nThreads];
-			for (int i = 0; i < m_nThreads; i++) {
+			double [] proportions = new double[threadCount];
+			for (int i = 0; i < threadCount; i++) {
 				proportions[i] = Double.parseDouble(strs[i % strs.length]);
 			}
 			// normalise
@@ -228,15 +241,15 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 			for (double d : proportions) {
 				sum += d;
 			}
-			for (int i = 0; i < m_nThreads; i++) {
+			for (int i = 0; i < threadCount; i++) {
 				proportions[i] /= sum;
 			}
 			// cummulative 
-			for (int i = 1; i < m_nThreads; i++) {
+			for (int i = 1; i < threadCount; i++) {
 				proportions[i] += proportions[i- 1];
 			}
 			// calc ranges
-			for (int i = 0; i < m_nThreads; i++) {
+			for (int i = 0; i < threadCount; i++) {
 				patternPoints[i+1] = (int) (proportions[i] * nPatterns + 0.5);
 			}
 		}
@@ -257,40 +270,35 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 		return logP;
     }
 
-    private CountDownLatch m_nCountDown;
-	
-	class BeagleCoreRunnable implements Runnable {
-		int m_iThread;
-		TreeLikelihood beagle;
-		
-		BeagleCoreRunnable(int iThread, TreeLikelihood beagle) {
-			    m_iThread = iThread;
-			    this.beagle = beagle;
-		}
+    class TreeLikelihoodCaller implements Callable<Double> {
+        private final TreeLikelihood likelihood;
+        private final int threadNr;
 
-        @Override
-		public void run() {
+        public TreeLikelihoodCaller(TreeLikelihood likelihood, int threadNr) {
+            this.likelihood = likelihood;
+            this.threadNr = threadNr;
+        }
+
+        public Double call() throws Exception {
   		  	try {
-	            logPByThread[m_iThread] = beagle.calculateLogP();
+	            logPByThread[threadNr] = likelihood.calculateLogP();
   		  	} catch (Exception e) {
-  		  		System.err.println("Something went wrong ith thread " + m_iThread);
+  		  		System.err.println("Something went wrong ith thread " + threadNr);
 				e.printStackTrace();
 				System.exit(0);
 			}
-  		    m_nCountDown.countDown();
+            return logPByThread[threadNr];
         }
 
-	} // CoreRunnable
+    }
+
+	
 	
     private double calculateLogPByBeagle() {
 		try {
-			if (m_nThreads > 1) {
-				m_nCountDown = new CountDownLatch(m_nThreads);
-		    	for (int iThread = 0; iThread < m_nThreads; iThread++) {
-		    		BeagleCoreRunnable coreRunnable = new BeagleCoreRunnable(iThread, treelikelihood[iThread]);
-		    		BeastMCMC.g_exec.execute(coreRunnable);
-		    	}
-				m_nCountDown.await();
+			if (threadCount > 1) {
+                pool.invokeAll(likelihoodCallers);
+
 		    	logP = 0;
 		    	for (double f : logPByThread) {
 		    		logP += f;
