@@ -257,7 +257,7 @@ public class BeastMain {
                         new Arguments.Option("validate", "Parse the XML, but do not run -- useful for debugging XML"),
                         // RRB: not sure what effect this option has
                         new Arguments.IntegerOption("errors", "Specify maximum number of numerical errors before stopping"),
-                        new Arguments.IntegerOption("threads", "The number of computational threads to use (default auto)"),
+                        new Arguments.IntegerOption("threads", "The number of computational threads to use (default 1), -1 for number of cores"),
                         new Arguments.Option("java", "Use Java only, no native implementations"),
                         new Arguments.Option("noerr", "Suppress all output to standard error"),
                         new Arguments.StringOption("loglevel", "LEVEL", "error,warning,info,debug,trace"),
@@ -304,7 +304,7 @@ public class BeastMain {
         long seed = Randomizer.getSeed();
         boolean useJava = false;
 
-        int threadCount = 0;
+        int threadCount = 1;
 
         if (arguments.hasOption("java")) {
             useJava = true;

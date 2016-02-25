@@ -307,6 +307,10 @@ public class JSONProducer {
                 	buf.append(buf2);
                 }
             	return;
+            } else if (input.getName().startsWith("*")) {
+        		// this can happen with private inputs, like in ThreadedTreeLikelihood
+        		// and * is not a valid XML attribute name
+            	return;
             } else if (value instanceof List) {
                 if (!isShort) {
                 	StringBuffer buf2 = new StringBuffer();
