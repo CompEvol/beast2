@@ -84,15 +84,15 @@ public class TreeAnnotator {
     
     abstract class TreeSet {
     	abstract boolean hasNext();
-    	abstract Tree next() throws Exception;
-    	abstract void reset() throws Exception ;
+    	abstract Tree next() throws IOException;
+    	abstract void reset() throws IOException;
     }    
     
     class FastTreeSet extends TreeSet {
     	int current = 0;
     	Tree [] trees;
     	
-    	public FastTreeSet(String inputFileName, int burninPercentage) throws Exception {
+    	public FastTreeSet(String inputFileName, int burninPercentage) throws IOException  {
             progressStream.println("0              25             50             75            100");
             progressStream.println("|--------------|--------------|--------------|--------------|");
     		TreeSetParser parser = new TreeSetParser(burninPercentage, false);
@@ -110,12 +110,12 @@ public class TreeAnnotator {
 		}
 
 		@Override
-		Tree next() throws Exception {
+		Tree next()  {
 			return trees[current++];
 		}
 
 		@Override
-		void reset() throws Exception {
+		void reset()  {
 			current = 0;
 		}
     }
@@ -135,7 +135,7 @@ public class TreeAnnotator {
         // label count origin for NEXUS trees
         int origin = -1;
        
-        MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws Exception {
+        MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws IOException  {
     		this.inputFileName = inputFileName;
     		init(burninPercentage);
         	progressStream.println("Processing " + (totalTrees - burninCount) + " trees from file" +
@@ -146,8 +146,9 @@ public class TreeAnnotator {
 
     	/** determine number of trees in the file,
     	 * and number of trees to skip as burnin 
+    	 * @throws IOException 
     	 * @throws FileNotFoundException **/
-    	private void init(int burninPercentage) throws Exception {
+    	private void init(int burninPercentage) throws IOException  {
             fin = new BufferedReader(new FileReader(new File(inputFileName)));
             if (!fin.ready()) {
             	throw new IOException("File appears empty");
@@ -176,7 +177,7 @@ public class TreeAnnotator {
 		}
 
     	@Override
-		void reset() throws Exception {
+		void reset() throws FileNotFoundException  {
     		current = 0;
             fin = new BufferedReader(new FileReader(new File(inputFileName)));
             lineNr = 0;
@@ -199,9 +200,10 @@ public class TreeAnnotator {
         } // parseFile
 
         /**
-         * read next line from Nexus file that is not a comment and not empty *
+         * read next line from Nexus file that is not a comment and not empty 
+         * @throws IOException *
          */
-        String nextLine() throws Exception {
+        String nextLine() throws IOException  {
             String str = readLine();
             if (str == null) {
                 return null;
@@ -235,7 +237,7 @@ public class TreeAnnotator {
             return fin.readLine();
         }
 
-        private void parseTreesBlock() throws Exception {
+        private void parseTreesBlock() throws IOException  {
             // read to first non-empty line within trees block
             String str = fin.readLine().trim();
             while (str.equals("")) {
@@ -329,7 +331,7 @@ public class TreeAnnotator {
     	}
     	
     	@Override
-		Tree next() throws Exception {
+		Tree next() throws IOException {
 			String str = nextLine();
     		if (!isNexus) {
                 TreeParser treeParser;
@@ -429,7 +431,7 @@ public class TreeAnnotator {
                          String targetTreeFileName,
                          String inputFileName,
                          String outputFileName
-    ) throws Exception {
+    ) throws IOException  {
 
         this.posteriorLimit = posteriorLimit;
         this.hpd2D = hpd2D;
@@ -675,7 +677,7 @@ public class TreeAnnotator {
         }
     }
 
-    private Tree summarizeTrees(CladeSystem cladeSystem, boolean useSumCladeCredibility) throws Exception {
+    private Tree summarizeTrees(CladeSystem cladeSystem, boolean useSumCladeCredibility) throws IOException  {
 
         Tree bestTree = null;
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -1470,8 +1472,8 @@ public class TreeAnnotator {
         boolean handleAttribute(Node node, String attributeName, double[] values);
     }
 
-    boolean setTreeHeightsByCA(Tree targetTree)
-            throws Exception {
+    boolean setTreeHeightsByCA(Tree targetTree) throws IOException
+             {
         progressStream.println("Setting node heights...");
         progressStream.println("0              25             50             75            100");
         progressStream.println("|--------------|--------------|--------------|--------------|");

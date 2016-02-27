@@ -19,7 +19,7 @@ public class RandomGeneTree extends RandomTree {
     final public Input<Tree> speciesTreeInput = new Input<>("speciesTree", "The species tree in which this random gene tree needs to fit", Validate.REQUIRED);
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
     }
 

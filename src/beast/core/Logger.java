@@ -114,7 +114,7 @@ public class Logger extends BEASTObject {
     int startSample;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         fileName = fileNameInput.get();
 
@@ -207,7 +207,7 @@ public class Logger extends BEASTObject {
     /**
      * initialise log, open file (if necessary) and produce header of log
      */
-    public void init() throws Exception {
+    public void init() throws IOException {
         final boolean needsHeader = openLogFile();
         if (needsHeader) {
             if (modelInput.get() != null) {

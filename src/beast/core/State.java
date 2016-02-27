@@ -618,7 +618,7 @@ public class State extends BEASTObject {
     } // calculateCalcNodePath
 
 
-    public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
+    public double robustlyCalcPosterior(final Distribution posterior) {
         store(-1);
         setEverythingDirty(true);
         //state.storeCalculationNodes();
@@ -629,7 +629,7 @@ public class State extends BEASTObject {
         return logLikelihood;
     }
 
-	public double robustlyCalcNonStochasticPosterior(Distribution posterior) throws Exception {
+	public double robustlyCalcNonStochasticPosterior(Distribution posterior)  {
         store(-1);
         setEverythingDirty(true);
         storeCalculationNodes();

@@ -19,6 +19,10 @@ import junit.framework.TestCase;
 
 public class InputTypeTest extends TestCase {
 
+	{
+		System.setProperty("beast.is.junit.testing", "true");
+	}
+
 	/*
 	 * Test that the type of an input can be determined, If not, the programmer
 	 * has to manually initialise the type of the input (most easily done

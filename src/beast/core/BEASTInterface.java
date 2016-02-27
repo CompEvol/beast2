@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface BEASTInterface {
-    public void initAndValidate() throws Exception;
+    public void initAndValidate();
 
 	/** identifiable **/
 	public String getID();
@@ -59,7 +59,7 @@ public interface BEASTInterface {
      * inputs are declared in the class, then calls
      * initAndValidate().
      */
-   default public void init(final Object... objects) throws Exception {
+   default public void init(final Object... objects) {
        final List<Input<?>> inputs = listInputs();
        int i = 0;
        for (final Object object : objects) {
@@ -75,7 +75,7 @@ public interface BEASTInterface {
     * assigns 2 to input kappa and true to input lambda.
     * After assigning inputs, initAndValidate() is called.
     */
-  default public void initByName(final Object... objects) throws Exception {
+  default public void initByName(final Object... objects) {
       if (objects.length % 2 == 1) {
           throw new RuntimeException("Expected even number of arguments, name-value pairs");
       }

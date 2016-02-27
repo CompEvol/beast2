@@ -4,6 +4,7 @@ package beast.app.beauti;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -26,6 +27,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -37,6 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
@@ -69,6 +72,7 @@ import beast.util.JSONProducer;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 import beast.util.XMLParser.RequiredInputProvider;
+import beast.util.XMLParserException;
 import beast.util.XMLProducer;
 
 
@@ -183,7 +187,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return templateName;
     }
     
-    public ActionOnExit parseArgs(String[] args) throws Exception {
+    public ActionOnExit parseArgs(String[] args) throws XMLParserException, SAXException, IOException, ParserConfigurationException  {
         ActionOnExit endState = ActionOnExit.UNKNOWN;
         String outputFileName = "beast.xml";
         String xml = null;
@@ -381,19 +385,19 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
     }
 
-    public void loadXML(File file) throws Exception {
+    public void loadXML(File file) throws IOException, XMLParserException, SAXException, ParserConfigurationException  {
         String xml = load(file);
         extractSequences(xml);
         scrubAll(true, false);
         fireDocHasChanged();
     }
 
-    public void loadNewTemplate(String fileName) throws Exception {
+    public void loadNewTemplate(String fileName)  {
         templateFileName = fileName;
         newAnalysis();
     }
 
-    public void importNexus(File file) throws Exception {
+    public void importNexus(File file) throws IOException  {
         NexusParser parser = new NexusParser();
         parser.parseFile(file);
         if (parser.filteredAlignments.size() > 0) {
@@ -408,7 +412,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //      fireDocHasChanged();
     }
 
-    public void importXMLAlignment(File file) throws Exception {
+    public void importXMLAlignment(File file)  {
         Alignment data = (Alignment) BeautiAlignmentProvider.getXMLData(file);
         data.initAndValidate();
         addAlignmentWithSubnet(data, beautiConfig.partitionTemplate.get());
@@ -416,13 +420,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //      fireDocHasChanged();
     }
 
-    void fireDocHasChanged() throws Exception {
+    void fireDocHasChanged()  {
         for (BeautiDocListener listener : listeners) {
-            listener.docHasChanged();
+            try {
+				listener.docHasChanged();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         }
     }
 
-    void initialize(ActionOnExit endState, String xml, String template, String fileName) throws Exception {
+    void initialize(ActionOnExit endState, String xml, String template, String fileName) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         // beautiConfig.clear();
         switch (endState) {
             case UNKNOWN:
@@ -477,9 +485,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     /**
-     * public to allow access for unit test *
+     * public to allow access for unit test 
+     * @throws IOException *
      */
-    public String processTemplate(String fileName) throws Exception {
+    public String processTemplate(String fileName) throws IOException {
         final String MERGE_ELEMENT = "mergepoint";
         // first gather the set of potential directories with templates
         Set<String> dirs = new HashSet<>();// AddOnManager.getBeastDirectories();
@@ -626,7 +635,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return templateXML;
     }
 
-    void processBeautiConfig(Document doc) throws Exception {
+    void processBeautiConfig(Document doc) throws XMLParserException, TransformerException  {
         // find configuration elements, process and remove
         NodeList nodes = doc.getElementsByTagName("beauticonfig");
         Node topNode = doc.getElementsByTagName("*").item(0);
@@ -705,16 +714,18 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     } // validateModel
 
     /**
-     * save specification in file *
+     * save specification in file 
+     * @throws IOException *
      */
-    public void save(String fileName) throws Exception {
+    public void save(String fileName) throws IOException  {
         save(new File(fileName));
     } // save
 
     /**
-     * save specification in file *
+     * save specification in file 
+     * @throws IOException *
      */
-    public void save(File file) throws Exception {
+    public void save(File file) throws IOException  {
         determinePartitions();
         scrubAll(false, false);
         // String xml = new XMLProducer().toXML(mcmc.get(), );
@@ -769,7 +780,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	    return beautiStatus;
     }
 
-    void extractSequences(String xml) throws Exception {
+    void extractSequences(String xml) throws XMLParserException, SAXException, IOException, ParserConfigurationException  {
 
         // parse the XML fragment into a DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -864,8 +875,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     /**
      * Merge sequence data with xml specification.
+     * @throws ParserConfigurationException 
+     * @throws IOException 
+     * @throws SAXException 
+     * @throws XMLParserException 
      */
-    void mergeSequences(String xml) throws Exception {
+    void mergeSequences(String xml) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         if (xml == null) {
             xml = processTemplate(STANDARD_TEMPLATE);
         }
@@ -914,7 +929,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
     }
 
-    void loadTemplate(String xml) throws Exception {
+    void loadTemplate(String xml) throws XMLParserException, SAXException, IOException, ParserConfigurationException  {
         // load the template and its beauti configuration parts
         XMLParser parser = new XMLParser();
         BEASTObjectPanel.init();
@@ -957,9 +972,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /**
      * Connect all inputs to the relevant ancestors of m_runnable.
      *
-     * @throws Exception *
+     * @ *
      */
-    void connectModel() throws Exception {
+    void connectModel()  {
         scrubAll(true, true);
     }
 
@@ -1294,7 +1309,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
     }
 
-    void setClockRate() throws Exception {
+    void setClockRate()  {
     	boolean needsEstimationBySPTree = false;
         if (pluginmap.containsKey("Tree.t:Species")) {
         	Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
@@ -1351,7 +1366,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
     }
 
-    public void addPlugin(final BEASTInterface beastObject) { // throws Exception {
+    public void addPlugin(final BEASTInterface beastObject) { //  {
         // SwingUtilities.invokeLater(new Runnable() {
         // @Override
         // public void run() {
@@ -1388,7 +1403,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /**
      * connect source beastObject with target beastObject
      *
-     * @throws Exception *
+     * @ *
      */
     public void connect(BeautiConnector connector, PartitionContext context) {
         if (!connector.isRegularConnector) {
@@ -1511,7 +1526,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		
 	}
 
-	public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template) throws Exception {
+	public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template)  {
         BEASTInterface data = template.createSubNet(context, true);
         alignments.add((Alignment) data);
         // re-determine partitions
@@ -2090,7 +2105,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
     }
 
-    public void renamePartition(int partitionID, String oldName, String newName) throws Exception {
+    public void renamePartition(int partitionID, String oldName, String newName)  {
     	Log.warning.println("renamePartition: " + partitionID + " " + oldName + " " + newName);
         // sanity check: make sure newName is not already in use by another partition
         String newsuffix = null;
@@ -2400,7 +2415,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     }
 
     /** create taxonset, one taxon for each sequence in the alignment

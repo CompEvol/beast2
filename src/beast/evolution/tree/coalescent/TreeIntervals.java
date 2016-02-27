@@ -55,7 +55,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         super();
     }
 
-    public TreeIntervals(Tree tree) throws Exception {
+    public TreeIntervals(Tree tree) {
         init(tree);
     }
 

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,11 +42,11 @@ public class EBSPAnalyser {
     String m_sInputFile;
     int m_nBurninPercentage = 10;
 
-    private void run() throws Exception {
+    private void run() throws IOException {
         parse(m_sInputFile, m_nBurninPercentage, m_type, m_out);
     }
 
-    void parse(String fileName, int burnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws Exception {
+    void parse(String fileName, int burnInPercentage, CompoundPopulationFunction.Type type, PrintStream out) throws IOException {
         logln("Processing " + fileName);
         BufferedReader fin = new BufferedReader(new FileReader(fileName));
         String str;

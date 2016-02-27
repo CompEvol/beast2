@@ -1,5 +1,7 @@
 package beast.evolution.substitutionmodel;
 
+import java.lang.reflect.InvocationTargetException;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -35,7 +37,7 @@ public class TIM extends GeneralSubstitutionModel {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (ratesInput.get() != null) {
             throw new IllegalArgumentException("the rates attribute should not be used. Use the individual rates rateAG, rateCT, etc, instead.");
         }
@@ -47,7 +49,12 @@ public class TIM extends GeneralSubstitutionModel {
             throw new IllegalArgumentException("Frequencies has wrong size. Expected 4, but got " + nrOfStates);
         }
 
-        eigenSystem = createEigenSystem();
+        try {
+			eigenSystem = createEigenSystem();
+		} catch (SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[nrOfStates * (nrOfStates - 1)];
         storedRelativeRates = new double[nrOfStates * (nrOfStates - 1)];
@@ -58,7 +65,7 @@ public class TIM extends GeneralSubstitutionModel {
         rateTransversions2 = getParameter(rateTransversions2Input);
     }
 
-    private RealParameter getParameter(Input<RealParameter> parameterInput) throws Exception {
+    private RealParameter getParameter(Input<RealParameter> parameterInput) {
         if (parameterInput.get() != null) {
             return parameterInput.get();
         }

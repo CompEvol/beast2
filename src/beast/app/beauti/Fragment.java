@@ -13,6 +13,6 @@ public class Fragment extends BEASTObject {
 	final public Input<List<BeautiConnector>> connectorsInput = new Input<>("connect", "for representing BEAUti connectors", new ArrayList<>());
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 	}
 }

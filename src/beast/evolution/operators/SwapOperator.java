@@ -27,7 +27,7 @@ public class SwapOperator extends Operator {
     private List<Integer> masterList = null;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (parameterInput.get() != null) {
             parameter = parameterInput.get();
         } else {

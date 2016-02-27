@@ -93,7 +93,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	
         RealParameter clockRate = clockRateInput.get();
 
@@ -264,7 +264,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
             }
         }
 
-        Node toNode() throws Exception {
+        Node toNode() {
             final Node node = newNode();
             node.setHeight(m_fHeight);
             if (m_left == null) {
@@ -354,7 +354,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
 
     @SuppressWarnings("unchecked")
-    public Node buildClusterer() throws Exception {
+    public Node buildClusterer() {
         final int taxonCount = taxaNames.size();
         if (taxonCount == 1) {
             // pathological case

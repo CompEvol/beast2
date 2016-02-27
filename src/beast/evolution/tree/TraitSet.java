@@ -63,7 +63,7 @@ public class TraitSet extends BEASTObject {
     boolean numeric = true;
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (traitsInput.get().matches("^\\s*$")) {
             return;
         }
@@ -166,7 +166,7 @@ public class TraitSet extends BEASTObject {
     /**
      * see if we can convert the string to a double value *
      */
-    private double parseDouble(String str) throws Exception {
+    private double parseDouble(String str) {
         // default, try to interpret the string as a number
         try {
             return Double.parseDouble(str);

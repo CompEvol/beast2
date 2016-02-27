@@ -28,6 +28,7 @@ package beast.evolution.substitutionmodel;
 
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import beast.core.Description;
 import beast.core.Function;
@@ -56,7 +57,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
 
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         updateMatrix = true;
         nrOfStates = frequencies.getFreqs().length;
@@ -66,7 +67,12 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
                     "expected");
         }
 
-        eigenSystem = createEigenSystem();
+        try {
+			eigenSystem = createEigenSystem();
+		} catch (SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         //eigenSystem = new DefaultEigenSystem(m_nStates);
 
         rateMatrix = new double[nrOfStates][nrOfStates];
@@ -75,9 +81,15 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     } // initAndValidate
 
     /**
-     * create an EigenSystem of the class indicated by the eigenSystemClass input *
+     * create an EigenSystem of the class indicated by the eigenSystemClass input 
+     * @throws ClassNotFoundException 
+     * @throws SecurityException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws InstantiationException *
      */
-    protected EigenSystem createEigenSystem() throws Exception {
+    protected EigenSystem createEigenSystem() throws SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Constructor<?>[] ctors = Class.forName(eigenSystemClass.get()).getDeclaredConstructors();
         Constructor<?> ctor = null;
         for (int i = 0; i < ctors.length; i++) {

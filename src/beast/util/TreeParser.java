@@ -112,7 +112,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * Ensure the class behaves properly, even when inputs are not specified.
      */
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	boolean sortNodesAlphabetically = false;
 
         if (dataInput.get() != null) {
@@ -236,7 +236,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public TreeParser() {
     }
 
-    public TreeParser(final Alignment alignment, final String newick) throws Exception {
+    public TreeParser(final Alignment alignment, final String newick) {
         dataInput.setValue(alignment, this);
         newickInput.setValue(newick, this);
         initAndValidate();
@@ -252,12 +252,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      *                  so, name(node with nodeNumber) = taxaNames[nodeNumber-offset]
      * @param adjustTipHeightsWhenMissingDateTraits
      *                  true if tip heights should be adjusted to zero
-     * @throws Exception
      */
     public TreeParser(final List<String> taxaNames,
                       final String newick,
                       final int offset,
-                      final boolean adjustTipHeightsWhenMissingDateTraits) throws Exception {
+                      final boolean adjustTipHeightsWhenMissingDateTraits) {
 
         if (taxaNames == null) {
             isLabelledNewickInput.setValue(true, this);
@@ -277,7 +276,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      *
      * @param newick a string representing a tree in newick format
      */
-    public TreeParser(final String newick) throws Exception {
+    public TreeParser(final String newick) {
         this(newick, false, true, true, 1);
     }
 
@@ -285,21 +284,19 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @param newick                a string representing a tree in newick format
      * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
      * @param allowSingleChildNodes true if internal nodes with single children are allowed
-     * @throws Exception
      */
     public TreeParser(final String newick,
                       final boolean adjustTipHeights,
-                      final boolean allowSingleChildNodes) throws Exception {
+                      final boolean allowSingleChildNodes) {
         this(newick, adjustTipHeights, allowSingleChildNodes, true, 1);
     }
 
     /**
      * @param newick           a string representing a tree in newick format
      * @param adjustTipHeights true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
-     * @throws Exception
      */
     public TreeParser(final String newick,
-                      final boolean adjustTipHeights) throws Exception {
+                      final boolean adjustTipHeights) {
         this(newick, adjustTipHeights, true, true, 1);
     }
 
@@ -311,13 +308,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @param offset                if isLabeled == false and node labeling starts with x
      *                              then offset should be x. When isLabeled == true offset should
      *                              be 1 as by default.
-     * @throws Exception
      */
     public TreeParser(final String newick,
                       final boolean adjustTipHeights,
                       final boolean allowSingleChildNodes,
                       final boolean isLabeled,
-                      final int offset) throws Exception {
+                      final int offset) {
 
         newickInput.setValue(newick, this);
         isLabelledNewickInput.setValue(isLabeled, this);

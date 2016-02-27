@@ -26,7 +26,7 @@ public class CompoundValuable extends CalculationNode implements Function {
     double[] m_fValues;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // determine dimension
         int dimension = 0;
         for (BEASTObject beastObject : m_values.get()) {

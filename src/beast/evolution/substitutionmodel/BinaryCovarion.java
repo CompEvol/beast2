@@ -1,5 +1,7 @@
 package beast.evolution.substitutionmodel;
 
+import java.lang.reflect.InvocationTargetException;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -91,7 +93,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         alpha = alphaInput.get();
         switchRate = switchRateInput.get();
         frequencies = frequenciesInput.get();
@@ -133,7 +135,12 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         storedUnnormalizedQ = new double[4][4];
 
         updateMatrix = true;
-        eigenSystem = createEigenSystem();
+        try {
+			eigenSystem = createEigenSystem();
+		} catch (SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[4 * 3];
         storedRelativeRates = new double[4 * 3];

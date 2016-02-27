@@ -24,10 +24,15 @@
 */
 package beast.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
@@ -119,7 +124,7 @@ public class MCMC extends Runnable {
 
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         Log.info.println("===============================================================================");
         Log.info.println("Citations for this model:");
         Log.info.println(getCitations());
@@ -253,7 +258,7 @@ public class MCMC extends Runnable {
     protected List<Logger> loggers;
 
     @Override
-    public void run() throws Exception {
+    public void run() throws IOException, SAXException, ParserConfigurationException {
         // set up state (again). Other beastObjects may have manipulated the
         // StateNodes, e.g. set up bounds or dimensions
         state.initAndValidate();
@@ -283,6 +288,9 @@ public class MCMC extends Runnable {
         }
         final long startTime = System.currentTimeMillis();
 
+        state.storeCalculationNodes();
+
+        
         // do the sampling
         logAlpha = 0;
         debugFlag = Boolean.valueOf(System.getProperty("beast.debug"));
@@ -351,9 +359,10 @@ public class MCMC extends Runnable {
 
 
     /**
-     * main MCMC loop *
+     * main MCMC loop 
+     * @throws IOException *
      */
-    protected void doLoop() throws Exception {
+    protected void doLoop() throws IOException {
         int corrections = 0;
         final boolean isStochastic = posterior.isStochastic();
         
@@ -370,7 +379,7 @@ public class MCMC extends Runnable {
 //            }
 
             final Operator operator = operatorSchedule.selectOperator();
-            // System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
+            //System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
             Evaluator evaluator = null;
@@ -419,7 +428,7 @@ public class MCMC extends Runnable {
                     if (sampleNr >= 0) {
                         operator.accept();
                     }
-                    // System.err.print(" accept");
+                    //System.err.print(" accept");
                 } else {
                     // reject
                     if (sampleNr >= 0) {
@@ -427,7 +436,7 @@ public class MCMC extends Runnable {
                     }
                     state.restore();
                     state.restoreCalculationNodes();
-                    // System.err.print(" reject");
+                    //System.err.print(" reject");
                 }
                 state.setEverythingDirty(false);
             } else {
@@ -440,7 +449,7 @@ public class MCMC extends Runnable {
                     state.setEverythingDirty(false);
                     state.restoreCalculationNodes();
 				}
-				// System.err.print(" direct reject");
+				//System.err.print(" direct reject");
             }
             log(sampleNr);
 
@@ -449,15 +458,16 @@ public class MCMC extends Runnable {
                 // sample, as long as we are in debug mode
             	final double originalLogP = isStochastic ? posterior.getNonStochasticLogP() : oldLogLikelihood;
                 final double logLikelihood = isStochastic ? state.robustlyCalcNonStochasticPosterior(posterior) : state.robustlyCalcPosterior(posterior);
-                if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
+                if (isTooDifferent(logLikelihood, originalLogP)) {
                     reportLogLikelihoods(posterior, "");
                     Log.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + logLikelihood
+                    		+ "(" + (originalLogP - logLikelihood) + ")"
                             + " Operator: " + operator.getClass().getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch off debug mode once a sufficient large sample is checked
                     debugFlag = false;
-                    if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
+                    if (isTooDifferent(logLikelihood, originalLogP)) {
                         // incorrect calculation outside debug period.
                         // This happens infrequently enough that it should repair itself after a robust posterior calculation
                         corrections++;
@@ -471,7 +481,7 @@ public class MCMC extends Runnable {
                         oldLogLikelihood = state.robustlyCalcPosterior(posterior);;
                     }
                 } else {
-                    if (Math.abs(logLikelihood - originalLogP) > 1e-6) {
+                    if (isTooDifferent(logLikelihood, originalLogP)) {
                         // halt due to incorrect posterior during intial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();
@@ -498,7 +508,13 @@ public class MCMC extends Runnable {
         }
     }
 
-    /**
+    private boolean isTooDifferent(double logLikelihood, double originalLogP) {
+    	//return Math.abs((logLikelihood - originalLogP)/originalLogP) > 1e-6;
+    	return Math.abs(logLikelihood - originalLogP) > 1e-6;
+	}
+
+
+	/*
      * report posterior and subcomponents recursively, for debugging
      * incorrectly recalculated posteriors *
      */
@@ -521,7 +537,7 @@ public class MCMC extends Runnable {
      * Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
-    public double robustlyCalcPosterior(final Distribution posterior) throws Exception {
+    public double robustlyCalcPosterior(final Distribution posterior) {
         return state.robustlyCalcPosterior(posterior);
     }
 
@@ -530,7 +546,7 @@ public class MCMC extends Runnable {
      * Calculate posterior by setting all StateNodes and CalculationNodes dirty.
      * Clean everything afterwards.
      */
-    public double robustlyCalcNonStochasticPosterior(final Distribution posterior) throws Exception {
+    public double robustlyCalcNonStochasticPosterior(final Distribution posterior) {
         return state.robustlyCalcNonStochasticPosterior(posterior);
     }
 } // class MCMC

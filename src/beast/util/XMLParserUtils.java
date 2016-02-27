@@ -255,7 +255,7 @@ public class XMLParserUtils {
 	}
 
 //	/** get value of the input of a beast object with name specified in input **/
-//    static Object getValue(BEASTInterface beastObject, InputType input) throws Exception {
+//    static Object getValue(BEASTInterface beastObject, InputType input) {
 //    	if (input.isInput()) {
 //    		// input represents simple Input
 //    		return beastObject.getInput(input.getName()).get();

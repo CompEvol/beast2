@@ -91,7 +91,7 @@ public class Node extends BEASTObject {
     public Node() {
     }
 
-    public Node(final String id) throws Exception {
+    public Node(final String id) {
         setID(id);
         initAndValidate();
     }
@@ -101,7 +101,7 @@ public class Node extends BEASTObject {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         // do nothing
     }
 
@@ -651,7 +651,7 @@ public class Node extends BEASTObject {
      *
      * @param scale scale factor
      */
-    public void scale(final double scale) throws Exception {
+    public void scale(final double scale) {
         startEditing();
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf() && !isFake()) {
@@ -675,9 +675,8 @@ public class Node extends BEASTObject {
 //     * @param scale    the scalar to multiply each scaled node age by
 //     * @param scaleSNodes true if sampled nodes should be scaled as well as internal nodes, false if only non-sampled
 //     *                  internal nodes should be scaled.
-//     * @throws Exception throws exception if resulting tree would have negative branch lengths.
 //     */
-//    public void scale(double scale, boolean scaleSNodes) throws Exception {
+//    public void scale(double scale, boolean scaleSNodes) {
 //        startEditing();
 //        isDirty |= Tree.IS_DIRTY;
 //        if (scaleSNodes || (!isLeaf() && !isFake())) {
@@ -689,7 +688,7 @@ public class Node extends BEASTObject {
 //                (getRight()).scale(scale, scaleSNodes);
 //            }
 //            if (height < getLeft().height || height < getRight().height) {
-//                throw new Exception("Scale gives negative branch length");
+//                throw new IllegalArgumentException("Scale gives negative branch length");
 //            }
 //        }
 //    }

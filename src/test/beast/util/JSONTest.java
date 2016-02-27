@@ -35,7 +35,7 @@ public class JSONTest extends TestCase {
     @Test
     public void testJSONFragmentParsing() throws Exception {
     	JSONParser parser = new JSONParser();
-    	String json = "{version: \"2.3\",\n" + 
+    	String json = "{version: \"2.4\",\n" + 
     			"\n" + 
     			"beast: [\n" + 
     			"{spec:\"beast.core.parameter.RealParameter\",\n" +
@@ -76,7 +76,7 @@ public class JSONTest extends TestCase {
     	
     	
     	// test that default value for param1 comes through
-    	String json2 = "{version: \"2.3\",\n" + 
+    	String json2 = "{version: \"2.4\",\n" + 
     			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\",\n" + 
     			"\n" + 
     			"beast: [\n" + 
@@ -103,7 +103,7 @@ public class JSONTest extends TestCase {
     	
 
     	// test that array of doubles comes through in second constructor
-    	String json3 = "{version: \"2.3\",\n" + 
+    	String json3 = "{version: \"2.4\",\n" + 
     			"namespace: \"beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood\",\n" + 
     			"\n" + 
     			"beast: [\n" + 

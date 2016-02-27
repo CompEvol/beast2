@@ -1,5 +1,7 @@
 package beast.evolution.substitutionmodel;
 
+import java.lang.reflect.InvocationTargetException;
+
 import beast.core.Description;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
@@ -17,7 +19,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     double[] m_empiricalRates;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         frequencies = getEmpericalFrequencieValues();
         m_empiricalRates = getEmpericalRateValues();
         int freqs = frequencies.getFreqs().length;
@@ -28,7 +30,12 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
 
         updateMatrix = true;
         nrOfStates = frequencies.getFreqs().length;
-        eigenSystem = createEigenSystem();
+        try {
+			eigenSystem = createEigenSystem();
+		} catch (SecurityException | ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         rateMatrix = new double[nrOfStates][nrOfStates];
         relativeRates = new double[m_empiricalRates.length];
         storedRelativeRates = new double[m_empiricalRates.length];
@@ -43,7 +50,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     /**
      * convert empirical rates into a RealParameter, only off diagonal entries are recorded *
      */
-    double[] getEmpericalRateValues() throws Exception {
+    double[] getEmpericalRateValues() {
         double[][] matrix = getEmpiricalRates();
         int[] order = getEncodingOrder();
         int states = matrix.length;
@@ -65,7 +72,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     /**
      * convert empirical frequencies into a RealParameter *
      */
-    Frequencies getEmpericalFrequencieValues() throws Exception {
+    Frequencies getEmpericalFrequencieValues() {
         double[] freqs = getEmpiricalFrequencies();
         int[] order = getEncodingOrder();
         int states = freqs.length;

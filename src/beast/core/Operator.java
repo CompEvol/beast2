@@ -210,7 +210,7 @@ public abstract class Operator extends BEASTObject {
      * state nodes that are input to the operator but are never changed
      * in a proposal should not be listed
      */
-    public List<StateNode> listStateNodes() throws Exception {
+    public List<StateNode> listStateNodes() {
         // pick up all inputs that are stateNodes that are estimated
         final List<StateNode> list = new ArrayList<>();
         for (BEASTInterface o : listActiveBEASTObjects()) {

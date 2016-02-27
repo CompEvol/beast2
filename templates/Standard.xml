@@ -149,7 +149,7 @@
 		<alignmentProvider id="Import Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
 
 
-        <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.ThreadedTreeLikelihood' mainid='mcmc'>
 <![CDATA[
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
@@ -159,7 +159,7 @@
                 <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
             </plugin>
 
-            <plugin spec='TreeLikelihood' id="treeLikelihood.$(n)">
+            <plugin spec='ThreadedTreeLikelihood' id="treeLikelihood.$(n)">
                 <data idref="data"/>
                 <tree idref="Tree.t:$(n)"/>
                 <siteModel idref="SiteModel.s:$(n)"/>

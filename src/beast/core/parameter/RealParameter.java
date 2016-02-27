@@ -27,12 +27,12 @@ public class RealParameter extends Parameter.Base<Double> {
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public RealParameter(final String value) throws Exception {
+    public RealParameter(final String value) {
         init(0.0, 0.0, value, 1);
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (lowerValueInput.get() != null) {
             m_fLower = lowerValueInput.get();
         } else {
@@ -92,7 +92,7 @@ public class RealParameter extends Parameter.Base<Double> {
      * StateNode methods *
      */
     @Override
-    public int scale(final double scale) throws Exception {
+    public int scale(final double scale) {
         for (int i = 0; i < values.length; i++) {
             values[i] *= scale;
             if (values[i] < m_fLower || values[i] > m_fUpper) {

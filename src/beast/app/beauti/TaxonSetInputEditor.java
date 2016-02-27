@@ -307,7 +307,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
      * guesses taxon sets based on pattern in regExp based on the taxa in
      * m_rawData
      */
-    public int guessTaxonSets(String regexp, int minSize) throws Exception {
+    public int guessTaxonSets(String regexp, int minSize) {
         m_taxonset.clear();
         HashMap<String, TaxonSet> map = new HashMap<>();
         Pattern m_pattern = Pattern.compile(regexp);

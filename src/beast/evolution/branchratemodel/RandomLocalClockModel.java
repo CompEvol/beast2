@@ -35,7 +35,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     RealParameter meanRate;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         m_tree = treeInput.get();
 
         BooleanParameter indicators = indicatorParamInput.get();

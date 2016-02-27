@@ -62,7 +62,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 
     @SuppressWarnings("unchecked")
 	@Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     	ploidy = ploidyInput.get();
 //    	switch (m_ploidy.get()) {
 //			case autosomal_nuclear: m_fPloidy = 2.0; break;

@@ -52,6 +52,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -526,7 +527,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             repaint();
         }
 
-        private void writeSVG(String fileName) throws Exception {
+        private void writeSVG(String fileName) throws FileNotFoundException {
             PrintStream out = new PrintStream(fileName);
             out.println("<?xml version='1.0'?>\n" + "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n"
                     + "  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n"

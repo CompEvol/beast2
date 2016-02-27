@@ -18,7 +18,7 @@ public class Dirichlet extends ParametricDistribution {
     final public Input<RealParameter> alphaInput = new Input<>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Dirichlet extends ParametricDistribution {
 
 
     @Override
-    public double calcLogP(Function pX) throws Exception {
+    public double calcLogP(Function pX) {
         Double[] alpha = alphaInput.get().getValues();
         if (alphaInput.get().getDimension() != pX.getDimension()) {
             throw new IllegalArgumentException("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()

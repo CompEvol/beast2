@@ -32,7 +32,7 @@ public class YuleModel extends SpeciesTreeDistribution {
     protected boolean conditionalOnOrigin;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         conditionalOnRoot = conditionalOnRootInput.get();
         conditionalOnOrigin = originHeightParameterInput.get() != null;

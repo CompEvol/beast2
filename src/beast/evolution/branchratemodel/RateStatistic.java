@@ -62,7 +62,7 @@ public class RateStatistic extends BEASTObject implements Loggable, Function {
     final static int COEFFICIENT_OF_VARIATION = 2;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         tree = treeInput.get();
         branchRateModel = branchRateModelInput.get();
         if (branchRateModel == null) {

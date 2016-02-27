@@ -28,6 +28,7 @@ package beast.app;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -152,9 +153,10 @@ public class DocMaker {
     }
 
     /**
-     * create CSS style sheet for all pages *
+     * create CSS style sheet for all pages 
+     * @throws FileNotFoundException *
      */
-    void createCSS() throws Exception {
+    void createCSS() throws FileNotFoundException  {
         PrintStream out = new PrintStream(m_sDir + "/doc.css");
         out.println(getCSS());
         out.close();
@@ -247,9 +249,10 @@ public class DocMaker {
     }
 
     /**
-     * create plug in index pages, shown in left frame *
+     * create plug in index pages, shown in left frame 
+     * @throws FileNotFoundException *
      */
-    void createIndex() throws Exception {
+    void createIndex() throws FileNotFoundException  {
         {
             PrintStream out = new PrintStream(m_sDir + "/index.html");
             out.println("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN'\n" +
@@ -368,9 +371,10 @@ public class DocMaker {
     }
 
     /**
-     * Create page for individual plug-in *
+     * Create page for individual plug-in 
+     * @throws FileNotFoundException *
      */
-    void createBEASTObjectPage(String beastObjectName) throws Exception {
+    void createBEASTObjectPage(String beastObjectName) throws FileNotFoundException {
         PrintStream out = new PrintStream(m_sDir + "/" + beastObjectName + ".html");
         try {
             out.print(getHTML(beastObjectName, true));
@@ -381,7 +385,7 @@ public class DocMaker {
     } // createBEASTObjectPage
 
 
-    public String getHTML(String beastObjectName, boolean useExternalStyleSheet) throws Exception {
+    public String getHTML(String beastObjectName, boolean useExternalStyleSheet) throws InstantiationException, IllegalAccessException, ClassNotFoundException  {
         StringBuffer buf = new StringBuffer();
         buf.append("<html>\n<head>\n<title>BEAST " + version.getVersionString() + " Documentation: " + beastObjectName + "</title>\n");
         if (useExternalStyleSheet) {
@@ -546,8 +550,9 @@ public class DocMaker {
      * including index page + frame
      * individual pages for each plug in
      * *
+     * @throws FileNotFoundException 
      */
-    public void generateDocs() throws Exception {
+    public void generateDocs() throws FileNotFoundException {
         // first, produce CSS & index page
         createCSS();
         createIndex();

@@ -89,7 +89,7 @@ public class Expectation extends BEASTObject {
     }
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		// TODO Auto-generated method stub
 		
 	}

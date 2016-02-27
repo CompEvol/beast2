@@ -20,7 +20,7 @@ public class UniformOperator extends Operator {
     int lowerIndex, upperIndex;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         parameter = parameterInput.get();
         if (parameter instanceof RealParameter) {
             lower = (Double) parameter.getLower();

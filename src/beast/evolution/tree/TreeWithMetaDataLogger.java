@@ -32,7 +32,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     private DecimalFormat df;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (parameterInput.get().size() == 0 && clockModelInput.get() == null) {
         	someMetaDataNeedsLogging = false;
         	return;
@@ -56,7 +56,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         treeInput.get().init(out);
     }
 

@@ -26,16 +26,16 @@ public interface DataType {
      * Ambiguous states should be represented by integer numbers higher than getStateCount()
      * throws exception when parsing error occur *
      */
-    List<Integer> string2state(String sequence) throws Exception;
+    List<Integer> string2state(String sequence);
 
     /**
      * Convert an array of states into a sequence represented by a string.
      * This is the inverse of string2state()
      * throws exception when State cannot be mapped *
      */
-    String state2string(List<Integer> states) throws Exception;
+    String state2string(List<Integer> states);
 
-    String state2string(int[] states) throws Exception;
+    String state2string(int[] states);
 
     /**
      * returns an array of length getStateCount() containing the (possibly ambiguous) states
@@ -108,7 +108,7 @@ public interface DataType {
         protected int[][] mapCodeToStateSet;
 
         @Override
-        public void initAndValidate() throws Exception {
+        public void initAndValidate() {
             if (mapCodeToStateSet != null) {
                 if (mapCodeToStateSet.length != codeMap.length() / codeLength) {
                     throw new IllegalArgumentException("codeMap and mapCodeToStateSet have incompatible lengths");
@@ -125,7 +125,7 @@ public interface DataType {
          * implementation for single character per state encoding *
          */
         @Override
-        public List<Integer> string2state(String data) throws Exception {
+        public List<Integer> string2state(String data) {
             List<Integer> sequence;
             sequence = new ArrayList<>();
             // remove spaces
@@ -283,7 +283,7 @@ public interface DataType {
         }
         
         /** return state associated with a character */
-        public Integer char2state(String character) throws Exception {
+        public Integer char2state(String character) {
         	return string2state(character).get(0);
         }
     } // class Base

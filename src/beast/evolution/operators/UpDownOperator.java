@@ -37,7 +37,7 @@ public class UpDownOperator extends Operator {
     private double upper,lower;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         scaleFactor = scaleFactorInput.get();
         // sanity checks
         if (upInput.get().size() + downInput.get().size() == 0) {

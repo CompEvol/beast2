@@ -28,12 +28,12 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
     /**
      * Constructor used by Input.setValue(String) *
      */
-    public IntegerParameter(String value) throws Exception {
+    public IntegerParameter(String value) {
         init(0, 0, value, 1);
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (lowerValueInput.get() != null) {
             m_fLower = lowerValueInput.get();
         } else {

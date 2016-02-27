@@ -49,7 +49,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     private int branchCount;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         tree = treeInput.get();
         branchCount = tree.getNodeCount() - 1;

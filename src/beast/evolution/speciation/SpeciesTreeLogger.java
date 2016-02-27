@@ -44,7 +44,7 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void init(final PrintStream out) throws Exception {
+    public void init(final PrintStream out) {
         treeInput.get().init(out);
     }
 

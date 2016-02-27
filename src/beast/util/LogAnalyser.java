@@ -70,32 +70,32 @@ public class LogAnalyser {
      *
      * @param args
      * @param burnInPercentage  burnInPercentage typical = 10; percentage of data that can be ignored
-     * @throws Exception
+     * @throws IOException 
      */
-    public LogAnalyser(String[] args, int burnInPercentage) throws Exception {
+    public LogAnalyser(String[] args, int burnInPercentage) throws IOException {
         fileName = args[args.length - 1];
         readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String[] args) throws Exception {
+    public LogAnalyser(String[] args) throws IOException {
         this(args, BURN_IN_PERCENTAGE);
     }
 
-    public LogAnalyser(String fileName, int burnInPercentage) throws Exception {
+    public LogAnalyser(String fileName, int burnInPercentage) throws IOException {
         this.fileName = fileName;
         readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws Exception {
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws IOException {
         this.fileName = fileName;
         this.quiet = quiet;
         readLogFile(fileName, burnInPercentage);
         calcStats();
     }
 
-    public LogAnalyser(String fileName) throws Exception {
+    public LogAnalyser(String fileName) throws IOException {
         this(fileName, BURN_IN_PERCENTAGE);
     }
 

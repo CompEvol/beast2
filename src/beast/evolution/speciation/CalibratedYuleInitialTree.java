@@ -29,6 +29,8 @@ package beast.evolution.speciation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math.MathException;
+
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -47,13 +49,13 @@ public class CalibratedYuleInitialTree extends Tree implements StateNodeInitiali
                     Input.Validate.REQUIRED);
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         initStateNodes();
     }
 
     @Override
-    public void initStateNodes() throws Exception {
+    public void initStateNodes() {
         // Would have been nice to use the MCMC CalibratedYuleModel beastObject directly, but at this point
         // it does not exist since the tree being initialized is one of its arguments. So, build a temporary
         // one using the initializer tree.
@@ -68,7 +70,12 @@ public class CalibratedYuleInitialTree extends Tree implements StateNodeInitiali
         cym.setInputValue("type", CalibratedYuleModel.Type.NONE);
         cym.initAndValidate();
 
-        final Tree t = cym.compatibleInitialTree();
+        Tree t;
+		try {
+			t = cym.compatibleInitialTree();
+		} catch (MathException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
         m_initial.get().assignFromWithoutID(t);
     }
 

@@ -16,6 +16,11 @@ import junit.framework.TestCase;
 
 public class DocumentationTest extends TestCase {
 
+	
+	{
+		System.setProperty("beast.is.junit.testing", "true");
+	}
+	
     /**
      * Check all plug-ins have a proper description so that
      * everything is at least moderately well documented. *

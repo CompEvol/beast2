@@ -28,25 +28,25 @@ public class TaxonSet extends Taxon {
     public TaxonSet() {
     }
 
-    public TaxonSet(final List<Taxon> taxa) throws Exception {
+    public TaxonSet(final List<Taxon> taxa) {
         taxonsetInput.setValue(taxa, this);
         initAndValidate();
     }
     
-    public TaxonSet(final Alignment alignment) throws Exception {
+    public TaxonSet(final Alignment alignment) {
         alignmentInput.setValue(alignment, this);
         initAndValidate();
     }
 
     // for testing purposes (Huw)
-    public TaxonSet(final String id, final List<Taxon> taxa) throws Exception {
+    public TaxonSet(final String id, final List<Taxon> taxa) {
         setID(id);
         taxonsetInput.setValue(taxa, this);
         initAndValidate();
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         taxonList = taxonsetInput.get();
         if (alignmentInput.get() != null) {
             if (taxonList.size() > 0) {

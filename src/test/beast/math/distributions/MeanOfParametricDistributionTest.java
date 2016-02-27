@@ -38,17 +38,17 @@ public class MeanOfParametricDistributionTest extends TestCase {
 		Gamma gamma = new Gamma();
 		gamma.initByName("alpha", "100", "beta", "10");
 		double mean = gamma.getMean();
-        assertEquals(mean, 10, 1e-10);
+        assertEquals(mean, 1000, 1e-10);
 
         gamma = new Gamma();
 		gamma.initByName("alpha", "100", "beta", "100");
 		mean = gamma.getMean();
-        assertEquals(mean, 1, 1e-10);
+        assertEquals(mean, 10000, 1e-10);
 
         gamma = new Gamma();
 		gamma.initByName("alpha", "100", "beta", "10", "offset", "3");
 		mean = gamma.getMean();
-        assertEquals(mean, 13, 1e-10);
+        assertEquals(mean, 1003, 1e-10);
 	}
 
 
@@ -91,7 +91,7 @@ public class MeanOfParametricDistributionTest extends TestCase {
             exp = new LogNormalDistributionModel();
     		exp.initByName("M", "1", "S", "1", "meanInRealSpace", false, "offset", "3");
     		mean = exp.getMean();
-            assertEquals(mean, 4, 1e-10);
+            assertEquals(mean, 4.4816890703380645, 1e-10);
         } catch (RuntimeException e) {
         	// we are fine here
         }

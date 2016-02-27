@@ -29,6 +29,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +53,10 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.json.JSONException;
+import org.xml.sax.SAXException;
 
 import beagle.BeagleFlag;
 import beast.app.beastapp.BeastDialog;
@@ -64,6 +69,7 @@ import beast.core.Runnable;
 import beast.core.util.Log;
 import beast.util.AddOnManager;
 import beast.util.JSONParser;
+import beast.util.JSONParserException;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLParserException;
@@ -98,10 +104,11 @@ public class BeastMCMC {
 
     /**
      * parse command line arguments, and load file if specified
-     *
-     * @throws Exception *
+     * @throws IOException 
+     * @throws JSONException 
+     * @throws JSONParserException 
      */
-    public void parseArgs(String[] args) throws Exception {
+    public void parseArgs(String[] args) throws IOException, XMLParserException, JSONException {
         int i = 0;
         boolean resume = false;
 
@@ -248,7 +255,11 @@ public class BeastMCMC {
         if (beastFile.getPath().toLowerCase().endsWith(".json")) {
             m_runnable = new JSONParser().parseFile(beastFile);
         } else {        	
-        	m_runnable = new XMLParser().parseFile(beastFile);
+        	try {
+				m_runnable = new XMLParser().parseFile(beastFile);
+			} catch (SAXException | ParserConfigurationException e) {
+				throw new IllegalArgumentException(e);
+			}
         }
         m_runnable.setStateFile(beastFile.getName() + ".state", resume);
     } // parseArgs

@@ -175,7 +175,7 @@ public class Package {
         String depString = "";
         for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
             String s = packageDependency.dependencyName;
-            if (!s.equalsIgnoreCase("beast2")) {
+            if (!s.equalsIgnoreCase(AddOnManager.BEAST_PACKAGE)) {
                 depString +=  s + ", ";
             }
         }
@@ -194,7 +194,7 @@ public class Package {
         String html = "<html>";
         html += "<h1>" + packageName + "</h1>";
         html += "<p>Installed version: " + getStatusString() + "</p>";
-        html += "<p>Latestversion: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
+        html += "<p>Latest version: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
         html += "<p>" + description +"</p>";
         html += "</html>";
         return html;

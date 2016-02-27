@@ -37,7 +37,7 @@ public class TipDatesRandomWalker extends TreeOperator {
     boolean reflectValue = true;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         windowSize = windowSizeInput.get();
         useGaussian = useGaussianInput.get();
 

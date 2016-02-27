@@ -21,7 +21,7 @@ public class Uniform extends ParametricDistribution {
     private boolean infiniteSupport;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         _lower = lowerInput.get();
         _upper = upperInput.get();
         if (_lower >= _upper) {

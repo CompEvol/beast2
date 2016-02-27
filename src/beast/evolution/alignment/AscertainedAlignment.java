@@ -32,7 +32,7 @@ public class AscertainedAlignment extends Alignment {
 //	List<Integer> m_nIncluded;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
         int from = excludefromInput.get();

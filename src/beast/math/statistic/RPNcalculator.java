@@ -39,7 +39,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
     int dim;
 
     @Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 
         names = new ArrayList<>();
         dim = parametersInput.get().get(0).getDimension();

@@ -48,7 +48,7 @@ public class MarkovChainDistribution extends Distribution {
     boolean useLogNormal;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         reverse = isReverseInput.get();
         jeffreys = isJeffreysInput.get();
         uselog = useLogInput.get();
@@ -67,7 +67,7 @@ public class MarkovChainDistribution extends Distribution {
      */
     @SuppressWarnings("deprecation")
 	@Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0.0;
         // jeffreys Prior!
         if (jeffreys) {

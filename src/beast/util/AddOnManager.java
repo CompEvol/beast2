@@ -82,8 +82,10 @@ public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     public final static String TO_INSTALL_LIST_FILE = "toInstallList";
+    public final static String BEAST_PACKAGE = "BEAST";
 
-    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
+//    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
+    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
 
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "not installed";
@@ -98,8 +100,9 @@ public class AddOnManager {
      * Exception thrown when reading a package repository fails.
      */
     public static class PackageListRetrievalException extends Exception {
+		private static final long serialVersionUID = 1L;
 
-        /**
+		/**
          * Constructor for new exception.
          *
          * @param message Message explaining what went wrong
@@ -114,6 +117,7 @@ public class AddOnManager {
      * Exception thrown when an operation fails due to package dependency issues.
      */
     public static class DependencyResolutionException extends Exception {
+		private static final long serialVersionUID = 1L;
 
         /**
          * Constructor for new exception
@@ -280,17 +284,17 @@ public class AddOnManager {
 
         // Manually set currently-installed BEAST 2 version (won't have to do this soon!)
 
-        Package beastPkg;
-        if (packageMap.containsKey("beast2"))
-            beastPkg = packageMap.get("beast2");
-        else {
-            beastPkg = new Package("beast2");
-            packageMap.put("beast2", beastPkg);
-        }
-
-        PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
-        Set<PackageDependency> beastPkgDeps = new TreeSet<>();
-        beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
+//        Package beastPkg;
+//        if (packageMap.containsKey(BEAST_PACKAGE))
+//            beastPkg = packageMap.get(BEAST_PACKAGE);
+//        else {
+//            beastPkg = new Package(BEAST_PACKAGE);
+//            packageMap.put(BEAST_PACKAGE, beastPkg);
+//        }
+//
+//        PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
+//        Set<PackageDependency> beastPkgDeps = new TreeSet<>();
+//        beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
     }
 
     /**
@@ -403,8 +407,9 @@ public class AddOnManager {
         if (getToDeleteListFile().exists()) {
             // Write to-install file
 
-            File toDeleteList = getToDeleteListFile();
-            FileWriter outfile = new FileWriter(toDeleteList, true);
+        	// RRB: what are the following two lines for?
+            //File toDeleteList = getToDeleteListFile();
+            //FileWriter outfile = new FileWriter(toDeleteList, true);
             try (PrintStream ps = new PrintStream(getToInstallListFile())) {
                 for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
                     ps.println(entry.getKey() + ":" + entry.getValue());
@@ -1288,7 +1293,15 @@ public class AddOnManager {
 
         // sort result
         result.addAll(names);
-        Collections.sort(result); //, new StringCompare());
+        Collections.sort(result, (s1, s2) -> {
+        	if (s1.equals(BEAST_PACKAGE)) {
+        		return -1;
+        	}
+        	if (s2.equals(BEAST_PACKAGE)) {
+        		return 1;
+        	}
+        	return s1.compareTo(s2);
+        }); //, new StringCompare());
 
         return result;
     }
@@ -1335,7 +1348,15 @@ public class AddOnManager {
         }
 
         // sort result
-        Collections.sort(result); //, new StringCompare());
+        Collections.sort(result, (s1, s2) -> {
+        	if (s1.equals(BEAST_PACKAGE)) {
+        		return -1;
+        	}
+        	if (s2.equals(BEAST_PACKAGE)) {
+        		return 1;
+        	}
+        	return s1.compareTo(s2);
+        }); //, new StringCompare());
         // remove duplicates
         for (int i = result.size() - 1; i > 0; i--) {
             if (result.get(i).equals(result.get(i - 1))) {
@@ -1374,8 +1395,8 @@ public class AddOnManager {
         // Assemble list of packages (excluding beast2), keeping track of maximum field widths
         List<Package> packageList = new ArrayList<>();
         for (Package pkg : packageMap.values()) {
-            if (pkg.getName().equals("beast2"))
-                continue;
+//            if (pkg.getName().equals(BEAST_PACKAGE))
+//                continue;
 
             packageList.add(pkg);
 
@@ -1409,13 +1430,30 @@ public class AddOnManager {
             ps.print("-");
         ps.println();
 
+
         // Print formatted package information
         for (Package pkg : packageList) {
-            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
-            ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
-            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
-            ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
-            ps.printf("%s\n", pkg.getDescription());
+        	if (pkg.getName().equals(BEAST_PACKAGE)) {
+        		ps.printf(nameFormat, pkg.getName()); ps.print(sep);
+		        ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
+		        ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
+		        ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
+		        ps.printf("%s\n", pkg.getDescription());
+        	}
+        }
+        for (int i=0; i<totalWidth; i++)
+            ps.print("-");
+        ps.println();
+        
+        // Print formatted package information
+        for (Package pkg : packageList) {
+        	if (!pkg.getName().equals(BEAST_PACKAGE)) {
+	            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
+	            ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
+	            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
+	            ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
+	            ps.printf("%s\n", pkg.getDescription());
+        	}
         }
     }
 

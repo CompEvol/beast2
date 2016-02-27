@@ -68,7 +68,7 @@ public class InputShape extends Shape {
         return m_beastObjectShape.m_beastObject;
     }
 
-    String getInputName() throws Exception {
+    String getInputName() {
         String name = getLabel();
         if (name.indexOf('=') >= 0) {
             name = name.substring(0, name.indexOf('='));

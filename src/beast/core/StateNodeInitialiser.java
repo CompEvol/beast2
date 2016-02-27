@@ -25,7 +25,7 @@ public interface StateNodeInitialiser {
     /**
      * Called to set up start state. May be called multiple times. *
      */
-    void initStateNodes() throws Exception;
+    void initStateNodes();
 
     /**
      * @return list of StateNodes that are initialised

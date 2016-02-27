@@ -120,7 +120,7 @@ public class RealParameterListTest extends Operator {
     }
 
 	@Override
-	public void initAndValidate() throws Exception {
+	public void initAndValidate() {
 		// TODO Auto-generated method stub
 		
 	}

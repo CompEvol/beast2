@@ -67,7 +67,7 @@ public class CompoundDistribution extends Distribution {
     public static ExecutorService exec;
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         useThreads = useThreadsInput.get() && (BeastMCMC.m_nThreads > 1);
 		nrOfThreads = useThreads ? BeastMCMC.m_nThreads : 1;
@@ -93,7 +93,7 @@ public class CompoundDistribution extends Distribution {
      * Distribution implementation follows *
      */
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0;
         if (ignore) {
         	return logP;
@@ -142,7 +142,7 @@ public class CompoundDistribution extends Distribution {
 
     CountDownLatch countDown;
 
-    private double calculateLogPUsingThreads() throws Exception {
+    private double calculateLogPUsingThreads() {
         try {
 
             int dirtyDistrs = 0;
@@ -165,7 +165,7 @@ public class CompoundDistribution extends Distribution {
                 logP += distr.getCurrentLogP();
             }
             return logP;
-        } catch (RejectedExecutionException e) {
+        } catch (RejectedExecutionException | InterruptedException e) {
             useThreads = false;
             Log.err.println("Stop using threads: " + e.getMessage());
             return calculateLogP();
@@ -218,7 +218,7 @@ public class CompoundDistribution extends Distribution {
     }
     
     @Override
-    public double getNonStochasticLogP() throws Exception {
+    public double getNonStochasticLogP() {
         double logP = 0;
         if (ignore) {
         	return logP;

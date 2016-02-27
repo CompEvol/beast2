@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class OperatorSchedule extends BEASTObject {
     boolean detailedRejection = false;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         transform = transformInput.get();
         autoOptimise = autoOptimiseInput.get();
         autoOptimizeDelay = autoOptimizeDelayInput.get();
@@ -201,9 +202,9 @@ public class OperatorSchedule extends BEASTObject {
 
     /**
      * store operator optimisation specific information to file *
-     * @throws Exception
+     * @throws IOException
      */
-    public void storeToFile() throws Exception {
+    public void storeToFile() throws IOException {
         // appends state of operator set to state file
         File file = new File(stateFileName);
         PrintWriter out = new PrintWriter(new FileWriter(file, true));
@@ -225,9 +226,9 @@ public class OperatorSchedule extends BEASTObject {
 
     /**
      * restore operator optimisation specific information from file *
-     * @throws Exception
+     * @throws IOException
      */
-    public void restoreFromFile() throws Exception {
+    public void restoreFromFile() throws IOException {
         // reads state of operator set from state file
         String xml = "";
         final BufferedReader fin = new BufferedReader(new FileReader(stateFileName));

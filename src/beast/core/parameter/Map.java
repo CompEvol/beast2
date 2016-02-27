@@ -24,7 +24,7 @@ abstract public class Map<T> extends CalculationNode {
     abstract protected Class<?> mapType();
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         map = defaultInput.get();
     }
 

@@ -89,6 +89,8 @@
         <delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
         <delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
         <delete file="${build}/beast/app/util/Utils6.class" />
+        <delete file="${build}/beast/app/BEASTVersion.class" />
+        <delete file="${build}/beast/app/util/Version.class" />
         <javac source="1.6"
                target="1.6"
                bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
@@ -101,6 +103,8 @@
                includeAntRuntime='false'>
             <include name="beast/**/*Launcher.java" />
             <include name="beast/**/Utils6.java" />
+            <include name="beast/**/BEASTVersion.java" />
+            <include name="beast/**/Version.java" />
         </javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties" />
@@ -109,7 +113,7 @@
         <echo message="Successfully compiled." />
     </target>
 
-    <!-- make the beast.jar and beauti.jar -->
+    <!-- make the beast.jar -->
     <target name="dist_all_BEAST" depends="compile-all" description="create BEAST jar">
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}" />
@@ -137,6 +141,8 @@
             <fileset dir="${build}">
                 <include name="beast/**/*Launcher.class" />
                 <include name="beast/**/Utils6*.class" />
+                <include name="beast/**/BEASTVersion.class" />
+                <include name="beast/**/Version.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
             </fileset>
         </jar>
@@ -149,7 +155,23 @@
                 <include name="beast/**/*.xsl" />
             </fileset>
         </jar>
-    </target>
+
+        <!-- create BEAST package -->
+        <mkdir dir="${release_dir}/package/" />
+        <mkdir dir="${release_dir}/package/lib" />
+        <copy file="${dist}/beast.src.jar" todir="${release_dir}/package/"/>
+        <copy file="${dist}/beast.jar" todir="${release_dir}/package/lib/"/>
+        <copy file="../beast2/version.xml" todir="${release_dir}/package/"/>
+
+        <jar jarfile="${release_dir}/package/beast.package.${version}.zip">
+            <fileset dir="${release_dir}/package">
+                <include name="version.xml" />
+                <include name="lib/beast.jar" />
+                <include name="beast.src.jar" />
+            </fileset>
+        </jar>
+
+</target>
 
     <!-- run beast.jar -->
     <target name="run_BEAST">
@@ -215,10 +237,10 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.3.2" />
-    <property name="version_number" value="2.3.2" />
+    <property name="version" value="2.4.0" />
+    <property name="version_number" value="2.4.0" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2015" />
+    <property name="copyright" value="Beast 2 development team 2011-2016" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="beast_name" value="beast" />
