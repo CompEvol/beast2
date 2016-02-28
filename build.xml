@@ -237,7 +237,7 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.4.0" />
+    <property name="version" value="2.4.0pre1" />
     <property name="version_number" value="2.4.0" />
     <property name="release_dir" value="release" />
     <property name="copyright" value="Beast 2 development team 2011-2016" />
@@ -382,6 +382,7 @@
         <zip destfile="${Windows_dir}/${BEAST_name}.v${version}.zip">
             <zipfileset dir="${Windows_package_dir}" prefix="${BEAST_name}" />
         </zip>
+       <copy file="${Windows_dir}/${BEAST_name}.v${version}.zip" todir="../../tmp/" />
 
         <echo message="Windows version release is finished." />
     </target>
@@ -444,10 +445,14 @@
             </tar>-->
         <!-- [ANT Bug 550] the tar task change the mode of the executables files, have to tar manaully -->
         <echo message="Have to tar manaully, because [ANT Bug 550] the tar task change the mode of the executables files." />
-        <!-- tar -cvzf BEASTv1.x.x.tgz BEASTv1.x.x/ -->
-        <!-- cksum BEASTv1.x.x.tgz -->
-        <!-- tar -xvzf BEASTv1.x.x.tgz -->
+        <!-- tar -cvzf BEASTv1.x.x.tgz BEASTv2.x.x/ -->
+        <!-- cksum BEASTv2.x.x.tgz -->
+        <!-- tar -xvzf BEASTv2.x.x.tgz -->
         <echo message="Linux/Unix version release is finished." />
+        
+        <echo message="cd release/Linux"/>
+        <echo message="tar fcz BEAST.v${version}.tgz beast"/>
+        <echo message="cp BEAST.v${version}.tgz ../../../tmp"/>
     </target>
 
     <!-- Define the appbundler task -->
@@ -664,6 +669,9 @@
         </exec>
 
         <delete file="${Mac_dir}/pack.temp.dmg"/>
+        
+       <copy file="${Mac_dir}/${BEAST_name} v${version}.dmg" tofile="../../tmp/${Mac_dir}/${BEAST_name}.v${version}.dmg" />
+
 
         <echo message="Mac version release is finished." />
     </target>
