@@ -73,10 +73,11 @@ public class Frequencies extends CalculationNode {
      * return up to date frequencies *
      */
     public double[] getFreqs() {
-        if (needsUpdate) {
-
-            update();
-        }
+    	synchronized (this) {
+            if (needsUpdate) {
+                update();
+            }			
+		}
 
         return freqs;
     }

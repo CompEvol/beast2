@@ -283,7 +283,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
   		  	try {
 	            logPByThread[threadNr] = likelihood.calculateLogP();
   		  	} catch (Exception e) {
-  		  		System.err.println("Something went wrong ith thread " + threadNr);
+  		  		System.err.println("Something went wrong in thread " + threadNr);
 				e.printStackTrace();
 				System.exit(0);
 			}

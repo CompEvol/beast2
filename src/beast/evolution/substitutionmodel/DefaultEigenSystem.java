@@ -2,6 +2,7 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.util.Log;
 import beast.math.MachineAccuracy;
+import java.util.Arrays;
 
 /**
  * A default Eigen decomposition system
@@ -178,7 +179,10 @@ public class DefaultEigenSystem implements EigenSystem {
                 }
                 if (itn == 0) {
                     /* eigenvalues have not converged */
-                    Log.warning.println("Eigenvalues not converged");
+                    Log.warning.println("Eigenvalues not converged for Q-matrix");
+                    for (i = 0; i < n; i++) {
+                    	Log.warning.println(Arrays.toString(h[i]));
+                    }
                     throw new ArithmeticException();
                 }
                 y = h[na - 1][na - 1];
