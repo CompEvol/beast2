@@ -161,6 +161,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
                     break;
 			}
         }
+        addAlignments(doc, selectedBEASTObjects);
+        return selectedBEASTObjects;
+    }
+    
+    protected void addAlignments(BeautiDoc doc, List<BEASTInterface> selectedBEASTObjects) {
         for (BEASTInterface beastObject : selectedBEASTObjects) {
         	// ensure ID of alignment is unique
         	int k = 0;
@@ -173,7 +178,6 @@ public class BeautiAlignmentProvider extends BEASTObject {
         	sortByTaxonName(((Alignment) beastObject).sequenceInput.get());
             doc.addAlignmentWithSubnet((Alignment) beastObject, getStartTemplate());
         }
-        return selectedBEASTObjects;
     }
 
 	/** provide GUI for manipulating the alignment **/
@@ -196,11 +200,11 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	
 	/** return template to apply to this new alignment.
 	 * By default, the partition template of the current beauti template is returned **/
-	BeautiSubTemplate getStartTemplate() {
+	protected BeautiSubTemplate getStartTemplate() {
 		return template.get();
 	}
 
-    private void sortByTaxonName(List<Sequence> seqs) {
+    protected void sortByTaxonName(List<Sequence> seqs) {
         Collections.sort(seqs, (Sequence o1, Sequence o2) -> {
                 return o1.taxonInput.get().compareTo(o2.taxonInput.get());
             }
