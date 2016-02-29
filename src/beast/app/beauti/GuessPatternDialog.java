@@ -540,8 +540,9 @@ public class GuessPatternDialog extends JDialog {
             try {
                 BufferedReader fin = new BufferedReader(new FileReader(txtFile.getText()));
                 StringBuffer buf = new StringBuffer();
-                // eat up header
-                fin.readLine();
+                // do not eat up header -- it might contain a useful entry, 
+                // but if not, it will not hurt
+                // fin.readLine();
                 // process data
                 while (fin.ready()) {
                     String str = fin.readLine();
