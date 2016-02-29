@@ -548,7 +548,7 @@ public class GuessPatternDialog extends JDialog {
                     String str = fin.readLine();
                     str = str.replaceFirst("\t", "=") + ",";
                     // only add entries that are non-empty
-                    if (!str.matches("^\\s+=.*$")) {
+                    if (str.indexOf("=") > 0 && !str.matches("^\\s+=.*$")) {
                         buf.append(str);
                     }
                 }
@@ -557,6 +557,11 @@ public class GuessPatternDialog extends JDialog {
                 while (trait.endsWith(",")) {
                     trait = trait.substring(0, trait.length() - 1).trim();
                 }
+                
+               if (trait.trim().length() == 0) {
+            	   JOptionPane.showMessageDialog(m_parent, "Could not find traint information in the file. " +
+            			   "Perhaps this is not a tab-delimited but space file?");
+               }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(m_parent, "Loading trait from file failed:" + e.getMessage());
                 return Status.canceled;
