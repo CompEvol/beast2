@@ -724,11 +724,18 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
                 int [] patternWeights = dataInput.get().getWeights();
                 proportionInvariant = m_siteModel.getProportionInvariant();
-                for (int k : constantPattern) {
-                	int i = k / m_nStateCount;
-                	int j = k % m_nStateCount;
-                	logL += patternWeights[i] * (Math.log(Math.exp(patternLogLikelihoods[i]) + proportionInvariant * frequencies[j]) - patternLogLikelihoods[i]);
-                }
+                
+                
+    	        for (int k : constantPattern) {
+    	        	int i = k / m_nStateCount;
+    	        	int j = k % m_nStateCount;
+    	        	patternLogLikelihoods[i] = (Math.log(Math.exp(patternLogLikelihoods[i]) + proportionInvariant * frequencies[j]));
+    	        }
+        	
+	            logL = 0.0;
+	            for (int i = 0; i < patternCount; i++) {
+	                logL += patternLogLikelihoods[i] * patternWeights[i];
+	            }
             }
 
             if (Double.isNaN(logL) || Double.isInfinite(logL)) {
