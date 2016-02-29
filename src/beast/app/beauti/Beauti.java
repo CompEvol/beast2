@@ -318,7 +318,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         @Override
 		public void actionPerformed(ActionEvent ae) {
             File file = beast.app.util.Utils.getLoadFile("Load Beast XML File",
-                    new File(g_sDir), "Beast XML files", "xml");
+                    new File(g_sDir), "Beast XML files", "xml");//, "BEAST json file", "json");
             // JFileChooser fileChooser = new JFileChooser(g_sDir);
             // fileChooser.addChoosableFileFilter(ef1);
             // fileChooser.setDialogTitle("Load Beast XML File");
@@ -338,6 +338,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                             doc.getFileName().lastIndexOf(fileSep));
                 }
                 try {
+                	// TODO: deal with json files
                     doc.loadXML(new File(doc.getFileName()));
                     a_save.setEnabled(true);
                     a_saveas.setEnabled(true);

@@ -20,7 +20,10 @@ import beast.app.BEASTVersion;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.parameter.BooleanParameter;
+import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.TraitSet;
 
@@ -342,7 +345,7 @@ public class JSONProducer {
             		
             		// Parameters can use short hand notation if they are not in the state 
             		// Note this means lower and upper bounds are lost -- no problem for BEAST, but maybe for BEAUti
-            		if (value instanceof Parameter.Base) {
+            		if (value instanceof BooleanParameter || value instanceof IntegerParameter || value instanceof RealParameter) {
             			Parameter.Base parameter = (Parameter.Base) value;
             			boolean isInState = false;
             			for (Object o : parameter.getOutputs()) {
@@ -351,12 +354,16 @@ public class JSONProducer {
             					break;
             				}
             			}
-            			if (!isInState) {
-            				if (isShort) {
-                                buf.append(" " + input.getName() + ": \"" + parameter.getValue() + "\"");
-            				} else {
-            					return;
-            				}
+            			if (!isInState && parameter.getDimension() == 1 && parameter.getMinorDimension1() == 1) {
+            				// if not in state, bounds do not matter
+            				//if ((parameter instanceof RealParameter && parameter.getLower().equals(Double.NEGATIVE_INFINITY) && parameter.getUpper().equals(Double.POSITIVE_INFINITY)) ||
+            				//	(parameter instanceof IntegerParameter && parameter.getLower().equals(Integer.MIN_VALUE + 1) && parameter.getUpper().equals(Integer.MAX_VALUE - 1))) {
+	            				if (isShort) {
+	                                buf.append(" " + input.getName() + ": \"" + parameter.getValue() + "\"");
+	            				} else {
+	            					return;
+	            				}
+            				//}
             			}
             		}
             		
