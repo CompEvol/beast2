@@ -711,33 +711,31 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				} else {
 					comp.setBackground(Color.white);
 				}
-			    JComponent jcomp = (JComponent)comp;
-			    if (comp == jcomp) {
-			    	switch (Index_col) {
-			    	case NAME_COLUMN:			    		
-		    		case CLOCKMODEL_COLUMN: 
-		    		case TREE_COLUMN: 
-		    		case SITEMODEL_COLUMN: 
-				        jcomp.setToolTipText("Set " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
-						break;
-		    		case FILE_COLUMN:
-		    		case TAXA_COLUMN:
-		    		case SITES_COLUMN:
-		    		case TYPE_COLUMN:
-				        jcomp.setToolTipText("Report " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
-						break;
-		    		case USE_AMBIGUITIES_COLUMN: 
-						jcomp.setToolTipText("<html>Flag whether to use ambiguities.<br>" +
-								"If not set, the treelikelihood will treat ambiguities in the<br>" +
-								"data as unknowns<br>" +
-								"If set, the treelikelihood will use ambiguities as equally<br>" +
-								"likely values for the tips.<br>" +
-								"This will make the computation twice as slow.</html>");
-						break;
-					default:
-				        jcomp.setToolTipText(null);
-			    	}
-			    }
+			    JComponent jcomp = (JComponent) comp;
+		    	switch (Index_col) {
+		    	case NAME_COLUMN:			    		
+	    		case CLOCKMODEL_COLUMN: 
+	    		case TREE_COLUMN: 
+	    		case SITEMODEL_COLUMN: 
+			        jcomp.setToolTipText("Set " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
+					break;
+	    		case FILE_COLUMN:
+	    		case TAXA_COLUMN:
+	    		case SITES_COLUMN:
+	    		case TYPE_COLUMN:
+			        jcomp.setToolTipText("Report " + table.getColumnName(Index_col).toLowerCase() + " for this partition");
+					break;
+	    		case USE_AMBIGUITIES_COLUMN: 
+					jcomp.setToolTipText("<html>Flag whether to use ambiguities.<br>" +
+							"If not set, the treelikelihood will treat ambiguities in the<br>" +
+							"data as unknowns<br>" +
+							"If set, the treelikelihood will use ambiguities as equally<br>" +
+							"likely values for the tips.<br>" +
+							"This will make the computation twice as slow.</html>");
+					break;
+				default:
+			        jcomp.setToolTipText(null);
+		    	}
 				updateStatus();
 				return comp;
 			}

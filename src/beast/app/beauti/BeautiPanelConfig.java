@@ -32,7 +32,7 @@ public class BeautiPanelConfig extends BEASTObject {
             "distribution/distribution[id='posterior']/traitset all posterior inputs with name traitset", Validate.REQUIRED);
 
     final public Input<Partition> hasPartitionsInput = new Input<>("hasPartitions", "flag to indicate the panel has" +
-            "a partition context (and hence a partition list), deafult none.  Possible values: " + Partition.values(), Partition.none, Partition.values());
+            "a partition context (and hence a partition list), deafult none.  Possible values: " + Arrays.toString(Partition.values()), Partition.none, Partition.values());
 
     final public Input<Boolean> addButtonsInput = new Input<>("addButtons", "flag to indicate buttons should be added, default true", true);
     final public Input<Boolean> isVisibleInput = new Input<>("isVisible", "flag to indicate panel is visible on startup, default true", true);

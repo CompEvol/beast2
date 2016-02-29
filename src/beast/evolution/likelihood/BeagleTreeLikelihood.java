@@ -971,11 +971,6 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     
     /**
-     * the pattern likelihoods
-     */
-    protected double[] patternLogLikelihoods = null;
-
-    /**
      * the number of rate categories
      */
     protected int categoryCount;

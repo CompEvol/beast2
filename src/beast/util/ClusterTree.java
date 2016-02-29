@@ -28,6 +28,7 @@ package beast.util;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +71,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     double EPSILON = 1e-10;
 
     final public Input<Type> clusterTypeInput = new Input<>("clusterType", "type of clustering algorithm used for generating initial beast.tree. " +
-            "Should be one of " + Type.values() + " (default " + Type.average + ")", Type.average, Type.values());
+            "Should be one of " + Arrays.toString(Type.values()) + " (default " + Type.average + ")", Type.average, Type.values());
     final public Input<Alignment> dataInput = new Input<>("taxa", "alignment data used for calculating distances for clustering");
 
     final public Input<Distance> distanceInput = new Input<>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");

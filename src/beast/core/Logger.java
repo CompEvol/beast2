@@ -38,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,8 +67,8 @@ public class Logger extends BEASTObject {
     final public Input<BEASTObject> modelInput = new Input<>("model", "Model to log at the top of the log. " +
             "If specified, XML will be produced for the model, commented out by # at the start of a line. " +
             "Alignments are suppressed. This way, the log file documents itself. ");
-    final public Input<LOGMODE> modeInput = new Input<>("mode", "logging mode, one of " + LOGMODE.values(), LOGMODE.autodetect, LOGMODE.values());
-    final public Input<SORTMODE> sortModeInput = new Input<>("sort", "sort items to be logged, one of " + SORTMODE.values(), SORTMODE.none, SORTMODE.values());
+    final public Input<LOGMODE> modeInput = new Input<>("mode", "logging mode, one of " + Arrays.toString(LOGMODE.values()), LOGMODE.autodetect, LOGMODE.values());
+    final public Input<SORTMODE> sortModeInput = new Input<>("sort", "sort items to be logged, one of " + Arrays.toString(SORTMODE.values()), SORTMODE.none, SORTMODE.values());
     final public Input<Boolean> sanitiseHeadersInput = new Input<>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
 
     final public Input<List<BEASTObject>> loggersInput = new Input<>("log",
@@ -141,7 +142,7 @@ public class Logger extends BEASTObject {
         } else if (mode.equals(LOGMODE.compound)) {
         	this.mode = LOGMODE.compound;
         } else {
-            throw new IllegalArgumentException("Mode '" + mode + "' is not supported. Choose one of " + LOGMODE.values());
+            throw new IllegalArgumentException("Mode '" + mode + "' is not supported. Choose one of " + Arrays.toString(LOGMODE.values()));
         }
 
         if (everyInput.get() != null) {

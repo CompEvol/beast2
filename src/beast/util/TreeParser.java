@@ -463,8 +463,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                     attribctx.attribValue().number().getText()));
                         } else if (attribctx.attribValue().STRING() != null) {
                             String stringValue = attribctx.attribValue().STRING().getText();
-                            if (stringValue.startsWith("\"") || stringValue.startsWith("\'"));
+                            if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
                                 stringValue = stringValue.substring(1, stringValue.length()-1);
+                            }
                             node.setMetaData(key, stringValue);
                         } else {
                             // BEAST doesn't do anything with vectors yet.
