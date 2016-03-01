@@ -141,7 +141,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         samplingBox.add(comboBox);
 
         taxonsets = new ArrayList<>();
-        Taxon allTaxa = new Taxon();
+        Taxon allTaxa = getDoc().getTaxon(ALL_TAXA);
         allTaxa.setID(ALL_TAXA);
         taxonsets.add(allTaxa);
         List<String> taxonSetIDs = new ArrayList<>();

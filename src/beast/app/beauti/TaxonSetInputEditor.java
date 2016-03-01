@@ -316,8 +316,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         for (Alignment alignment : getDoc().alignments) {
         	for (String id : alignment.getTaxaNames()) {
                 if (!taxonIDs.contains(id)) {
-	                Taxon taxon = new Taxon();
-	                taxon.setID(id);
+                	Taxon taxon = getDoc().getTaxon(id);
 	                taxa.add(taxon);
 	                taxonIDs.add(id);
         		}
@@ -325,12 +324,11 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             for (Sequence sequence : alignment.sequenceInput.get()) {
                 String id = sequence.taxonInput.get();
                 if (!taxonIDs.contains(id)) {
-                    Taxon taxon = new Taxon();
+                    Taxon taxon = getDoc().getTaxon(sequence.taxonInput.get());
                     // ensure sequence and taxon do not get same ID
                     if (sequence.getID().equals(sequence.taxonInput.get())) {
                         sequence.setID("_" + sequence.getID());
                     }
-                    taxon.setID(sequence.taxonInput.get());
                     taxa.add(taxon);
                     taxonIDs.add(id);
                 }
@@ -347,8 +345,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                             TaxonSet set = map.get(match);
                             set.taxonsetInput.setValue(taxon, set);
                         } else {
-                            TaxonSet set = new TaxonSet();
-                            set.setID(match);
+                        	TaxonSet set = newTaxonSet(match);
                             set.taxonsetInput.setValue(taxon, set);
                             map.put(match, set);
                         }
@@ -370,7 +367,23 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         return ignored;
     }
 
-    void parseTrait(String trait) {
+    private TaxonSet newTaxonSet(String match) {
+    	if (getDoc().taxaset.containsKey(match)) {
+    		Taxon t = doc.taxaset.get(match);
+    		if (t instanceof TaxonSet) {
+    			TaxonSet set = (TaxonSet) t;
+    			set.taxonsetInput.get().clear();
+    			return set;
+    		} else {
+    			// TODO handle situation where taxon and set have same name (issue #135)
+    		}
+    	}
+        TaxonSet set = new TaxonSet();
+        set.setID(match);
+		return set;
+	}
+
+	void parseTrait(String trait) {
     	Map<String,String> traitmap = new HashMap<>();
     	for (String line : trait.split(",")) {
     		String [] strs = line.split("=");
@@ -390,12 +403,11 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             for (Sequence sequence : alignment.sequenceInput.get()) {
                 String id = sequence.taxonInput.get();
                 if (!taxonIDs.contains(id)) {
-                    Taxon taxon = new Taxon();
+                    Taxon taxon = getDoc().getTaxon(sequence.taxonInput.get());
                     // ensure sequence and taxon do not get same ID
                     if (sequence.getID().equals(sequence.taxonInput.get())) {
                         sequence.setID("_" + sequence.getID());
                     }
-                    taxon.setID(sequence.taxonInput.get());
                     taxa.add(taxon);
                     taxonIDs.add(id);
                 }
@@ -412,8 +424,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                             TaxonSet set = map.get(match);
                             set.taxonsetInput.setValue(taxon, set);
                         } else {
-                            TaxonSet set = new TaxonSet();
-                            set.setID(match);
+                            TaxonSet set = newTaxonSet(match);
                             set.taxonsetInput.setValue(taxon, set);
                             map.put(match, set);
                         }
@@ -530,8 +541,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             // new taxon set?
             if (!m_taxonMap.containsValue(taxonSetID)) {
                 // create new taxon set
-                TaxonSet taxonset = new TaxonSet();
-                taxonset.setID(taxonSetID);
+                TaxonSet taxonset = newTaxonSet(taxonSetID);
                 m_taxonset.add(taxonset);
             }
             m_taxonMap.put(lineageID, taxonSetID);
