@@ -1,15 +1,19 @@
 package beast.app.beastapp;
 
 
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.nio.file.Files;
 
 import javax.swing.JOptionPane;
 
@@ -21,7 +25,7 @@ import beast.app.util.Utils6;
  * Loads beast.jar and launches BEAST through the BEASTMain class
  * 
  * This class should be compiled against 1.6 and packaged by itself. The
- * remained of BEAST can be compiled against Java 1.8
+ * remainder of BEAST can be compiled against Java 1.8
  * **/
 public class BeastLauncher {
 
@@ -90,7 +94,7 @@ public class BeastLauncher {
 	        
 	        File beastJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.jar");
 	        File target = new File(dir + pathDelimiter + "beast.jar");
-	        Files.copy(beastJar.toPath(), target.toPath());
+	        copyFileUsingStream(beastJar, target);
 	        
 	        String version = "<addon name='BEAST' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
 	        		"</addon>";
@@ -98,9 +102,9 @@ public class BeastLauncher {
 	        outfile.write(version);
 	        outfile.close();
 
-	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.src.jar");
+	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "beast.src.jar");
 	        File srcTarget = new File(dir + pathDelimiter + "beast.src.jar");
-	        Files.copy(beastSrcJar.toPath(), srcTarget.toPath());
+	        copyFileUsingStream(beastSrcJar, srcTarget);
 
 	        // TODO: include templates?
 	        // if so, how to prevent clashes with templates in package and in installation dir?
@@ -111,7 +115,24 @@ public class BeastLauncher {
 		}
 
 	}
-
+	
+	// copy files using Java 6 code
+	private static void copyFileUsingStream(File source, File dest) throws IOException {
+	    InputStream is = null;
+	    OutputStream os = null;
+	    try {
+	        is = new FileInputStream(source);
+	        os = new FileOutputStream(dest);
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	    } finally {
+	        is.close();
+	        os.close();
+	    }
+	}
 	private static boolean checkForBEAST(File jarDir, Object clu) throws IOException {
 		System.err.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
