@@ -437,6 +437,8 @@ public class AddOnManager {
      * @throws IOException if URL cannot be accessed for some reason
      */
     public static Map<String, String> installPackages(Map<Package, PackageVersion> packagesToInstall, boolean useAppDir, String customDir) throws IOException {
+    	closeClassLoader();
+    	
         Map<String, String> dirList = new HashMap<>();
 
         for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
@@ -512,6 +514,7 @@ public class AddOnManager {
      * @throws IOException thrown if packages cannot be deleted and delete list file cannot be written
      */
     public static String uninstallPackage(Package pkg, boolean useAppDir, String customDir) throws IOException {
+    	closeClassLoader();
 
         String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + pkg.getName();
         if (customDir != null) {
@@ -534,7 +537,32 @@ public class AddOnManager {
     }
 
 
-    private static void deleteRecursively(File file, List<File> deleteFailed) {
+    /**
+     * Close class loader so that locks on jar files are released, which may prevent
+     * files being replaced on Windows.
+     * http://docs.oracle.com/javase/7/docs/api/java/net/URLClassLoader.html#close%28%29
+     * 
+     * This allows smooth upgrading of BEAST versions using the package manager. Without 
+     * this, there is no way to upgrade BEAST since the AddOnManager is part of the 
+     * BEAST.jar file that is loaded and needs to be replaced.
+     * 
+     * Side effect is that after installing a package, opening a new BEAUti instance
+     * will fail (Windows only).
+     * 
+     */
+    private static void closeClassLoader() {
+    	try {
+    		if (Utils.isWindows()) {
+    			URLClassLoader sysLoader = (URLClassLoader) AddOnManager.class.getClassLoader();
+    			sysLoader.close();
+    		}
+		} catch (IOException e) {
+			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		}
+		
+	}
+
+	private static void deleteRecursively(File file, List<File> deleteFailed) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (File f : files) {
