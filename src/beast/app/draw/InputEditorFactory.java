@@ -152,7 +152,7 @@ public class InputEditorFactory {
         } else {
         	if (input.get() != null && !input.get().getClass().equals(inputClass)
         			&& !(input.get() instanceof ArrayList)) {
-        		Log.err.println(input.get().getClass() + " != " + inputClass);
+        		Log.trace.println(input.get().getClass() + " != " + inputClass);
         		inputClass = input.get().getClass();
         	}
         }

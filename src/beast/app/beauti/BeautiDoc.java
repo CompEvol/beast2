@@ -1215,15 +1215,15 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         
                 
-        Log.warning.print("InPosterior=");
+        Log.trace.print("InPosterior=");
         for (BEASTInterface o : posteriorPredecessors) {
         	pluginmap.put(o.getID(), o);
-        	Log.warning.print(o.getID() + " ");
+        	Log.trace.print(o.getID() + " ");
         	//if (!pluginmap.containsKey(o)) {
         	//	System.err.println("MISSING: " + o.getID());
         	//}
         }
-        Log.warning.println();
+        Log.trace.println();
     }
 
     public static String translatePartitionNames(String str, PartitionContext partition) {

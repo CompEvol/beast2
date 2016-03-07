@@ -102,7 +102,7 @@ public class BeastLauncher {
 	        outfile.write(version);
 	        outfile.close();
 
-	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "beast.src.jar");
+	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.src.jar");
 	        File srcTarget = new File(dir + pathDelimiter + "beast.src.jar");
 	        copyFileUsingStream(beastSrcJar, srcTarget);
 
