@@ -293,7 +293,7 @@ public class AddOnManager {
             packageMap.put(BEAST_PACKAGE_NAME, beastPkg);
         }
 
-        if (beastPkg.isInstalled()) {
+        if (!beastPkg.isInstalled()) {
             PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
             Set<PackageDependency> beastPkgDeps = new TreeSet<>();
             beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
