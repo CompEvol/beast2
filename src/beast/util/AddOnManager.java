@@ -282,19 +282,19 @@ public class AddOnManager {
             }
         }
 
-        // Manually set currently-installed BEAST 2 version (won't have to do this soon!)
+        // Manually set currently-installed BEAST 2 version if not already set
+        // This can happen when the BEAST package is not installed (perhaps due to 
+        // file access issues)
+        if (!packageMap.containsKey(BEAST_PACKAGE)) {
+            Package beastPkg;
+            beastPkg = new Package(BEAST_PACKAGE);
+            packageMap.put(BEAST_PACKAGE, beastPkg);
+            
+            PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
+            Set<PackageDependency> beastPkgDeps = new TreeSet<>();
+            beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
+        }
 
-//        Package beastPkg;
-//        if (packageMap.containsKey(BEAST_PACKAGE))
-//            beastPkg = packageMap.get(BEAST_PACKAGE);
-//        else {
-//            beastPkg = new Package(BEAST_PACKAGE);
-//            packageMap.put(BEAST_PACKAGE, beastPkg);
-//        }
-//
-//        PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
-//        Set<PackageDependency> beastPkgDeps = new TreeSet<>();
-//        beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
     }
 
     /**
