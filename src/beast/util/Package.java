@@ -175,7 +175,7 @@ public class Package {
         String depString = "";
         for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
             String s = packageDependency.dependencyName;
-            if (!s.equalsIgnoreCase(AddOnManager.BEAST_PACKAGE)) {
+            if (!s.equalsIgnoreCase(AddOnManager.BEAST_PACKAGE_NAME)) {
                 depString +=  s + ", ";
             }
         }

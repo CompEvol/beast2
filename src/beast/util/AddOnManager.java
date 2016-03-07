@@ -82,7 +82,7 @@ public class AddOnManager {
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     public final static String TO_INSTALL_LIST_FILE = "toInstallList";
-    public final static String BEAST_PACKAGE = "BEAST";
+    public final static String BEAST_PACKAGE_NAME = "BEAST";
 
     public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
 //    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
@@ -285,11 +285,15 @@ public class AddOnManager {
         // Manually set currently-installed BEAST 2 version if not already set
         // This can happen when the BEAST package is not installed (perhaps due to 
         // file access issues)
-        if (!packageMap.containsKey(BEAST_PACKAGE)) {
-            Package beastPkg;
-            beastPkg = new Package(BEAST_PACKAGE);
-            packageMap.put(BEAST_PACKAGE, beastPkg);
-            
+        Package beastPkg;
+        if (packageMap.containsKey(BEAST_PACKAGE_NAME)) {
+            beastPkg = packageMap.get(BEAST_PACKAGE_NAME);
+        } else {
+            beastPkg = new Package(BEAST_PACKAGE_NAME);
+            packageMap.put(BEAST_PACKAGE_NAME, beastPkg);
+        }
+
+        if (beastPkg.isInstalled()) {
             PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
             Set<PackageDependency> beastPkgDeps = new TreeSet<>();
             beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
@@ -1322,10 +1326,10 @@ public class AddOnManager {
         // sort result
         result.addAll(names);
         Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE)) {
+        	if (s1.equals(BEAST_PACKAGE_NAME)) {
         		return -1;
         	}
-        	if (s2.equals(BEAST_PACKAGE)) {
+        	if (s2.equals(BEAST_PACKAGE_NAME)) {
         		return 1;
         	}
         	return s1.compareTo(s2);
@@ -1377,10 +1381,10 @@ public class AddOnManager {
 
         // sort result
         Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE)) {
+        	if (s1.equals(BEAST_PACKAGE_NAME)) {
         		return -1;
         	}
-        	if (s2.equals(BEAST_PACKAGE)) {
+        	if (s2.equals(BEAST_PACKAGE_NAME)) {
         		return 1;
         	}
         	return s1.compareTo(s2);
@@ -1461,7 +1465,7 @@ public class AddOnManager {
 
         // Print formatted package information
         for (Package pkg : packageList) {
-        	if (pkg.getName().equals(BEAST_PACKAGE)) {
+        	if (pkg.getName().equals(BEAST_PACKAGE_NAME)) {
         		ps.printf(nameFormat, pkg.getName()); ps.print(sep);
 		        ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
 		        ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
@@ -1475,7 +1479,7 @@ public class AddOnManager {
         
         // Print formatted package information
         for (Package pkg : packageList) {
-        	if (!pkg.getName().equals(BEAST_PACKAGE)) {
+        	if (!pkg.getName().equals(BEAST_PACKAGE_NAME)) {
 	            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
 	            ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
 	            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);

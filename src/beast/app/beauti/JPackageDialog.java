@@ -37,13 +37,13 @@ public class JPackageDialog extends JPanel {
     PackageTable dataTable = null;
 
     TreeMap<String, Package> packageMap = new TreeMap<>((s1,s2)->{
-    	if (s1.equals(AddOnManager.BEAST_PACKAGE)) {
-    		if (s2.equals(AddOnManager.BEAST_PACKAGE)) {
+    	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+    		if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
     			return 0;
     		}
     		return -1;
     	}
-    	if (s2.equals(AddOnManager.BEAST_PACKAGE)) {
+    	if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
     		return 1;
     	}
     	return s1.compareToIgnoreCase(s2);

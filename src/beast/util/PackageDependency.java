@@ -45,7 +45,7 @@ public class PackageDependency {
                              PackageVersion minimumVersion,
                              PackageVersion maximumVersion) {
     	if (dependencyName.equals("beast2")) {
-    		dependencyName = AddOnManager.BEAST_PACKAGE;
+    		dependencyName = AddOnManager.BEAST_PACKAGE_NAME;
     	}
         this.dependencyName = dependencyName;
         
