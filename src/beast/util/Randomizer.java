@@ -251,7 +251,7 @@ public class Randomizer {
      * @param lambda mean of Poissonian distribution
      * @return sample (as double for historical reasons)
      */
-    public static double nextPoisson(double lambda) {
+    public static long nextPoisson(double lambda) {
         synchronized (random) {
             return random.nextPoisson(lambda);
         }
