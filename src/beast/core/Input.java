@@ -748,5 +748,9 @@ public class Input<T> {
                 break;
         }
     } // validate
+    
+    public String toString() {
+    	return String.format("Input(\"%s\")", name);
+    }
 
 } // class Input
