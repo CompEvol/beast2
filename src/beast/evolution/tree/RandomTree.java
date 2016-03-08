@@ -420,7 +420,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 final Set<Node> candidates = new HashSet<>();
                 int i = 0;
                 for (String taxon : taxa) {
-                    final Node node = new Node();
+                    final Node node = newNode();
                     node.setNr(i);
                     node.setID(taxon);
                     node.setHeight(0.0);
@@ -560,7 +560,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 int k = nodeList.size() - 1;
                 final Node left = nodeList.remove(k);
                 final Node right = nodeList.get(k-1);
-                final Node newNode = new Node();
+                final Node newNode = newNode();
                 newNode.setNr(nextNodeNr++);   // multiple tries may generate an excess of nodes assert(nextNodeNr <= nrOfTaxa*2-1);
                 newNode.setHeight(h + dt);
                 newNode.setLeft(left);
@@ -691,7 +691,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         final Node left = nodeList.get(node1);
         final Node right = nodeList.get(node2);
 
-        final Node newNode = new Node();
+        final Node newNode = newNode();
 //		System.err.println(2 * m_taxa.get().getNrTaxa() - nodeList.size());
         newNode.setNr(nextNodeNr++);   // multiple tries may generate an excess of nodes assert(nextNodeNr <= nrOfTaxa*2-1);
         newNode.setHeight(height);
