@@ -34,6 +34,7 @@ import beagle.BeagleFlag;
 import beagle.BeagleInfo;
 import beagle.InstanceDetails;
 import beagle.ResourceDetails;
+import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
@@ -501,8 +502,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         hasDirt = Tree.IS_CLEAN;
 
         updateSiteModel |= m_siteModel.isDirtyCalculation();
-        updateSubstitutionModel |= substitutionModel.isDirtyCalculation();
-
+        if (substitutionModel instanceof CalculationNode) {
+        	updateSubstitutionModel |= ((CalculationNode) substitutionModel).isDirtyCalculation();
+        }
+        
         if (dataInput.get().isDirtyCalculation()) {
             hasDirt = Tree.IS_FILTHY;
             return true;

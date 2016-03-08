@@ -68,7 +68,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * BEASTObject associated with inputs. Since none of the inputs are StateNodes, it
      * is safe to link to them only once, during initAndValidate.
      */
-    SubstitutionModel.Base substitutionModel;
+    SubstitutionModel substitutionModel;
     protected SiteModel.Base m_siteModel;
     protected BranchRateModel.Base branchRateModel;
 
