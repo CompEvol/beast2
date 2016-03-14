@@ -273,6 +273,7 @@ public class BeastMain {
                         new Arguments.StringOption("beagle_scaling", new String[]{"default", "none", "dynamic", "always"},
                                 false, "BEAGLE: specify scaling scheme to use"),
                         new Arguments.Option("help", "Print this information and stop"),
+                        new Arguments.Option("version", "Print version and stop"),
                 });
 
         try {
@@ -283,6 +284,11 @@ public class BeastMain {
         	Log.info.println();
             printUsage(arguments);
             System.exit(1);
+        }
+
+        if (arguments.hasOption("version")) {
+        	Log.info.println((new BEASTVersion()).getVersionString());
+        	System.exit(0);
         }
 
         if (arguments.hasOption("help")) {

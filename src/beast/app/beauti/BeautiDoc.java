@@ -101,7 +101,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      */
 
     public boolean autoSetClockRate = true;
-        
+
     public boolean autoUpdateOperatorWeights = true;
 
     public boolean autoUpdateFixMeanSubstRate = true;
@@ -159,7 +159,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public Set<Input<?>> linked;
 
     InputEditorFactory inputEditorFactory;
-    
+
     /** used to capture Stdout and Stderr **/
     static ByteArrayOutputStream baos = null;
 
@@ -186,7 +186,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public String getTemplateName() {
         return templateName;
     }
-    
+
     public ActionOnExit parseArgs(String[] args) throws XMLParserException, SAXException, IOException, ParserConfigurationException  {
         ActionOnExit endState = ActionOnExit.UNKNOWN;
         String outputFileName = "beast.xml";
@@ -200,8 +200,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 int old = i;
                 if (args[i].equals("")) {
                     i += 1;
-                } else if (args[i].equals("-h") || args[i].equals("-help")) {
-                    showUsageAndExit();
                 } else if (args[i].equals("-capture")) {
                 	// capture stderr and stdout
                 	// already done in beast.app.beauti.Beauti
@@ -289,16 +287,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return fileName.substring(0, fileName.length() - 4);
     }
 
-    void showUsageAndExit() {
-        System.out.println(usage());
-        System.exit(0);
-    }
 
-    String usage() {
-        return "java Beauti [options]\n" + "where options can be one of the following:\n"
-                + "-template [template file]\n" + "-nex [nexus data file]\n" + "-xmldat [beast xml file]\n"
-                + "-xml [beast file]\n" + "-out [output file name]\n" + "-exitaction [writexml|usetemplate|usexml]\n";
-    }
 
     private Set<BeautiDocListener> listeners = new HashSet<>();
 
@@ -346,14 +335,14 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         taxaset.remove(beastObject.getID());
         // directly remove beast object from HashMap
         // relies on hashes of String being unique (which they should be).
-        // is much more efficient (O(1)) than lookup in keySet (O(n)), 
-        // which matter when a lot of partitions are loaded 
+        // is much more efficient (O(1)) than lookup in keySet (O(n)),
+        // which matter when a lot of partitions are loaded
         // but less reliable since ID may have changed.
         String id = reversePluginmap.get(beastObject);
         if (id != null && pluginmap.containsKey(id)) {
             pluginmap.remove(id);
         }
-        
+
 //        String oldID = null;
 //        for (String id : pluginmap.keySet()) {
 //            if (pluginmap.get(id).equals(beastObject)) {
@@ -464,12 +453,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //
 //			XMLProducer producer = new XMLProducer();
 //			producer.toRawXML(alignments.get(0));
-//			
+//
 //			Pplugin beastObject =  parser.parseFragment(xml, false);
 //			int i = xml.indexOf("<data");
 //			for (BEASTObject beastObject : pluginmap.values()) {
 //				if (beastObject instanceof Alignment) {
-//					
+//
 //				}
 //			}
 //			save(fileName);
@@ -485,7 +474,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     /**
-     * public to allow access for unit test 
+     * public to allow access for unit test
      * @throws IOException *
      */
     public String processTemplate(String fileName) throws IOException {
@@ -714,7 +703,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     } // validateModel
 
     /**
-     * save specification in file 
+     * save specification in file
      * @throws IOException *
      */
     public void save(String fileName) throws IOException  {
@@ -722,7 +711,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     } // save
 
     /**
-     * save specification in file 
+     * save specification in file
      * @throws IOException *
      */
     public void save(File file) throws IOException  {
@@ -815,7 +804,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         beauti.allowLinking.setSelected(allowLinking);
         autoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
         beauti.autoUpdateOperatorWeights.setSelected(autoUpdateOperatorWeights);
-        autoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate"); 
+        autoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate");
         beauti.autoUpdateFixMeanSubstRate.setSelected(autoUpdateFixMeanSubstRate);
 
         // parse file
@@ -875,10 +864,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     /**
      * Merge sequence data with xml specification.
-     * @throws ParserConfigurationException 
-     * @throws IOException 
-     * @throws SAXException 
-     * @throws XMLParserException 
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     * @throws XMLParserException
      */
     void mergeSequences(String xml) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         if (xml == null) {
@@ -1200,7 +1189,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         } catch (Exception e) {
             Log.err.println(e.getMessage());
         }
-        
+
         if (autoUpdateOperatorWeights) {
         	reweightSpeciesPartitionOperators();
         }
@@ -1213,8 +1202,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         if (pluginmap.containsKey("likelihood")) {
             collectPredecessors(pluginmap.get("likelihood"), likelihoodPredecessors);
         }
-        
-                
+
+
         Log.trace.print("InPosterior=");
         for (BEASTInterface o : posteriorPredecessors) {
         	pluginmap.put(o.getID(), o);
@@ -1237,18 +1226,18 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		for (int i = 0; i < len; i++) {
 			char c = str.charAt(i);
 			if (c == '.' && i < len - 6) {
-				if (str.charAt(i + 2) == ':' && str.charAt(i + 3) == '$' && 
+				if (str.charAt(i + 2) == ':' && str.charAt(i + 3) == '$' &&
 						str.charAt(i + 4) == '(' && str.charAt(i + 5) == 'n' && str.charAt(i + 6) == ')') {
 					switch (str.charAt(i+1)) {
 					case 's': // .s:$(n)
 						sb.append(".s:").append(partition.siteModel);
 						i += 6;
 						break;
-					case 'c': 
+					case 'c':
 						sb.append(".c:").append(partition.clockModel);
 						i += 6;
 						break;
-					case 't': 
+					case 't':
 						sb.append(".t:").append(partition.tree);
 						i += 6;
 						break;
@@ -1323,7 +1312,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	            }
 	        }
         }
-    	
+
         BEASTInterface likelihood = pluginmap.get("likelihood");
         if (likelihood instanceof CompoundDistribution) {
             int i = 0;
@@ -1494,15 +1483,15 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     /**
-      * Reweight total weight of operators that work on the Species partition to 20% 
+      * Reweight total weight of operators that work on the Species partition to 20%
       * of total operator weights. This helps *BEAST analyses in convergence. For non
-      * *BEAST analyses, this bit of code has no effect. 
+      * *BEAST analyses, this bit of code has no effect.
       */
     private void reweightSpeciesPartitionOperators() {
     	if (!(mcmc.get() instanceof MCMC)) {
     		return;
     	}
-    	List<Operator> speciesOperators = new ArrayList<>(); 
+    	List<Operator> speciesOperators = new ArrayList<>();
     	double totalWeight = 0;
     	double speciesWeight = 0;
     	for (Operator operator : ((MCMC)mcmc.get()).operatorsInput.get()) {
@@ -1512,7 +1501,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 			}
 			totalWeight += operator.getWeight();
     	}
-    	
+
     	if (speciesWeight > 0 && speciesWeight < totalWeight) {
     		// we have a Species-related operator AND an alignment
     		// rescale weights so that 20% of operator weights is dedicated to Species operators
@@ -1523,7 +1512,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     			operator.m_pWeight.setValue(scale * operator.getWeight(), operator);
     		}
     	}
-		
+
 	}
 
 	public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template)  {
@@ -1910,7 +1899,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             	Object o2 = copy.getInput(input.getName()).get();
                             	boolean alreadyInList = false;
                             	if (o2 instanceof List) {
-                            		List<?> currentList = (List<?>) o2; 
+                            		List<?> currentList = (List<?>) o2;
 	                            	for (Object v : currentList) {
 	                            		if (v == value) {
 	                            			alreadyInList = true;
@@ -2419,7 +2408,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     /** create taxonset, one taxon for each sequence in the alignment
-     * and assign taxonset to the alignment 
+     * and assign taxonset to the alignment
      * **/
     static void createTaxonSet(Alignment a, BeautiDoc doc) {
 		List<String> taxaNames = a.getTaxaNames();
@@ -2436,7 +2425,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		doc.registerPlugin(taxonset);
 	}
 
-    /** create Taxon with given name, reuse if a taxon 
+    /** create Taxon with given name, reuse if a taxon
      *  with this name already exists
      **/
 	public Taxon getTaxon(String taxaName) {

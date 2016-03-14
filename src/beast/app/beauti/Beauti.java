@@ -81,7 +81,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     static public final String FILE_EXT = ".xml";
     static public final String FILE_EXT2 = ".json";
     static final String fileSep = System.getProperty("file.separator");
-    
+
     /**
      * document in document-view pattern. BTW this class is the view
      */
@@ -608,7 +608,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     } // class ActionHelp
-    
+
     class ActionMsgs extends MyAction {
         private static final long serialVersionUID = -1;
 
@@ -630,7 +630,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	        	JScrollPane scroller = new JScrollPane(textArea);
 	        	JOptionPane.showMessageDialog(frame, scroller);
         	}
-        }    	
+        }
     }
 
     class ActionCitation extends MyAction implements ClipboardOwner {
@@ -965,7 +965,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                                 fileName = fileName.substring(0, fileName.length() - 4);
                                 boolean duplicate = false;
                             	for (AbstractAction action : actions) {
-                            		String name = action.getValue(Action.NAME).toString(); 
+                            		String name = action.getValue(Action.NAME).toString();
                             		if (name.equals(fileName)) {
                             			duplicate = true;
                             		}
@@ -991,12 +991,12 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	if (new File(exampledir).exists()) {
 	        	AbstractAction action = new AbstractAction() {
 					private static final long serialVersionUID = 1L;
-	
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						g_sDir = dir;
 					}
-	            	
+
 	            };
 	            String workDirInfo = "Set working directory to " + dir;
 	            String name = dir;
@@ -1086,10 +1086,32 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     	return BEAUtiIntances > 0;
     }
 
+    private static String usage() {
+        return "java Beauti [options]\n" + "where options can be one of the following:\n"
+                + "-template [template file] : BEAUti template to be used. Default templates/Standard.xml\n"
+        		+ "-nex [nexus data file] : nexus file to be read using template, multiple -nex arguments are allowed\n"
+                + "-xmldat [beast xml file] : as -nex but with BEAST 1 or 2 xml file instead of nexus file\n"
+                + "-xml [beast file] : BEAST 2 XML file to be loaded\n"
+                + "-exitaction [writexml|usetemplate|usexml] : what to do after processing arguments\n"
+                + "-out [output file name] : file to be written\n"
+                + "-capture : captures stdout and stderr and make them available under Help/Messages menu\n"
+                + "-v, -version : print version\n"
+                + "-h, -help : print this help message\n";
+    }
+
+
     public static Beauti main2(String[] args) {
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {
+            	if (arg.equals("-v") || arg.equals("-version")) {
+                    System.out.println((new BEASTVersion()).getVersionString());
+                    System.exit(0);
+            	}
+            	if (arg.equals("-h") || arg.equals("-help")) {
+                    System.out.println(usage());
+                    System.exit(0);
+            	}
             	if (arg.equals("-capture")) {
             		final PrintStream beautiLog = System.err;
                 	baos = new ByteArrayOutputStream() {
@@ -1104,26 +1126,26 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 			super.write(b);
                 			beautiLog.write(b);
                 		};
-                		
+
                 		@Override
                 		public void write(byte[] b) throws java.io.IOException {
                 			super.write(b);
                 			beautiLog.write(b);
                 		};
-                		
+
                 		@Override
                 		public void flush() throws java.io.IOException {
                 			super.flush();
                 			beautiLog.flush();
                 		};
-                		
+
                 		@Override
                 		public void close() throws IOException {
                 			super.close();
                 			beautiLog.close();
                 		}
                 	};
-                	
+
                 	PrintStream p = new PrintStream(baos);
                 	System.setOut(p);
                 	System.setErr(p);
@@ -1134,7 +1156,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 	Log.trace = p;
             	}
             }
-        	
+
             AddOnManager.loadExternalJars();
             if (!Utils.isMac()) {
             	Utils.loadUIManager();
