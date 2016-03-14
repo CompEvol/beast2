@@ -154,8 +154,6 @@ public class OperatorSchedule extends BEASTObject {
         formatter.format(headerFormat, PR_ACCEPT);
         out.println(": The acceptance probability (" + NUM_ACCEPT + " as a fraction of the total proposals for this operator).");
         out.println();
-        
-        formatter.close();
     }
 
     protected static String prettyPrintOperator(
