@@ -32,8 +32,8 @@ fi
 
 
 # use BEAGL_LIB if the BEAGLE library is not in a standard location
-if [-z $BEAGLE_LIB]; then
-	if [-z "$BEAST_EXTRA_LIBS" ]; then
+if [ -z "$BEAGLE_LIB" ]; then
+	if [ -z "$BEAST_EXTRA_LIBS" ]; then
 		BEAST_EXTRA_LIBS=$BEAST_EXTRA_LIBS:$BEAGLE_LIB
 	else
 		BEAST_EXTRA_LIBS=$BEAGLE_LIB
