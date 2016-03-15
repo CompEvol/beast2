@@ -32,8 +32,8 @@ fi
 
 
 # use BEAGL_LIB if the BEAGLE library is not in a standard location
-if [ -z "$BEAGLE_LIB" ]; then
-	if [ -z "$BEAST_EXTRA_LIBS" ]; then
+if [ -n "$BEAGLE_LIB" ]; then
+	if [ -n "$BEAST_EXTRA_LIBS" ]; then
 		BEAST_EXTRA_LIBS=$BEAST_EXTRA_LIBS:$BEAGLE_LIB
 	else
 		BEAST_EXTRA_LIBS=$BEAGLE_LIB
@@ -42,8 +42,8 @@ fi
 
 # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
 # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
-if [ -z "$BEAST_EXTRA_LIBS" ]; then 
+if [ -n "$BEAST_EXTRA_LIBS" ]; then 
   $JAVA -Xms64m -Xmx4g -Djava.library.path=$BEAST_EXTRA_LIBS -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*
-else 
+else	
   $JAVA -Xms64m -Xmx4g -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*
 fi
