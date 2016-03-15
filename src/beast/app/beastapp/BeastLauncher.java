@@ -83,6 +83,10 @@ public class BeastLauncher {
 
 	private static void createBeastPackage(File jarDir0, String pathDelimiter) {
 		try {
+	        if (jarDir0.toString().toLowerCase().endsWith("lib")) {
+	        	jarDir0 = jarDir0.getParentFile();
+	        }
+
 			// create package user dir, if it not already exists
 	        File dir = new File(getPackageUserDir() + pathDelimiter + "BEAST" + pathDelimiter + "lib");
 	        if (!dir.exists()) {
@@ -98,7 +102,7 @@ public class BeastLauncher {
 	        
 	        String version = "<addon name='BEAST' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
 	        		"</addon>";
-	        FileWriter outfile = new FileWriter(getPackageUserDir() + pathDelimiter + "beast" + pathDelimiter + "version.xml");
+	        FileWriter outfile = new FileWriter(getPackageUserDir() + pathDelimiter + "BEAST" + pathDelimiter + "version.xml");
 	        outfile.write(version);
 	        outfile.close();
 
@@ -118,6 +122,9 @@ public class BeastLauncher {
 	
 	// copy files using Java 6 code
 	private static void copyFileUsingStream(File source, File dest) throws IOException {
+System.err.println(source.getAbsolutePath());
+System.err.println(dest.getAbsolutePath());
+
 	    InputStream is = null;
 	    OutputStream os = null;
 	    try {
