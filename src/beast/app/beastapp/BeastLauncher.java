@@ -122,8 +122,6 @@ public class BeastLauncher {
 	
 	// copy files using Java 6 code
 	private static void copyFileUsingStream(File source, File dest) throws IOException {
-System.err.println(source.getAbsolutePath());
-System.err.println(dest.getAbsolutePath());
 
 	    InputStream is = null;
 	    OutputStream os = null;
