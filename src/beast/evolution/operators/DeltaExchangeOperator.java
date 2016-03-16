@@ -315,9 +315,9 @@ public class DeltaExchangeOperator extends Operator {
     public void optimize(final double logAlpha) {
         // must be overridden by operator implementation to have an effect
         if (autoOptimize) {
-            double delta = calcDelta(logAlpha);
-            delta += Math.log(delta);
-            delta = Math.exp(delta);
+            double _delta = calcDelta(logAlpha);
+            _delta += Math.log(delta);
+            delta = Math.exp(_delta);
             if (isIntegerOperator) {
             	// when delta < 0.5
             	// Randomizer.nextInt((int) Math.round(delta)) becomes
