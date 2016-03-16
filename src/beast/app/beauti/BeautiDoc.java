@@ -1099,17 +1099,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
 
             // set estimate flag on tree, only if tree occurs in a partition
-            for (BEASTInterface beastObject : pluginmap.values()) {
-                if (beastObject instanceof Tree) {
-                    Tree tree = (Tree) beastObject;
-                    tree.isEstimatedInput.setValue(false, tree);
-                }
-            }
-            for (BEASTInterface beastObject : pPartition[2]) {
-                // TODO: this might not be a valid type conversion from TreeInterface to Tree
-                Tree tree = (Tree) ((GenericTreeLikelihood) beastObject).treeInput.get();
-                tree.isEstimatedInput.setValue(true, tree);
-            }
+//            for (BEASTInterface beastObject : pluginmap.values()) {
+//                if (beastObject instanceof Tree) {
+//                    Tree tree = (Tree) beastObject;
+//                    tree.isEstimatedInput.setValue(false, tree);
+//                }
+//            }
+//            for (BEASTInterface beastObject : pPartition[2]) {
+//                // TODO: this might not be a valid type conversion from TreeInterface to Tree
+//                Tree tree = (Tree) ((GenericTreeLikelihood) beastObject).treeInput.get();
+//                tree.isEstimatedInput.setValue(true, tree);
+//            }
             if (pluginmap.containsKey("Tree.t:Species")) {
                 Tree tree = (Tree) pluginmap.get("Tree.t:Species");
                 tree.isEstimatedInput.setValue(true, tree);
