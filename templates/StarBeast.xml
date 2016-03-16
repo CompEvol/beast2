@@ -161,7 +161,7 @@
 		<alignmentProvider id="Import Alignment" spec='BeautiAlignmentProvider' template='@StarBEASTPartitionTemplate'/>
 
 
-        <partitiontemplate id='StarBEASTPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='StarBEASTPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.ThreadedTreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
 		    <distribution id='treePrior.t:$(n)' spec='GeneTreeForSpeciesTreeDistribution' tree='@Tree.t:$(n)' speciesTree='@Tree.t:Species' speciesTreePrior='@SpeciesTreePopSize.Species'/>
@@ -369,7 +369,7 @@
 		            <distr spec="beast.math.distributions.OneOnX"/>
 		        </distribution>
             </distribution>
-            <distribution spec="CompoundDistribution" id="likelihood">
+            <distribution spec="CompoundDistribution" id="likelihood" useThreads="true">
 				<mergepoint id='aux-likelihoods'/>
             </distribution>
         </distribution>
