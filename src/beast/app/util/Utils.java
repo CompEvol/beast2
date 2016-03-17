@@ -33,7 +33,6 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.evolution.tree.Tree;
 import beast.util.AddOnManager;
 import beast.util.TreeParser;
 
@@ -346,7 +345,7 @@ public class Utils {
 			// /Library/Frameworks/CUDA.framework
 			// /Developer/NVIDIA
 			// /usr/local/cuda
-			if (true || new File("/Library/Frameworks/CUDA.framework").exists() ||
+			if (new File("/Library/Frameworks/CUDA.framework").exists() ||
 					new File("/Developer/NVIDIA").exists() ||
 					new File("/usr/local/cuda").exists()) {
 				// there is evidence of CUDA being installed on this computer
