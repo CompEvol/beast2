@@ -3,6 +3,7 @@ package beast.app.util;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -26,6 +28,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
 import beast.core.util.Log;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.likelihood.BeagleTreeLikelihood;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.tree.Tree;
+import beast.util.AddOnManager;
+import beast.util.TreeParser;
 
 /**
  * @author Andrew Rambaut
@@ -320,4 +330,102 @@ public class Utils {
 	    }
 	
 	}
+
+	
+	public static boolean testCudaStatusOnMac() {
+		String cudaStatusOnMac = "<html>It appears you have CUDA installed, but your computer hardware does not support it.<br>"
+				+ "You need to remove CUDA before BEAST/BEAUti can start.<br>"
+				+ "To remove CUDA, delete the following folders by typing in a terminal:<br>"
+				+ "rm -r /Library/Frameworks/CUDA.framework<br>"
+				+ "rm -r /Developer/NVIDIA<br>"
+				+ "rm -r /usr/local/cuda<br>"
+				+ "You may need 'sudo rm' instead of 'rm'</html>";
+				
+		if (isMac()) {
+			// check any of these directories exist
+			// /Library/Frameworks/CUDA.framework
+			// /Developer/NVIDIA
+			// /usr/local/cuda
+			if (true || new File("/Library/Frameworks/CUDA.framework").exists() ||
+					new File("/Developer/NVIDIA").exists() ||
+					new File("/usr/local/cuda").exists()) {
+				// there is evidence of CUDA being installed on this computer
+				// try to create a BeagleTreeLikelihood using a separate process
+				try {
+				      String java = System.getenv("java.home");
+				      if (java == null) {
+				    	  java ="/usr/bin/java";
+				      } else {
+				    	  java += "/bin/java";
+				      }
+				      String beastJar = AddOnManager.getPackageUserDir();
+				      beastJar += "/" + "BEAST" + "/" + "lib" + "/" + "beast.jar";
+				      if (!new File(beastJar).exists()) {
+				    	  Log.debug.println("Could not find beast.jar, giving up testCudaStatusOnMac");
+				    	  return true;
+				      }
+				      //beastJar = "\"" + beastJar + "\"";
+				      //beastJar = "/Users/remco/workspace/beast2/build/dist/beast.jar";
+				      Process p = Runtime.getRuntime().exec(new String[]{java , "-cp" , beastJar , "beast.app.util.Utils"});
+				      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				      String line;
+				      while ((line = input.readLine()) != null) {
+				        Log.debug.println(line);
+				      }
+				      input.close();
+				      if (p.exitValue() != 0) {
+				    	  if (GraphicsEnvironment.isHeadless()) {
+				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<br>", "\n");
+				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<.?html>","\n");
+				    		  Log.warning.println("WARNING: " + cudaStatusOnMac);
+				    	  } else {
+				    		  JOptionPane.showMessageDialog(null, cudaStatusOnMac);
+				    	  }
+				    	  return false;
+				      }
+				    }
+				    catch (Exception err) {
+				      err.printStackTrace();
+				    }
+			}
+			
+		}
+		return true;
+	}
+	
+	
+    public static void main(String[] args) {
+		try {
+			Sequence a = new Sequence("A", "A");
+	        Sequence b = new Sequence("B", "A");
+	        Sequence c = new Sequence("C", "A");
+	        Sequence d = new Sequence("D", "A");
+
+	        Alignment data = new Alignment();
+	        data.initByName("sequence", a, "sequence", b, "sequence", c, "sequence", d, "dataType", "nucleotide");
+
+	        TreeParser tree = new TreeParser();
+	        tree.initByName("taxa", data,
+	                "newick", "(((A:1,B:1):1,C:2):1,D:3)",
+	                "IsLabelledNewick", true);
+
+	        JukesCantor JC = new JukesCantor();
+	        JC.initAndValidate();
+
+	        SiteModel siteModel = new SiteModel();
+	        siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", JC);
+
+	    	BeagleTreeLikelihood likelihood = new BeagleTreeLikelihood();
+	        likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    	
+    	System.out.println("Success");
+    	// if we got this far, exit with status 0
+		System.exit(0);
+	}
+
 }
