@@ -250,7 +250,7 @@ public class SubtreeSlide extends TreeOperator {
      */
     @Override
     public void optimize(final double logAlpha) {
-        if (optimiseInput.get() && ! Double.isInfinite(logAlpha) ) {
+        if (optimiseInput.get()) {
             double delta = calcDelta(logAlpha);
             delta += Math.log(size);
             final double f = Math.exp(delta);
