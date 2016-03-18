@@ -83,13 +83,13 @@
                 c:$(n)
             </connect>
             <connect srcID='ExpCategoriesRandomWalk.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(expRateCategories.c:$(n))'>Randomly change categories of partition c:$(n)
+                     if='inlikelihood(expRateCategories.c:$(n)) and expRateCategories.c:$(n)/estimate=true'>Randomly change categories of partition c:$(n)
             </connect>
             <connect srcID='ExpCategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(expRateCategories.c:$(n))'>Swap categories of partition c:$(n)
+                     if='inlikelihood(expRateCategories.c:$(n)) and expRateCategories.c:$(n)/estimate=true'>Swap categories of partition c:$(n)
             </connect>
             <connect srcID='ExpCategoriesUniform.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(expRateCategories.c:$(n))'>Uniformly draw categories of partition c:$(n)
+                     if='inlikelihood(expRateCategories.c:$(n)) and expRateCategories.c:$(n)/estimate=true'>Uniformly draw categories of partition c:$(n)
             </connect>
             <connect srcID='relaxedUpDownOperatorExp.c:$(n)' targetID='mcmc' inputName='operator'
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
@@ -161,16 +161,16 @@
                 c:$(n)
             </connect>
             <connect srcID='ucldStdevScaler.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(ucldStdev.c:$(n))'>Scale stdev of rate of partition c:$(n)
+                     if='inlikelihood(ucldStdev.c:$(n)) and ucldStdev.c:$(n)/estimate=true'>Scale stdev of rate of partition c:$(n)
             </connect>
             <connect srcID='CategoriesRandomWalk.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(rateCategories.c:$(n))'>Randomly change categories of partition c:$(n)
+                     if='inlikelihood(rateCategories.c:$(n)) and rateCategories.c:$(n)/estimate=true'>Randomly change categories of partition c:$(n)
             </connect>
             <connect srcID='CategoriesSwapOperator.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(rateCategories.c:$(n))'>Swap categories of partition c:$(n)
+                     if='inlikelihood(rateCategories.c:$(n)) and rateCategories.c:$(n)/estimate=true'>Swap categories of partition c:$(n)
             </connect>
             <connect srcID='CategoriesUniform.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(rateCategories.c:$(n))'>Uniformly draw categories of partition c:$(n)
+                     if='inlikelihood(rateCategories.c:$(n)) and rateCategories.c:$(n)/estimate=true'>Uniformly draw categories of partition c:$(n)
             </connect>
             <connect srcID='relaxedUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
