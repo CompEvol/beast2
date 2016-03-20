@@ -137,6 +137,47 @@ public class DeltaExchangeOperator extends Operator {
     @Override
     public final double proposal() {
     	int[] parameterWeights = weights();
+    	final int dim = parameterWeights.length;
+    	
+    	// Find the number of weights that are nonzero
+    	int nonZeroWeights = 0;
+    	for (int i: parameterWeights) {
+    		if (i != 0) {
+    			++nonZeroWeights;
+    		}
+    	}
+    	
+        if (nonZeroWeights <= 1) {
+        	// it is impossible to select two distinct entries in this case, so there is nothing to propose 
+        	return 0.0;
+        }
+    	
+        // Generate indices for the values to be modified
+        int dim1 = Randomizer.nextInt(nonZeroWeights);
+        int dim2 = Randomizer.nextInt(nonZeroWeights-1);
+        if (dim2 >= dim1) {
+        	++dim2;
+        }
+        if (nonZeroWeights<dim) {
+        	// There are zero weights, so we need to increase dim1 and dim2 accordingly.
+        	int nonZerosBeforeDim1 = dim1;
+        	int nonZerosBeforeDim2 = dim2;
+        	dim1 = 0;
+        	dim2 = 0;
+        	while (nonZerosBeforeDim1 > 0 | parameterWeights[dim1] == 0 ) {
+        		if (parameterWeights[dim1] != 0) {
+        			--nonZerosBeforeDim1;
+        		}
+        		++dim1;
+        	}
+        	while (nonZerosBeforeDim2 > 0 | parameterWeights[dim2] == 0 ) {
+        		if (parameterWeights[dim2] != 0) {
+        			--nonZerosBeforeDim2;
+        		}
+        		++dim2;
+        	}
+        }
+
         double logq = 0.0;
 
         if (compoundParameter == null) { // one parameter case
@@ -148,18 +189,6 @@ public class DeltaExchangeOperator extends Operator {
                 intparameter = intparameterInput.get().get(0);
             } else {
                 realparameter = parameterInput.get().get(0);
-            }
-
-            final int dim = (realparameter != null ? realparameter.getDimension() : intparameter.getDimension());
-            if (dim <= 1) {
-            	// it is impossible to select two distinct entries in this case, so there is nothing to propose 
-            	return 0.0;
-            }
-
-            final int dim1 = Randomizer.nextInt(dim);
-            int dim2 = dim1;
-            while (dim1 == dim2) {
-                dim2 = Randomizer.nextInt(dim);
             }
 
             if (intparameter == null) {
@@ -216,19 +245,6 @@ public class DeltaExchangeOperator extends Operator {
             }
 
         } else { // compound parameter case
-
-            // get two dimensions
-            final int dim = compoundParameter.getDimension();
-            if (dim <= 1) {
-            	// it is impossible to select two distinct entries in this case, so there is nothing to propose 
-            	return 0.0;
-            }
-
-            final int dim1 = Randomizer.nextInt(dim);
-            int dim2 = dim1;
-            while (dim1 == dim2) {
-                dim2 = Randomizer.nextInt(dim);
-            }
 
             if (intparameterInput.get().isEmpty()) {
                 // operate on real parameter
