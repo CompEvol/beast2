@@ -21,7 +21,9 @@ public class TestDeltaExchangeOperator extends TestOperator {
 	
 	@Test
 	public void testKeepsSum() {
-		m_operator.proposal();
+		for (int i=0; i<100; ++i) {
+			m_operator.proposal();
+		}
 		double i = 0;
 		for (Double p : ((RealParameter) m_operands.get("parameter")).getValues()) {
 			i += p;
