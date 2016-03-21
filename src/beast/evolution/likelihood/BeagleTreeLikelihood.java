@@ -83,6 +83,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     int m_nStateCount;
     int m_nNodeCount;
     
+    private double [] currentCategoryRates;
+    private double [] storedCurrentCategoryRates;
+    
     private int invariantCategory = -1;
 
     @Override
@@ -140,6 +143,14 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	        		break;
 	        	}
 	        }
+//	        if (constantPattern.size() > dataInput.get().getPatternCount()) {
+//	        	// if there are many more constant patterns than patterns (each pattern can
+//	        	// have a number of constant patters, one for each state) it is less efficient
+//	        	// to just calculate the TreeLikelihood for constant sites than optimising
+//	        	invariantCategory = -1;
+//	        	proportionInvariant = 0;
+//	        	constantPattern = null;
+//	        }
         }        
 
         this.categoryCount = m_siteModel.getCategoryCount() - (invariantCategory >= 0 ? 1 : 0);
@@ -350,7 +361,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         // set up sitemodel
         
         beagle.setCategoryRates(categoryRates);
-
+        currentCategoryRates = categoryRates;
+        storedCurrentCategoryRates = categoryRates.clone();
+        
         return true;
     }
 
@@ -500,8 +513,26 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     @Override
     protected boolean requiresRecalculation() {
         hasDirt = Tree.IS_CLEAN;
+        
+        double[] categoryRates = m_siteModel.getCategoryRates(null);
+        if (constantPattern != null) {
+            double [] tmp = new double [categoryRates.length - 1];
+            for (int k = 0; k < invariantCategory; k++) {
+            	tmp[k] = categoryRates[k];
+            }
+            for (int k = invariantCategory + 1; k < categoryRates.length; k++) {
+            	tmp[k-1] = categoryRates[k];
+            }
+            categoryRates = tmp;
+        }
+        for (int i = 0; i < categoryRates.length; i++) {
+        	if (categoryRates[i] != currentCategoryRates[i]) {
+        		updateSiteModel = true;
+        		break;
+        	}
+        }
+        //updateSiteModel |= m_siteModel.isDirtyCalculation();
 
-        updateSiteModel |= m_siteModel.isDirtyCalculation();
         if (substitutionModel instanceof CalculationNode) {
         	updateSubstitutionModel |= ((CalculationNode) substitutionModel).isDirtyCalculation();
         }
@@ -538,12 +569,23 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
         super.store();
         System.arraycopy(m_branchLengths, 0, storedBranchLengths, 0, m_branchLengths.length);
+        System.arraycopy(currentCategoryRates, 0, storedCurrentCategoryRates, 0, currentCategoryRates.length);
     }
 
     @Override
     public void restore() {
-        updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
-
+    	if (currentCategoryRates.length > 1) {
+            for (int i = 0; i < currentCategoryRates.length; i++) {
+            	if (currentCategoryRates[i] != storedCurrentCategoryRates[i]) {
+            		updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
+            		break;
+            	}
+            }
+            double [] tmp = storedCurrentCategoryRates;
+            storedCurrentCategoryRates = currentCategoryRates;
+            currentCategoryRates = tmp;
+    	}
+        
         partialBufferHelper.restoreState();
         eigenBufferHelper.restoreState();
         matrixBufferHelper.restoreState();
@@ -645,6 +687,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	            categoryRates = tmp;
 	        }
             beagle.setCategoryRates(categoryRates);
+            currentCategoryRates = categoryRates;
         }
 
         for (int i = 0; i < eigenCount; i++) {
