@@ -84,7 +84,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     int m_nNodeCount;
     
     private double [] currentCategoryRates;
-    private double [] storedCurrentCategoryRates;
+//    private double [] storedCurrentCategoryRates;
+    private double [] currentFreqs;
+    private double [] currentCategoryWeights;
     
     private int invariantCategory = -1;
 
@@ -364,7 +366,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         
         beagle.setCategoryRates(categoryRates);
         currentCategoryRates = categoryRates;
-        storedCurrentCategoryRates = categoryRates.clone();
+        currentFreqs = new double[m_nStateCount];
+        currentCategoryWeights = new double[categoryRates.length];
         
         return true;
     }
@@ -571,20 +574,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
         super.store();
         System.arraycopy(m_branchLengths, 0, storedBranchLengths, 0, m_branchLengths.length);
-        System.arraycopy(currentCategoryRates, 0, storedCurrentCategoryRates, 0, currentCategoryRates.length);
     }
 
     @Override
     public void restore() {
-        for (int i = 0; i < currentCategoryRates.length; i++) {
-        	if (currentCategoryRates[i] != storedCurrentCategoryRates[i]) {
-        		updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
-        		break;
-        	}
-        }
-        double [] tmp = storedCurrentCategoryRates;
-        storedCurrentCategoryRates = currentCategoryRates;
-        currentCategoryRates = tmp;
+  		updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
         
         partialBufferHelper.restoreState();
         eigenBufferHelper.restoreState();
@@ -686,7 +680,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	            }
 	            categoryRates = tmp;
 	        }
-            beagle.setCategoryRates(categoryRates);
+            for (int i = 0; i < categoryRates.length; i++) {
+            	if (categoryRates[i] != currentCategoryRates[i]) {
+                    beagle.setCategoryRates(categoryRates);
+                    i = categoryRates.length;
+            	}
+            }
             currentCategoryRates = categoryRates;
         }
 
@@ -751,8 +750,21 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             }
 
             // these could be set only when they change but store/restore would need to be considered
-            beagle.setCategoryWeights(0, categoryWeights);
-            beagle.setStateFrequencies(0, frequencies);
+            
+            for (int i = 0; i < categoryWeights.length; i++) {
+            	if (categoryWeights[i] != currentCategoryWeights[i]) {
+                    beagle.setCategoryWeights(0, categoryWeights);
+            		i = categoryWeights.length;
+            	}
+            }
+            currentCategoryWeights = categoryWeights;
+            for (int i = 0; i < frequencies.length; i++) {
+            	if (frequencies[i] != currentFreqs[i]) {
+                    beagle.setStateFrequencies(0, frequencies);
+            		i = frequencies.length;
+            	}
+            }
+            currentFreqs = frequencies;
 
             double[] sumLogLikelihoods = new double[1];
 
