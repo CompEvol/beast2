@@ -143,14 +143,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	        		break;
 	        	}
 	        }
-//	        if (constantPattern.size() > dataInput.get().getPatternCount()) {
-//	        	// if there are many more constant patterns than patterns (each pattern can
-//	        	// have a number of constant patters, one for each state) it is less efficient
-//	        	// to just calculate the TreeLikelihood for constant sites than optimising
-//	        	invariantCategory = -1;
-//	        	proportionInvariant = 0;
-//	        	constantPattern = null;
-//	        }
+	        if (constantPattern.size() > dataInput.get().getPatternCount()) {
+	        	// if there are many more constant patterns than patterns (each pattern can
+	        	// have a number of constant patters, one for each state) it is less efficient
+	        	// to just calculate the TreeLikelihood for constant sites than optimising
+	        	Log.debug("switch off constant sites optimisiation: calculating through separate TreeLikelihood category (as in the olden days)");
+	        	invariantCategory = -1;
+	        	proportionInvariant = 0;
+	        	constantPattern = null;
+	        	categoryRates = m_siteModel.getCategoryRates(null);
+	        }
         }        
 
         this.categoryCount = m_siteModel.getCategoryCount() - (invariantCategory >= 0 ? 1 : 0);
@@ -574,17 +576,15 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     @Override
     public void restore() {
-    	if (currentCategoryRates.length > 1) {
-            for (int i = 0; i < currentCategoryRates.length; i++) {
-            	if (currentCategoryRates[i] != storedCurrentCategoryRates[i]) {
-            		updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
-            		break;
-            	}
-            }
-            double [] tmp = storedCurrentCategoryRates;
-            storedCurrentCategoryRates = currentCategoryRates;
-            currentCategoryRates = tmp;
-    	}
+        for (int i = 0; i < currentCategoryRates.length; i++) {
+        	if (currentCategoryRates[i] != storedCurrentCategoryRates[i]) {
+        		updateSiteModel = true; // this is required to upload the categoryRates to BEAGLE after the restore
+        		break;
+        	}
+        }
+        double [] tmp = storedCurrentCategoryRates;
+        storedCurrentCategoryRates = currentCategoryRates;
+        currentCategoryRates = tmp;
         
         partialBufferHelper.restoreState();
         eigenBufferHelper.restoreState();
