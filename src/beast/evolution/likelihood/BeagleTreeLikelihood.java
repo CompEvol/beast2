@@ -143,7 +143,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	        		break;
 	        	}
 	        }
-	        if (constantPattern.size() > dataInput.get().getPatternCount()) {
+	        if (constantPattern != null && constantPattern.size() > dataInput.get().getPatternCount()) {
 	        	// if there are many more constant patterns than patterns (each pattern can
 	        	// have a number of constant patters, one for each state) it is less efficient
 	        	// to just calculate the TreeLikelihood for constant sites than optimising
