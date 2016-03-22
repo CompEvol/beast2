@@ -164,9 +164,9 @@ public class BeastMain {
            Log.info.println(e.getMessage());
             //e.printStackTrace();
         } catch (Exception e) {
-            infoLogger.severe("Fatal exception: " + e.getMessage());
             Log.info.println("Fatal exception: " + e.getMessage());
             e.printStackTrace(Log.err);
+            infoLogger.severe("Fatal exception: " + e.getMessage());
         }
     }
 
