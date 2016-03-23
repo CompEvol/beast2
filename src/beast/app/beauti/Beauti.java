@@ -56,6 +56,7 @@ import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
+import beast.app.tools.AppStore;
 import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.core.util.Log;
@@ -166,6 +167,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
     Action a_addOn = new ActionAddOn();
+    Action a_appLauncher = new ActionAppLauncher();
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
@@ -416,7 +418,20 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     }
 
-//    class ActionImport extends MyAction {
+    class ActionAppLauncher extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionAppLauncher() {
+            super("Launch Apps", "Launch BEAST Apps supplied by packages", "launch", -1);
+        } // c'tor
+
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+        	AppStore.main(new String[]{});
+        } // actionPerformed
+    }
+
+    //    class ActionImport extends MyAction {
 //        private static final long serialVersionUID = 1;
 //
 //        public ActionImport() {
@@ -803,6 +818,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         templateMenu.addSeparator();
         templateMenu.add(a_template);
         fileMenu.add(a_addOn);
+        fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
