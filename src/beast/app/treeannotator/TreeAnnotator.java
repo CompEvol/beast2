@@ -1297,6 +1297,14 @@ public class TreeAnnotator {
             }
 
             int burninPercentage = dialog.getBurninPercentage();
+            if (burninPercentage < 0) {
+            	Log.warning.println("burnin percentage is " + burninPercentage + " but should be non-negative. Setting it to zero");
+            	burninPercentage = 0;
+            }
+            if (burninPercentage >= 100) {
+            	Log.err.println("burnin percentage is " + burninPercentage + " but should be less than 100.");
+            	return;
+            }
             double posteriorLimit = dialog.getPosteriorLimit();
             double hpd2D = 0.80;
             Target targetOption = dialog.getTargetOption();
@@ -1408,7 +1416,7 @@ public class TreeAnnotator {
             burnin = arguments.getIntegerOption("b");        	
         }
         if (burnin >= 100) {
-        	Log.err.println("burnin is a percentage and should be less than 100.");
+        	Log.err.println("burnin percentage is " + burnin + " but should be less than 100.");
         	System.exit(1);
         }
 
