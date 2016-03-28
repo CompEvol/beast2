@@ -13,7 +13,7 @@ import beast.evolution.datatype.DataType;
 
 
 
-@Description("Alignemnt based on a filter operation on another alignment")
+@Description("Alignment based on a filter operation on another alignment")
 public class FilteredAlignment extends Alignment {
     final public Input<String> filterInput = new Input<>("filter", "specifies which of the sites in the input alignment should be selected " +
             "First site is 1." +
