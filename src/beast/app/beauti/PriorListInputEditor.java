@@ -117,6 +117,13 @@ public class PriorListInputEditor extends ListInputEditor {
         super.init(input, beastObject, itemNr, isExpandOption, addButtons);
 
         
+        if (beastObject instanceof BeautiPanelConfig) {
+        	BeautiPanelConfig config = (BeautiPanelConfig) beastObject;
+        	if (config.parentBEASTObjects != null && config.parentBEASTObjects.size() > 0 && config.parentBEASTObjects.get(0).getID().equals("speciescoalescent")) {
+        		m_buttonStatus = ButtonStatus.NONE;
+        	}
+        }
+        
         if (m_buttonStatus == ButtonStatus.ALL || m_buttonStatus == ButtonStatus.ADD_ONLY) {
 	        addButton = new SmallButton("+", true);
 	        addButton.setName("addItem");
