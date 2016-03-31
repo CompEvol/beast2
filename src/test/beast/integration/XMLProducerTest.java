@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import beast.core.BEASTInterface;
 import beast.core.Logger;
+import beast.evolution.datatype.Nucleotide;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -84,4 +85,11 @@ public class XMLProducerTest extends TestCase {
         }
     } // test_XmlExamples
 
+    
+    @Test
+    public void testObjectWithoutID() {
+    	BEASTInterface o = new Nucleotide();
+    	XMLProducer producer = new XMLProducer();
+    	System.out.println(producer.toXML(o));
+    }
 }
