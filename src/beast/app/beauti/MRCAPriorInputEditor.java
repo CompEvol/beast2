@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
+import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.BEASTInterface;
@@ -60,8 +61,16 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                     Set<Taxon> candidates = getTaxonCandidates(prior2);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
-                        prior2.setID(dlg.taxonSet.getID());
                         prior2.taxonsetInput.setValue(dlg.taxonSet, prior2);
+                        int i = 1;
+                        String id = dlg.taxonSet.getID();
+                        while (doc.pluginmap.containsKey(dlg.taxonSet.getID()) && doc.pluginmap.get(dlg.taxonSet.getID()) != dlg.taxonSet) {
+                        	dlg.taxonSet.setID(id + i);
+                        	i++;
+                        }
+                        BEASTObjectPanel.addPluginToMap(dlg.taxonSet, doc);
+                        prior2.setID(dlg.taxonSet.getID() + ".prior");
+
                     }
                 } catch (Exception e1) {
                     // TODO Auto-generated catch block

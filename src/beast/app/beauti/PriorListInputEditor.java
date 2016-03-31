@@ -251,6 +251,12 @@ public class PriorListInputEditor extends ListInputEditor {
                 return null;
             }
             taxonSet = dlg.taxonSet;
+            int i = 1;
+            String id = taxonSet.getID();
+            while (doc.pluginmap.containsKey(taxonSet.getID()) && doc.pluginmap.get(taxonSet.getID()) != taxonSet) {
+            	taxonSet.setID(id + i);
+            	i++;
+            }
             BEASTObjectPanel.addPluginToMap(taxonSet, doc);
             prior.taxonsetInput.setValue(taxonSet, prior);
             prior.setID(taxonSet.getID() + ".prior");
