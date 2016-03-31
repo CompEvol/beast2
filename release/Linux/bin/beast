@@ -31,13 +31,22 @@ else
 fi
 
 
-# use BEAGL_LIB if the BEAGLE library is not in a standard location
+# use BEAGLE_LIB if the BEAGLE library is not in a standard location
 if [ -n "$BEAGLE_LIB" ]; then
 	if [ -n "$BEAST_EXTRA_LIBS" ]; then
 		BEAST_EXTRA_LIBS=$BEAST_EXTRA_LIBS:$BEAGLE_LIB
 	else
 		BEAST_EXTRA_LIBS=$BEAGLE_LIB
 	fi
+fi
+
+# Explicitly add /usr/local/lib to library search path to ensure 
+# beast continues to find beagle when installed here.  (This is
+# necessary due to known problems with certain JREs.)
+if [ -z "$LD_LIBRARY_PATH" ]; then
+    export LD_LIBRARY_PATH=/usr/local/lib
+else
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib
 fi
 
 # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
