@@ -73,30 +73,41 @@ public class LogAnalyser {
      * @throws IOException 
      */
     public LogAnalyser(String[] args, int burnInPercentage) throws IOException {
+    	this(args, burnInPercentage, false, true);
+    }
+
+    public LogAnalyser(String[] args, int burnInPercentage, boolean quiet, boolean calcStats) throws IOException {
         fileName = args[args.length - 1];
         readLogFile(fileName, burnInPercentage);
-        calcStats();
+        this.quiet = quiet;
+        if (calcStats) {
+        	calcStats();
+        }
     }
 
     public LogAnalyser(String[] args) throws IOException {
-        this(args, BURN_IN_PERCENTAGE);
+        this(args, BURN_IN_PERCENTAGE, false, true);
     }
 
     public LogAnalyser(String fileName, int burnInPercentage) throws IOException {
-        this.fileName = fileName;
-        readLogFile(fileName, burnInPercentage);
-        calcStats();
+    	this(fileName, burnInPercentage, false, true);
     }
 
     public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws IOException {
+    	this(fileName, burnInPercentage, quiet, true);
+    }
+    
+    public LogAnalyser(String fileName) throws IOException {
+        this(fileName, BURN_IN_PERCENTAGE);
+    }
+
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet, boolean calcStats) throws IOException {
         this.fileName = fileName;
         this.quiet = quiet;
         readLogFile(fileName, burnInPercentage);
-        calcStats();
-    }
-
-    public LogAnalyser(String fileName) throws IOException {
-        this(fileName, BURN_IN_PERCENTAGE);
+        if (calcStats) {
+        	calcStats();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -178,7 +189,7 @@ public class LogAnalyser {
      * calculate statistics on the data, one per column.
      * First column (sample nr) is not set *
      */
-    void calcStats() {
+    public void calcStats() {
         logln("\nCalculating statistics\n\n" + BAR);
         int stars = 0;
         int items = m_sLabels.length;
