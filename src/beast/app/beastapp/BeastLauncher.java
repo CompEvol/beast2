@@ -18,7 +18,6 @@ import java.net.URLDecoder;
 import javax.swing.JOptionPane;
 
 import beast.app.BEASTVersion;
-import beast.app.util.Utils;
 import beast.app.util.Utils6;
 
 
@@ -33,7 +32,7 @@ public class BeastLauncher {
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("BEAST")) {
 			loadBEASTJars();
-			Utils.testCudaStatusOnMac();
+			Utils6.testCudaStatusOnMac();
 			BeastMain.main(args);
 		}
 	}

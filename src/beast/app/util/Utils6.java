@@ -3,16 +3,22 @@ package beast.app.util;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import beast.core.util.Log;
+import beast.util.AddOnManager;
 
 /** Utils that work with Java6 **/
 public class Utils6 {
@@ -98,6 +104,68 @@ public class Utils6 {
 	        return null;
 	    }
 	}
+	
+	public static boolean testCudaStatusOnMac() {
+		String cudaStatusOnMac = "<html>It appears you have CUDA installed, but your computer hardware does not support it.<br>"
+				+ "You need to remove CUDA before BEAST/BEAUti can start.<br>"
+				+ "To remove CUDA, delete the following folders by typing in a terminal:<br>"
+				+ "rm -r /Library/Frameworks/CUDA.framework<br>"
+				+ "rm -r /Developer/NVIDIA<br>"
+				+ "rm -r /usr/local/cuda<br>"
+				+ "You may need 'sudo rm' instead of 'rm'</html>";
+				
+		if (isMac()) {
+			// check any of these directories exist
+			// /Library/Frameworks/CUDA.framework
+			// /Developer/NVIDIA
+			// /usr/local/cuda
+			if (new File("/Library/Frameworks/CUDA.framework").exists() ||
+					new File("/Developer/NVIDIA").exists() ||
+					new File("/usr/local/cuda").exists()) {
+				// there is evidence of CUDA being installed on this computer
+				// try to create a BeagleTreeLikelihood using a separate process
+				try {
+				      String java = System.getenv("java.home");
+				      if (java == null) {
+				    	  java ="/usr/bin/java";
+				      } else {
+				    	  java += "/bin/java";
+				      }
+				      String beastJar = AddOnManager.getPackageUserDir();
+				      beastJar += "/" + "BEAST" + "/" + "lib" + "/" + "beast.jar";
+				      if (!new File(beastJar).exists()) {
+				    	  Log.debug.println("Could not find beast.jar, giving up testCudaStatusOnMac");
+				    	  return true;
+				      }
+				      //beastJar = "\"" + beastJar + "\"";
+				      //beastJar = "/Users/remco/workspace/beast2/build/dist/beast.jar";
+				      Process p = Runtime.getRuntime().exec(new String[]{java , "-cp" , beastJar , "beast.app.util.Utils"});
+				      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				      String line;
+				      while ((line = input.readLine()) != null) {
+				        Log.debug.println(line);
+				      }
+				      input.close();
+				      if (p.exitValue() != 0) {
+				    	  if (GraphicsEnvironment.isHeadless()) {
+				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<br>", "\n");
+				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<.?html>","\n");
+				    		  Log.warning.println("WARNING: " + cudaStatusOnMac);
+				    	  } else {
+				    		  JOptionPane.showMessageDialog(null, cudaStatusOnMac);
+				    	  }
+				    	  return false;
+				      }
+				    }
+				    catch (Exception err) {
+				      err.printStackTrace();
+				    }
+			}
+			
+		}
+		return true;
+	}
+
 
     public static boolean isMac() {
         return System.getProperty("os.name").toLowerCase().startsWith("mac");
