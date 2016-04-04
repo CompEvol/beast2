@@ -537,7 +537,7 @@ public class LogAnalyser {
             	// process args
             	int burninPercentage = BURN_IN_PERCENTAGE;
                 boolean oneLine = false;
-                boolean quiet = true;
+                boolean quiet = false;
             	List<String> files = new ArrayList<>();
             	int i = 0;
             	while (i < args.length) {
