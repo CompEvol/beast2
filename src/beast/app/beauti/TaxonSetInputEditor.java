@@ -21,8 +21,10 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
@@ -335,25 +337,33 @@ public class TaxonSetInputEditor extends InputEditor.Base {
             }
         }
 
+        List<String> unknowns = new ArrayList<>();
         for (Taxon taxon : taxa) {
             if (!(taxon instanceof TaxonSet)) {
                 Matcher matcher = m_pattern.matcher(taxon.getID());
+                String match;
                 if (matcher.find()) {
-                    String match = matcher.group(1);
-                    try {
-                        if (map.containsKey(match)) {
-                            TaxonSet set = map.get(match);
-                            set.taxonsetInput.setValue(taxon, set);
-                        } else {
-                        	TaxonSet set = newTaxonSet(match);
-                            set.taxonsetInput.setValue(taxon, set);
-                            map.put(match, set);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    match = matcher.group(1);
+                } else {
+                   	match = "UNKNOWN";
+                   	unknowns.add(taxon.getID());
+                }
+                try {
+                    if (map.containsKey(match)) {
+                        TaxonSet set = map.get(match);
+                        set.taxonsetInput.setValue(taxon, set);
+                    } else {
+                    	TaxonSet set = newTaxonSet(match);
+                        set.taxonsetInput.setValue(taxon, set);
+                        map.put(match, set);
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
+        }
+        if (unknowns.size() > 0) {
+        	showMisMatchMessage(unknowns);
         }
         // add taxon sets
         int ignored = 0;
@@ -400,14 +410,9 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         	if (alignment instanceof FilteredAlignment) {
         		alignment = ((FilteredAlignment)alignment).alignmentInput.get();
         	}
-            for (Sequence sequence : alignment.sequenceInput.get()) {
-                String id = sequence.taxonInput.get();
+            for (String id : alignment.getTaxaNames()) {
                 if (!taxonIDs.contains(id)) {
-                    Taxon taxon = getDoc().getTaxon(sequence.taxonInput.get());
-                    // ensure sequence and taxon do not get same ID
-                    if (sequence.getID().equals(sequence.taxonInput.get())) {
-                        sequence.setID("_" + sequence.getID());
-                    }
+                    Taxon taxon = getDoc().getTaxon(id);
                     taxa.add(taxon);
                     taxonIDs.add(id);
                 }
@@ -415,22 +420,25 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         }
 
         HashMap<String, TaxonSet> map = new HashMap<>();
+        List<String> unknowns = new ArrayList<>();
         for (Taxon taxon : taxa) {
             if (!(taxon instanceof TaxonSet)) {
                 String match = traitmap.get(taxon.getID());
-                if (match != null) {
-                    try {
-                        if (map.containsKey(match)) {
-                            TaxonSet set = map.get(match);
-                            set.taxonsetInput.setValue(taxon, set);
-                        } else {
-                            TaxonSet set = newTaxonSet(match);
-                            set.taxonsetInput.setValue(taxon, set);
-                            map.put(match, set);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                if (match == null) {
+                	match = "UNKNOWN";
+                	unknowns.add(taxon.getID());
+                }
+                try {
+                    if (map.containsKey(match)) {
+                        TaxonSet set = map.get(match);
+                        set.taxonsetInput.setValue(taxon, set);
+                    } else {
+                        TaxonSet set = newTaxonSet(match);
+                        set.taxonsetInput.setValue(taxon, set);
+                        map.put(match, set);
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
         }
@@ -438,9 +446,20 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         for (TaxonSet set : map.values()) {
              m_taxonset.add(set);
         }
+        if (unknowns.size() > 0) {
+        	showMisMatchMessage(unknowns);
+        }
     }
     
-    String m_sPattern = "^(.+)[-_\\. ](.*)$";
+    private void showMisMatchMessage(List<String> unknowns) {
+    	JOptionPane.showMessageDialog(
+    	    this, 
+    	    "Some taxa did not have a match and are set to UNKNOWN:\n" + unknowns.toString().replaceAll(",", "\n"), 
+    	    "Warning", 
+    	    JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	String m_sPattern = "^(.+)[-_\\. ](.*)$";
 
 
     private Component createFilterBox() {
