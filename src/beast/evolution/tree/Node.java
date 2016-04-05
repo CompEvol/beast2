@@ -711,7 +711,7 @@ public class Node extends BEASTObject {
     }
 
     public void setChild(final int childIndex, final Node node) {
-        while (children.size() < childIndex) {
+        while (children.size() <= childIndex) {
             children.add(null);
         }
         children.set(childIndex, node);
