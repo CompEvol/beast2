@@ -227,6 +227,11 @@ public class MCMC extends Runnable {
 	        }
 	    }
     
+        // sanity check: at least one operator required to run MCMC
+        if (operatorsInput.get().size() == 0) {
+        	Log.warning.println("Warning: at least one operator required to run the MCMC properly, but none found.");
+        }
+        
         // sanity check: all state nodes should be operated on
         for (final StateNode stateNode : stateNodes) {
             if (!operatorStateNodes.contains(stateNode)) {
