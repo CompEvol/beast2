@@ -64,6 +64,7 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
+import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
@@ -2441,6 +2442,53 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     		}
     	}
 		return null;
+	}
+
+	public void addMRCAPriors(List<MRCAPrior> mrcaPriors) {
+		if (mrcaPriors == null || mrcaPriors.size() == 0) {
+			return;
+		}
+		// find prior object to attach the MRCAPriors to
+		if (!pluginmap.containsKey("prior")) {
+			return;
+		}
+		if (!pluginmap.containsKey("Tree.t:" + alignments.get(0).getID())) {
+			return;
+		}
+		Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
+		
+		
+		CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
+		for (MRCAPrior mrcaPrior : mrcaPriors) {
+			mrcaPrior.treeInput.setValue(tree, mrcaPrior);
+
+			TaxonSet t = mrcaPrior.taxonsetInput.get();
+			if (taxaset.keySet().contains(t.getID())) {
+				Log.warning.println("taxonset " + t.getID() + " already exists: MRCAPrior " + mrcaPrior.getID() + " can not be added");
+			} else {
+				taxaset.put(t.getID(), t);
+				// ensure TaxonSets are not duplicated
+				List<Taxon> taxa = t.taxonsetInput.get();
+				for (int i = 0; i< taxa.size(); i++) {
+					if (taxaset.containsKey(taxa.get(i).getID())) {
+						taxa.set(i, taxaset.get(taxa.get(i).getID()));
+					} else {
+						taxaset.put(taxa.get(i).getID(), taxa.get(i));
+					}
+				}
+				prior.pDistributions.setValue(mrcaPrior, prior);
+			}
+			if (t.taxonsetInput.get().size() == 1) {
+				// it is a calibration on a tip -- better start sampling that tip
+		        TipDatesRandomWalker operator = new TipDatesRandomWalker();
+		        t.initAndValidate();
+		        operator.initByName("taxonset", t, "weight", 1.0, "tree", tree, "windowSize", 1.0);
+		        operator.setID("TipDatesRandomWalker." + t.getID());
+		        MCMC mcmc = (MCMC) this.mcmc.get();
+		        mcmc.operatorsInput.setValue(operator, mcmc);
+			}
+		}
+		
 	}
 
 

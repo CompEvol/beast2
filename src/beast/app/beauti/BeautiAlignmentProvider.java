@@ -35,6 +35,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
+import beast.math.distributions.MRCAPrior;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
@@ -44,7 +45,6 @@ import beast.util.XMLParser;
 public class BeautiAlignmentProvider extends BEASTObject {
 	
 	final public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
-
 	
 	@Override
 	public void initAndValidate() {
@@ -80,6 +80,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
      */
     public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
         List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
+        List<MRCAPrior> calibrations = new ArrayList<>();
         for (File file : files) {
             String fileName = file.getName();
 			String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
@@ -126,8 +127,20 @@ public class BeautiAlignmentProvider extends BEASTObject {
 								sortByTaxonName(data.sequenceInput.get());
 								selectedBEASTObjects.add(data);
 							}
+							if (parser.calibrations != null) {
+								if (calibrations == null) {
+									calibrations = new ArrayList<>();
+								}
+								calibrations.addAll(parser.calibrations);
+							}
 						} else {
 							selectedBEASTObjects.add(parser.m_alignment);
+							if (parser.calibrations != null) {
+								if (calibrations == null) {
+									calibrations = new ArrayList<>();
+								}
+								calibrations.addAll(parser.calibrations);
+							}
 						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -162,8 +175,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
         }
         addAlignments(doc, selectedBEASTObjects);
+        doc.addMRCAPriors(calibrations);
         return selectedBEASTObjects;
     }
+    
     
     protected void addAlignments(BeautiDoc doc, List<BEASTInterface> selectedBEASTObjects) {
         for (BEASTInterface beastObject : selectedBEASTObjects) {

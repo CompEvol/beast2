@@ -29,6 +29,13 @@ import beast.evolution.datatype.StandardData;
 import beast.evolution.datatype.UserDataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+import beast.math.distributions.Exponential;
+import beast.math.distributions.Gamma;
+import beast.math.distributions.LogNormalDistributionModel;
+import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.Normal;
+import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.Uniform;
 
 
 /**
@@ -46,8 +53,10 @@ public class NexusParser {
     public Alignment m_alignment;
     public List<Alignment> filteredAlignments = new ArrayList<>();
     public TraitSet traitSet;
+    public List<MRCAPrior> calibrations;
 
     public List<String> taxa;
+    List<Taxon> taxonList = new ArrayList<>();
     public List<Tree> trees;
 
     static Set<String> g_sequenceIDs;
@@ -274,6 +283,7 @@ public class NexusParser {
                             	taxon = taxon.substring(1, taxon.length() - 1);
                             }
                             taxa.add(taxon);
+                            taxonList.add(new Taxon(taxon));
                     	}
                     }
                 } while (!str.toLowerCase().equals("end"));
@@ -605,6 +615,7 @@ public class NexusParser {
 
         HashSet<String> sortedAmbiguities = new HashSet<>();
         for (final String taxon : taxa) {
+        	taxonList.add(new Taxon(taxon));
             final StringBuilder bsData = seqMap.get(taxon);
             String data = bsData.toString().replaceAll("\\s", "");
             seqMap.put(taxon, new StringBuilder(data));
@@ -759,7 +770,121 @@ public class NexusParser {
             			Log.warning.println("WTSET was specified before alignment. WTSET is ignored.");
             		}
             	}
+            } else if (str.toLowerCase().matches("\\s*taxset\\s.*")) {
+            	String [] strs = str.split("=");
+            	if (strs.length > 1) {
+            		String str0 = strs[0].trim();
+            		String [] strs2 = str0.split("\\s+");
+            		if (strs2.length != 2) {
+            			throw new RuntimeException("expected 'taxset <name> = ...;' but did not get two words before the = sign: " + str);
+            		}
+            		String taxonSetName = strs2[1];
+            		str0 = strs[strs.length - 1].trim();
+            		if (!str0.endsWith(";")) {
+            			Log.warning.println("expected 'taxset <name> = ...;' semi-colin is missing: " + str + "\n"
+            					+ "Taxa from following lines may be missing.");
+            		}
+            		str0 = str0.replaceAll(";", "");
+            		String [] taxonNames = str0.split("\\s+");
+            		TaxonSet taxonset = new TaxonSet();
+            		for (String taxon : taxonNames) {
+            			taxonset.taxonsetInput.get().add(new Taxon(taxon.replaceAll("'\"", "")));
+            		}
+            		taxonset.setID(taxonSetName.replaceAll("'\"", ""));
+            		taxonsets.add(taxonset);
+            	}
+            } else if (str.toLowerCase().matches("^\\s*calibrate\\s.*")) {
+            	// define calibration represented by an MRCAPRior, 
+            	// taxon sets need to be specified earlier, but can also be a single taxon
+            	// e.g.
+            	// begin mrbayes;
+            	// calibrate germanic = normal(1000,50)
+            	// calibrate hittite = normal(3450,100)
+            	// calibrate english = fixed(0)
+            	// end;
+            	String [] strs = str.split("=");
+            	if (strs.length > 1) {
+            		String str0 = strs[0].trim();
+            		String [] strs2 = str0.split("\\s+");
+            		if (strs2.length != 2) {
+            			throw new RuntimeException("expected 'calibrate <name> = ...' but did not get two words before the = sign: " + str);
+            		}
+            		// first, get the taxon
+            		String taxonSetName = strs2[1].replaceAll("'\"", "");
+            		TaxonSet taxonset = null;
+            		for (Taxon t : taxonsets) {
+            			if (t.getID().equals(taxonSetName) && t instanceof TaxonSet) {
+            				taxonset = (TaxonSet) t;
+            			}
+            		}
+            		if (taxonset == null) {
+            			// perhaps it is a singleton
+            			for (Taxon t : taxonList) {
+            				if (t.getID().equals(taxonSetName)) {
+            					taxonset = new TaxonSet();
+            					taxonset.setID(t.getID() + ".leaf");
+            					taxonset.taxonsetInput.setValue(t, taxonset);
+            				}
+            			}
+            		}
+            		if (taxonset == null) {
+            			throw new RuntimeException("Could not find taxon/taxonset " + taxonSetName + " in calibration: " + str);
+            		}
+            		
+            		// next get the calibration
+            		str0 = strs[strs.length - 1].trim();
+            		String [] strs3 = str0.split("[\\(,\\)]");
+            		ParametricDistribution distr  = null;
+            		switch (strs3[0]) {
+            		case "normal":
+            			distr = new Normal();
+            			distr.initByName("mean", strs3[1], "sigma", strs3[2]);
+            			break;
+            		case "uniform":
+            			distr = new Uniform();
+            			distr.initByName("lower", strs3[1], "upper", strs3[2]);
+            			break;
+            		case "fixed":
+            			// uniform with lower == upper
+            			distr = new Uniform();
+            			distr.initByName("lower", strs3[1], "upper", strs3[1]);
+            			break;
+            		case "offsetlognormal":
+            			distr = new LogNormalDistributionModel();
+            			distr.initByName("offset", strs3[1], "M", strs3[2], "S", strs3[3], "meanInRealSpace", true);
+            			break;
+            		case "lognormal":
+            			distr = new LogNormalDistributionModel();
+            			distr.initByName("M", strs3[1], "S", strs3[2], "meanInRealSpace", true);
+            			break;
+            		case "offsetexponential":
+            			distr = new Exponential();
+            			distr.initByName("offset", strs3[1], "mean", strs3[2]);
+            			break;
+            		case "gamma":
+            			distr = new Gamma();
+            			distr.initByName("alpha", strs3[1], "beta", strs3[2]);
+            			break;
+            		case "offsetgamma":
+            			distr = new Gamma();
+            			distr.initByName("offset", strs3[1], "alpha", strs3[2], "beta", strs3[3]);
+            			break;
+            		default:
+            			throw new RuntimeException("Unknwon distribution "+ strs3[0] +"in calibration: " + str);
+            		}
+            		MRCAPrior prior = new MRCAPrior();
+            		prior.isMonophyleticInput.setValue(true, prior);
+            		prior.distInput.setValue(distr, prior);
+            		prior.taxonsetInput.setValue(taxonset, prior);
+            		prior.setID(taxonset.getID() + ".prior");
+            		// should set Tree before initialising, but we do not know the tree yet...
+            		if (calibrations == null) {
+            			calibrations = new ArrayList<>();
+            		}
+            		calibrations.add(prior);
+            	}
             }
+
 
         } while (!str.toLowerCase().contains("end;"));
     }
@@ -776,21 +901,28 @@ public class NexusParser {
         do {
             str = nextLine(fin);
             if (str.toLowerCase().matches("\\s*taxset\\s.*")) {
-                str = str.replaceAll("^\\s+", "");
-                str = str.replaceAll(";", "");
-                final String[] strs = str.split("\\s+");
-                String id = strs[1];
-                id = id.replaceAll("'\"", "");
-                final TaxonSet set = new TaxonSet();
-                set.setID(id);
-                for (int i = 3; i < strs.length; i++) {
-                    id = strs[i];
-                    id = id.replaceAll("'\"", "");
-                    final Taxon taxon = new Taxon();
-                    taxon.setID(id);
-                    set.taxonsetInput.setValue(taxon, set);
-                }
-                taxonsets.add(set);
+            	String [] strs = str.split("=");
+            	if (strs.length > 1) {
+            		String str0 = strs[0].trim();
+            		String [] strs2 = str0.split("\\s+");
+            		if (strs2.length != 2) {
+            			throw new RuntimeException("expected 'taxset <name> = ...;' but did not get two words before the = sign: " + str);
+            		}
+            		String taxonSetName = strs2[1];
+            		str0 = strs[strs.length - 1].trim();
+            		if (!str0.endsWith(";")) {
+            			Log.warning.println("expected 'taxset <name> = ...;' semi-colin is missing: " + str + "\n"
+            					+ "Taxa from following lines may be missing.");
+            		}
+            		str0 = str0.replaceAll(";", "");
+            		String [] taxonNames = str0.split("\\s+");
+            		TaxonSet taxonset = new TaxonSet();
+            		for (String taxon : taxonNames) {
+            			taxonset.taxonsetInput.get().add(new Taxon(taxon.replaceAll("'\"", "")));
+            		}
+            		taxonset.setID(taxonSetName.replaceAll("'\"", ""));
+            		taxonsets.add(taxonset);
+            	}
             }
         } while (!str.toLowerCase().contains("end;"));
     }
