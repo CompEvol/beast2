@@ -107,10 +107,12 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         m_taxonMap = new HashMap<>();
         m_lineageset = new ArrayList<>();
         for (Taxon taxonset2 : m_taxonset) {
-            for (Taxon taxon : ((TaxonSet) taxonset2).taxonsetInput.get()) {
-                m_lineageset.add(taxon);
-                m_taxonMap.put(taxon.getID(), taxonset2.getID());
-            }
+        	if (taxonset2 instanceof TaxonSet) {
+		        for (Taxon taxon : ((TaxonSet) taxonset2).taxonsetInput.get()) {
+		            m_lineageset.add(taxon);
+		            m_taxonMap.put(taxon.getID(), taxonset2.getID());
+		        }
+        	}
         }
 
         // set up table.

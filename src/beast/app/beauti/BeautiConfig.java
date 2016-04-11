@@ -16,6 +16,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
+import beast.math.distributions.MRCAPrior;
 import beast.util.XMLParser;
 
 @Description("Beauti configuration object, used to find Beauti configuration " +
@@ -192,6 +193,14 @@ public class BeautiConfig extends BEASTObject {
 	        		} catch(Exception e) {
 	        			e.printStackTrace();
 	        		}
+	        	}
+	        }
+        }
+        doc.connectModel();
+        if (beastObjects != null) {
+	        for (BEASTInterface o : beastObjects) {
+	        	if (o instanceof MRCAPrior) {
+        			doc.addMRCAPrior((MRCAPrior) o);
 	        	}
 	        }
         }

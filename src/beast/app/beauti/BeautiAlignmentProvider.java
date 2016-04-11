@@ -175,7 +175,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
         }
         addAlignments(doc, selectedBEASTObjects);
-        doc.addMRCAPriors(calibrations);
+        if (calibrations != null) {
+        	selectedBEASTObjects.addAll(calibrations);
+        }
+        // doc.addMRCAPriors(calibrations);
         return selectedBEASTObjects;
     }
     

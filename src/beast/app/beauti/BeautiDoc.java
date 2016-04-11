@@ -69,6 +69,8 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.Uniform;
 import beast.util.JSONProducer;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
@@ -2444,23 +2446,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		return null;
 	}
 
-	public void addMRCAPriors(List<MRCAPrior> mrcaPriors) {
-		if (mrcaPriors == null || mrcaPriors.size() == 0) {
-			return;
-		}
-		// find prior object to attach the MRCAPriors to
-		if (!pluginmap.containsKey("prior")) {
-			return;
-		}
-		if (!pluginmap.containsKey("Tree.t:" + alignments.get(0).getID())) {
-			return;
-		}
-		Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
-		
-		
-		CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
-		for (MRCAPrior mrcaPrior : mrcaPriors) {
+	public void addMRCAPrior(MRCAPrior mrcaPrior) {
+			Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
+			// TODO: make sure we have the appropriate tree
+			CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
 			mrcaPrior.treeInput.setValue(tree, mrcaPrior);
+			ParametricDistribution distr = mrcaPrior.distInput.get();
 
 			TaxonSet t = mrcaPrior.taxonsetInput.get();
 			if (taxaset.keySet().contains(t.getID())) {
@@ -2476,7 +2467,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						taxaset.put(taxa.get(i).getID(), taxa.get(i));
 					}
 				}
-				prior.pDistributions.setValue(mrcaPrior, prior);
+				if (distr instanceof Uniform && ((Uniform)distr).lowerInput.get() == ((Uniform)distr).upperInput.get()) {
+					// it is a 'fixed' calibration, no need to add a distribution
+				} else {
+					prior.pDistributions.setValue(mrcaPrior, prior);
+				}
 			}
 			if (t.taxonsetInput.get().size() == 1) {
 				// it is a calibration on a tip -- better start sampling that tip
@@ -2486,9 +2481,27 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		        operator.setID("TipDatesRandomWalker." + t.getID());
 		        MCMC mcmc = (MCMC) this.mcmc.get();
 		        mcmc.operatorsInput.setValue(operator, mcmc);
+		        
+		        // set up date trait
+		        double date = distr.getMean();
+		        TraitSet dateTrait = null;
+		        for (TraitSet ts : tree.m_traitList.get()) {
+		        	if (ts.isDateTrait()) {
+		        		dateTrait = ts;
+		        	}
+		        }
+		        if (dateTrait == null) {
+		        	dateTrait = new TraitSet();
+		        	dateTrait.initByName("traitname", TraitSet.DATE_BACKWARD_TRAIT, "taxa", tree.getTaxonset(), 
+		        			"value", t.taxonsetInput.get().get(0).getID() + "=" + date);
+		        	tree.m_traitList.setValue(dateTrait, tree);
+		        	tree.initAndValidate();
+		        } else {
+		        	dateTrait.traitsInput.setValue(dateTrait.traitsInput.get() + ",\n" +
+		        			t.taxonsetInput.get().get(0).getID() + "=" + date
+		        			, dateTrait);	
+		        }
 			}
-		}
-		
 	}
 
 

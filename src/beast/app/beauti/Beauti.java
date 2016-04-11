@@ -61,6 +61,7 @@ import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
+import beast.math.distributions.MRCAPrior;
 import beast.util.AddOnManager;
 import jam.framework.DocumentFrame;
 
@@ -856,6 +857,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 		                doc.connectModel();
 		                doc.fireDocHasChanged();
+		                
+				        if (beastObjects != null) {
+					        for (BEASTInterface o : beastObjects) {
+					        	if (o instanceof MRCAPrior) {
+				        			doc.addMRCAPrior((MRCAPrior) o);
+					        	}
+					        }
+				        }
 		                a_save.setEnabled(true);
 		                a_saveas.setEnabled(true);
 		            } catch (Exception exx) {

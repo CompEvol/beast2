@@ -286,9 +286,9 @@ public class NexusParser {
                             taxonList.add(new Taxon(taxon));
                     	}
                     }
-                } while (!str.toLowerCase().equals("end"));
+                } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
             }
-        } while (!str.toLowerCase().equals("end"));
+        } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
         if (expectedTaxonCount >= 0 && taxa.size() != expectedTaxonCount) {
             throw new IOException("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
             		"field (" + expectedTaxonCount + ") specified in 'taxa' block");
@@ -839,35 +839,43 @@ public class NexusParser {
             		case "normal":
             			distr = new Normal();
             			distr.initByName("mean", strs3[1], "sigma", strs3[2]);
+            			distr.setID("Normal.0");
             			break;
             		case "uniform":
             			distr = new Uniform();
             			distr.initByName("lower", strs3[1], "upper", strs3[2]);
+            			distr.setID("Uniform.0");
             			break;
             		case "fixed":
             			// uniform with lower == upper
             			distr = new Uniform();
             			distr.initByName("lower", strs3[1], "upper", strs3[1]);
+            			distr.setID("Uniform.0");
             			break;
             		case "offsetlognormal":
             			distr = new LogNormalDistributionModel();
             			distr.initByName("offset", strs3[1], "M", strs3[2], "S", strs3[3], "meanInRealSpace", true);
+            			distr.setID("LogNormal.0");
             			break;
             		case "lognormal":
             			distr = new LogNormalDistributionModel();
             			distr.initByName("M", strs3[1], "S", strs3[2], "meanInRealSpace", true);
+            			distr.setID("LogNormal.0");
             			break;
             		case "offsetexponential":
             			distr = new Exponential();
             			distr.initByName("offset", strs3[1], "mean", strs3[2]);
+            			distr.setID("Exponential.0");
             			break;
             		case "gamma":
             			distr = new Gamma();
             			distr.initByName("alpha", strs3[1], "beta", strs3[2]);
+            			distr.setID("Gamma.0");
             			break;
             		case "offsetgamma":
             			distr = new Gamma();
             			distr.initByName("offset", strs3[1], "alpha", strs3[2], "beta", strs3[3]);
+            			distr.setID("Gamma.0");
             			break;
             		default:
             			throw new RuntimeException("Unknwon distribution "+ strs3[0] +"in calibration: " + str);
