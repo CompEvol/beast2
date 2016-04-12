@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -110,6 +111,7 @@ public class NexusParser {
             while (fin.ready()) {
                 final String str = nextLine(fin);
                 if (str == null) {
+                    processSets();
                     return;
                 }
                 final String lower = str.toLowerCase();
@@ -128,13 +130,14 @@ public class NexusParser {
                     parseTreesBlock(fin);
                 }
             }
+            processSets();
         } catch (Exception e) {
             e.printStackTrace();
             throw new IOException("Around line " + lineNr + "\n" + e.getMessage());
         }
     } // parseFile
 
-    private void parseTreesBlock(final BufferedReader fin) throws IOException {
+	private void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
         String str = fin.readLine().trim();
@@ -896,6 +899,33 @@ public class NexusParser {
 
         } while (!str.toLowerCase().contains("end;"));
     }
+
+    
+    private void processSets() {
+    	// create monophyletic MRCAPrior for each taxon set that 
+    	// does not already have a calibration associated with it
+    	for (TaxonSet taxonset : taxonsets) {
+    		boolean found = false;
+    		for (BEASTInterface o : taxonset.getOutputs()) {
+    			if (o instanceof MRCAPrior) {
+    				found = true;
+    				break;
+    			}
+    		}
+    		if (!found) {
+        		MRCAPrior prior = new MRCAPrior();
+        		prior.isMonophyleticInput.setValue(true, prior);
+        		prior.taxonsetInput.setValue(taxonset, prior);
+        		prior.setID(taxonset.getID() + ".prior");
+        		// should set Tree before initialising, but we do not know the tree yet...
+        		if (calibrations == null) {
+        			calibrations = new ArrayList<>();
+        		}
+        		calibrations.add(prior);
+    		}
+    	}
+	}
+
 
     /**
      * parse sets block
