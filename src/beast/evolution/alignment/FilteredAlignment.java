@@ -1,6 +1,7 @@
 package beast.evolution.alignment;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class FilteredAlignment extends Alignment {
         	}
     	}
         
-        counts = data.counts;
+   		counts = data.getCounts();
         taxaNames = data.taxaNames;
         stateCounts = data.stateCounts;
         if (convertDataType && m_dataType.getStateCount() > 0) {
@@ -156,6 +157,24 @@ public class FilteredAlignment extends Alignment {
         }
     }
 
+    
+    @Override
+    public List<List<Integer>> getCounts() {
+    	if (counts == null) {
+			counts = new ArrayList<>();
+			for (int j = 0; j < sitePatterns[0].length; j++) {
+				counts.add(new ArrayList<>());
+			}
+			for (int i = 0; i < getSiteCount(); i++) {
+				int [] sites = getPattern(getPatternIndex(i));
+    			for (int j = 0; j < getTaxonCount(); j++) {
+    				counts.get(j).add(sites[j]);
+    			}
+			}
+    	}
+    	return counts;
+    }
+    
     @Override
     protected void calcPatterns() {
         int nrOfTaxa = counts.size();
@@ -323,6 +342,10 @@ public class FilteredAlignment extends Alignment {
         	Log.info.println(getSiteCount() + " sites");
         }
         Log.info.println(getPatternCount() + " patterns");
+        
+        // counts are not valid any more -- better set to null in case
+        // someone gets bitten by this.
+        this.counts = null;
     }
     
     /** return indices of the sites that the filter uses **/

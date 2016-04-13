@@ -271,7 +271,27 @@ public class FilteredAlignmentTest extends TestCase {
 
 //        System.out.println(alignmentToString(data2, 1));
     }
+    
+    @Test
+    public void testFilteredFileredAlignment() throws Exception {
+        Alignment data1 = getAlignment();
+        FilteredAlignment data2 = new FilteredAlignment();
+        data2.initByName("data", data1, "filter", "2:16:2");
 
+        
+        FilteredAlignment data3 = new FilteredAlignment();
+        data3.initByName("data", data2, "filter", "-");//, "ascertained", true, "excludeto", 1);
+        
+        assertEquals(alignmentToString(data2,0), alignmentToString(data3, 0));
+        assertEquals(alignmentToString(data2,1), alignmentToString(data3, 1));
+
+        FilteredAlignment data4 = new FilteredAlignment();
+        data4.initByName("data", data3, "filter", "-", "ascertained", true, "excludeto", 1);
+
+        assertEquals(alignmentToString(data2,0), alignmentToString(data4, 0));
+        assertEquals(alignmentToString(data2,1), alignmentToString(data4, 1));
+}
+    
     String alignmentToString(Alignment data, int iTaxon) throws Exception {
         int[] states = new int[data.getPatternCount()];
 //        for (int i = 0; i < data.getSiteCount(); i++) {
