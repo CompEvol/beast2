@@ -28,6 +28,8 @@ import beast.app.util.Utils6;
  * remainder of BEAST can be compiled against Java 1.8
  * **/
 public class BeastLauncher {
+	
+	private static String pathDelimiter;
 
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("BEAST")) {
@@ -47,30 +49,29 @@ public class BeastLauncher {
 
 		// first try beast from the package_user_dir/lib/beast.jar
 		String beastUserDir = getPackageUserDir();
-		String pathDelimiter = isWindows() ? "\\\\" : "/";
+		pathDelimiter = isWindows() ? "\\\\" : "/";
 		beastUserDir +=  pathDelimiter + "BEAST" + pathDelimiter;
 		String beastJar = beastUserDir + "lib";
-		boolean foundOne = checkForBEAST(new File(beastJar), clu);
+		boolean foundJavaJarFile = checkForBEAST(new File(beastJar), clu);
 		
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
 		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
 		System.err.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
-		while ((!foundOne) && (jarDir0 != null)) { // && jarDir0.exists() &&
-											// jarDir0.isDirectory()) {
-			foundOne = checkForBEAST(jarDir0, clu);
-			foundOne = foundOne ||
-			    checkForBEAST((isWindows() ? new File(jarDir0.getAbsolutePath() + "\\lib") : new File(jarDir0.getAbsolutePath() + "/lib")), clu);
+		while ((!foundJavaJarFile) && (jarDir0 != null)) {
+			foundJavaJarFile = checkForBEAST(jarDir0, clu);
+			foundJavaJarFile = foundJavaJarFile ||
+			    checkForBEAST(new File(jarDir0.getAbsolutePath() + pathDelimiter +"lib"), clu);
 			
-			if (foundOne) {
-				createBeastPackage(jarDir0, pathDelimiter);
+			if (foundJavaJarFile) {
+				createBeastPackage(jarDir0);
 			}
 			
 			jarDir0 = jarDir0.getParentFile();
 		}
 		
-		if (!foundOne) {
+		if (!foundJavaJarFile) {
 			System.err.println("WARNING: could not find beast.jar");
 			// if beast.jar or its classes are not already in the class path (as is when launched e.g. as developer)
 			// the next line will fail
@@ -82,16 +83,31 @@ public class BeastLauncher {
 
 	}
 
-	private static void createBeastPackage(File jarDir0, String pathDelimiter) {
+	private static void createBeastPackage(File jarDir0) {
 		try {
 	        if (jarDir0.toString().toLowerCase().endsWith("lib")) {
 	        	jarDir0 = jarDir0.getParentFile();
 	        }
 
 			// create package user dir, if it not already exists
-	        File dir = new File(getPackageUserDir() + pathDelimiter + "BEAST" + pathDelimiter + "lib");
+	        String userDir = getPackageUserDir();
+	        File dir = new File(userDir + pathDelimiter + "BEAST" + pathDelimiter + "lib");
 	        if (!dir.exists()) {
 	            if (!dir.mkdirs()) {
+	            	// cannot create dir, let alone create a beast package
+	            	return;
+	            }
+	        }
+	        File exampleDir = new File(userDir + pathDelimiter + "BEAST" + pathDelimiter + "examples" + pathDelimiter + "nexus");
+	        if (!exampleDir.exists()) {
+	            if (!exampleDir.mkdirs()) {
+	            	// cannot create dir, let alone create a beast package
+	            	return;
+	            }
+	        }
+	        File templateDir = new File(userDir + pathDelimiter + "BEAST" + pathDelimiter + "templates");
+	        if (!templateDir.exists()) {
+	            if (!templateDir.mkdirs()) {
 	            	// cannot create dir, let alone create a beast package
 	            	return;
 	            }
@@ -103,13 +119,17 @@ public class BeastLauncher {
 	        
 	        String version = "<addon name='BEAST' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
 	        		"</addon>";
-	        FileWriter outfile = new FileWriter(getPackageUserDir() + pathDelimiter + "BEAST" + pathDelimiter + "version.xml");
+	        FileWriter outfile = new FileWriter(userDir + pathDelimiter + "BEAST" + pathDelimiter + "version.xml");
 	        outfile.write(version);
 	        outfile.close();
 
 	        File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "beast.src.jar");
 	        File srcTarget = new File(dir + pathDelimiter + "beast.src.jar");
 	        copyFileUsingStream(beastSrcJar, srcTarget);
+	        
+	        copyFilesInDir(new File(jarDir0 + pathDelimiter + "examples"), new File(userDir + pathDelimiter + "BEAST" + pathDelimiter + "examples"));
+	        copyFilesInDir(new File(jarDir0 + pathDelimiter + "examples" + pathDelimiter + "nexus"), exampleDir);
+	        copyFilesInDir(new File(jarDir0 + pathDelimiter + "templates"), templateDir);
 
 	        // TODO: include templates?
 	        // if so, how to prevent clashes with templates in package and in installation dir?
@@ -121,6 +141,15 @@ public class BeastLauncher {
 
 	}
 	
+	private static void copyFilesInDir(File srcDir, File targetDir) throws IOException {
+		String targetDirName = targetDir.getAbsolutePath();
+		for (File src : srcDir.listFiles()) {
+			if (src.isFile()) {
+				copyFileUsingStream(src, new File(targetDirName + pathDelimiter + src.getName()));		
+			}
+		}
+	}
+
 	// copy files using Java 6 code
 	private static void copyFileUsingStream(File source, File dest) throws IOException {
 
