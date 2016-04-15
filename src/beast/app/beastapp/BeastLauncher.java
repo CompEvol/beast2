@@ -2,9 +2,11 @@ package beast.app.beastapp;
 
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -174,6 +176,30 @@ public class BeastLauncher {
 		if (jarDir.exists()) {
 			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
 			if (new File(jarDir.getAbsoluteFile()+File.separator+"beast.jar").exists()) {
+				File versionFile = new File(jarDir.getParent() + pathDelimiter + "version.xml");
+				if (versionFile.exists()) {
+			        BufferedReader fin = new BufferedReader(new FileReader(versionFile));
+			        String str = null;
+			        while (fin.ready()) {
+			            str += fin.readLine();
+			        }
+			        fin.close();
+			        
+			        
+			        int start = str.indexOf("version=");
+			        int end = str.indexOf("'", start + 9);
+			        String version = str.substring(start + 9, end);
+			        BEASTVersion beastVersion = new BEASTVersion();
+			        double localVersion = beastVersion.parseVersion(version);
+			        double desiredVersion = beastVersion.parseVersion(beastVersion.getVersion());
+			        if (localVersion < desiredVersion) {
+			        	return false;
+			        }
+				}
+				
+				
+				
+				
 				URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
 				Class<?> sysclass = URLClassLoader.class;
 				try {
