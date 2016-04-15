@@ -23,7 +23,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -1011,27 +1013,31 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     private List<AbstractAction> getWorkDirActions() {
         List<AbstractAction> actions = new ArrayList<>();
         List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        Set<String> doneDirs = new HashSet<>();
         for (String dir : beastDirectories) {
-        	String exampledir = dir + File.separator+ "examples";
-        	if (new File(exampledir).exists()) {
-	        	AbstractAction action = new AbstractAction() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						g_sDir = dir;
-					}
-
-	            };
-	            String workDirInfo = "Set working directory to " + dir;
-	            String name = dir;
-	            if (name.indexOf(File.separator) >= 0) {
-	            	name = dir.substring(dir.lastIndexOf(File.separator) + 1);
-	            }
-	            action.putValue(Action.SHORT_DESCRIPTION, workDirInfo);
-	            action.putValue(Action.LONG_DESCRIPTION, workDirInfo);
-	            action.putValue(Action.NAME, name);
-	            actions.add(action);
+        	if (!doneDirs.contains(dir)) {
+	        	doneDirs.add(dir);
+	        	String exampledir = dir + File.separator+ "examples";
+	        	if (new File(exampledir).exists()) {
+		        	AbstractAction action = new AbstractAction() {
+						private static final long serialVersionUID = 1L;
+	
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							g_sDir = dir;
+						}
+	
+		            };
+		            String workDirInfo = "Set working directory to " + dir;
+		            String name = dir;
+		            if (name.indexOf(File.separator) >= 0) {
+		            	name = dir.substring(dir.lastIndexOf(File.separator) + 1);
+		            }
+		            action.putValue(Action.SHORT_DESCRIPTION, workDirInfo);
+		            action.putValue(Action.LONG_DESCRIPTION, workDirInfo);
+		            action.putValue(Action.NAME, name);
+		            actions.add(action);
+	        	}
         	}
         }
         return actions;
