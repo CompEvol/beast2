@@ -163,7 +163,7 @@
         <copy file="${dist}/beast.jar" todir="${release_dir}/package/lib/"/>
         <copy file="../beast2/version.xml" todir="${release_dir}/package/"/>
 
-        <jar jarfile="${release_dir}/package/beast.package.${version}.zip">
+        <jar jarfile="${release_dir}/package/BEAST.addon.v${version}.zip">
             <fileset dir="${release_dir}/package">
                 <include name="version.xml" />
                 <include name="lib/beast.jar" />
@@ -316,7 +316,15 @@
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
-                  txtProductVersion="${version}" />
+                  txtProductVersion="${version}" >
+                  <!-- to bunle a JRE, copy the desired JRE to folder ../jre 
+                       (so java.exe is in ../jre/bin/) and uncomment following fragment
+                       TODO: needs testing
+                  <jre>
+                      <path>../jre</path>
+    			  </jre>
+    			  -->
+         </launch4j>
 
         <!-- BEAST v?.?.?.exe -->
         <launch4j configFile="${Windows_dir}/BEAST_launch4j.xml"
@@ -517,6 +525,9 @@
                    copyright="${BEAST_name}, ${copyright}"
                    mainclassname="beast.app.beastapp.BeastLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
+            <!-- adding a 'runtime' entry will include the JRE for OSX
+            <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home"/>
+            -->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
@@ -675,7 +686,7 @@
 
         <delete file="${Mac_dir}/pack.temp.dmg"/>
         
-       <copy file="${Mac_dir}/${BEAST_name} v${version}.dmg" tofile="../../tmp/${Mac_dir}/${BEAST_name}.v${version}.dmg" />
+       <copy file="${Mac_dir}/${BEAST_name} v${version}.dmg" tofile="../../tmp/${BEAST_name}.v${version}.dmg" />
 
 
         <echo message="Mac version release is finished." />

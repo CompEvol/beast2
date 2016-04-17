@@ -1,10 +1,26 @@
-                    BEAST v2.4.0 2016
+                    BEAST v2.4.1 2016
                  Beast 2 development team 2011-2016
 Version History
 Last updated: March 2016
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.1 April 2016
+     BEAUti
+         import of calibrations from NEXUS files
+         add App Launcher menu
+         make missing *BEAST template available again
+         
+     Streamlined upgrades of BEAST
+     
+     BEAST
+     	improved BEAGLE library loading from CLI
+        test for spurious CUDA drivers on OSX, which used to cause a crash, but now provides instructions on how to solve this
+        improved operator tuning for slightly better performance
+        improved error reporting
+
+     LogAnalyser shows progress on CLI again by default
+        
 Version 2.4.0 February 2016
     BEAST improved performance
         up to 2x faster when using proportion invariant sites

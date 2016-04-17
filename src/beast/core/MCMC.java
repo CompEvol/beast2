@@ -215,7 +215,7 @@ public class MCMC extends Runnable {
         for (final Operator op : operatorsInput.get()) {
             List<StateNode> nodes = op.listStateNodes();
             if (nodes.size() == 0) {
-                    throw new RuntimeException("Operator " + op.getID() + "has no state nodes in the state. "
+                    throw new RuntimeException("Operator " + op.getID() + " has no state nodes in the state. "
                                     + "Each operator should operate on at least one estimated state node in the state. "
                                     + "Remove the operator or add its statenode(s) to the state and/or set estimate='true'.");
                     // otherwise the chain may hang without obvious reason

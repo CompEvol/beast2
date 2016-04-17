@@ -1,7 +1,7 @@
-                    BEAST v2.4.0 2016
+                    BEAST v2.4.1 2016
                  Beast 2 development team 2011-2016
 
-Last updated: March 2016
+Last updated: April 2016
 
 Contents:
 1) INTRODUCTION
@@ -46,7 +46,7 @@ BEAST requires a Java Virtual Machine to run. Many systems will already
 have this installed. It requires at least version 1.8 of Java to run. The
 latest versions of Java can be downloaded from:
 
-<http://java.sun.com/>
+<http://java.com/>
 
 If in doubt type "java -version" to see what version of java is installed
 (or if it is installed at all).
