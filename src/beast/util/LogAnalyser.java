@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.util.Utils;
 import beast.core.util.ESS;
 import beast.core.util.Log;
@@ -591,7 +591,7 @@ public class LogAnalyser {
             	}
             	if (files.size() == 0) {
             		// no file specified, open file dialog to select one
-	                BEASTVersion version = new BEASTVersion();
+	                BEASTVersion2 version = new BEASTVersion2();
 	                File file = Utils.getLoadFile("LogAnalyser " + version.getVersionString() + " - Select log file to analyse",
 	                        null, "BEAST log (*.log) Files", "log", "txt");
 	                if (file == null) {

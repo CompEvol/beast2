@@ -79,7 +79,7 @@ public class Frequencies extends CalculationNode {
             }			
 		}
 
-        return freqs;
+        return freqs.clone();
     }
 
     /**

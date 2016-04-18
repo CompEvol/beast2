@@ -18,7 +18,7 @@ import javax.swing.filechooser.FileFilter;
 
 import beagle.BeagleFlag;
 import beagle.BeagleInfo;
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.BeastMCMC;
 import beast.app.util.Arguments;
 import beast.app.util.ErrorLogHandler;
@@ -32,7 +32,7 @@ import jam.util.IconUtils;
 
 public class BeastMain {
 
-    private final static Version version = new BEASTVersion();
+    private final static Version version = new BEASTVersion2();
 
     static class BeastConsoleApp extends jam.console.ConsoleApplication {
 
@@ -287,7 +287,7 @@ public class BeastMain {
         }
 
         if (arguments.hasOption("version")) {
-        	Log.info.println((new BEASTVersion()).getVersionString());
+        	Log.info.println((new BEASTVersion2()).getVersionString());
         	System.exit(0);
         }
 

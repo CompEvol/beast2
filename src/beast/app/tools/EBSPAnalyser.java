@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.util.Utils;
 import beast.app.util.WholeNumberField;
 import beast.core.util.Log;
@@ -376,7 +376,7 @@ public class EBSPAnalyser {
      * @param args
      */
     public static void main(String[] args) {
-        BEASTVersion version = new BEASTVersion();
+        BEASTVersion2 version = new BEASTVersion2();
         final String versionString = version.getVersionString();
         String nameString = "EBSP Analyser " + versionString;
         String aboutString = "<html><center><p>" + versionString + ", " + version.getDateString() + "</p>" +

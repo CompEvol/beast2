@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.util.Utils;
 
 /**
@@ -135,7 +135,7 @@ public class LogComparator {
         LogAnalyser analyser2 = null;
         try {
             if (args.length == 0) {
-                BEASTVersion version = new BEASTVersion();
+                BEASTVersion2 version = new BEASTVersion2();
                 File file = Utils.getLoadFile("LogComparator " + version.getVersionString() + " - Select first log file to analyse",
                         null, "BEAST log (*.log) Files", "log", "txt");
                 if (file == null) {

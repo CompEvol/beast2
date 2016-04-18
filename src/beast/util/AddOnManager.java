@@ -58,7 +58,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.beastapp.BeastMain;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
@@ -77,7 +77,7 @@ import beast.evolution.alignment.Alignment;
 // TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
 @Description("Manage all BEAUti packages and list their dependencies")
 public class AddOnManager {
-    public static final BEASTVersion beastVersion = new BEASTVersion();
+    public static final BEASTVersion2 beastVersion = new BEASTVersion2();
 
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";

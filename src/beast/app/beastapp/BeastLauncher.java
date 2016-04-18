@@ -19,7 +19,6 @@ import java.net.URLDecoder;
 
 import javax.swing.JOptionPane;
 
-import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
 
 
@@ -30,6 +29,8 @@ import beast.app.util.Utils6;
  * remainder of BEAST can be compiled against Java 1.8
  * **/
 public class BeastLauncher {
+	private static String getVersion() {return "2.4.1";}
+	private static String getMajorVersion() {return "2.4";}
 	
 	private static String pathDelimiter;
 
@@ -119,7 +120,7 @@ public class BeastLauncher {
 	        File target = new File(dir + pathDelimiter + "beast.jar");
 	        copyFileUsingStream(beastJar, target);
 	        
-	        String version = "<addon name='BEAST' version='" + (new BEASTVersion()).getVersion() + "'>\n" +
+	        String version = "<addon name='BEAST' version='" + getVersion() + "'>\n" +
 	        		"</addon>";
 	        FileWriter outfile = new FileWriter(userDir + pathDelimiter + "BEAST" + pathDelimiter + "version.xml");
 	        outfile.write(version);
@@ -189,9 +190,8 @@ public class BeastLauncher {
 			        int start = str.indexOf("version=");
 			        int end = str.indexOf("'", start + 9);
 			        String version = str.substring(start + 9, end);
-			        BEASTVersion beastVersion = new BEASTVersion();
-			        double localVersion = beastVersion.parseVersion(version);
-			        double desiredVersion = beastVersion.parseVersion(beastVersion.getVersion());
+			        double localVersion = parseVersion(version);
+			        double desiredVersion = parseVersion(getVersion());
 			        if (localVersion < desiredVersion) {
 			        	return false;
 			        }
@@ -274,12 +274,39 @@ public class BeastLauncher {
             return System.getProperty("beast.user.package.dir");
         
         if (Utils6.isWindows()) {
-            return System.getProperty("user.home") + "\\BEAST\\" + (new BEASTVersion()).getMajorVersion();
+            return System.getProperty("user.home") + "\\BEAST\\" + getMajorVersion();
         }
         if (Utils6.isMac()) {
-            return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + (new BEASTVersion()).getMajorVersion();
+            return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + getMajorVersion();
         }
         // Linux and unices
-        return System.getProperty("user.home") + "/.beast/" + (new BEASTVersion()).getMajorVersion();
+        return System.getProperty("user.home") + "/.beast/" + getMajorVersion();
     }
+    
+	/** Parse version string, assume it is of the form 1.2.3
+     * returns version where each sub-version is divided by 100,
+     * so 2.0 -> return 2
+     * 2.1 return 2.01
+     * 2.2.3 return 2.0103
+     * Letters are ignored, so
+     * 2.0.e -> 2.0
+     * 2.x.1 -> 2.0001
+     * @return
+     */
+    private static double parseVersion(String versionString) {
+        // is of the form 1.2.3
+        String [] strs = versionString.split("\\.");
+        double version = 0;
+        double divider = 1.0;
+        for (int i = 0; i < strs.length; i++) {
+            try {
+                version += Double.parseDouble(strs[i]) / divider;
+                divider = divider * 100.0;
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return version;
+    }
+
 }

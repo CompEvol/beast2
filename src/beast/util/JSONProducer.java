@@ -16,7 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.State;
@@ -85,7 +85,7 @@ public class JSONProducer {
             StringBuffer buf = new StringBuffer();
             //buf.append("{\"version\": \"2.0\",\n\"namespace\": \"" + DEFAULT_NAMESPACE + "\",\n\n" +
             //		"\"" + JSONParser.ANALYSIS_ELEMENT + "\": [\n");
-            buf.append("{version: \"" + (new BEASTVersion()).getMajorVersion() + "\",\nnamespace: \"" + DEFAULT_NAMESPACE + "\",\n\n" +
+            buf.append("{version: \"" + (new BEASTVersion2()).getMajorVersion() + "\",\nnamespace: \"" + DEFAULT_NAMESPACE + "\",\n\n" +
             		XMLParser.BEAST_ELEMENT + ": [\n");
             //buf.append("\n\n");
             isDone = new HashSet<>();

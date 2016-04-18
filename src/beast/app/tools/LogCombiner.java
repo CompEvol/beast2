@@ -17,7 +17,7 @@ import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.table.TableCellEditor;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.core.util.Log;
 import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
@@ -405,7 +405,7 @@ public class LogCombiner extends LogAnalyser {
      * @param args
      */
     public static void main(String[] args) {
-        BEASTVersion version = new BEASTVersion();
+        BEASTVersion2 version = new BEASTVersion2();
         final String versionString = version.getVersionString();
         String nameString = "LogCombiner " + versionString;
         String aboutString = "<html><center><p>" + versionString + ", " + version.getDateString() + "</p>" +

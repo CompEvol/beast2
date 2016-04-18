@@ -51,7 +51,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import beast.app.BEASTVersion;
+import beast.app.BEASTVersion2;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
 import beast.app.draw.BEASTObjectPanel;
@@ -602,7 +602,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-            BEASTVersion version = new BEASTVersion();
+            BEASTVersion2 version = new BEASTVersion2();
             JOptionPane.showMessageDialog(null, version.getCredits(),
                     "About Beauti " + version.getVersionString(), JOptionPane.PLAIN_MESSAGE,
                     Utils.getIcon(BEAUTI_ICON));
@@ -1136,7 +1136,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {
             	if (arg.equals("-v") || arg.equals("-version")) {
-                    System.out.println((new BEASTVersion()).getVersionString());
+                    System.out.println((new BEASTVersion2()).getVersionString());
                     System.exit(0);
             	}
             	if (arg.equals("-h") || arg.equals("-help")) {
