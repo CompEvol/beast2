@@ -10,6 +10,7 @@ import org.junit.Test;
 import beast.core.BEASTInterface;
 import beast.core.Logger;
 import beast.evolution.datatype.Nucleotide;
+import beast.util.NexusParser;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import beast.util.XMLProducer;
@@ -17,15 +18,76 @@ import junit.framework.TestCase;
 
 public class XMLProducerTest extends TestCase {
 
+//    @Test
+//    public void test_ThatXmlExamplesProduces() {
+//    	System.setProperty("java.only", "true");
+//        String dir = System.getProperty("user.dir") + "/examples";
+//        //String dir = "/tmp";
+//        List<String> exceptions = new ArrayList<String>();
+//        exceptions.add("testExponentialGrowth.xml");
+//    	test_ThatXmlExamplesProduces(dir, exceptions);
+//    }
+    
+    
+    
     @Test
-    public void test_ThatXmlExamplesProduces() {
-    	System.setProperty("java.only", "true");
-        String dir = System.getProperty("user.dir") + "/examples";
-        //String dir = "/tmp";
-        List<String> exceptions = new ArrayList<String>();
-        exceptions.add("testExponentialGrowth.xml");
-    	test_ThatXmlExamplesProduces(dir, exceptions);
+    public void test_ThatNexusExamplesProduces() {
+        try {
+            String dirName = System.getProperty("user.dir") + "/examples/nexus";
+            System.out.println("Test Nexus Examples in " + dirName);
+            File exampleDir = new File(dirName);
+            String[] exampleFiles = exampleDir.list(new FilenameFilter() {
+                @Override
+				public boolean accept(File dir, String name) {
+                    return name.endsWith(".nex") || name.endsWith(".nxs") ;
+                }
+            });
+
+            List<String> failedFiles = new ArrayList<>();
+            for (String fileName : exampleFiles) {
+                System.out.println("Processing " + fileName);
+                NexusParser parser = new NexusParser();
+                try {
+                    parser.parseFile(new File(dirName + "/" + fileName));
+                } catch (Exception e) {
+                    System.out.println("ExampleNexusParsing::Failed for " + fileName
+                            + ": " + e.getMessage());
+                    failedFiles.add(fileName);
+                }
+                
+                XMLProducer producer = new XMLProducer();
+                BEASTInterface o = parser.m_alignment;
+                if (o != null) {
+                	String xml = producer.toXML(o);
+                	
+                    //FileWriter outfile = new FileWriter(new File("/tmp/XMLProducerTest.xml"));
+                    //outfile.write(xml);
+                    //outfile.close();
+
+                	XMLParser parser2 = new XMLParser();
+                    try {
+                    	BEASTInterface o2 = parser2.parseFragment(xml, false);
+                    	System.out.println(o2);
+                    } catch (Exception e) {
+                        System.out.println("test_ThatNexusExamplesProduces::Failed for " + fileName
+                                + ": " + e.getMessage());
+                        failedFiles.add(fileName);
+                    }
+                }
+                System.out.println("Done " + fileName);
+            }
+            if (failedFiles.size() > 0) {
+                System.out.println("\test_ThatNexusExamplesProduces::Failed for : " + failedFiles.toString());
+            } else {
+                System.out.println("\test_ThatNexusExamplesProduces::Success");
+            }
+            assertTrue(failedFiles.toString(), failedFiles.size() == 0);
+        } catch (Exception e) {
+            System.out.println("exception thrown ");
+            System.out.println(e.getMessage());
+        }
     }
+
     
     /** parse all XML files in the given directory, then produce XML from it, and see if the produced XML still parses **/
     public void test_ThatXmlExamplesProduces(String dir, List<String> exceptions) {

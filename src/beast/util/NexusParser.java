@@ -676,16 +676,23 @@ public class NexusParser {
                 }
             }
 
-            if (alignment.dataTypeInput.get().equals("nucleotide") || 
-            	alignment.dataTypeInput.get().equals("binary")  ||
-            	alignment.dataTypeInput.get().equals("aminoacid") ) {
-            	alignment.setInputValue(taxon, data);
-            } else {
+            // Using Alignment as Map gives problems when producing XML: 
+            // Sequence names are used as attribute names, producing very readable XML
+            // However, since attribute names cannot start with a number or contain
+            // special characters (like ":" or "]") but sequence names do contain them
+            // on occasion, it is more robust to create a Sequence object for each 
+            // sequence where the taxon name is stored as an XML attribute values
+            // that do not have the attribute name restrictions.
+//            if (alignment.dataTypeInput.get().equals("nucleotide") || 
+//            	alignment.dataTypeInput.get().equals("binary")  ||
+//            	alignment.dataTypeInput.get().equals("aminoacid") ) {
+//            	alignment.setInputValue(taxon, data);
+//            } else {
 	            final Sequence sequence = new Sequence();
 	            sequence.init(totalCount, taxon, data);
 	            sequence.setID(generateSequenceID(taxon));
 	            alignment.sequenceInput.setValue(sequence, alignment);
-            }
+//            }
         }
 
 
