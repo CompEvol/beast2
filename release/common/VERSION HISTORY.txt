@@ -10,7 +10,7 @@ Version 2.4.1 April 2016
          import of calibrations from NEXUS files
          add App Launcher menu
          make missing *BEAST template available again
-         
+         save in old style XML, with less restricions on taxa names 
      Streamlined upgrades of BEAST
      
      BEAST

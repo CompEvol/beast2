@@ -156,16 +156,16 @@ public class BeastMain {
                 // This call never returns as another RuntimeException exception is raised by
                 // the error log handler???
                 infoLogger.warning("Error running file: " + fileName);
-                Log.err.println("Fatal exception: " + rex.getMessage());
+                System.err.println("Fatal exception: " + rex.getMessage());
                 rex.printStackTrace(System.err);
             }
             */
         } catch (XMLParserException e) {
-           Log.info.println(e.getMessage());
+           System.out.println(e.getMessage());
             //e.printStackTrace();
         } catch (Exception e) {
-            Log.info.println("Fatal exception: " + e.getMessage());
-            e.printStackTrace(Log.err);
+            System.out.println("Fatal exception: " + e.getMessage());
+            e.printStackTrace(System.err);
             infoLogger.severe("Fatal exception: " + e.getMessage());
         }
     }
@@ -206,22 +206,22 @@ public class BeastMain {
         final int n = pageWidth - line.length();
         final int n1 = n / 2;
         for (int i = 0; i < n1; i++) {
-            Log.info.print(" ");
+            System.out.print(" ");
         }
-        Log.info.println(line);
+        System.out.println(line);
     }
 
     public static void printTitle() {
 
         int pageWidth = 72;
 
-        Log.info.println();
+        System.out.println();
         centreLine("BEAST " + version.getVersionString() + ", " + version.getDateString(), pageWidth);
         centreLine("Bayesian Evolutionary Analysis Sampling Trees", pageWidth);
         for (final String creditLine : version.getCredits()) {
             centreLine(creditLine, pageWidth);
         }
-        Log.info.println();
+        System.out.println();
     }
 
     public static void printUsage(final Arguments arguments) {
@@ -279,15 +279,15 @@ public class BeastMain {
         try {
             arguments.parseArguments(args);
         } catch (Arguments.ArgumentException ae) {
-        	Log.info.println();
-        	Log.info.println(ae.getMessage());
-        	Log.info.println();
+        	System.out.println();
+        	System.out.println(ae.getMessage());
+        	System.out.println();
             printUsage(arguments);
             System.exit(1);
         }
 
         if (arguments.hasOption("version")) {
-        	Log.info.println((new BEASTVersion2()).getVersionString());
+        	System.out.println((new BEASTVersion2()).getVersionString());
         	System.exit(0);
         }
 
@@ -389,14 +389,14 @@ public class BeastMain {
         }
         if (threadCount <= 0) {
         	threadCount = Runtime.getRuntime().availableProcessors();
-        	Log.warning.println("Setting number of threads to " + threadCount);
+        	System.err.println("Setting number of threads to " + threadCount);
         }
 
         if (arguments.hasOption("seed")) {
             seed = arguments.getLongOption("seed");
             if (seed <= 0) {
                 printTitle();
-                Log.err.println("The random number seed should be > 0");
+                System.err.println("The random number seed should be > 0");
                 System.exit(1);
             }
         }
@@ -486,7 +486,7 @@ public class BeastMain {
 
             inputFile = dialog.getInputFile();
             if (!beagleShowInfo && inputFile == null) {
-            	Log.err.println("No input file specified");
+            	System.err.println("No input file specified");
                 System.exit(1);
             }
 
@@ -510,8 +510,8 @@ public class BeastMain {
             final String[] args2 = arguments.getLeftoverArguments();
 
             if (args2.length > 1) {
-            	Log.err.println("Unknown option: " + args2[1]);
-            	Log.err.println();
+            	System.err.println("Unknown option: " + args2[1]);
+            	System.err.println();
                 printUsage(arguments);
                 System.exit(1);
             }
@@ -577,7 +577,7 @@ public class BeastMain {
 
         if (stateFileName!= null && stateFileName.trim().length() > 0) {
             System.setProperty("state.file.name", stateFileName.trim());
-            Log.info.println("Writing state to file " + stateFileName);
+            System.out.println("Writing state to file " + stateFileName);
         }
 
 //        if (allowOverwrite) {
@@ -599,8 +599,8 @@ public class BeastMain {
         MCMCargs.add(seed + "");
         Randomizer.setSeed(seed);
 
-        Log.info.println("Random number seed: " + seed);
-        Log.info.println();
+        System.out.println("Random number seed: " + seed);
+        System.out.println();
 
         // Construct the beast object
         final BeastMCMC beastMCMC = new BeastMCMC();
@@ -613,7 +613,7 @@ public class BeastMain {
             if (!doNotRun) {
             	new BeastMain(beastMCMC, consoleApp, maxErrorCount);
             } else {
-            	Log.info.println("Done!");
+            	System.out.println("Done!");
             }
         } catch (RuntimeException rte) {
             if (window) {

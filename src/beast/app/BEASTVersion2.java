@@ -13,7 +13,7 @@ public class BEASTVersion2 extends BEASTVersion {
 
     private static final String DATE_STRING = "2002-2016";
 
-    private static final boolean IS_PRERELEASE = true;
+    private static final boolean IS_PRERELEASE = false;
 //
 //    private static final String BEAST2_WEBPAGE = "http://beast2.org/";
 //    
