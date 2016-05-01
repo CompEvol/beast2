@@ -414,6 +414,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         if (taxa.size() == 0)
             return;
 
+        String msg = "Failed to generate a random tree (probably a bug).";
         for (int attempts = 0; attempts < 1000; ++attempts) {
             try {
                 nextNodeNr = nrOfTaxa;
@@ -442,18 +443,18 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 return;
             } catch (ConstraintViolatedException e) {
                 // need to generate another tree
-            	Log.warning.println("WARNING: Generating a random tree did not succeed. The most common reasons are:");
-            	Log.warning.println("WARNING: 1. there are conflicting monophyletic constraints, for example if both (A,B) "
-            			+ "and (B,C) must be monophyletic no tree will be able to meet these constraints at the same "
-            			+ "time. To fix this, carefully check all clade sets, especially the ones that are expected to "
-            			+ "be nested clades.");
-            	Log.warning.println("WARNING: 2. clade heights are constrained by an upper and lower bound, but the population size "
-            			+ "is too large, so it is very unlikely a generated treed does not violate these constraints. To "
-            			+ "fix this you can try to reduce the popultion size of the population model.");
-            	Log.warning.println("WARNING: Expect BEAST to crash if this is not fixed."); 
+            	msg = "\nWARNING: Generating a random tree did not succeed. The most common reasons are:\n";
+            	msg += "1. there are conflicting monophyletic constraints, for example if both (A,B) \n"
+            			+ "and (B,C) must be monophyletic no tree will be able to meet these constraints at the same \n"
+            			+ "time. To fix this, carefully check all clade sets, especially the ones that are expected to \n"
+            			+ "be nested clades.\n";
+            	msg += "2. clade heights are constrained by an upper and lower bound, but the population size \n"
+            			+ "is too large, so it is very unlikely a generated treed does not violate these constraints. To \n"
+            			+ "fix this you can try to reduce the popultion size of the population model.\n";
+            	msg += "Expect BEAST to crash if this is not fixed.\n"; 
             }
         }
-        throw new RuntimeException("Failed to generate a random tree (probably a bug).");
+        throw new RuntimeException(msg);
     }
     
     /**

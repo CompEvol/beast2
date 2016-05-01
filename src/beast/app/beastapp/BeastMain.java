@@ -630,10 +630,14 @@ public class BeastMain {
             // logger.severe will throw a RTE but we want to keep the console visible
         } catch (XMLParserException e) {
             System.out.println(e.getMessage());
-            System.exit(1);
+            if (!window) {
+            	System.exit(1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            if (!window) {
+            	System.exit(1);
+            }
         }
 
         if (!window) {
