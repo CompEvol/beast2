@@ -94,7 +94,7 @@ public class Utils {
 
 
     public static void loadUIManager() {
-
+    	   	
         if (isMac()) {
             System.setProperty("apple.awt.graphics.UseQuartz", "true");
             System.setProperty("apple.awt.antialiasing", "true");
@@ -141,7 +141,19 @@ public class Utils {
                 }
             }
 
+        } else {
+        	boolean isHighResScreen = Toolkit.getDefaultToolkit().getScreenResolution() > 200;
+        	if (isHighResScreen) {
+	            try {
+	                // Set System L&F
+	            	// this is supposed to look OK on high res screens
+	            	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	            } catch (UnsupportedLookAndFeelException |ClassNotFoundException | InstantiationException |IllegalAccessException e) {
+	            	Log.warning.println(e.getMessage());
+	            }
+        	}
         }
+        
 
 // APART FROM THE ABOVE CODE FOR OLD MAC OS X, WE SHOULD LEAVE THE UIManager to the defaults, rather than mess it up
 // DEFAULT is almost always the most appropriate thing to use!
