@@ -836,16 +836,13 @@ public class XMLProducer extends XMLParser {
             // see whether a reasonable id can be generated
             if (beastObject.getID() != null && !beastObject.getID().equals("")) {
                 String id = beastObject.getID();
-                // ensure ID is unique
-                if (IDs.contains(id)) {
-                    int k = 1;
-                    while (IDs.contains(id + k)) {
-                        k++;
-                    }
-                    id = id + k;
-                }
-                buf.append(" id='" + normalise(id) + "'");
-                IDs.add(id);
+                // ensure ID is unique, if not add index behind
+                uniqueID(id, buf);
+            } else {
+                // auto naming by class name
+                String id = beastObject.getClass().getSimpleName().toLowerCase();
+                uniqueID(id, buf);
+                beastObject.setID(id);
             }
             isDone.add(beastObject);
         }
@@ -905,6 +902,18 @@ public class XMLProducer extends XMLParser {
         }
     } // pluginToXML
 
+    // ensure ID is unique, if not add index behind
+    private void uniqueID(String id, StringBuffer buf) {
+        if (IDs.contains(id)) {
+            int k = 1;
+            while (IDs.contains(id + k)) {
+                k++;
+            }
+            id = id + k;
+        }
+        buf.append(" id='" + normalise(id) + "'");
+        IDs.add(id);
+    }
 
     /**
      * produce XML for an input of a beast object, both as attribute/value pairs for
