@@ -838,11 +838,6 @@ public class XMLProducer extends XMLParser {
                 String id = beastObject.getID();
                 // ensure ID is unique, if not add index behind
                 uniqueID(id, buf);
-            } else {
-                // auto naming by class name
-                String id = beastObject.getClass().getSimpleName().toLowerCase();
-                uniqueID(id, buf);
-                beastObject.setID(id);
             }
             isDone.add(beastObject);
         }

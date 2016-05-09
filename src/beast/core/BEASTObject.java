@@ -89,7 +89,10 @@ abstract public class BEASTObject implements BEASTInterface{
     // a method in Object, so it needs to be in BEASTObject
 	@Override
     public String toString() {
-    	return getID();
+		if (getID() != null) {
+			return getID();
+		}
+        return this.getClass().getSimpleName().toLowerCase();
     }
     
     
