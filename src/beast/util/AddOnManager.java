@@ -877,7 +877,7 @@ public class AddOnManager {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(versionFile);
                     Element addon = doc.getDocumentElement();
-                    Log.info.println("Loading package " + addon.getAttribute("name") + " v" + addon.getAttribute("version"));
+                    Log.warning.println("Loading package " + addon.getAttribute("name") + " v" + addon.getAttribute("version"));
                 } catch (Exception e) {
                 	// too bad, won't print out any info
                 }
