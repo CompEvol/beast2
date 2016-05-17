@@ -36,6 +36,9 @@ public class LogCombiner extends LogAnalyser {
     PrintStream m_out = System.out;
     int m_nBurninPercentage = 10;
 
+    private boolean preAmpleIsPrinted = false;
+    private int columnCount = -1;
+
     boolean m_bIsTreeLog = false;
     List<String> m_sTrees;
     // Sample interval as it appears in the combined log file.
@@ -134,58 +137,130 @@ public class LogCombiner extends LogAnalyser {
 		}
     }
 
+    @SuppressWarnings("unchecked")
+	protected long readLogFile(String fileName, int burnInPercentage, long state) throws IOException {
+        log("\nLoading " + fileName);
+        BufferedReader fin = new BufferedReader(new FileReader(fileName));
+        String str;
+        m_sPreAmble = "";
+        m_sLabels = null;
+        int data = 0;
+        // first, sweep through the log file to determine size of the log
+        while (fin.ready()) {
+            str = fin.readLine();
+            if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
+                if (m_sLabels == null)
+                    m_sLabels = str.split("\\s");
+                else
+                    data++;
+            } else {
+                m_sPreAmble += str + "\n";
+            }
+        }
+        if (!preAmpleIsPrinted) {
+        	m_out.print(m_sPreAmble);
+            // header
+            for (int i = 0; i < m_sLabels.length; i++) {
+                m_out.print(m_sLabels[i] + "\t");
+            }
+            m_out.println();
+        	preAmpleIsPrinted = true;
+        }
+        
+        int lines = Math.max(1, data / 80);
+        // reserve memory
+        int items = m_sLabels.length;
+        m_ranges = new List[items];
+        int burnIn = data * burnInPercentage / 100;
+        m_fTraces = new Double[items][data - burnIn];
+        fin.close();
+        fin = new BufferedReader(new FileReader(fileName));
+        data = -burnIn - 1;
+        logln(", burnin " + burnInPercentage + "%, skipping " + burnIn + " log lines\n\n" + BAR);
+        // grab data from the log, ignoring burn in samples
+        long prevLogState = -1;
+        while (fin.ready()) {
+            str = fin.readLine();
+            if (str.indexOf('#') < 0 && str.matches("[0-9].*")) {
+                data++;
+                if (data >= 0) {
+                	String [] strs = str.split("\\s");
+                	long logState = Long.parseLong(strs[0]);
+                    if (m_nSampleInterval < 0 && prevLogState >= 0) {
+                        // need to renumber
+                        m_nSampleInterval = (int) (logState - prevLogState);
+                    }
+                    prevLogState = logState;
+                    if (columnCount != strs.length) {
+                    	if (columnCount < 0) {
+                    		columnCount = strs.length;
+                    	} else {
+                            fin.close();
+                            throw new IllegalArgumentException("ERROR: The number of columns in file " + fileName + " does not match that of the first file");
+                    	}
+                    }
+                	
+                	if (logState % m_nSampleInterval == 0 || m_nSampleInterval < 0) {
+	                	if (state < 0) {
+	                		state = 0;
+	                	} else {
+	                		state += m_nSampleInterval;
+	                	}
+	                	m_out.print(state + "\t");
+	                	for (int k = 1; k < strs.length; k++) {
+		                	if (m_bUseDecimalFormat && strs[k].indexOf('.') > 0) {
+		                		double d = Double.parseDouble(strs[k]);
+		                		m_out.print(format.format(d));
+		                	} else {
+		                		m_out.print(strs[k]);
+		                	}
+	                		m_out.print('\t');
+	                	}
+	                	m_out.println();
+                	}
+                }
+        	}
+            if (data % lines == 0) {
+                log("*");
+            }
+        }
+        logln("");
+        fin.close();
+        return state;
+    } // readLogFile
+
+
     private void combineLogs(String[] logs, int[] burbIns) throws IOException {
+    	preAmpleIsPrinted = false;
+        log("Writing to file " + m_sFileOut);
+        try {
+            m_out = new PrintStream(new File(m_sFileOut));
+        } catch (FileNotFoundException e) {
+            log("Could not open file " + m_sFileOut + " for writing: " + e.getMessage());
+            return;
+        }
+
         m_fCombinedTraces = null;
-        // read logs
-        int columns = 0;
+        // process logs
         int k = 0;
+        long state = -1;
         for (String fileName : logs) {
             BufferedReader fin = new BufferedReader(new FileReader(fileName));
             String str = fin.readLine();
             if (str.toUpperCase().startsWith("#NEXUS")) {
                 m_bIsTreeLog = true;
-                readTreeLogFile(fileName, burbIns[k]);
+                state = readTreeLogFile(fileName, burbIns[k], state);
             } else {
-                readLogFile(fileName, burbIns[k]);
-            }
-
-            if (m_fCombinedTraces == null) {
-                m_fCombinedTraces = m_fTraces;
-                if (!m_bIsTreeLog) {
-                    columns = m_sLabels.length;
-                }
-            } else {
-                if (columns != m_sLabels.length) {
-                    fin.close();
-                    throw new IllegalArgumentException("ERROR: The number of columns in file " + fileName + " does not match that of the first file");
-                }
-                for (int i = 0; i < m_fTraces.length; i++) {
-                    Double[] logLine = m_fTraces[i];
-                    Double[] oldTrace = m_fCombinedTraces[i];
-                    Double[] newTrace = new Double[oldTrace.length + logLine.length];
-                    System.arraycopy(oldTrace, 0, newTrace, 0, oldTrace.length);
-                    System.arraycopy(logLine, 0, newTrace, oldTrace.length, logLine.length);
-                    m_fCombinedTraces[i] = newTrace;
-                }
+                state = readLogFile(fileName, burbIns[k], state);
             }
             k++;
             fin.close();
         }
-        if (!m_bIsTreeLog) {
-            // reset sample column
-            if (m_fCombinedTraces[0].length > 2) {
-                if (m_nSampleInterval < 0) {
-                    // need to renumber
-                    m_nSampleInterval = (int) (m_fCombinedTraces[0][1] - m_fCombinedTraces[0][0]);
-                }
-                for (int i = 0; i < m_fCombinedTraces[0].length; i++) {
-                    m_fCombinedTraces[0][i] = (double) (m_nSampleInterval * i);
-                }
-            }
-        }
+        m_out.close();
+        log("Wrote " + (state/m_nSampleInterval + 1) + " lines to " + m_sFileOut);
     }
 
-    protected void readTreeLogFile(String fileName, int burnInPercentage) throws IOException {
+    protected long readTreeLogFile(String fileName, int burnInPercentage, long state) throws IOException {
         log("\nLoading " + fileName);
         BufferedReader fin = new BufferedReader(new FileReader(fileName));
         String str = null;
@@ -202,6 +277,10 @@ public class LogCombiner extends LogAnalyser {
                 }
             }
         }
+        if (!preAmpleIsPrinted) {
+        	m_out.println(m_sPreAmble);
+        	preAmpleIsPrinted = true;
+        }
         int lines = data / 80;
         // reserve memory
         int burnIn = data * burnInPercentage / 100;
@@ -212,25 +291,32 @@ public class LogCombiner extends LogAnalyser {
         fin.close();
         fin = new BufferedReader(new FileReader(fileName));
         data = -burnIn - 1;
-        // grab data from the log, ignoring burn in samples
-        int sample0 = -1;
 
+        // grab data from the log, ignoring burn in samples
+        long prevLogState = -1;
         while (fin.ready()) {
             str = fin.readLine();
             if (str.matches("^tree STATE_.*")) {
                 if (++data >= 0) {
-                    if (m_nSampleInterval < 0) {
-                        String str2 = str.substring(11, str.indexOf("=")).trim();
-                        str2 = str2.split("\\s")[0];
-                        if (sample0 < 0) {
-                            sample0 = Integer.parseInt(str2);
-                        } else {
-                            m_nSampleInterval = Integer.parseInt(str2) - sample0;
-                        }
-
+                    String str2 = str.substring(11, str.indexOf("=")).trim();
+                    str2 = str2.split("\\s")[0];
+                    long logState = Long.parseLong(str2);
+                    if (m_nSampleInterval < 0 && prevLogState >= 0) {
+                        // need to renumber
+                        m_nSampleInterval = (int) (logState - prevLogState);
                     }
-                    str = str.replaceAll("^tree STATE_[^\\s=]*", "");
-                    m_sTrees.add(str);
+                    prevLogState = logState;
+                	
+                	if (logState % m_nSampleInterval == 0 || m_nSampleInterval < 0) {
+	                	if (state < 0) {
+	                		state = 0;
+	                	} else {
+	                		state += m_nSampleInterval;
+	                	}
+	                    str = str.replaceAll("^tree STATE_[^\\s=]*", "");
+	                	m_out.print("tree STATE_" + state + " =" + str);
+	                	m_out.println();
+                	}
                 }
             }
             if (data % lines == 0) {
@@ -238,6 +324,7 @@ public class LogCombiner extends LogAnalyser {
             }
         }
         logln("");
+        return state;
     } // readTreeLogFile
 
     private void printCombinedLogs() {
@@ -376,12 +463,12 @@ public class LogCombiner extends LogAnalyser {
                 "options:\n" +
                 "-log <file>      specify the name of the log file, each log file must be specified with separate -log option\n" +
                 "-o <output.log>  specify log file to write into (default output is stdout)\n" +
-                "-b <burnin>      specify the number PERCANTAGE of lines in the log file considered to be burnin (default 10)\n" +
-                "-dir <directory> specify particle directory -- used for particle filtering in BEASTii only -- if defined only one log must be specified and the -n option specified\n" +
+                "-b <burnin>      specify the number PERCENTAGE of lines in the log file considered to be burnin (default 10)\n" +
+                "-dir <directory> specify particle directory -- used for particle filtering in BEASTLabs only -- if defined only one log must be specified and the -n option specified\n" +
                 "-n <int>         specify the number of particles, ignored if -dir is not defined\n" +
                 "-resample <int>  specify number of states to resample\n" +
                 "-decimal         flag to indicate numbers should converted from scientific into decimal format\n" +
-                "-renumber        flag to indicate ouput states should be renumbered\n" +
+                "-renumber        flag to indicate output states should be renumbered\n" +
                 "-help            print this message\n";
     }
 
@@ -480,8 +567,7 @@ public class LogCombiner extends LogAnalyser {
 
                 try {
                     combiner.combineLogs(inputFiles, burnins);
-                    combiner.printCombinedLogs();
-
+ 
                 } catch (Exception ex) {
                 	Log.warning.println("Exception: " + ex.getMessage());
                     ex.printStackTrace();
@@ -508,8 +594,8 @@ public class LogCombiner extends LogAnalyser {
                 } else {
                     // particle log combiner
                     combiner.combineParticleLogs();
+                    combiner.printCombinedLogs();
                 }
-                combiner.printCombinedLogs();
             }
         } catch (Exception e) {
             System.out.println(getUsage());
