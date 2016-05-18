@@ -234,10 +234,14 @@ public class Logger extends BEASTObject {
             for (final Loggable m_logger : loggerList) {
                 m_logger.init(out);
             }
+
+            // Remove trailing tab from header
+            String header = rawbaos.toString().trim();
+
             if (sanitiseHeadersInput.get()) {
-            	m_out.print(sanitiseHeader(rawbaos.toString()));
+            	m_out.print(sanitiseHeader(header));
             } else {
-            	m_out.print(rawbaos.toString());
+            	m_out.print(header);
             }
             
             if ( baos != null ) {
@@ -484,30 +488,31 @@ public class Logger extends BEASTObject {
             }
             sampleNr += sampleOffset;
         }
-        ByteArrayOutputStream baos = null;
-        PrintStream tmp = null;
-        if (m_out == System.out) {
-            tmp = m_out;
-            baos = new ByteArrayOutputStream();
-            m_out = new PrintStream(baos);
-        }
-        if (mode == LOGMODE.compound) {
-            m_out.print((sampleNr) + "\t");
-        }
-        for (final Loggable m_logger : loggerList) {
-            m_logger.log(sampleNr, m_out);
-        }
-        if ( baos != null ) {
-            assert tmp == System.out ;
 
-            m_out = tmp;
-            try {
-                String logContent = baos.toString("ASCII");
-                logContent = prettifyLogLine(logContent);
-                m_out.print(logContent);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(baos);
+
+        if (mode == LOGMODE.compound) {
+            out.print((sampleNr) + "\t");
+        }
+
+        for (final Loggable m_logger : loggerList) {
+            m_logger.log(sampleNr, out);
+        }
+
+        // Aquire log string and trim excess tab
+        String logContent;
+        try {
+            logContent = baos.toString("ASCII").trim();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("ASCII string encoding not supported: required for logging!");
+        }
+
+        // Include calculation speed estimate if this log is going to the terminal
+        if ( m_out == System.out ) {
+            logContent = prettifyLogLine(logContent);
+            m_out.print(logContent);
+
             if (startLogTime < 0) {
                 if (sampleNr - sampleOffset > 6000) {
                     startLogTime++;
@@ -527,8 +532,11 @@ public class Logger extends BEASTObject {
                                 (secondsPerMSamples % 60 + "s");
                 m_out.print(" " + timePerMSamples + "/Msamples");
             }
+            m_out.println();
+
+        } else {
+            m_out.println(logContent);
         }
-        m_out.println();
     } // log
 
 
