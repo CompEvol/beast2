@@ -486,6 +486,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 			}
 			if (tree != null && tree != this.likelihoods[rowNr].treeInput.get()) {
+				JOptionPane.showMessageDialog(this, "Cannot link clock model with different trees");
 				throw new IllegalArgumentException("Cannot link clock model with different trees");
 			}
 
