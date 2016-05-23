@@ -1001,6 +1001,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 if (tree != null && tree != ((GenericTreeLikelihood) d).treeInput.get()) {
                     clockModel = clockModels.get(k);
                     Log.warning.println("WARNING: unlinking clock model for " + d.getID());
+                    JOptionPane.showMessageDialog(beauti.getSelectedComponent(),
+                            "Cannot link all clock model(s) except strict clock with different trees !");
                     ((GenericTreeLikelihood) d).branchRateModelInput.setValue(clockModel, d);
                 }
             } catch (Exception e) {
