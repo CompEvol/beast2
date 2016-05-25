@@ -82,6 +82,9 @@ public class FrequencySet<T> {
      * get frequency of ith object
      */
     public int getFrequency(int i) {
+        if (!sorted) {
+            sortByFrequency();
+        }
         return getFrequency(sortedList.get(i));
     }
 
