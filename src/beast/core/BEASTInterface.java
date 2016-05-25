@@ -37,6 +37,12 @@ import java.util.Map;
 import java.util.Set;
 
 public interface BEASTInterface {
+	/**
+	 * initAndValidate is supposed to check validity of values of inputs, and initialise. 
+	 * If for some reason this fails, the most appropriate exception to throw is 
+	 * IllegalArgumentException (if the combination of input values is not correct)
+	 * or otherwise a RuntimeException.
+	 */	
     public void initAndValidate();
 
 	/** identifiable **/
