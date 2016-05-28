@@ -148,6 +148,8 @@ public class Utils {
 	                // Set System L&F
 	            	// this is supposed to look OK on high res screens
 	            	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	            	double scale = Toolkit.getDefaultToolkit().getScreenResolution() / 96;
+	                Utils.setFontSize(scale);
 	            } catch (UnsupportedLookAndFeelException |ClassNotFoundException | InstantiationException |IllegalAccessException e) {
 	            	Log.warning.println(e.getMessage());
 	            }
@@ -375,6 +377,22 @@ public class Utils {
     	System.out.println("Success");
     	// if we got this far, exit with status 0
 		System.exit(0);
+	}
+
+	static public void setFontSize(double scale) {
+	     // Setup font size based on screen size
+		for (String item : new String[]{"Button.font", "ToggleButton.font", "RadioButton.font", 
+				"ColorChooser.font", "List.font", "MenuBar.font", "MenuItem.font", 
+				"RadioButtonMenuItem.font", "CheckBoxMenuItem.font", "Menu.font", "PopupMenu.font", "OptionPane.font", 
+				"Panel.font", "ProgressBar.font", "ScrollPane.font", "Viewport.font", "TabbedPane.font",  
+				"TableHeader.font", "PasswordField.font", 
+				"EditorPane.font", "TitledBorder.font", "ToolBar.font", "ToolTip.font", "Tree.font",
+				"ComboBox.font", "CheckBox.font", "Label.font", "Table.font", "TextField.font", "TextArea.font", "TextPane.font"}) {
+			Font font = UIManager.getFont(item);
+			int newSize = (int) Math.max(font.getSize() * scale, 6);
+			UIManager.put(item, new Font(font.getName(), font.getStyle(), newSize));
+		}
+	    Log.debug.println("Font is now at size " + scale);
 	}
 
 }

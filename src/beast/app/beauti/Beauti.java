@@ -43,6 +43,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -79,7 +80,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * current directory for opening files *
      */
     public static String g_sDir = System.getProperty("user.dir");
-    /**
+	static double fontSizeScale = 1;
+
+	/**
      * File extension for Beast specifications
      */
     static public final String FILE_EXT = ".xml";
@@ -895,6 +898,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
 	}
 
+	
 	void setUpViewMenu() {
         m_viewPanelCheckBoxMenuItems = null;
         viewMenu.removeAll();
@@ -908,6 +912,33 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
         viewMenu.addSeparator();
         viewMenu.add(a_viewall);
+        
+        viewMenu.addSeparator();
+        MyAction zoomIn = new MyAction("Zoom in", "Increase font size of all components", null, KeyEvent.VK_EQUALS) {
+ 			private static final long serialVersionUID = 1L;
+
+			@Override
+        	public void actionPerformed(ActionEvent ae) {
+				int size = UIManager.getFont("Label.font").getSize();
+            	Utils.setFontSize((size + 1.5) / size);
+        		refreshPanel();
+        		repaint();
+        	}
+        };
+        MyAction zoomOut = new MyAction("Zoom out", "Decrease font size of all components", null, KeyEvent.VK_MINUS) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+        	public void actionPerformed(ActionEvent ae) {
+				int size = UIManager.getFont("Label.font").getSize();
+            	Utils.setFontSize(size / (size + 1.5));
+        		refreshPanel();
+        		repaint();
+        	}
+        };
+        viewMenu.add(zoomIn);
+        viewMenu.add(zoomOut);
+
     }
 
     class TemplateAction extends AbstractAction {
@@ -1130,6 +1161,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 + "-h, -help : print this help message\n";
     }
 
+   
 
     public static Beauti main2(String[] args) {
         try {
@@ -1189,9 +1221,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
 
             AddOnManager.loadExternalJars();
-            if (!Utils.isMac()) {
+            //if (!Utils.isMac()) {
             	Utils.loadUIManager();
-            }
+            //}
             BEASTObjectPanel.init();
 
             BeautiDoc doc = new BeautiDoc();
@@ -1201,7 +1233,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
 
             final Beauti beauti = new Beauti(doc);
+        	Beauti.fontSizeScale = Toolkit.getDefaultToolkit().getScreenResolution() / 96;
 
+            
             if (Utils.isMac()) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
