@@ -41,8 +41,8 @@ public class PriorInputEditor extends InputEditor.Base {
         Prior prior = (Prior) beastObject;
         String text = prior.getParameterName();
         JLabel label = new JLabel(text);
-        label.setMinimumSize(PREFERRED_SIZE);
-        label.setPreferredSize(PREFERRED_SIZE);
+//        label.setMinimumSize(PREFERRED_SIZE);
+//        label.setPreferredSize(PREFERRED_SIZE);
         itemBox.add(label);
 
         List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);

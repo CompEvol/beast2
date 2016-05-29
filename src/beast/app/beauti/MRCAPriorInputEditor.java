@@ -50,8 +50,8 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         String text = prior.getID();
 
         JButton taxonButton = new JButton(text);
-        taxonButton.setMinimumSize(Base.PREFERRED_SIZE);
-        taxonButton.setPreferredSize(Base.PREFERRED_SIZE);
+//        taxonButton.setMinimumSize(Base.PREFERRED_SIZE);
+//        taxonButton.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(taxonButton);
         taxonButton.addActionListener(e -> {
                 List<?> list = (List<?>) m_input.get();

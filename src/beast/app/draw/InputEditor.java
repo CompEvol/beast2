@@ -218,13 +218,15 @@ public abstract class Base extends JPanel implements InputEditor {
     void setUpEntry() {
         m_entry = new JTextField();
         m_entry.setName(m_input.getName());
-        Dimension prefDim = new Dimension(PREFERRED_SIZE.width, m_entry.getPreferredSize().height);
-        Dimension maxDim = new Dimension(MAX_SIZE.width, m_entry.getPreferredSize().height);
-        m_entry.setMinimumSize(prefDim);
-        m_entry.setPreferredSize(prefDim);
-        m_entry.setSize(prefDim);
+        m_entry.setColumns(10);
+//        Dimension prefDim = new Dimension(PREFERRED_SIZE.width, m_entry.getPreferredSize().height);
+//        Dimension maxDim = new Dimension(MAX_SIZE.width, m_entry.getPreferredSize().height);
+//        m_entry.setMinimumSize(prefDim);
+//        m_entry.setPreferredSize(prefDim);
+//        m_entry.setSize(prefDim);
         initEntry();
         m_entry.setToolTipText(m_input.getHTMLTipText());
+        Dimension maxDim = m_entry.getPreferredSize();
         m_entry.setMaximumSize(maxDim);
 
         m_entry.getDocument().addDocumentListener(new DocumentListener() {

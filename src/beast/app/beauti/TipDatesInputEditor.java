@@ -544,7 +544,9 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     ex.printStackTrace();
                 }
             });
+        Dimension d = unitsComboBox.getPreferredSize();
         unitsComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, unitsComboBox.getPreferredSize().height));
+        unitsComboBox.setSize(d);
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox<>(new String[]{"Since some time in the past", "Before the present"});

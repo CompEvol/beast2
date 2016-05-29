@@ -186,12 +186,13 @@ public class IntegerListInputEditor extends ListInputEditor {
 		void setUpEntry() {
             m_entry = new JTextField();
             m_entry.setName(m_input.getName());
-            m_entry.setMinimumSize(PREFERRED_SIZE);
-            m_entry.setPreferredSize(PREFERRED_SIZE);
-            m_entry.setSize(PREFERRED_SIZE);
+            m_entry.setColumns(6);
+//            m_entry.setMinimumSize(PREFERRED_SIZE);
+//            m_entry.setPreferredSize(PREFERRED_SIZE);
+//            m_entry.setSize(PREFERRED_SIZE);
             initEntry();
             m_entry.setToolTipText(m_input.getHTMLTipText());
-            m_entry.setMaximumSize(MAX_SIZE);
+//            m_entry.setMaximumSize(MAX_SIZE);
 
             m_entry.getDocument().addDocumentListener(new DocumentListener() {
                 @Override

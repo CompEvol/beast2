@@ -59,8 +59,8 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
             text += distr.treeIntervalsInput.get().treeInput.get().getID();
         }
         JLabel label = new JLabel(text);
-        label.setMinimumSize(Base.PREFERRED_SIZE);
-        label.setPreferredSize(Base.PREFERRED_SIZE);
+//        label.setMinimumSize(Base.PREFERRED_SIZE);
+//        label.setPreferredSize(Base.PREFERRED_SIZE);
         itemBox.add(label);
         // List<String> availableBEASTObjects =
         // PluginPanel.getAvailablePlugins(m_input, m_beastObject, null);
