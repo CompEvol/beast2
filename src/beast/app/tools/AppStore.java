@@ -422,6 +422,7 @@ public class AppStore {
         AppStore appStore = new AppStore();
 
         if (args.length == 0) {
+        	Utils.loadUIManager();
             SwingUtilities.invokeLater(() -> appStore.launchGUI().setVisible(true));
         } else {
 

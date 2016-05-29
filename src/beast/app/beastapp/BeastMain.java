@@ -443,7 +443,8 @@ public class BeastMain {
         File inputFile = null;
 
         if (options) {
-
+        	Utils.loadUIManager();
+        	
             final String titleString = "<html><center><p>Bayesian Evolutionary Analysis Sampling Trees<br>" +
                     "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
             final javax.swing.Icon icon = IconUtils.getIcon(BeastMain.class, "images/beast.png");

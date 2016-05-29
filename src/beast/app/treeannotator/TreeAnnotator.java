@@ -49,6 +49,7 @@ import beast.app.BEASTVersion;
 import beast.app.beauti.BeautiDoc;
 import beast.app.tools.LogCombiner;
 import beast.app.util.Arguments;
+import beast.app.util.Utils;
 import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -1258,6 +1259,8 @@ public class TreeAnnotator {
         String outputFileName = null;
 
         if (args.length == 0) {
+        	Utils.loadUIManager();
+
             System.setProperty("com.apple.macos.useScreenMenuBar", "true");
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.showGrowBox", "true");

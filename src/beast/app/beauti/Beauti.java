@@ -80,7 +80,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * current directory for opening files *
      */
     public static String g_sDir = System.getProperty("user.dir");
-	static double fontSizeScale = 1;
 
 	/**
      * File extension for Beast specifications
@@ -920,7 +919,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			@Override
         	public void actionPerformed(ActionEvent ae) {
 				int size = UIManager.getFont("Label.font").getSize();
-            	Utils.setFontSize((size + 1.5) / size);
+            	Utils.setFontSize(size + 1);
+            	Utils.saveBeautiProperty("fontsize", (size + 1) + "");
         		refreshPanel();
         		repaint();
         	}
@@ -931,7 +931,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 			@Override
         	public void actionPerformed(ActionEvent ae) {
 				int size = UIManager.getFont("Label.font").getSize();
-            	Utils.setFontSize(size / (size + 1.5));
+            	Utils.setFontSize(Math.max(size - 1, 4));
+            	Utils.saveBeautiProperty("fontsize", Math.max(size - 1, 4) + "");
         		refreshPanel();
         		repaint();
         	}
@@ -1233,8 +1234,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
 
             final Beauti beauti = new Beauti(doc);
-        	Beauti.fontSizeScale = Toolkit.getDefaultToolkit().getScreenResolution() / 96;
-
             
             if (Utils.isMac()) {
                 // set up application about-menu for Mac

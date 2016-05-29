@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.table.TableCellEditor;
 
 import beast.app.BEASTVersion2;
+import beast.app.util.Utils;
 import beast.core.util.Log;
 import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
@@ -510,6 +511,8 @@ public class LogCombiner extends LogAnalyser {
         LogCombiner combiner = new LogCombiner();
         try {
             if (args.length == 0) {
+            	Utils.loadUIManager();
+
                 System.setProperty("com.apple.macos.useScreenMenuBar", "true");
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("apple.awt.showGrowBox", "true");

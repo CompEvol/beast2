@@ -393,7 +393,9 @@ public class EBSPAnalyser {
         try {
             EBSPAnalyser analyser = new EBSPAnalyser();
             if (args.length == 0) {
-                System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            	Utils.loadUIManager();
+
+            	System.setProperty("com.apple.macos.useScreenMenuBar", "true");
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("apple.awt.showGrowBox", "true");
 
