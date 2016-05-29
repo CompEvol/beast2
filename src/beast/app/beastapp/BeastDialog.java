@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -59,7 +60,8 @@ public class BeastDialog {
         final JLabel titleText = new JLabel(titleString);
         titleText.setIcon(icon);
         optionPanel.addSpanningComponent(titleText);
-        titleText.setFont(new Font("sans-serif", 0, 12));
+        Font font = UIManager.getFont("Label.font");
+        titleText.setFont(new Font("sans-serif", font.getStyle(), font.getSize()));
 
         final JButton inputFileButton = new JButton("Choose File...");
         final JTextField inputFileNameText = new JTextField("not selected", 16);

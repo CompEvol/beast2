@@ -187,7 +187,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             final int NR_OF_TICKS_Y = m_nTicks;
 
             // draw ticks on edge
-            Font smallFont = new Font(font.getName(), font.getStyle(), 8);
+            Font smallFont = new Font(font.getName(), font.getStyle(), font.getSize() * 2/3);
             g.setFont(smallFont);
 
             // collect the ylabels and the maximum label width in small font
@@ -247,7 +247,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 g.drawString(ylabels[i], leftMargin - TICK_LENGTH - 1 - sfm.stringWidth(ylabels[i]), y + 3);
             }
 
-            g.setFont(new Font(font.getName(), font.getStyle(), 10));
+            g.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 10 / 12));
             try {
                 FontMetrics fontMetrics = g.getFontMetrics();
                 String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};

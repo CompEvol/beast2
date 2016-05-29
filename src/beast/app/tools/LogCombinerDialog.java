@@ -102,7 +102,8 @@ public class LogCombinerDialog {
         final JLabel titleText = new JLabel(titleString);
         titleText.setIcon(icon);
         optionPanel.addSpanningComponent(titleText);
-        titleText.setFont(new Font("sans-serif", 0, 12));
+        Font font = UIManager.getFont("Label.font");
+        titleText.setFont(new Font("sans-serif", font.getStyle(), font.getSize()));
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);

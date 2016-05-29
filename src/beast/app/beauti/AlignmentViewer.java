@@ -130,7 +130,7 @@ public class AlignmentViewer extends JPanel {
         JTable fixedTable = new JTable(fixedColumnModel);
         fixedTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         Font font = fixedTable.getFont();
-        font = new Font(font.getFontName(), font.getStyle(), 8);
+        font = new Font(font.getFontName(), font.getStyle(), font.getSize() * 2/3);
         fixedTable.setFont(font);
         TableColumn col = fixedTable.getColumnModel().getColumn(0);
         col.setPreferredWidth(200);

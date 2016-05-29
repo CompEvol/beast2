@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import org.w3c.dom.Node;
 
@@ -48,7 +49,7 @@ import beast.util.Randomizer;
 
 
 public class BEASTObjectShape extends Shape {
-    static Font g_PluginFont = new Font("arial", Font.PLAIN, 11);
+    static Font g_PluginFont = new Font("arial", Font.PLAIN, UIManager.getFont("Label.font").getSize() * 11 / 12);
     public beast.core.BEASTInterface m_beastObject;
     List<InputShape> m_inputs;
 
