@@ -31,7 +31,9 @@ public class SpeciesTreePrior extends TreeDistribution {
     public final Input<RealParameter> popSizesTopInput = new Input<>("topPopSize", "population size parameter at the top of a branch. " +
             "Ignored for constant population function, but required for linear population function.");
 
-    public final Input<RealParameter> gammaParameterInput = new Input<>("gammaParameter", "shape parameter of the gamma distribution", Validate.REQUIRED);
+    public final Input<RealParameter> gammaParameterInput = new Input<>("gammaParameter", "scale parameter of the gamma distribution over population sizes. "
+    		+ "This makes this parameter half the expected population size on all branches for constant population function, "
+    		+ "but a quarter of the expected population size for tip branches only for linear population functions.", Validate.REQUIRED);
 
 //	public Input<RealParameter> m_rootHeightParameter = new Input<>("rootBranchHeight","height of the node above the root, representing the root branch", Validate.REQUIRED);
     /**
