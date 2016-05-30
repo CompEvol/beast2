@@ -547,6 +547,9 @@ public class Tree extends StateNode implements TreeInterface {
      */
     @Override
     public void assignFromFragile(final StateNode other) {
+        // invalidate cache
+        postCache = null;
+
         final Tree tree = (Tree) other;
         if (m_nodes == null) {
             initArrays();
