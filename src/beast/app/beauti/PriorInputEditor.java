@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,8 +42,10 @@ public class PriorInputEditor extends InputEditor.Base {
         Prior prior = (Prior) beastObject;
         String text = prior.getParameterName();
         JLabel label = new JLabel(text);
-//        label.setMinimumSize(PREFERRED_SIZE);
-//        label.setPreferredSize(PREFERRED_SIZE);
+        Font font = label.getFont();
+        Dimension size = new Dimension(font.getSize() * 200 / 12, font.getSize() * 2);
+        label.setMinimumSize(size);
+        label.setPreferredSize(size);
         itemBox.add(label);
 
         List<BeautiSubTemplate> availableBEASTObjects = doc.getInputEditorFactory().getAvailableTemplates(prior.distInput, prior, null, doc);

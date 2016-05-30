@@ -1,6 +1,8 @@
 package beast.app.beauti;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -59,8 +61,10 @@ public class TreeDistributionInputEditor extends InputEditor.Base {
             text += distr.treeIntervalsInput.get().treeInput.get().getID();
         }
         JLabel label = new JLabel(text);
-//        label.setMinimumSize(Base.PREFERRED_SIZE);
-//        label.setPreferredSize(Base.PREFERRED_SIZE);
+        Font font = label.getFont();
+        Dimension size = new Dimension(font.getSize() * 200 / 12, font.getSize() * 2);
+        label.setMinimumSize(size);
+        label.setPreferredSize(size);
         itemBox.add(label);
         // List<String> availableBEASTObjects =
         // PluginPanel.getAvailablePlugins(m_input, m_beastObject, null);
