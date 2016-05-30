@@ -33,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import beast.util.AddOnManager;
 import beast.util.Randomizer;
@@ -83,7 +84,8 @@ public class ModelBuilder extends JPanel {
             drawTest.m_doc.loadFile(args[0]);
             drawTest.setDrawingFlag();
         }
-        f.setSize(600, 800);
+        int size = UIManager.getFont("Label.font").getSize();
+        f.setSize(600 * size / 13, 800 * size / 13);
         f.setVisible(true);
     } // main
 }

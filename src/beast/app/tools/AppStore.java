@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -92,7 +93,8 @@ public class AppStore {
 //      Dimension dim = panel.getPreferredSize();
 //      Dimension dim2 = buttonBox.getPreferredSize();
 //		setSize(dim.width + 10, dim.height + dim2.height + 30);
-        mainDialog.setSize(new Dimension(660, 400));
+        int size = UIManager.getFont("Label.font").getSize();
+        mainDialog.setSize(600 * size / 13, 400 * size / 13);
         mainDialog.setLocationRelativeTo(null);
 
         return mainDialog;

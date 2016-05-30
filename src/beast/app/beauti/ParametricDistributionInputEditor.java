@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import org.apache.commons.math.MathException;
 
@@ -337,7 +338,8 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
     private Component createGraph() {
         JPanel panel = new PDPanel();
-        Dimension size = new Dimension(200, 200);
+        int fsize = UIManager.getFont("Label.font").getSize();
+        Dimension size = new Dimension(200 * fsize / 13, 200 * fsize / 13);
         panel.setSize(size);
         panel.setPreferredSize(size);
         panel.setMinimumSize(size);

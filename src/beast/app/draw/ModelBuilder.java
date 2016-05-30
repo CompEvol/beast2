@@ -74,6 +74,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 import beast.app.util.Utils;
@@ -1274,7 +1275,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
 
     public void init() {
         m_Selection.setDocument(m_doc);
-        setSize(2048, 2048);
+        int size = UIManager.getFont("Label.font").getSize();
+        setSize(2048 * size / 13, 2048 * size / 13);
         g_panel = new DrawPanel();
         m_jScrollPane = new JScrollPane(g_panel);
         makeToolbar();
@@ -2177,7 +2179,8 @@ public class ModelBuilder extends JPanel implements ComponentListener {
             drawTest.m_doc.loadFile(args[0]);
             drawTest.setDrawingFlag();
         }
-        f.setSize(600, 800);
+        int size = UIManager.getFont("Label.font").getSize();
+        f.setSize(800 * size / 13, 600 * size / 13);
         f.setVisible(true);
     } // main
 

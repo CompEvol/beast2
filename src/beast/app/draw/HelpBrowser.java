@@ -33,6 +33,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -179,7 +180,8 @@ public class HelpBrowser extends JDialog implements HyperlinkListener {
     public static void main(String[] args) {
         try {
             HelpBrowser b = new HelpBrowser("beast.core.MCMC");
-            b.setSize(800, 800);
+            int size = UIManager.getFont("Label.font").getSize();
+            b.setSize(800 * size / 13, 800 * size / 13);
             b.setVisible(true);
             b.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         } catch (Exception e) {

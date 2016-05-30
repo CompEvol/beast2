@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -276,7 +277,8 @@ public class AlignmentViewer extends JPanel {
         buttonBox.add(useColorCheckBox);
         dlg.add(buttonBox, BorderLayout.SOUTH);
 
-        dlg.setSize(1024, 600);
+        int size = UIManager.getFont("Label.font").getSize();
+        dlg.setSize(1024 * size / 13, 600 * size / 13);
         dlg.setModal(true);
         dlg.setVisible(true);
         dlg.dispose();

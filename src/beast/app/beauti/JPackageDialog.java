@@ -426,7 +426,8 @@ public class JPackageDialog extends JPanel {
         Point frameLocation = frame.getLocation();
         Dimension frameSize = frame.getSize();
         Dimension dim = getPreferredSize();
-		dlg.setSize(690, 430);
+        int size = UIManager.getFont("Label.font").getSize();
+        dlg.setSize(690 * size / 13, 430 * size / 13);
         dlg.setLocation(frameLocation.x + frameSize.width / 2 - dim.width / 2, frameLocation.y + frameSize.height / 2 - dim.height / 2);
 
         frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

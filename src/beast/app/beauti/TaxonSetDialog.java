@@ -20,6 +20,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
@@ -82,7 +83,8 @@ public class TaxonSetDialog extends JDialog {
         }
 
         add(box);
-        setSize(new Dimension(400, 600));
+        int size = UIManager.getFont("Label.font").getSize();
+        setSize(400 * size / 13, 600 * size / 13);
         setModal(true);
     } // c'tor
     

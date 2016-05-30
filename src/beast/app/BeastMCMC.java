@@ -50,6 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileFilter;
@@ -378,7 +379,8 @@ public class BeastMCMC {
                 box.add(Box.createVerticalGlue());
                 box.add(createRunQuitButtons());
                 add(box);
-                setSize(new Dimension(600, 500));
+                int size = UIManager.getFont("Label.font").getSize();
+                setSize(600 * size / 13, 500 * size / 13);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Could not create dialog: " + e.getMessage());

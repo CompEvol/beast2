@@ -197,7 +197,7 @@ public class NexusParser {
 
     private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
 
-        Log.info.println("translation map size = " + translationMap.size());
+        Log.warning.println("translation map size = " + translationMap.size());
 
         final String[] taxa = new String[translationMap.size()];
 

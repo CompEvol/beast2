@@ -622,7 +622,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		public void actionPerformed(ActionEvent ae) {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
             HelpBrowser b = new HelpBrowser(currentTab.config.getType());
-            b.setSize(800, 800);
+            int size = UIManager.getFont("Label.font").getSize();
+            b.setSize(800 * size / 13, 800 * size / 13);
             b.setVisible(true);
             b.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -1328,7 +1329,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
 
             frame.add(beauti);
-            frame.setSize(1024, 768);
+            int size = UIManager.getFont("Label.font").getSize();
+            frame.setSize(1024 * size / 13, 768 * size / 13);
             frame.setLocation(BEAUtiIntances * 10, BEAUtiIntances * 10);
             frame.setVisible(true);
 
