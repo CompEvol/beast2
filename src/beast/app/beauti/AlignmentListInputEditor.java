@@ -741,7 +741,8 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				return comp;
 			}
 		};
-		table.setRowHeight(25);
+		int size = table.getFont().getSize();
+		table.setRowHeight(25 * size/13);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);

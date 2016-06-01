@@ -9,6 +9,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import beast.app.draw.BEASTObjectDialog;
 import beast.app.draw.InputEditor;
@@ -43,7 +44,7 @@ public class PriorInputEditor extends InputEditor.Base {
         String text = prior.getParameterName();
         JLabel label = new JLabel(text);
         Font font = label.getFont();
-        Dimension size = new Dimension(font.getSize() * 200 / 12, font.getSize() * 2);
+        Dimension size = new Dimension(font.getSize() * 200 / 13, font.getSize() * 25/13);
         label.setMinimumSize(size);
         label.setPreferredSize(size);
         itemBox.add(label);
@@ -80,8 +81,11 @@ public class PriorInputEditor extends InputEditor.Base {
             sync();
             refreshPanel();
         });
-        itemBox.add(comboBox);
-
+        JPanel panel = new JPanel();
+        panel.add(comboBox);
+        panel.setMaximumSize(size);
+        itemBox.add(panel);
+        
         if (prior.m_x.get() instanceof RealParameter) {
             // add range button for real parameters
             RealParameter p = (RealParameter) prior.m_x.get();

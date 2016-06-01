@@ -359,7 +359,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             public void addCellEditorListener(CellEditorListener l) {
             }
         });
-        table.setRowHeight(24);
+        int fontsize = table.getFont().getSize();
+        table.setRowHeight(24 * fontsize / 13);
         scrollPane = new JScrollPane(table);
 
 // AJD: This ComponentListener breaks the resizing of the tip dates table, so I have removed it.
