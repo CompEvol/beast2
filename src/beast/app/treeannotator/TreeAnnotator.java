@@ -555,13 +555,13 @@ public class TreeAnnotator {
         progressStream.println("0              25             50             75            100");
         progressStream.println("|--------------|--------------|--------------|--------------|");
 
-        stepSize = Math.max(totalTrees / 60, 1);
+        stepSize = Math.max(totalTreesUsed / 60, 1);
         int reported = 0;
 
         // this call increments the clade counts and it shouldn't
         // this is remedied with removeClades call after while loop below
         cladeSystem = new CladeSystem(targetTree);
-        totalTreesUsed = 0;
+        int totalTreesUsed = 0;
         try {
             int counter = 0;
             treeSet.reset();
@@ -572,9 +572,11 @@ public class TreeAnnotator {
             	}
                 cladeSystem.collectAttributes(tree, attributeNames);
                 if (counter > 0 && counter % stepSize == 0 && reported < 61) {
-                    progressStream.print("*");
+    				while (1000 * reported < 61000 * (counter + 1)/ this.totalTreesUsed) {
+    	                progressStream.print("*");
+    	                reported++;
+            	    }
                     progressStream.flush();
-                    reported++;
                 }
                 totalTreesUsed++;
                 counter++;
@@ -582,6 +584,7 @@ public class TreeAnnotator {
         	
             cladeSystem.removeClades(targetTree.getRoot(), true);
             //progressStream.println("totalTreesUsed=" + totalTreesUsed);
+            this.totalTreesUsed = totalTreesUsed;
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
         } catch (Exception e) {
             Log.err.println("Error Parsing Input Tree: " + e.getMessage());
@@ -687,7 +690,7 @@ public class TreeAnnotator {
         progressStream.println("0              25             50             75            100");
         progressStream.println("|--------------|--------------|--------------|--------------|");
 
-        int stepSize = Math.max(totalTrees / 60, 1);
+        int stepSize = Math.max(totalTreesUsed / 60, 1);
         int reported = 0;
 
         int counter = 0;
@@ -699,10 +702,12 @@ public class TreeAnnotator {
               bestTree = tree;
               bestScore = score;
           }
-          if (counter > 0 && counter % stepSize == 0 && reported < 61) {
-              progressStream.print("*");
+          if (counter % stepSize == 0 && reported < 61) {
+			  while (1000*reported < 61000 * (counter + 1) / totalTreesUsed) {
+	              progressStream.print("*");
+	              reported++;
+        	  }
               progressStream.flush();
-              reported++;
           }
           counter++;
         }
@@ -1489,7 +1494,7 @@ public class TreeAnnotator {
         progressStream.println("0              25             50             75            100");
         progressStream.println("|--------------|--------------|--------------|--------------|");
 
-        int reportStepSize = totalTrees / 60;
+        int reportStepSize = totalTreesUsed / 60;
         if (reportStepSize < 1) reportStepSize = 1;
         int reported = 0;
 
@@ -1517,7 +1522,7 @@ public class TreeAnnotator {
         // heights total sum from posterior trees
         double[] ths = new double[clades];
 
-        totalTreesUsed = 0;
+        int totalTreesUsed = 0;
 
         int counter = 0;
         treeSet.reset();
@@ -1538,9 +1543,11 @@ public class TreeAnnotator {
             }
             totalTreesUsed += 1;
             if (counter > 0 && counter % reportStepSize == 0 && reported < 61) {
-                progressStream.print("*");
+				while (1000 * reported < 61000 * (counter + 1)/ this.totalTreesUsed) {
+				    progressStream.print("*");
+				    reported++;
+				}
                 progressStream.flush();
-                reported++;
             }
             counter++;
 
@@ -1553,6 +1560,8 @@ public class TreeAnnotator {
             node.setHeight(ths[k]);
         }
 
+        assert (totalTreesUsed == this.totalTreesUsed);
+        this.totalTreesUsed = totalTreesUsed;
         progressStream.println();
         progressStream.println();
 
