@@ -50,7 +50,7 @@ import beast.evolution.datatype.TwoStateCovarion;
  * [    0            ,     s*f1        ,    p0*f1     , -p0*f1-s*f1 ]
  * 
  * equilibrium frequencies
- * [ p0 * f0, p1, * f0, p0 * f1, p1, * f1 ]
+ * [ p0 * f1, p1, * f1, p0 * f0, p1, * f0 ]
  * 
  * mode = TUFFLEYSTEEL uses alternative parameterisation: hfrequencies is ignored, and switch parameter is set to dimension = 2
  * [ -(a*p1)-s1 ,   a*p1     ,    s1   ,   0    ]
@@ -98,6 +98,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         switchRate = switchRateInput.get();
         frequencies = frequenciesInput.get();
         hiddenFrequencies = hfrequenciesInput.get();
+        mode  = modeInput.get();
 
         
         if (mode.equals(MODE.BEAST) || mode.equals(MODE.REVERSIBLE)) {
@@ -196,8 +197,8 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 	        freqs[2] = frequencies.getValue(0) * hiddenFrequencies.getValue(1);
 	        freqs[3] = frequencies.getValue(1) * hiddenFrequencies.getValue(1);
         } else {
-        	double h0 = alpha.getValue(1) * (alpha.getValue(0) + alpha.getValue(1));
-        	double h1 = alpha.getValue(0) * (alpha.getValue(0) + alpha.getValue(1));
+        	double h0 = switchRate.getValue(1) / (switchRate.getValue(0) + switchRate.getValue(1));
+        	double h1 = switchRate.getValue(0) / (switchRate.getValue(0) + switchRate.getValue(1));
 	        freqs[0] = frequencies.getValue(0) * h0;
 	        freqs[1] = frequencies.getValue(1) * h0;
 	        freqs[2] = frequencies.getValue(0) * h1;
@@ -271,7 +272,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         case TUFFLEYSTEEL: {
             double a = alpha.getValue(0);
             double s1 = switchRate.getValue(0);
-            double s2 = switchRate.getValue(0);
+            double s2 = switchRate.getValue(1);
             double p0 = frequencies.getValue(0);
             double p1 = frequencies.getValue(1);
 
