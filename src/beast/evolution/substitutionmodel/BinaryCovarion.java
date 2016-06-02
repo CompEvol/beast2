@@ -50,7 +50,7 @@ import beast.evolution.datatype.TwoStateCovarion;
  * [    0            ,     s*f1        ,    p0*f1     , -p0*f1-s*f1 ]
  * 
  * equilibrium frequencies
- * [ p0 * f1, p1, * f1, p0 * f0, p1, * f0 ]
+ * [ p0 * f0, p1, * f0, p0 * f1, p1, * f1 ]
  * 
  * mode = TUFFLEYSTEEL uses alternative parameterisation: hfrequencies is ignored, and switch parameter is set to dimension = 2
  * [ -(a*p1)-s1 ,   a*p1     ,    s1   ,   0    ]
@@ -129,6 +129,12 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         	}
         }
 
+        if (!mode.equals(MODE.BEAST)) {
+        	Log.warning.println("If you encounter infinities, or chaing getting stuck, consider using a more robust "
+        			+ "eigen system, by setting the eigenSystem input, e.g. "
+        			+ "eigenSystem=\"beast.evolution.substitutionmodel.RobustEigenSystem\" "
+        			+ "available from the beast-classic package.");
+        }
         
         
         nrOfStates = 4;
@@ -253,19 +259,19 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
             assert Math.abs(1.0 - p0 - p1) < 1e-8;
 
             unnormalizedQ[0][1] = a * p1 * f0;
-            unnormalizedQ[0][2] = s * f0;
+            unnormalizedQ[0][2] = s * f1;
             unnormalizedQ[0][3] = 0.0;
 
             unnormalizedQ[1][0] = a * p0 * f0;
             unnormalizedQ[1][2] = 0.0;
-            unnormalizedQ[1][3] = s * f0;
+            unnormalizedQ[1][3] = s * f1;
 
-            unnormalizedQ[2][0] = s * f1;
+            unnormalizedQ[2][0] = s * f0;
             unnormalizedQ[2][1] = 0.0;
             unnormalizedQ[2][3] = p1 * f1;
 
             unnormalizedQ[3][0] = 0.0;
-            unnormalizedQ[3][1] = s * f1;
+            unnormalizedQ[3][1] = s * f0;
             unnormalizedQ[3][2] = p0 * f1;
         }
     	break;

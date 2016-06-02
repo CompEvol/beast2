@@ -25,8 +25,8 @@ public class BinaryCovarionModelTest extends TestCase {
 		for (int i = 0; i < 10; i++) {
 			doWithEqualHFreqs("BEAST");
 			doWithEqualHFreqs("REVERSIBLE");
-			doWithUnEqualHFreqs("REVERSIBLE");
 		}
+		doWithUnEqualHFreqs("REVERSIBLE");
 	}
 	
 	private void doWithTufflySteel() {
@@ -43,6 +43,7 @@ public class BinaryCovarionModelTest extends TestCase {
 	        		"vfrequencies", vfrequencies, /* [p0, p1] */
 	        		"alpha", "0.01",
 	        		"switchRate", switchrate,
+	        		//"eigenSystem", "beast.evolution.substitutionmodel.RobustEigenSystem",
 	        		"mode", "TUFFLEYSTEEL");
 	        
 	        double [] matrix = new double[16];
@@ -104,15 +105,16 @@ public class BinaryCovarionModelTest extends TestCase {
         		"vfrequencies", vfrequencies, /* [p0, p1] */
         		"alpha", "0.01",
         		"switchRate", "0.1",
+        		//"eigenSystem", "beast.evolution.substitutionmodel.RobustEigenSystem",
         		"mode", mode);
         
         double [] matrix = new double[16];
         substModel.getTransitionProbabilities(null, 1000, 0, 1.0, matrix);
         double [] baseFreqs = new double[] {
-	        (vfrequencies.getValue(0) * hfrequencies.getValue(1)),
-	        (vfrequencies.getValue(1) * hfrequencies.getValue(1)),
 	        (vfrequencies.getValue(0) * hfrequencies.getValue(0)),
-	        (vfrequencies.getValue(1) * hfrequencies.getValue(0))
+	        (vfrequencies.getValue(1) * hfrequencies.getValue(0)),
+	        (vfrequencies.getValue(0) * hfrequencies.getValue(1)),
+	        (vfrequencies.getValue(1) * hfrequencies.getValue(1))
         };
         System.err.println("Expected: " + Arrays.toString(baseFreqs));
         System.err.println("Calculat: " + Arrays.toString(matrix));
