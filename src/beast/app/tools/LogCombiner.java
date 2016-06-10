@@ -44,13 +44,13 @@ public class LogCombiner extends LogAnalyser {
     List<String> m_sTrees;
     // Sample interval as it appears in the combined log file.
     // To use the interval of the log files, use the -renumber option
-    int m_nSampleInterval = 1;
+    int m_nSampleInterval = -1;
     // whether to use decimal or scientific format to print doubles
     boolean m_bUseDecimalFormat = false;
     DecimalFormat format = new DecimalFormat("#.############E0", new DecimalFormatSymbols(Locale.US));
 
     // resample the log files to this frequency (the original sampling frequency must be a factor of this value)
-    int m_nResample = 1;
+    int m_nResample = -1;
 
     private void parseArgs(String[] args) {
         int i = 0;
@@ -96,7 +96,7 @@ public class LogCombiner extends LogAnalyser {
                         m_nResample = Integer.parseInt(args[i + 1]);
                         i += 2;
                     } else if (args[i].equals("-renumber")) {
-                        m_nSampleInterval = -1;
+                        m_nSampleInterval = 1;
                         i++;
                     }
                     if (i == old) {
@@ -189,7 +189,11 @@ public class LogCombiner extends LogAnalyser {
                 	long logState = Long.parseLong(strs[0]);
                     if (m_nSampleInterval < 0 && prevLogState >= 0) {
                         // need to renumber
-                        m_nSampleInterval = (int) (logState - prevLogState);
+                    	if (m_nResample < 0) {
+                    		m_nSampleInterval = (int) (logState - prevLogState);
+                    	} else {
+                    		m_nSampleInterval = m_nResample;
+                    	}
                     }
                     prevLogState = logState;
                     if (columnCount != strs.length) {
@@ -201,7 +205,7 @@ public class LogCombiner extends LogAnalyser {
                     	}
                     }
                 	
-                	if (logState % m_nSampleInterval == 0 || m_nSampleInterval < 0) {
+                	if (logState % m_nResample == 0 || m_nResample < 0) {
 	                	if (state < 0) {
 	                		state = 0;
 	                	} else {
@@ -257,6 +261,9 @@ public class LogCombiner extends LogAnalyser {
             k++;
             fin.close();
         }
+        if (m_bIsTreeLog) {
+        	m_out.println("End;");
+        }
         m_out.close();
         log("Wrote " + (state/m_nSampleInterval + 1) + " lines to " + m_sFileOut);
     }
@@ -304,11 +311,15 @@ public class LogCombiner extends LogAnalyser {
                     long logState = Long.parseLong(str2);
                     if (m_nSampleInterval < 0 && prevLogState >= 0) {
                         // need to renumber
-                        m_nSampleInterval = (int) (logState - prevLogState);
-                    }
+                    	if (m_nResample < 0) {
+                    		m_nSampleInterval = (int) (logState - prevLogState);
+                    	} else {
+                    		m_nSampleInterval = m_nResample;
+                    	}
+                   }
                     prevLogState = logState;
                 	
-                	if (logState % m_nSampleInterval == 0 || m_nSampleInterval < 0) {
+                	if (logState % m_nResample == 0 || m_nResample < 0) {
 	                	if (state < 0) {
 	                		state = 0;
 	                	} else {

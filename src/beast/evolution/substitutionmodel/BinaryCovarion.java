@@ -59,7 +59,7 @@ import beast.evolution.datatype.TwoStateCovarion;
  * [    0       ,     s2     ,    p0   , -p0-s2 ]
  *
  * equilibrium frequencies
- * [ f0 * s2/(s1+s2), f1, * s2/(s1+s2), f0 * s1/(s1+s2), f1, * s1/(s1+s2) ]
+ * [ p0 * s2/(s1+s2), p1, * s2/(s1+s2), p0 * s1/(s1+s2), p1, * s1/(s1+s2) ]
  *
  *
  * Note: to use Tuffley & Steel's methods, set a = 0.
