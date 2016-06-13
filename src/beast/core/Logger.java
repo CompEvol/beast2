@@ -601,6 +601,9 @@ public class Logger extends BEASTObject {
         }
     } // close
 
+    public PrintStream getM_out() {
+        return m_out;
+    }
 
     public static int getSampleOffset() {
         return sampleOffset < 0 ? 0 : sampleOffset;
