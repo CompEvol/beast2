@@ -38,7 +38,7 @@ import beast.math.statistic.RPNcalculator;
         , DOI = "10.1093/sysbio/syr087", year = 2012, firstAuthorSurname = "heled")
 public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
-    public static enum Type {
+    public enum Type {
         NONE("none"),
         OVER_ALL_TOPOS("full"),
         OVER_RANKED_COUNTS("restricted");
@@ -658,9 +658,13 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         boolean first = true;
 
         int[][] linsInLevels;
-        //int ccc = 0;
+        int ccc = 0;
         while ((linsInLevels = cli.next()) != null) {
-            //ccc++;
+            ccc++;
+            if( ccc > 30000000 ) {
+                issueSlowWarning();
+                //return Double.POSITIVE_INFINITY;
+            }
             double v = countRankedTrees(levels, linsInLevels, joiners, linsAtLevel);
             // 1 for root formula, 1 for kludge in iterator which sets root as 2 lineages
             if (noRoot) {
@@ -715,6 +719,18 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
         val += logc0 + logc1 + logc2;
 
         return val;
+    }
+
+    private boolean warningIssued = false;
+    private void issueSlowWarning() {
+        if( ! warningIssued )
+        Log.warning("This calibrated Yule analysis with " + orderedCalibrations.length + " calibrations will take a looong time.\n"
+                +"Possibly will never complete even a single step. You can change the type of the calibration to 'none' (type=\"none\"\n"
+                + "in the XML) and get the non-calibrated Yule just like in BEAST1, or set type to \"restricted\", a variant of the\n" +
+                "calibrated Yule which runs faster and where the proterior distribution of the node times is more similar to the\n" +
+                "actual calibration than the \"none\" case. In both cases test to see how far your posterior calibrations are from the " +
+                "specifications.");
+        warningIssued = true;
     }
 
     private double
