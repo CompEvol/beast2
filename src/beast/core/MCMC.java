@@ -119,6 +119,12 @@ public class MCMC extends Runnable {
      */
     protected int storeEvery;
 
+    /**
+     * Set this to true to enable detailed MCMC debugging information
+     * to be displayed.
+     */
+    private static final boolean printDebugInfo = false;
+
     public MCMC() {
     }
 
@@ -384,7 +390,8 @@ public class MCMC extends Runnable {
 //            }
 
             final Operator operator = operatorSchedule.selectOperator();
-            //System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
+
+            if (printDebugInfo) System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
 
             final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
             Evaluator evaluator = null;
@@ -424,7 +431,8 @@ public class MCMC extends Runnable {
                 newLogLikelihood = posterior.calculateLogP();
 
                 logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
-                // System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
+                if (printDebugInfo) System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
+
                 if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
                     // accept
                     oldLogLikelihood = newLogLikelihood;
@@ -433,7 +441,7 @@ public class MCMC extends Runnable {
                     if (sampleNr >= 0) {
                         operator.accept();
                     }
-                    //System.err.print(" accept");
+                    if (printDebugInfo) System.err.print(" accept");
                 } else {
                     // reject
                     if (sampleNr >= 0) {
@@ -441,7 +449,7 @@ public class MCMC extends Runnable {
                     }
                     state.restore();
                     state.restoreCalculationNodes();
-                    //System.err.print(" reject");
+                    if (printDebugInfo) System.err.print(" reject");
                 }
                 state.setEverythingDirty(false);
             } else {
@@ -454,7 +462,7 @@ public class MCMC extends Runnable {
                     state.setEverythingDirty(false);
                     state.restoreCalculationNodes();
 				}
-				//System.err.print(" direct reject");
+				if (printDebugInfo) System.err.print(" direct reject");
             }
             log(sampleNr);
 
