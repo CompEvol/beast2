@@ -436,6 +436,12 @@ public class BeastMain {
                     "</div></center></div></html>";
 
             consoleApp = new BeastConsoleApp(nameString, aboutString, icon);
+            
+            // ensure error and info information is shown in console
+            // but not warning, debug or trace, since that typically just
+            // results in a lot of clutter
+            Log.err = System.err;
+    		Log.info = System.out;
         }
 
         printTitle();
