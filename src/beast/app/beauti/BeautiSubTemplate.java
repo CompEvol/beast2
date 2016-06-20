@@ -253,7 +253,7 @@ public class BeautiSubTemplate extends BEASTObject {
         this.doc = doc;
     }
 
-    void removeSubNet(BeautiSubTemplate template, PartitionContext context)  {
+    public void removeSubNet(BeautiSubTemplate template, PartitionContext context)  {
         // disconnect all connection points in the template
         for (BeautiConnector connector : template.connectors) {
             doc.disconnect(connector, context);

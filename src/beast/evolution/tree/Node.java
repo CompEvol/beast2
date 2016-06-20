@@ -614,7 +614,7 @@ public class Node extends BEASTObject {
     /**
      * set meta-data according to pattern.
      * Only heights are recognised, but derived classes could deal with
-     * richer meta data pattersn.
+     * richer meta data patterns.
      */
     public void setMetaData(final String pattern, final Object value) {
         startEditing();
