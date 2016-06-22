@@ -1,10 +1,23 @@
-                    BEAST v2.4.1 2016
+                    BEAST v2.4.2 2016
                  Beast 2 development team 2011-2016
 Version History
-Last updated: March 2016
+Last updated: June 2016
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.2 June 2016
+     Applications are scalable, making them visible on high resolution screens
+
+     BEAUti
+         improved error reporting
+     BEAST
+         improved error reporting
+         prevent closing window on parsing errors
+     
+     LogCombiner requires much less memory than before
+     
+     Densitree updated to version 2.2.5
+     
 Version 2.4.1 April 2016
      BEAUti
          import of calibrations from NEXUS files
