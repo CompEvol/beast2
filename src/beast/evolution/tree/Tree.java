@@ -189,6 +189,7 @@ public class Tree extends StateNode implements TreeInterface {
         m_storedNodes = new Node[nodeCount];
         final Node copy = root.copy();
         listNodes(copy, m_storedNodes);
+        postCache = null;
     }
 
 
