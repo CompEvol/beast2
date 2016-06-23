@@ -203,7 +203,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (final MRCAPrior prior : calibrations) {
             final TaxonSet taxonSet = prior.taxonsetInput.get();
             if (taxonSet != null && !prior.onlyUseTipsInput.get()) {
-	            final Set<String> usedTaxa = new HashSet<>();
+	            final Set<String> usedTaxa = new LinkedHashSet<>();
 	        	if (taxonSet.asStringList() == null) {
 	        		taxonSet.initAndValidate();
 	        	}
@@ -257,7 +257,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (int i = 0; i < lastMonophyletic; i++) {
             for (int j = i + 1; j < lastMonophyletic; j++) {
 
-                Set<String> intersection = new HashSet<>(taxonSets.get(i));
+                Set<String> intersection = new LinkedHashSet<>(taxonSets.get(i));
                 intersection.retainAll(taxonSets.get(j));
 
                 if (intersection.size() > 0) {
@@ -351,7 +351,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 if (taxonSet == null) {
                 	throw new IllegalArgumentException("Something is wrong with constraint " + p.getID() + " -- a taxonset must be specified if a monophyletic constraint is enforced.");
                 }
-                final Set<String> usedTaxa = new HashSet<>();
+                final Set<String> usedTaxa = new LinkedHashSet<>();
                 usedTaxa.addAll(taxonSet.asStringList());
                 /* int c = */ traverse(root, usedTaxa, taxonSet.getTaxonCount(), new int[1]);
                 // boolean b = c == nrOfTaxa + 127;
@@ -418,7 +418,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         for (int attempts = 0; attempts < 1000; ++attempts) {
             try {
                 nextNodeNr = nrOfTaxa;
-                final Set<Node> candidates = new HashSet<>();
+                final Set<Node> candidates = new LinkedHashSet<>();
                 int i = 0;
                 for (String taxon : taxa) {
                     final Node node = newNode();
@@ -452,6 +452,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             			+ "is too large, so it is very unlikely a generated treed does not violate these constraints. To \n"
             			+ "fix this you can try to reduce the popultion size of the population model.\n";
             	msg += "Expect BEAST to crash if this is not fixed.\n"; 
+            	Log.err.println(msg);
             }
         }
         throw new RuntimeException(msg);
@@ -477,7 +478,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
         final Set<String> taxaDone = new TreeSet<>();
         for (final int monoNode : children[isMonophyleticNode]) {
             // create list of leaf nodes for this monophyletic MRCA
-            final Set<Node> candidates2 = new HashSet<>();
+            final Set<Node> candidates2 = new LinkedHashSet<>();
             final Set<String> isTaxonSet = taxonSets.get(monoNode);
             for (String taxon : isTaxonSet) {
                 candidates2.add(allCandidates.get(taxon));
