@@ -1291,6 +1291,8 @@ public class TreeAnnotator {
                     "</center></html>";
 
             new ConsoleApplication(nameString, aboutString, icon, true);
+            Log.info = System.out;
+            Log.err = System.err;
 
             // The ConsoleApplication will have overridden System.out so set progressStream
             // to capture the output to the window:
