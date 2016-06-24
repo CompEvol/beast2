@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.CellEditorListener;
@@ -152,7 +153,12 @@ public class AlignmentListInputEditor extends ListInputEditor {
         new FileDrop(null, scrollPane, focusBorder, new FileDrop.Listener() {
             @Override
 			public void filesDropped(java.io.File[] files) {
-                addFiles(files);
+            	SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+		                addFiles(files);
+					}
+				});
             }   // end filesDropped
         }); // end FileDrop.Listener
 
