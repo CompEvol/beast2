@@ -31,4 +31,11 @@ public class IntegerData extends Base {
         return (char)('0'+state);
     }
 
+    @Override
+    public String getCode(int state) {
+    	if (state < 0) {
+    		return "?";
+    	}
+    	return state + "";
+    }
 }
