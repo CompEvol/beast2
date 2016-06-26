@@ -36,6 +36,7 @@ import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.math.distributions.MRCAPrior;
+import beast.util.AddOnManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
@@ -43,7 +44,45 @@ import beast.util.XMLParser;
 
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
 public class BeautiAlignmentProvider extends BEASTObject {
-	
+	/** map extension to importer class names **/
+	static Map<String, AlignmentImporter> importers = null;
+    /**
+     * directory to pick up importers from *
+     */
+    final static String[] IMPLEMENTATION_DIR = {"beast.app"};
+
+	private void initImporters() {
+		importers = new HashMap<>();
+        // build up list of data types
+        List<String> importerClasses = AddOnManager.find(AlignmentImporter.class, IMPLEMENTATION_DIR);
+        for (String _class: importerClasses) {
+        	try {
+        		if (!_class.startsWith(this.getClass().getName())) {
+					AlignmentImporter importer = (AlignmentImporter) Class.forName(_class).newInstance();
+					String [] extensions = importer.getFileExtensions();
+					for (String ext : extensions) {
+						importers.put(ext, importer);
+					}
+        		}
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        // add standard importers
+        NexusImporter importer = new NexusImporter();
+		importers.put("nex", importer);
+		importers.put("nxs", importer);
+		importers.put("nexus", importer);
+        XMLImporter importer2 = new XMLImporter();
+		importers.put("xml", importer2);
+        FastaImporter importer3 = new FastaImporter();
+        for (String ext : new String[]{"fa","fas","fst","fasta","fna","ffn","faa","frn"}) {
+        	importers.put(ext, importer3);
+        }
+	}
+
 	final public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
 	
 	@Override
@@ -62,10 +101,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	 * return new alignment, return null if not successful 
 	 * **/
 	protected List<BEASTInterface> getAlignments(BeautiDoc doc) {
+		if (importers == null) {
+			initImporters();
+		}
+		List<String> extensions = new ArrayList<>(importers.keySet());
         File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
-                new File(Beauti.g_sDir), "Alignment files", "xml", 
-                "fa","fas","fst","fasta","fna","ffn","faa","frn",
-                "nex","nxs","nexus");
+                new File(Beauti.g_sDir), "Alignment files", extensions.toArray(new String[]{}));
         if (files != null && files.length > 0) {
             return getAlignments(doc, files);
         }
@@ -79,100 +120,32 @@ public class BeautiAlignmentProvider extends BEASTObject {
      * @return
      */
     public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
+		if (importers == null) {
+			initImporters();
+		}
         List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
         List<MRCAPrior> calibrations = new ArrayList<>();
         for (File file : files) {
             String fileName = file.getName();
-			String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 			Alignment alignment;
-
-			switch (fileExtension) {
-				case ".nex":
-				case ".nxs":
-				case ".nexus":
-					NexusParser parser = new NexusParser();
-					try {
-						parser.parseFile(file);
-						if (parser.filteredAlignments.size() > 0) {
-							/**
-							 * sanity check: make sure the filters do not
-							 * overlap
-							 **/
-							int[] used = new int[parser.m_alignment.getSiteCount()];
-							Set<Integer> overlap = new HashSet<>();
-							int partitionNr = 1;
-							for (Alignment data : parser.filteredAlignments) {
-								int[] indices = ((FilteredAlignment) data).indices();
-								for (int i : indices) {
-									if (used[i] > 0) {
-										overlap.add(used[i] * 10000 + partitionNr);
-									} else {
-										used[i] = partitionNr;
-									}
-								}
-								partitionNr++;
-							}
-							if (overlap.size() > 0) {
-								String overlaps = "<html>Warning: The following partitions overlap:<br/>";
-								for (int i : overlap) {
-									overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
-											+ " overlaps with "
-											+ parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
-								}
-								overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
-								JOptionPane.showMessageDialog(null, overlaps);
-							}
-							/** add alignments **/
-							for (Alignment data : parser.filteredAlignments) {
-								sortByTaxonName(data.sequenceInput.get());
-								selectedBEASTObjects.add(data);
-							}
-							if (parser.calibrations != null) {
-								if (calibrations == null) {
-									calibrations = new ArrayList<>();
-								}
-								calibrations.addAll(parser.calibrations);
-							}
-						} else {
-							selectedBEASTObjects.add(parser.m_alignment);
-							if (parser.calibrations != null) {
-								if (calibrations == null) {
-									calibrations = new ArrayList<>();
-								}
-								calibrations.addAll(parser.calibrations);
-							}
-						}
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Loading of " + fileName + " failed: " + ex.getMessage());
-						return null;
-					}
-					break;
-
-				case ".xml":
-					alignment = (Alignment)getXMLData(file);
-					selectedBEASTObjects.add(alignment);
-					break;
-
-				case ".fa":
-				case ".fas":
-				case ".fasta":
-				case ".fst":
-				case ".fna":
-				case ".ffn":
-				case ".faa":
-				case ".frn":
-					alignment = getFASTAData(file);
-					sortByTaxonName(alignment.sequenceInput.get());
-					selectedBEASTObjects.add(alignment);
-					break;
-
-                default:
-                    JOptionPane.showMessageDialog(null,
-                            "Unsupported sequence file extension.",
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    break;
+			if (importers.containsKey(fileExtension)) {
+				AlignmentImporter importer = importers.get(fileExtension);
+				// get a fresh instance
+				try {
+					importer = importer.getClass().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<BEASTInterface> list = importer.loadFile(file);
+				selectedBEASTObjects.addAll(list);
+			} else {
+                JOptionPane.showMessageDialog(null,
+                        "Unsupported sequence file extension.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
 			}
+			
         }
         addAlignments(doc, selectedBEASTObjects);
         if (calibrations != null) {
@@ -185,16 +158,18 @@ public class BeautiAlignmentProvider extends BEASTObject {
     
     protected void addAlignments(BeautiDoc doc, List<BEASTInterface> selectedBEASTObjects) {
         for (BEASTInterface beastObject : selectedBEASTObjects) {
-        	// ensure ID of alignment is unique
-        	int k = 0;
-        	String id = beastObject.getID();
-        	while (doc.pluginmap.containsKey(id)) {
-        		k++;
-        		id = beastObject.getID() + k;
+        	if (beastObject instanceof Alignment) {
+	        	// ensure ID of alignment is unique
+	        	int k = 0;
+	        	String id = beastObject.getID();
+	        	while (doc.pluginmap.containsKey(id)) {
+	        		k++;
+	        		id = beastObject.getID() + k;
+	        	}
+	        	beastObject.setID(id);
+	        	sortByTaxonName(((Alignment) beastObject).sequenceInput.get());
+	            doc.addAlignmentWithSubnet((Alignment) beastObject, getStartTemplate());
         	}
-        	beastObject.setID(id);
-        	sortByTaxonName(((Alignment) beastObject).sequenceInput.get());
-            doc.addAlignmentWithSubnet((Alignment) beastObject, getStartTemplate());
         }
     }
 
@@ -262,94 +237,6 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		}
 	}
 	
-    private Alignment getFASTAData(File file) {
-    	try {
-    		// grab alignment data
-        	Map<String, StringBuilder> seqMap = new HashMap<>();
-        	List<String> taxa = new ArrayList<>();
-        	String currentTaxon = null;
-			BufferedReader fin = new BufferedReader(new FileReader(file));
-	        String missing = "?";
-	        String gap = "-";
-	        int totalCount = 4;
-	        String datatype = "nucleotide";
-	        // According to http://en.wikipedia.org/wiki/FASTA_format lists file formats and their data content
-			// .fna = nucleic acid
-			// .ffn = nucleotide coding regions
-			// .frn = non-coding RNA
-			// .ffa = amino acid
-    		boolean mayBeAminoacid = !(file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || file.getName().toLowerCase().endsWith(".frn"));
-    		
-			while (fin.ready()) {
-				String line = fin.readLine();
-				if (line.startsWith(";")) {
-					// it is a comment, ignore
-				} else 	if (line.startsWith(">")) {
-					// it is a taxon
-					currentTaxon = line.substring(1).trim();
-					// only up to first space
-					currentTaxon = currentTaxon.replaceAll("\\s.*$", "");
-				} else {
-					// it is a data line
-					if (currentTaxon == null) {
-						fin.close();
-						throw new RuntimeException("Expected taxon defined on first line");
-					}
-					if (seqMap.containsKey(currentTaxon)) {
-						StringBuilder sb = seqMap.get(currentTaxon);
-						sb.append(line);
-					} else {
-						StringBuilder sb = new StringBuilder();
-						seqMap.put(currentTaxon, sb);
-						sb.append(line);
-						taxa.add(currentTaxon);
-					}
-				}
-			}
-			fin.close();
-			
-			int charCount = -1;
-			Alignment alignment = new Alignment();
-	        for (final String taxon : taxa) {
-	            final StringBuilder bsData = seqMap.get(taxon);
-	            String data = bsData.toString();
-	            data = data.replaceAll("\\s", "");
-	            seqMap.put(taxon, new StringBuilder(data));
-
-	            if (charCount < 0) {charCount = data.length();}
-	            if (data.length() != charCount) {
-	                throw new IllegalArgumentException("Expected sequence of length " + charCount + " instead of " + data.length() + " for taxon " + taxon);
-	            }
-	            // map to standard missing and gap chars
-	            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
-	            data = data.replace(gap.charAt(0), DataType.GAP_CHAR);
-
-	            if (mayBeAminoacid && datatype.equals("nucleotide") && !data.matches("[ACGTUXNacgtuxn?_-]+")) {
-	            	datatype = "aminoacid";
-	            	totalCount = 20;
-	            	for (Sequence seq : alignment.sequenceInput.get()) {
-	            		seq.totalCountInput.setValue(totalCount, seq);
-	            	}
-	            }
-	            
-	            final Sequence sequence = new Sequence();
-	            data = data.replaceAll("[Xx]", "?");
-	            sequence.init(totalCount, taxon, data);
-	            sequence.setID(NexusParser.generateSequenceID(taxon));
-	            alignment.sequenceInput.setValue(sequence, alignment);
-	        }
-	        String ID = file.getName();
-	        ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
-	        alignment.setID(ID);
-			alignment.dataTypeInput.setValue(datatype, alignment);
-	        alignment.initAndValidate();
-	        return alignment;
-    	} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
-    	}
-		return null;
-	}
 
 	private static BEASTInterface parseBeast1XML(String ID, String xml) throws SAXException, IOException, ParserConfigurationException  {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -415,6 +302,187 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
 		}
 		return null;
+	}
+
+	class NexusImporter implements AlignmentImporter {
+
+		@Override
+		public String[] getFileExtensions() {
+			return new String[]{"nex","nxs","nexus"};
+		}
+
+		@Override
+		public List<BEASTInterface> loadFile(File file) {
+			List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
+			NexusParser parser = new NexusParser();
+			try {
+				parser.parseFile(file);
+				if (parser.filteredAlignments.size() > 0) {
+					/**
+					 * sanity check: make sure the filters do not
+					 * overlap
+					 **/
+					int[] used = new int[parser.m_alignment.getSiteCount()];
+					Set<Integer> overlap = new HashSet<>();
+					int partitionNr = 1;
+					for (Alignment data : parser.filteredAlignments) {
+						int[] indices = ((FilteredAlignment) data).indices();
+						for (int i : indices) {
+							if (used[i] > 0) {
+								overlap.add(used[i] * 10000 + partitionNr);
+							} else {
+								used[i] = partitionNr;
+							}
+						}
+						partitionNr++;
+					}
+					if (overlap.size() > 0) {
+						String overlaps = "<html>Warning: The following partitions overlap:<br/>";
+						for (int i : overlap) {
+							overlaps += parser.filteredAlignments.get(i / 10000 - 1).getID()
+									+ " overlaps with "
+									+ parser.filteredAlignments.get(i % 10000 - 1).getID() + "<br/>";
+						}
+						overlaps += "The first thing you might want to do is delete some of these partitions.</html>";
+						JOptionPane.showMessageDialog(null, overlaps);
+					}
+					/** add alignments **/
+					for (Alignment data : parser.filteredAlignments) {
+						sortByTaxonName(data.sequenceInput.get());
+						selectedBEASTObjects.add(data);
+					}
+					if (parser.calibrations != null) {
+						selectedBEASTObjects.addAll(parser.calibrations);
+					}
+				} else {
+					selectedBEASTObjects.add(parser.m_alignment);
+					if (parser.calibrations != null) {
+						selectedBEASTObjects.addAll(parser.calibrations);
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Loading of " + file.getPath() + " failed: " + ex.getMessage());
+				return null;
+			}
+			return selectedBEASTObjects;
+		}
+	}
+	
+	class XMLImporter implements AlignmentImporter {
+
+		@Override
+		public String[] getFileExtensions() {
+			return new String[]{"xml"};
+		}
+
+		@Override
+		public List<BEASTInterface> loadFile(File file) {
+			List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
+			Alignment alignment = (Alignment)getXMLData(file);
+			selectedBEASTObjects.add(alignment);
+			return selectedBEASTObjects;
+		}
+		
+	}
+	class FastaImporter implements AlignmentImporter {
+
+		@Override
+		public String[] getFileExtensions() {
+			return new String[]{"fa","fas","fst","fasta","fna","ffn","faa","frn"};
+		}
+
+		@Override
+		public List<BEASTInterface> loadFile(File file) {
+			List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
+		    	try {
+		    		// grab alignment data
+		        	Map<String, StringBuilder> seqMap = new HashMap<>();
+		        	List<String> taxa = new ArrayList<>();
+		        	String currentTaxon = null;
+					BufferedReader fin = new BufferedReader(new FileReader(file));
+			        String missing = "?";
+			        String gap = "-";
+			        int totalCount = 4;
+			        String datatype = "nucleotide";
+			        // According to http://en.wikipedia.org/wiki/FASTA_format lists file formats and their data content
+					// .fna = nucleic acid
+					// .ffn = nucleotide coding regions
+					// .frn = non-coding RNA
+					// .ffa = amino acid
+		    		boolean mayBeAminoacid = !(file.getName().toLowerCase().endsWith(".fna") || file.getName().toLowerCase().endsWith(".ffn") || file.getName().toLowerCase().endsWith(".frn"));
+		    		
+					while (fin.ready()) {
+						String line = fin.readLine();
+						if (line.startsWith(";")) {
+							// it is a comment, ignore
+						} else 	if (line.startsWith(">")) {
+							// it is a taxon
+							currentTaxon = line.substring(1).trim();
+							// only up to first space
+							currentTaxon = currentTaxon.replaceAll("\\s.*$", "");
+						} else {
+							// it is a data line
+							if (currentTaxon == null) {
+								fin.close();
+								throw new RuntimeException("Expected taxon defined on first line");
+							}
+							if (seqMap.containsKey(currentTaxon)) {
+								StringBuilder sb = seqMap.get(currentTaxon);
+								sb.append(line);
+							} else {
+								StringBuilder sb = new StringBuilder();
+								seqMap.put(currentTaxon, sb);
+								sb.append(line);
+								taxa.add(currentTaxon);
+							}
+						}
+					}
+					fin.close();
+					
+					int charCount = -1;
+					Alignment alignment = new Alignment();
+			        for (final String taxon : taxa) {
+			            final StringBuilder bsData = seqMap.get(taxon);
+			            String data = bsData.toString();
+			            data = data.replaceAll("\\s", "");
+			            seqMap.put(taxon, new StringBuilder(data));
+
+			            if (charCount < 0) {charCount = data.length();}
+			            if (data.length() != charCount) {
+			                throw new IllegalArgumentException("Expected sequence of length " + charCount + " instead of " + data.length() + " for taxon " + taxon);
+			            }
+			            // map to standard missing and gap chars
+			            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
+			            data = data.replace(gap.charAt(0), DataType.GAP_CHAR);
+
+			            if (mayBeAminoacid && datatype.equals("nucleotide") && !data.matches("[ACGTUXNacgtuxn?_-]+")) {
+			            	datatype = "aminoacid";
+			            	totalCount = 20;
+			            	for (Sequence seq : alignment.sequenceInput.get()) {
+			            		seq.totalCountInput.setValue(totalCount, seq);
+			            	}
+			            }
+			            
+			            final Sequence sequence = new Sequence();
+			            data = data.replaceAll("[Xx]", "?");
+			            sequence.init(totalCount, taxon, data);
+			            sequence.setID(NexusParser.generateSequenceID(taxon));
+			            alignment.sequenceInput.setValue(sequence, alignment);
+			        }
+			        String ID = file.getName();
+			        ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
+			        alignment.setID(ID);
+					alignment.dataTypeInput.setValue(datatype, alignment);
+			        alignment.initAndValidate();
+			        selectedBEASTObjects.add(alignment);
+		    	} catch (Exception e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
+		    	}
+			return selectedBEASTObjects;
+		}
+		
 	}
 
 }
