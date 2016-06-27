@@ -56,6 +56,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import beast.app.BEASTVersion2;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 
@@ -98,7 +99,14 @@ public class XMLProducer extends XMLParser {
     public String toXML(BEASTInterface beastObject, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
-            buf.append("<" + XMLParser.BEAST_ELEMENT + " version='2.0' namespace='" + DEFAULT_NAMESPACE + "'>\n");
+        	Set<String> requiredPacakges = AddOnManager.getPackagesAndVersions(beastObject);
+        	String required = requiredPacakges.toString();
+        	required = required.substring(1, required.length() - 1);
+        	required = required.replaceAll(", ", ":");
+            buf.append("<" + XMLParser.BEAST_ELEMENT + 
+            		" version='" + new BEASTVersion2().getMajorVersion() + "'" +
+            		" required='" + required + "'" +
+            		" namespace='" + DEFAULT_NAMESPACE + "'>\n");
             for (String element : element2ClassMap.keySet()) {
             	if (!reservedElements.contains(element)) {
             		buf.append("<map name='" + element + "'>" + element2ClassMap.get(element) +"</map>\n");
@@ -826,8 +834,24 @@ public class XMLProducer extends XMLParser {
 
         // open element
         buf.append("<").append(elementName);
+        
+        if (beastObject.getID() == null) {
+        	String id = beastObject.getClass().getName();
+        	if (id.contains(".")) {
+        		id = id.substring(id.lastIndexOf('.') + 1);
+        	}
+            if (IDs.contains(id)) {
+                int k = 1;
+                while (IDs.contains(id + k)) {
+                    k++;
+                }
+                id = id + k;
+            }
+            beastObject.setID(id);
+        }
 
         boolean skipInputs = false;
+        // isDone.contains(beastObject) fails when BEASTObjects override equals(), so use a stream with == instead
         if (isDone.stream().anyMatch(x -> x == beastObject)) {
             // XML is already produced, we can idref it
             buf.append(" idref='" + normalise(beastObject.getID()) + "'");

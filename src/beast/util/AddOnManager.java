@@ -62,6 +62,7 @@ import beast.app.BEASTVersion2;
 import beast.app.beastapp.BeastMain;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
+import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
@@ -818,13 +819,14 @@ public class AddOnManager {
         return dirs;
     } // getBeastDirectories
 
-    /**
+    
+
+	/**
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws IOException {
         processDeleteList();
 
-        TreeMap<String, Package> packages = new TreeMap<>();
         addInstalledPackages(packages);
 
         processInstallList(packages);
@@ -833,13 +835,15 @@ public class AddOnManager {
 
         for (String jarDirName : getBeastDirectories()) {
             File versionFile = new File(jarDirName + "/version.xml");
+            String packageNameAndVersion = null;
             if (versionFile.exists()) {
                 try {
                     // print name and version of package
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(versionFile);
                     Element addon = doc.getDocumentElement();
-                    Log.warning.println("Loading package " + addon.getAttribute("name") + " v" + addon.getAttribute("version"));
+                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                    Log.warning.println("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                 	// too bad, won't print out any info
                 }
@@ -872,6 +876,9 @@ public class AddOnManager {
                                         loadedClass = className;
                                     } catch (Exception e) {
                                         // TODO: handle exception
+                                    }
+                                    if (loadedClass == null && packageNameAndVersion != null) {
+                                    	classToPackageMap.put(className, packageNameAndVersion);
                                     }
                                 }
                             }
@@ -1578,4 +1585,58 @@ public class AddOnManager {
             e.printStackTrace();
         }
     }
+
+    /** keep track of which class comes from a particular package.
+     * It maps a full class name onto a package name + " v" + package version
+     * e.g. "bModelTest v0.3.2"
+     */
+    private static Map<String, String> classToPackageMap = new HashMap<>();
+    
+    /**  maps package name to a Package object, which contains info on whether 
+     * and which version is installed. This is initialised when loadExternalJars()
+     * is called, which happens at the start of BEAST, BEAUti and many utilities.
+     */
+    private static TreeMap<String, Package> packages = new TreeMap<>();
+
+    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
+     * for all packages used by o and its predecessors in the model graph.
+     */
+    public static Set<String> getPackagesAndVersions(BEASTInterface o) {
+    	Set<String> packagesAndVersions = new LinkedHashSet<>();
+    	getPackagesAndVersions(o, packagesAndVersions);
+    	return packagesAndVersions;
+    }
+    
+    /** traverse model graph starting at o, and collect packageAndVersion strings
+     * along the way.
+     */
+    private static void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
+    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
+    	if (packageAndVersion != null) {
+    		packagesAndVersions.add(packageAndVersion);
+    	}
+    	for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
+    		getPackagesAndVersions(o2, packagesAndVersions);
+    	}
+	}
+
+    /** test whether a package with given name and version is available.
+     * @param pkgname
+     * @param pkgversion ignored for now
+     * @return
+     */
+    // RRB: may need to return PackageStatus instead of boolean, but not sure yet how to handle
+    // the case where a newer package is installed, and the old one is not available yet.
+    //public static enum PackageStatus {NOT_INSTALLED, INSTALLED, INSTALLED_VERSION_NOT_AVAILABLE};
+    public static boolean isInstalled(String pkgname, String pkgversion) {
+		if (!packages.containsKey(pkgname)) {
+			return false;
+		}
+		return true;
+//		Package pkg = packages.get(pkgname);
+//		PackageVersion version = new PackageVersion(pkgversion);
+//		if (pkg.isAvailable(version)) {
+//			return false;
+//		}
+	}
  }

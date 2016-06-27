@@ -196,6 +196,7 @@ public class XMLParser {
     HashMap<String, BEASTInterface> IDMap;
     HashMap<String, Integer[]> likelihoodMap;
     HashMap<String, Node> IDNodeMap;
+    String unavailablePacakges = "";
 
 
     static HashMap<String, String> element2ClassMap;
@@ -332,7 +333,7 @@ public class XMLParser {
 //        if (typeName == null || !typeName.equals("template")) {
 //        	return beastObjects;
 //        }
-
+        // sanity check that required packages are installed
 
         initIDNodeMap(topNode);
         parseNameSpaceAndMap(topNode);
@@ -483,6 +484,31 @@ public class XMLParser {
         final double version = getAttributeAsDouble(topNode, "version");
         if (version < 2.0 || version == Double.MAX_VALUE) {
             throw new XMLParserException(topNode, "Wrong version: only versions > 2.0 are supported", 101);
+        }
+
+        String required = getAttribute(topNode, "required");
+        if (required != null && required.trim().length() > 0) {
+        	String [] packageAndVersions = required.split(":");
+        	for (String s : packageAndVersions) {
+        		s = s.trim();
+        		int i = s.lastIndexOf(" ");
+        		if (i > 0) {
+        			String pkgname = s.substring(0, i-1);
+        			String pkgversion = s.substring(i+1);
+        			if (!AddOnManager.isInstalled(pkgname, pkgversion)) {
+        				unavailablePacakges += s +", ";
+        			}
+        		}
+        	}
+        	if (unavailablePacakges.length() > 1) {
+        		unavailablePacakges = unavailablePacakges.substring(0, unavailablePacakges.length() - 2);
+        		if (unavailablePacakges.contains(",")) {
+        			Log.warning("The following packages are required, but not available: " + unavailablePacakges);
+        		} else {
+        			Log.warning("The following package is required, but is not available: " + unavailablePacakges);
+        		}
+        		Log.warning("See http://beast2.org/managing-packages/ for details on how to install packages.");
+        	}
         }
 
         initIDNodeMap(topNode);
@@ -713,6 +739,15 @@ public class XMLParser {
             }
 		}
 		if (clazzName == null) {
+			if (unavailablePacakges.length() > 2) {
+				String msg = "Class " + specClass + " could not be found.\n" +
+		        		(unavailablePacakges.contains(",") ?
+							"This XML requires the following packages that are not installed: " :
+							"This XML requires the following package that is not installed: ") + unavailablePacakges + "\n" +
+		        		"See http://beast2.org/managing-packages/ for details on how to install packages.\n" +
+						"Or perhaps there is a typo in spec and you meant " + XMLParserUtils.guessClass(specClass) + "?";
+				throw new XMLParserException(node, msg, 1018);				
+			}
 			throw new XMLParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
 			// throw new ClassNotFoundException(specClass);
 		}
