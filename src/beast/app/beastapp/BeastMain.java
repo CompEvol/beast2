@@ -640,6 +640,8 @@ public class BeastMain {
                 }
                 Log.info.println();
                 Log.info.println("BEAST has terminated with an error. Please select QUIT from the menu.");
+            } else {
+            	rte.printStackTrace();
             }
             // logger.severe will throw a RTE but we want to keep the console visible
         } catch (XMLParserException e) {
