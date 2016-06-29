@@ -266,7 +266,7 @@ public class Logger extends BEASTObject {
     	for (int i = 0; i < header.length(); i++) {
     		char c = header.charAt(i);
     		if (c == '.') {
-    			if (header.charAt(i+2) == ':') {
+    			if (i < header.length() - 2 && header.charAt(i+2) == ':') {
     				final char c2 = header.charAt(++i);
     				i++;
     				String prefix = "";
