@@ -1,6 +1,8 @@
 package beast.core.util;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import beast.core.BEASTObject;
 import beast.core.CalculationNode;
@@ -16,7 +18,7 @@ import beast.core.parameter.IntegerParameter;
 
 @Description("calculates sum of a valuable")
 public class Sum extends CalculationNode implements Function, Loggable {
-    final public Input<Function> functionInput = new Input<>("arg", "argument to be summed", Validate.REQUIRED);
+    final public Input<List<Function>> functionInput = new Input<>("arg", "argument to be summed", new ArrayList<>(), Validate.REQUIRED);
 
     enum Mode {integer_mode, double_mode}
 
@@ -28,11 +30,12 @@ public class Sum extends CalculationNode implements Function, Loggable {
 
     @Override
     public void initAndValidate() {
-        Function valuable = functionInput.get();
-        if (valuable instanceof IntegerParameter || valuable instanceof BooleanParameter) {
-            mode = Mode.integer_mode;
-        } else {
-            mode = Mode.double_mode;
+        List<Function> valuable = functionInput.get();
+        mode = Mode.integer_mode;
+        for (Function v : valuable) {
+	        if (!(v instanceof IntegerParameter || v instanceof BooleanParameter)) {
+	            mode = Mode.double_mode;
+	        }
         }
     }
 
@@ -54,9 +57,10 @@ public class Sum extends CalculationNode implements Function, Loggable {
      */
     void compute() {
         sum = 0;
-        final Function v = functionInput.get();
-        for (int i = 0; i < v.getDimension(); i++) {
-            sum += v.getArrayValue(i);
+        for (Function v : functionInput.get()) {
+	        for (int i = 0; i < v.getDimension(); i++) {
+	            sum += v.getArrayValue(i);
+	        }
         }
         needsRecompute = false;
     }
@@ -100,11 +104,11 @@ public class Sum extends CalculationNode implements Function, Loggable {
 
     @Override
     public void log(int sampleNr, PrintStream out) {
-        Function valuable = functionInput.get();
-        final int dimension = valuable.getDimension();
         double sum = 0;
-        for (int i = 0; i < dimension; i++) {
-            sum += valuable.getArrayValue(i);
+        for (Function v : functionInput.get()) {
+	        for (int i = 0; i < v.getDimension(); i++) {
+	            sum += v.getArrayValue(i);
+	        }
         }
         if (mode == Mode.integer_mode) {
             out.print((int) sum + "\t");
