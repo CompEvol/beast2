@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel;
+import beast.util.Randomizer;
 import beast.util.XMLParser;
 import junit.framework.TestCase;
 
@@ -18,12 +19,12 @@ public class LogNormalDistributionModelTest extends TestCase {
         logNormal.init("1.0", "2.0");
 
         for (int i = 0; i < 10000; i++) {
-            double M = Math.random() * 10.0 - 5.0;
-            double S = Math.random() * 10;
+            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+            double S = Randomizer.nextDouble() * 10;
 
             double x = -1;
             while( x < 0 ) {
-                x = Math.log(Math.random() * 10);
+                x = Math.log(Randomizer.nextDouble() * 10);
             }
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
@@ -90,6 +91,7 @@ public class LogNormalDistributionModelTest extends TestCase {
 
         logNormal = new LogNormalDistributionModel();
         logNormal.initByName("M", "1.0", "S", "2.0");
+        Randomizer.setSeed(123);
     }
 
     public void testPdf() {
@@ -97,10 +99,10 @@ public class LogNormalDistributionModelTest extends TestCase {
         System.out.println("Testing 10000 random pdf calls");
 
         for (int i = 0; i < 10000; i++) {
-            double M = Math.random() * 10.0 - 5.0;
-            double S = Math.random() * 10;
+            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+            double S = Randomizer.nextDouble() * 10;
 
-            double x = Math.log(Math.random() * 10);
+            double x = Math.log(Randomizer.nextDouble() * 10);
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
             logNormal.SParameterInput.setValue(S + "", logNormal);
@@ -118,8 +120,8 @@ public class LogNormalDistributionModelTest extends TestCase {
     public void testMean() {
 
         for (int i = 0; i < 1000; i++) {
-            double M = Math.random() * 10.0 - 5.0;
-            double S = Math.random() * 10;
+            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+            double S = Randomizer.nextDouble() * 10;
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
             logNormal.SParameterInput.setValue(S + "", logNormal);
@@ -136,8 +138,8 @@ public class LogNormalDistributionModelTest extends TestCase {
 //    public void testVariance() {
 //
 //        for (int i = 0; i < 1000; i++) {
-//            double M = Math.random() * 10.0 - 5.0;
-//            double S = Math.random() * 10;
+//            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+//            double S = Randomizer.nextDouble() * 10;
 //
 //            logNormal.MParameterInput.setValue(M, logNormal);
 //            logNormal.SParameterInput.setValue(S, logNormal);
@@ -157,8 +159,8 @@ public class LogNormalDistributionModelTest extends TestCase {
         System.out.println("Testing 10000 random quantile(0.5) calls");
 
         for (int i = 0; i < 10000; i++) {
-            double M = Math.random() * 10.0 - 5.0;
-            double S = Math.random() * 10;
+            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+            double S = Randomizer.nextDouble() * 10;
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
             logNormal.SParameterInput.setValue(S + "", logNormal);
@@ -178,14 +180,14 @@ public class LogNormalDistributionModelTest extends TestCase {
 
         for (int i = 0; i < 10000; i++) {
 
-            double M = Math.random() * 10.0 - 5.0;
-            double S = Math.random() * 10;
+            double M = Randomizer.nextDouble() * 10.0 - 5.0;
+            double S = Randomizer.nextDouble() * 10;
 
             logNormal.MParameterInput.setValue(M + "", logNormal);
             logNormal.SParameterInput.setValue(S + "", logNormal);
             logNormal.initAndValidate();
 
-            double p = Math.random();
+            double p = Randomizer.nextDouble();
             double quantile = logNormal.inverseCumulativeProbability(p);
 
             double cdf = logNormal.cumulativeProbability(quantile);
