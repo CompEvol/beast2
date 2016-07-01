@@ -208,12 +208,16 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-            if (!doc.getFileName().equals("")) {
-                if (doc.validateModel() != DOC_STATUS.DIRTY) {
+            DOC_STATUS docStatus = doc.validateModel();
+            if (docStatus != DOC_STATUS.DIRTY) {
+                if (docStatus == DOC_STATUS.NO_DOCUMENT)
                     JOptionPane.showMessageDialog(null,
                             "There is no data to save to file");
-                    return;
-                }
+
+                return;
+            }
+
+            if (!doc.getFileName().equals("")) {
                 saveFile(doc.getFileName());
                 // m_doc.isSaved();
             } else {
