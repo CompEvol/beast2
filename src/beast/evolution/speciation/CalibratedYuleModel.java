@@ -132,6 +132,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                                 final CalibrationPoint cal = new CalibrationPoint();
                                 cal.distInput.setValue(_MRCAPrior.distInput.get(), cal);
                                 cal.taxonsetInput.setValue(_MRCAPrior.taxonsetInput.get(), cal);
+                                cal.forParentInput.setValue(_MRCAPrior.useOriginateInput.get(), cal);
                                 cal.initAndValidate();
                                 cals.add(cal);
                                 taxaSets.add(cal.taxa());
