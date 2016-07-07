@@ -450,7 +450,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             			+ "be nested clades.\n";
             	msg += "2. clade heights are constrained by an upper and lower bound, but the population size \n"
             			+ "is too large, so it is very unlikely a generated treed does not violate these constraints. To \n"
-            			+ "fix this you can try to reduce the popultion size of the population model.\n";
+            			+ "fix this you can try to reduce the population size of the population model.\n";
             	msg += "Expect BEAST to crash if this is not fixed.\n"; 
             	Log.err.println(msg);
             }
@@ -744,7 +744,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
         if (getMinimumInactiveHeight() < height) {
             throw new RuntimeException(
-                    "This should never happen! Somehow the current active node is older than the next inactive node!");
+                    "This should never happen! Somehow the current active node is older than the next inactive node!\n"
+            		+ "One possible solution you can try is to increase the population size of the population model.");
         }
         return height;
     }
