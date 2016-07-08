@@ -58,12 +58,12 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 		"a variant of the 'peeling algorithm'. For details, see" +
 		"Felsenstein, Joseph (1981). Evolutionary trees from DNA sequences: a maximum likelihood approach. J Mol Evol 17 (6): 368-376.")
 public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
-    final public Input<Boolean> useAmbiguitiesInput = new Input<>("useAmbiguities", "flag to indicate leafs that sites containing ambigue states should be handled instead of ignored (the default)", false);
+    final public Input<Boolean> useAmbiguitiesInput = new Input<>("useAmbiguities", "flag to indicate leafs that sites containing ambiguous states should be handled instead of ignored (the default)", false);
     
     final public Input<Integer> maxNrOfThreadsInput = new Input<>("threads","maximum number of threads to use, if less than 1 the number of threads in BeastMCMC is used (default -1)", -1);
 
     final public Input<String> proportionsInput = new Input<>("proportions", "specifies proportions of patterns used per thread as space "
-    		+ "delimted string. This is useful when using a mixture of BEAGLE devices that run at different speeds, e.g GPU and CPU. "
+    		+ "delimited string. This is useful when using a mixture of BEAGLE devices that run at different speeds, e.g GPU and CPU. "
     		+ "The string is duplicated if there are more threads than proportions specified. For example, "
     		+ "'1 2' as well as '33 66' with 2 threads specifies that the first thread gets a third of the patterns and the second "
     		+ "two thirds. With 3 threads, it is interpreted as '1 2 1' = 25%, 50%, 25% and with 7 threads it is "
@@ -123,7 +123,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     	treelikelihood = new TreeLikelihood[threadCount];
     	
     	if (dataInput.get().isAscertained) {
-    		Log.warning.println("Note, because the alignment is ascertained -- can only use single trhead per alignment");
+    		Log.warning.println("Note, can only use single thread per alignment because the alignment is ascertained");
     		threadCount = 1;
     	}
     	
@@ -170,7 +170,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
         				"siteModel", duplicate((BEASTInterface) siteModelInput.get(), i), 
         				"branchRateModel", duplicate(branchRateModelInput.get(), i), 
         				"useAmbiguities", useAmbiguitiesInput.get(),
-						"scaling" , scalingInput.get() + ""
+                                    	"scaling" , scalingInput.get() + ""
         				);
         		
         		likelihoodCallers.add(new TreeLikelihoodCaller(treelikelihood[i], i));
