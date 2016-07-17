@@ -98,7 +98,8 @@ public class TraitSet extends BEASTObject {
         // sanity check: did we cover all taxa?
         for (int i = 0; i < labels.size(); i++) {
             if (taxonValues[i] == null) {
-                Log.warning.println("WARNING: no trait specified for " + labels.get(i));
+                Log.warning.println("WARNING: no trait specified for " + labels.get(i) +": Assumed to be 0");
+                map.put(labels.get(i), i);
             }
         }
 
