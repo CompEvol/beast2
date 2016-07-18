@@ -1,5 +1,9 @@
 package test.beast.math.distributions;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
 import beast.evolution.alignment.Alignment;
@@ -64,6 +68,21 @@ public class MRCAPriorTest extends TestCase {
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true);
         logP = prior.calculateLogP();
         assertEquals(logP, Double.NEGATIVE_INFINITY, 0);
+
+    
+        set.setID("test");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        prior.init(ps);
+        String log = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        assertEquals(log, "mrcatime(test)\t");
+
+        baos = new ByteArrayOutputStream();
+        ps = new PrintStream(baos);
+        prior.initByName("tree", tree, "taxonset", set, "monophyletic", true, "useOriginate", true);
+        prior.init(ps);
+        log = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        assertEquals(log, "mrcatime(test.originate)\t");
     }
 
     @Test

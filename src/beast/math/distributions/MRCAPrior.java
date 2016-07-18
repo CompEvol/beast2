@@ -366,7 +366,7 @@ public class MRCAPrior extends Distribution {
             if (dist != null) {
                 out.print("logP(mrca(" + taxonsetInput.get().getID() + "))\t");
             }
-            out.print("mrcatime(" + taxonsetInput.get().getID() + ")\t");
+            out.print("mrcatime(" + taxonsetInput.get().getID() + (useOriginate ? ".originate" : "") +")\t");
         }
     }
 
