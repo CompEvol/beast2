@@ -332,7 +332,7 @@ public interface Parameter<T> extends Function {
         public void assignFromFragile(final StateNode other) {
             @SuppressWarnings("unchecked")
             final Parameter.Base<T> source = (Parameter.Base<T>) other;
-            System.arraycopy(source.values, 0, values, 0, values.length);
+            System.arraycopy(source.values, 0, values, 0, Math.min(values.length, source.getDimension()));
             Arrays.fill(m_bIsDirty, false);
         }
 
