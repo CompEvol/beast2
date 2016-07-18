@@ -325,8 +325,8 @@ public class LogCombiner extends LogAnalyser {
 	                	} else {
 	                		state += m_nSampleInterval;
 	                	}
-	                    str = str.replaceAll("^tree STATE_[^\\s=]*", "");
-	                	m_out.print("tree STATE_" + state + " =" + str);
+	                    str = str.replaceAll("^tree STATE_[^\\s]*", "");
+	                	m_out.print("tree STATE_" + state + str);
 	                	m_out.println();
                 	}
                 }
