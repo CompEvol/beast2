@@ -13,12 +13,25 @@ import beast.core.parameter.RealParameter;
         "separate independent component.")
 public class Gamma extends ParametricDistribution {
     final public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
-    final public Input<RealParameter> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
+    final public Input<RealParameter> betaInput = new Input<>("beta", "second parameter depends on mode, defaults to 2."
+    		+ "For mode=ShapeScale beta is interpreted as scale. "
+    		+ "For mode=ShapeRate beta is interpreted as rate. "
+    		+ "For mode=ShapeMean beta is interpreted as mean."
+    		+ "For mode=OneParameter beta is ignored.");
+    public enum mode {ShapeScale, ShapeRate, ShapeMean, OneParameter};
+    final public Input<mode> modeInput = new Input<>("mode", "determines parameterisation. "
+    		+ "For ShapeScale beta is interpreted as scale. "
+    		+ "For ShapeRate beta is interpreted as rate. "
+    		+ "For ShapeMean beta is interpreted as mean."
+    		+ "For OneParameter beta is ignored.", mode.ShapeScale, mode.values());
 
     static org.apache.commons.math.distribution.GammaDistribution m_dist = new GammaDistributionImpl(1, 1);
 
+    mode parameterisation = mode.ShapeScale;
+    		
     @Override
     public void initAndValidate() {
+    	parameterisation = modeInput.get();
         refresh();
     }
 
@@ -28,16 +41,32 @@ public class Gamma extends ParametricDistribution {
     @SuppressWarnings("deprecation")
 	void refresh() {
         double alpha;
-        double beta;
+        double beta = 2.0;
         if (alphaInput.get() == null) {
             alpha = 2;
         } else {
             alpha = alphaInput.get().getValue();
         }
-        if (betaInput.get() == null) {
-            beta = 2;
-        } else {
-            beta = betaInput.get().getValue();
+        
+        switch (parameterisation) {
+        case ShapeScale:
+            if (betaInput.get() != null) {
+                beta = betaInput.get().getValue();
+            }
+        	break;
+        case ShapeRate:
+            if (betaInput.get() != null) {
+                beta = 1.0/betaInput.get().getValue();
+            }
+        	break;
+        case ShapeMean:
+            if (betaInput.get() != null) {
+                beta = betaInput.get().getValue() / alpha;
+            }
+        	break;
+        case OneParameter:
+        	beta = 1.0 / alpha;
+        	break;
         }
         m_dist.setAlpha(alpha);
         m_dist.setBeta(beta);
@@ -51,6 +80,7 @@ public class Gamma extends ParametricDistribution {
 
     @Override
     public double getMean() {
+    	refresh();
     	return offsetInput.get() + m_dist.getAlpha() * m_dist.getBeta();
     }
 } // class Gamma

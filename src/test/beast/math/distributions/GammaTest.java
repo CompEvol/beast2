@@ -46,22 +46,33 @@ public class GammaTest extends TestCase {
 
 	public void testPdf() throws MathException  {
 
-        final int numberOfTests = 200;
+        final int numberOfTests = 300;
         double totErr = 0;
         double ptotErr = 0; int np = 0;
         double qtotErr = 0;
 
-        Randomizer.setSeed(555);
+        Randomizer.setSeed(551);
 
         for(int i = 0; i < numberOfTests; i++){
             final double mean = .01 + (3-0.01) * Randomizer.nextDouble();
             final double var = .01 + (3-0.01) * Randomizer.nextDouble();
 
-            final double scale = var / mean;
-            final double shape = mean / scale;
+            double scale0 = var / mean;
+            double shape = mean / scale0;
 
             final Gamma gamma = new Gamma();
-            gamma.initByName("alpha", shape +"", "beta", scale +"");
+            Gamma.mode mode = Gamma.mode.values()[Randomizer.nextInt(4)];
+            
+            double other = 0;
+        	switch (mode) {
+        	case ShapeScale: other = scale0; break;
+        	case ShapeRate: other = 1/scale0; break;
+        	case ShapeMean: other = scale0 * shape; break;
+        	case OneParameter: other = 1/shape; scale0 = 1/shape; break;
+        	}
+            final double scale = scale0;
+
+            gamma.initByName("alpha", shape +"", "beta", other +"", "mode", mode);
 
             final double value = Randomizer.nextGamma(shape, 1/scale);
 
@@ -96,22 +107,23 @@ public class GammaTest extends TestCase {
                 np += 1;
                 //assertTrue("" + shape + "," + scale + "," + value + " " + Math.abs(x-cdf)/x + "> 1e-6", Math.abs(1-cdf/x) < 1e-6);
 
+                final double q = gamma.inverseCumulativeProbability(cdf);
+                qtotErr += q != 0 ? Math.abs(q-value)/q : value;
                 //System.out.println(shape + ","  + scale + " " + value);
             } catch( ConvergenceException e ) {
                  // can't integrate , skip test
-              //  System.out.println(shape + ","  + scale + " skipped");
+                 //System.out.print(" theta(" + shape + ","  + scale + ") skipped");
             }
 
-            final double q = gamma.inverseCumulativeProbability(cdf);
-            qtotErr += q != 0 ? Math.abs(q-value)/q : value;
            // assertEquals("" + shape + "," + scale + "," + value + " " + Math.abs(q-value)/value, q, value, 1e-6);
+           // System.out.print("\n" + np + ": " + mode + " " + totErr/np + " " + qtotErr/np + " " + ptotErr/np);
         }
         //System.out.println( !Double.isNaN(totErr) );
        // System.out.println(totErr);
         // bad test, but I can't find a good threshold that works for all individual cases 
         assertTrue("failed " + totErr/numberOfTests, totErr/numberOfTests < 1e-7);
-        assertTrue("failed " + ptotErr/np, np > 0 ? (ptotErr/np < 1e-5) : true);
-        assertTrue("failed " + qtotErr/numberOfTests , qtotErr/numberOfTests < 1e-6);
+        assertTrue("failed " + qtotErr/numberOfTests , qtotErr/numberOfTests < 1e-10);
+        assertTrue("failed " + ptotErr/np, np > 0 ? (ptotErr/np < 2e-7) : true);
 	}
 
 }
