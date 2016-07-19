@@ -69,6 +69,7 @@ public interface DataType {
      *              <p/>
      *              return corresponding character
      */
+    @Deprecated
     public char getChar(int state);
 
     /**
@@ -219,23 +220,28 @@ public interface DataType {
          * implementation for single character per state encoding *
          */
         @Override
-        public String state2string(int[] nrOfStates) {
-            StringBuffer buf = new StringBuffer();
-            if (codeMap != null) {
-                for (int state : nrOfStates) {
-                    String code = codeMap.substring(state * codeLength, state * codeLength + codeLength);
-                    buf.append(code);
-                }
-            } else {
-                // produce a comma separated string of integers
-                for (int i = 0; i < nrOfStates.length - 1; i++) {
-                    buf.append(nrOfStates[i] + ",");
-                }
-                buf.append(nrOfStates[nrOfStates.length - 1] + "");
-            }
-            return buf.toString();
+        public String state2string(int[] states) {
+        	if (codeMap == null || codeLength < 1) {
+        		return state2string(states, ",");
+        	} else {
+        		return state2string(states, "");
+        	}
         } // state2string
 
+        protected String state2string(int[] states, String separator) {
+            StringBuffer buf = new StringBuffer();
+            boolean first = true;
+            for (int state : states) {
+            	if (first) {
+            		first = false;
+            	} else {
+            		buf.append(separator);
+            	}
+            	String code = getCode(state);
+                buf.append(code);
+            }
+            return buf.toString();        	
+        }
 
         @Override
         public int[] getStatesForCode(int state) {
@@ -267,6 +273,7 @@ public interface DataType {
             return true;
         }
 
+        @Deprecated
         @Override
         public char getChar(int state) {
             return (char) (state + 'A');
@@ -274,7 +281,16 @@ public interface DataType {
 
         @Override
         public String getCode(int state) {
-            return String.valueOf(getChar(state));
+            if (codeMap != null) {
+            	if (codeLength >= 1) {            
+                    return codeMap.substring(state * codeLength, state * codeLength + codeLength);
+            	} else {
+            		String[] codes = codeMap.toUpperCase().split(",");
+            		return codes[state];
+            	}
+            } else {
+                    return Integer.toString(state);
+            }
         }
 
         @Override
@@ -283,6 +299,7 @@ public interface DataType {
         }
         
         /** return state associated with a character */
+        @Deprecated
         public Integer char2state(String character) {
         	return string2state(character).get(0);
         }
