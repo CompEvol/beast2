@@ -19,7 +19,7 @@ public class TipDatesRandomWalker extends TreeOperator {
 
     final public Input<Double> windowSizeInput =
             new Input<>("windowSize", "the size of the window both up and down when using uniform interval OR standard deviation when using Gaussian", Input.Validate.REQUIRED);
-    final public Input<TaxonSet> m_taxonsetInput = new Input<>("taxonset", "limit scaling to a subset of taxa. By default all tips are scaled.");
+    final public Input<TaxonSet> m_taxonsetInput = new Input<>("taxonset", "limit moving to a subset of taxa. By default all tips are scaled.");
     final public Input<Boolean> useGaussianInput =
             new Input<>("useGaussian", "Use Gaussian to move instead of uniform interval. Default false.", false);
 
