@@ -62,7 +62,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * calculation engine *
      */
     protected LikelihoodCore likelihoodCore;
-    BeagleTreeLikelihood beagle;
+    protected BeagleTreeLikelihood beagle;
 
     /**
      * BEASTObject associated with inputs. Since none of the inputs are StateNodes, it
