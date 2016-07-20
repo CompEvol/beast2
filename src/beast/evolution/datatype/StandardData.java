@@ -88,7 +88,7 @@ public class StandardData extends DataType.Base {
 
 
     @Override
-    public List<Integer> string2state(String data) {
+	public List<Integer> stringToEncoding(String data) {
         List<Integer> sequence;
         sequence = new ArrayList<>();
         // remove spaces
@@ -137,15 +137,7 @@ public class StandardData extends DataType.Base {
     }
 
     @Override
-    public char getChar(int state) {
-        if (state < 0) {
-            return '?';
-        }
-        return (char)('0'+state);
-    }
-    
-    @Override
-    public String getCode(int state) {
+	public String getCharacter(int state) {
     	return codeMapping.get(state);
     }
 
