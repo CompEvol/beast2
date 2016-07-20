@@ -28,6 +28,7 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.InputForAnnotatedConstructor;
 import beast.core.Param;
+import beast.core.util.Log;
 
 /**
  *
@@ -73,12 +74,18 @@ public class XMLParserUtils {
             List<String> vals = new ArrayList<>();
             for (final String valueString : valuesString) {
                 if (valueString.indexOf(":") > 0) {
-                    String[] range = valueString.split(":");
-                    int min = Integer.parseInt(range[0]);
-                    int max = Integer.parseInt(range[1]);
-                    for (int i = min; i <= max; i++) {
-                        vals.add(String.valueOf(i));
-                    }
+                	try {
+	                    String[] range = valueString.split(":");
+	                    int min = Integer.parseInt(range[0]);
+	                    int max = Integer.parseInt(range[1]);
+	                    for (int i = min; i <= max; i++) {
+	                        vals.add(String.valueOf(i));
+	                    }
+                	} catch (NumberFormatException e) {
+                		Log.warning.println("plate range value '" + valueString + "'contains a ':' but does not seem to be a range, (like 1:5).");
+                		Log.warning.println("interpreting it as if it were not a range");
+                        vals.add(valueString);
+                	}
                 } else {
                     vals.add(valueString);
                 }

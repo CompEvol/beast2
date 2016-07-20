@@ -43,7 +43,10 @@ public class ExponentialGrowth extends PopulationFunction.Abstract {
     final public Input<RealParameter> popSizeParameterInput = new Input<>("popSize",
             "present-day population size (defaults to 1.0). ");
     final public Input<RealParameter> growthRateParameterInput = new Input<>("growthRate",
-            "growth rate is the exponent of the exponential growth");
+            "Growth rate is the exponent of the exponential growth. " +
+            "A value of zero represents a constant population size, negative values represent " +
+            "decline towards the present, positive numbers represents exponential growth towards " +
+            "the present.");
 
     //
     // Public stuff
