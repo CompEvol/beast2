@@ -324,12 +324,12 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
         final int nodeCount = tree.getNodeCount();
 
-        double[] times = new double[nodeCount];
+        times = new double[nodeCount];
         int[] childCounts = new int[nodeCount];
 
         collectTimes(tree, times, childCounts);
 
-        int[] indices = new int[nodeCount];
+        indices = new int[nodeCount];
 
         HeapSort.sort(times, indices);
 
@@ -430,6 +430,19 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         intervalsKnown = true;
     }
 
+    /**
+     * Returns the time of the start of an interval
+     *
+     * @param i which interval
+     * @return start time
+     */
+    public double getIntervalTime(int i) {
+        if (!intervalsKnown) {
+            calculateIntervals();
+        }
+        return times[indices[i]];
+    }
+    
     protected void addLineage(int interval, Node node) {
         if (lineagesAdded[interval] == null) lineagesAdded[interval] = new ArrayList<>();
         lineagesAdded[interval].add(node);
@@ -475,6 +488,10 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     protected double[] intervals;
     protected double[] storedIntervals;
 
+    /** interval times **/
+    double[] times;
+    int[] indices;
+    
     /**
      * The number of uncoalesced lineages within a particular interval.
      */
