@@ -27,6 +27,7 @@ package beast.core;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -42,9 +43,10 @@ import java.lang.annotation.Target;
  * like DocMaker then can pick it up through introspection.
  * <p/>
  */
-@Target({ElementType.TYPE})
+//@Target({ElementType.TYPE}) //<- does not work together with @Repeatable
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
+@Repeatable(Citation.Citations.class)
 public @interface Citation {
 
     /**
@@ -57,4 +59,16 @@ public @interface Citation {
     int year() default 0;
     
     String firstAuthorSurname() default "";
+
+    /** 
+     * The Citations annotation is required to retrieve classes annotated with 
+     * multiple citations.
+     **/
+    @Inherited
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Citations {
+    	Citation[] value();
+    }
 }
+
+

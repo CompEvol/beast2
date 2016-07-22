@@ -58,6 +58,12 @@ public class BEASTInterfaceTest extends TestCase {
 		}
 	}
 	
+	@Description("class that extends BEASTi with multiple citations")
+	@Citation("this is another dummy citation")
+	@Citation("and yet another dummy citation")
+	public class BEASTi2 extends BEASTi {
+		
+	}
 	
 	@Test
 	public void testBEASTi() throws Exception {
@@ -66,6 +72,14 @@ public class BEASTInterfaceTest extends TestCase {
 		System.err.println("test getCitation");
 		Citation citation = beasti.getCitation();
 		assertEquals("this is a dummy citation", citation.value());
+
+		citation = beasti.getCitationList().get(0);
+		assertEquals("this is a dummy citation", citation.value());
+		
+		BEASTi beasti02 = new BEASTi2();
+		List<Citation> citations = beasti02.getCitationList();
+		assertEquals(3, citations.size());
+
 
 		System.err.println("test initByName");
 		beasti.initByName("value", "hello world");
@@ -127,6 +141,8 @@ public class BEASTInterfaceTest extends TestCase {
 		beasti2.setInputValue("value", "Goodbye!");
 		String msg = (String) beasti2.getInputValue("value");
 		assertEquals("Goodbye!", msg);
+	
+		
 		
 	}
 	

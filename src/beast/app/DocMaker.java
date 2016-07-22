@@ -423,8 +423,7 @@ public class DocMaker {
         buf.append("<p>" + m_descriptions.get(beastObjectName) + "</p>\n");
 
         // show citation (if any)
-        Citation citation = beastObject.getCitation();
-        if (citation != null) {
+        for (Citation citation : beastObject.getCitationList()) {
             buf.append("<h2>Reference:</h2><p>" + citation.value() + "</p>\n");
             if (citation.DOI().length() > 0) {
                 buf.append("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>\n");

@@ -131,16 +131,41 @@ public interface BEASTInterface {
     }
 
     /**
-     * @return citation from @Citation annotation *
+     * Deprecated: use getCitationList() instead to allow multiple citations, not just the first one
      */
+	@Deprecated
     default public Citation getCitation() {
         final Annotation[] classAnnotations = this.getClass().getAnnotations();
         for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Citation) {
                 return (Citation) annotation;
             }
+            if (annotation instanceof Citation.Citations) {
+                return ((Citation.Citations) annotation).value()[0];
+                // TODO: this ignores other citations
+            }
         }
         return null;
+    }
+
+    /**
+     * @return array of @Citation annotations for this class
+     * or empty list if there are no citations
+     **/
+    default public List<Citation> getCitationList() {
+        final Annotation[] classAnnotations = this.getClass().getAnnotations();
+        List<Citation> citations = new ArrayList<>();
+        for (final Annotation annotation : classAnnotations) {
+            if (annotation instanceof Citation) {
+            	citations.add((Citation) annotation);
+            }
+            if (annotation instanceof Citation.Citations) {
+            	for (Citation citation : ((Citation.Citations) annotation).value()) {
+            		citations.add(citation);
+            	}
+            }
+        }
+       	return citations;
     }
 
     /**
@@ -158,16 +183,15 @@ public interface BEASTInterface {
             IDs.add(getID());
         }
         final StringBuilder buf = new StringBuilder();
-        if (getCitation() != null) {
-            // only add citation if it is not already processed
-            if (!citations.contains(getCitation().value())) {
+        // only add citation if it is not already processed
+    	for (Citation citation : getCitationList()) {
+            if (!citations.contains(citation.value())) {
                 // and there is actually a citation to add
                 buf.append("\n");
-                buf.append(getCitation().value());
+                buf.append(citation.value());
                 buf.append("\n");
-                citations.add(getCitation().value());
+                citations.add(citation.value());
             }
-            //return buf.toString();
         }
         try {
             for (final BEASTInterface beastObject : listActiveBEASTObjects()) {
