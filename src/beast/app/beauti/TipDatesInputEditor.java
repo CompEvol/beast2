@@ -1,9 +1,7 @@
 package beast.app.beauti;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EventObject;
@@ -27,8 +25,6 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 
@@ -108,165 +104,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             if (traitSet != null) {
                 box.add(createButtonBox());
                 box.add(createListBox());
-                box.add(createSamplingBox());
             }
             add(box);
         }
     } // init
-    final static int NO_TIP_SAMPLING = 0;
-    final static int SAMPLE_TIPS_SAME_PRIOR = 1;
-    final static int SAMPLE_TIPS_MULTIPLE_PRIOR = 2;
-    final static String ALL_TAXA = "all";
-    int m_iMode = NO_TIP_SAMPLING;
-
-    private Component createSamplingBox() {
-        Box samplingBox = Box.createHorizontalBox();
-        JComboBox<String> comboBox = new JComboBox<>(new String[]{"no tips sampling", "sample tips from taxon set:"});// ,"sample tips with individual priors"});
-
-        comboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboBox.getPreferredSize().height));
-
-        // determine mode
-        m_iMode = NO_TIP_SAMPLING;
-        // count nr of TipDateScalers with weight > 0
-        String treeID = tree.getID();
-        String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
-        TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
-        if (operator != null && operator.m_pWeight.get() > 0) {
-            m_iMode = SAMPLE_TIPS_SAME_PRIOR;
-        }
-
-        m_iMode = Math.min(m_iMode, 2);
-        comboBox.setSelectedIndex(m_iMode);
-        comboBox.addActionListener(this::selectMode);
-        samplingBox.add(comboBox);
-
-        taxonsets = new ArrayList<>();
-        Taxon allTaxa = getDoc().getTaxon(ALL_TAXA);
-        allTaxa.setID(ALL_TAXA);
-        taxonsets.add(allTaxa);
-        List<String> taxonSetIDs = new ArrayList<>();
-        taxonSetIDs.add(ALL_TAXA);
-        for (Taxon taxon : doc.taxaset.values()) {
-            if (taxon instanceof TaxonSet) {
-                taxonsets.add(taxon);
-                taxonSetIDs.add(taxon.getID());
-            }
-        }
-        JComboBox<String> comboBox2 = new JComboBox<>(taxonSetIDs.toArray(new String[]{}));
-
-        comboBox2.setMaximumSize(new Dimension(Integer.MAX_VALUE, comboBox2.getPreferredSize().height));
-        
-        if (operator == null) {
-        	comboBox.setEnabled(false);
-        	comboBox2.setEnabled(false);
-        } else {
-	        // find TipDatesSampler and set TaxonSet input
-	        Taxon set = operator.m_taxonsetInput.get();
-	        if (set != null) {
-	            int i = taxonSetIDs.indexOf(set.getID());
-	            comboBox2.setSelectedIndex(i);
-	        }
-	
-	        comboBox2.addActionListener(this::selectTaxonSet);
-        }
-        samplingBox.add(comboBox2);
-
-        return samplingBox;
-    }
-
-    private void selectTaxonSet(ActionEvent e) {
-        @SuppressWarnings("unchecked")
-		JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
-        String taxonSetID = (String) comboBox.getSelectedItem();
-        Taxon taxonset = null;;
-        for (Taxon taxon : taxonsets) {
-            if (taxon.getID().equals(taxonSetID)) {
-                taxonset = taxon;
-                break;
-            }
-        }
-
-        if (taxonset.getID().equals(ALL_TAXA)) {
-            taxonset = null;
-        }
-        try {
-            // find TipDatesSampler and set TaxonSet input
-
-            String treeID = tree.getID();
-            String operatorID = "allTipDatesRandomWalker.t:" + treeID.substring(treeID.lastIndexOf(":") + 1);
-            TipDatesRandomWalker operator = (TipDatesRandomWalker) doc.pluginmap.get(operatorID);
-            Log.warning.println("treeID = " + treeID);
-            Log.warning.println("operatorID = " + operatorID);
-            Log.warning.println("operator = " + operator);
-            operator.m_taxonsetInput.setValue(taxonset, operator);
-
-//            for (BEASTObject beastObject : traitSet.outputs) {
-//                if (beastObject instanceof Tree) {
-//                    for (BEASTObject beastObject2 : beastObject.outputs) {
-//                        if (beastObject2 instanceof TipDatesScaler) {
-//                            TipDatesScaler operator = (TipDatesScaler) beastObject2;
-//                            operator.m_taxonsetInput.setValue(taxonset, operator);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            // TODO: find MRACPriors and set TaxonSet inputs
-//            for (BEASTObject beastObject : traitSet.outputs) {
-//                if (beastObject instanceof Tree) {
-//                    for (BEASTObject beastObject2 : beastObject.outputs) {
-//                        if (beastObject2 instanceof MRCAPrior) {
-//                            MRCAPrior prior = (MRCAPrior) beastObject2;
-//                            if (prior.m_bOnlyUseTipsInput.get()) {
-//                                prior.m_taxonset.setValue(taxonset, prior);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-        } catch (Exception ex) {
-            // TODO: handle exception
-            ex.printStackTrace();
-        }
-    }
-
-    private void selectMode(ActionEvent e) {
-        JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
-        m_iMode = comboBox.getSelectedIndex();
-        try {
-            // clear
-            for (Object beastObject : traitSet.getOutputs()) {
-                if (beastObject instanceof Tree) {
-                    for (Object beastObject2 : BEASTInterface.getOutputs(beastObject)) {
-                        if (beastObject2 instanceof TipDatesRandomWalker) {
-                            TipDatesRandomWalker operator = (TipDatesRandomWalker) beastObject2;
-                            switch (m_iMode) {
-                                case NO_TIP_SAMPLING:
-                                    operator.m_pWeight.setValue(0.0, operator);
-                                    break;
-                                case SAMPLE_TIPS_SAME_PRIOR:
-                                    if (operator.getID().contains("allTipDatesRandomWalker")) {
-                                        operator.m_pWeight.setValue(1.0, operator);
-                                    } else {
-                                        operator.m_pWeight.setValue(0.0, operator);
-                                    }
-                                    break;
-                                case SAMPLE_TIPS_MULTIPLE_PRIOR:
-                                    if (operator.getID().contains("allTipDatesRandomWalker")) {
-                                        operator.m_pWeight.setValue(0.0, operator);
-                                    } else {
-                                        operator.m_pWeight.setValue(0.1, operator);
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            // TODO: handle exception
-        }
-    }
 
     private Component createListBox() {
         taxa = traitSet.taxaInput.get().asStringList();

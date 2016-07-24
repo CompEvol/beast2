@@ -1,7 +1,9 @@
 package beast.app.beauti;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,13 +14,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import beast.app.draw.BEASTObjectPanel;
+import beast.app.draw.BooleanInputEditor;
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.Operator;
 import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
@@ -202,5 +207,90 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
             }
         }
     }
+    
+    
+    InputEditor tipsonlyEditor;
+    
+    public InputEditor createTipsonlyEditor() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        BooleanInputEditor e = new BooleanInputEditor (doc) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+        	public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption,
+        			boolean addButtons) {
+        		super.init(input, beastObject, itemNr, isExpandOption, addButtons);
+        		// hack to get to JCheckBox
+        		Component [] components = getComponents();       		
+        		((JCheckBox) components[0]).addActionListener(e -> {
+                	JCheckBox src = (JCheckBox) e.getSource();
+                	if (src.isSelected()) {
+                		enableTipSampling();
+                	} else {
+                		disableTipSampling();
+                	}
+                });
+        	}
+        	
+        };
+
+        MRCAPrior prior = (MRCAPrior) m_beastObject;
+        Input<?> input = prior.onlyUseTipsInput;
+        e.init(input, prior, -1, ExpandOption.FALSE, false);
+        return e;
+    }
+
+    // add TipDatesRandomWalker (if not present) and add to list of operators
+    private void enableTipSampling() {
+    	// First, create/find the operator
+    	TipDatesRandomWalker operator = null;
+    	MRCAPrior prior = (MRCAPrior) m_beastObject;
+    	TaxonSet taxonset = prior.taxonsetInput.get();
+    	taxonset.initAndValidate();
+    	
+    	// see if an old operator still hangs around -- happens when toggling the TipsOnly checkbox a few times
+    	for (BEASTInterface o : taxonset.getOutputs()) {
+    		if (o instanceof TipDatesRandomWalker) {
+    			operator = (TipDatesRandomWalker) o;
+    		}
+    	}
+    	
+    	if (operator == null) {
+    		operator = new TipDatesRandomWalker();
+    		operator.initByName("tree", prior.treeInput.get(), "taxonset", taxonset, "windowSize", 1.0, "weight", 1.0);
+    	}
+   		operator.setID("tipDatesSampler." + taxonset.getID());
+   	    	
+    	doc.mcmc.get().setInputValue("operator", operator);
+	}
+
+    // remove TipDatesRandomWalker from list of operators
+	private void disableTipSampling() {
+    	// First, find the operator
+    	TipDatesRandomWalker operator = null;
+    	MRCAPrior prior = (MRCAPrior) m_beastObject;
+    	TaxonSet taxonset = prior.taxonsetInput.get();
+    	
+    	// We cannot rely on the operator ID created in enableTipSampling()
+    	// since the taxoneset name may have changed.
+    	// However, if there is an TipDatesRandomWalker with taxonset as input, we want to remove it.
+    	for (BEASTInterface o : taxonset.getOutputs()) {
+    		if (o instanceof TipDatesRandomWalker) {
+    			operator = (TipDatesRandomWalker) o;
+    		}
+    	}
+    	
+    	if (operator == null) {
+    		// should never happen
+    		return;
+    	}
+    	
+    	// remove from list of operators
+    	Object o = doc.mcmc.get().getInput("operator");
+    	if (o instanceof Input<?>) {
+    		Input<List<Operator>> operatorInput = (Input<List<Operator>>) o;
+    		List<Operator> operators = operatorInput.get();
+    		operators.remove(operator);
+    	}
+	}
 
 }
