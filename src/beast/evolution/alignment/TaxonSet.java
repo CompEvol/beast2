@@ -50,12 +50,12 @@ public class TaxonSet extends Taxon {
         taxonList = taxonsetInput.get();
         if (alignmentInput.get() != null) {
             if (taxonList.size() > 0) {
-                throw new IllegalArgumentException("Only one of taxon and alignment should be specified, not both.");
+                throw new IllegalArgumentException("Only one of taxon and alignment should be specified, not both (id=" + getID() + ").");
             }
             taxaNames = alignmentInput.get().taxaNames;
         } else {
             if (taxonList.size() == 0) {
-                throw new IllegalArgumentException("Either taxon or alignment should be specified.");
+                throw new IllegalArgumentException(getID() + ": Either taxon or alignment should be specified (id=" + getID() + ").");
             }
             taxaNames = new ArrayList<>();
             for (final Taxon taxon : taxonList) {
