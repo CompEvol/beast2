@@ -308,6 +308,11 @@ public class PriorListInputEditor extends ListInputEditor {
 	                return null;
 	            }
 	            taxonSet = dlg.taxonSet;
+	            if (taxonSet.taxonsetInput.get().size() == 0) {
+	            	JOptionPane.showMessageDialog(doc.beauti, "At least one taxon should be included in the taxon set",
+	            			"Error specifying taxon set", JOptionPane.ERROR_MESSAGE);
+	            	return null;
+	            }
 	            int i = 1;
 	            String id = taxonSet.getID();
 	            while (doc.pluginmap.containsKey(taxonSet.getID()) && doc.pluginmap.get(taxonSet.getID()) != taxonSet) {

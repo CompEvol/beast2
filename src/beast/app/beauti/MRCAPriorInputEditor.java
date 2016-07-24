@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.BooleanInputEditor;
@@ -63,9 +65,18 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 MRCAPrior prior2 = (MRCAPrior) list.get(itemNr);
                 try {
                     TaxonSet taxonset = prior2.taxonsetInput.get();
+                    List<Taxon> originalTaxa = new ArrayList<>();
+                    originalTaxa.addAll(taxonset.taxonsetInput.get());
                     Set<Taxon> candidates = getTaxonCandidates(prior2);
                     TaxonSetDialog dlg = new TaxonSetDialog(taxonset, candidates, doc);
                     if (dlg.showDialog()) {
+        	            if (dlg.taxonSet.taxonsetInput.get().size() == 0) {
+        	            	JOptionPane.showMessageDialog(doc.beauti, "At least one taxon should be included in the taxon set",
+        	            			"Error specifying taxon set", JOptionPane.ERROR_MESSAGE);
+        	            	taxonset.taxonsetInput.get().addAll(originalTaxa);
+        	            	return;
+        	            }
+
                         prior2.taxonsetInput.setValue(dlg.taxonSet, prior2);
                         int i = 1;
                         String id = dlg.taxonSet.getID();
