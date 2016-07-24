@@ -2504,6 +2504,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 		        			t.taxonsetInput.get().get(0).getID() + "=" + date
 		        			, dateTrait);	
 		        }
+		        mrcaPrior.onlyUseTipsInput.setValue(true, mrcaPrior);
 			}
 	}
 
