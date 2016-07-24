@@ -36,6 +36,7 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 import beast.math.distributions.Prior;
+import beast.util.AddOnManager;
 
 
 
@@ -216,63 +217,126 @@ public class PriorListInputEditor extends ListInputEditor {
         sync();
         refreshPanel();
     } // addItem
+    
+    List<PriorProvider> priorProviders;
+    
+    private void initProviders() {
+    	priorProviders = new ArrayList<>();
+    	priorProviders.add(new MRCAPriorProvider());
+    	
+        // build up list of data types
+        List<String> importerClasses = AddOnManager.find(PriorProvider.class, new String[]{"beast.app"});
+        for (String _class: importerClasses) {
+        	try {
+        		if (!_class.startsWith(this.getClass().getName())) {
+        			PriorProvider priorProvider = (PriorProvider) Class.forName(_class).newInstance();
+					priorProviders.add(priorProvider);
+        		}
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
 
+    }
+    
     @Override
 	protected List<BEASTInterface> pluginSelector(Input<?> input, BEASTInterface parent, List<String> tabooList) {
-        MRCAPrior prior = new MRCAPrior();
-        try {
+    	if (priorProviders == null) {
+    		initProviders();
+    	}
+    	PriorProvider priorProvider = priorProviders.get(0);
+    	if (priorProviders.size() > 1) {
+			// let user choose a PriorProvider
+			List<String> descriptions = new ArrayList<>();
+			for (PriorProvider i : priorProviders) {
+				descriptions.add(i.getDescription());
+			}
+			String option = (String)JOptionPane.showInputDialog(null, "Which prior do you want to add", "Option",
+                    JOptionPane.WARNING_MESSAGE, null, descriptions.toArray(), descriptions.get(0));
+			if (option == null) {
+				return null;
+			}
+			int i = descriptions.indexOf(option);
+			priorProvider = priorProviders.get(i);
 
-            List<Tree> trees = new ArrayList<>();
-            getDoc().scrubAll(true, false);
-            State state = (State) doc.pluginmap.get("state");
-            for (StateNode node : state.stateNodeInput.get()) {
-                if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {
-                    trees.add((Tree) node);
-                }
-            }
-            int treeIndex = 0;
-            if (trees.size() > 1) {
-                String[] treeIDs = new String[trees.size()];
-                for (int j = 0; j < treeIDs.length; j++) {
-                    treeIDs[j] = trees.get(j).getID();
-                }
-                treeIndex = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                        treeIDs, trees.get(0));
-            }
-            if (treeIndex < 0) {
-                return null;
-            }
-            prior.treeInput.setValue(trees.get(treeIndex), prior);
-            TaxonSet taxonSet = new TaxonSet();
-
-            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);
-            if (!dlg.showDialog() || dlg.taxonSet.getID() == null || dlg.taxonSet.getID().trim().equals("")) {
-                return null;
-            }
-            taxonSet = dlg.taxonSet;
-            int i = 1;
-            String id = taxonSet.getID();
-            while (doc.pluginmap.containsKey(taxonSet.getID()) && doc.pluginmap.get(taxonSet.getID()) != taxonSet) {
-            	taxonSet.setID(id + i);
-            	i++;
-            }
-            BEASTObjectPanel.addPluginToMap(taxonSet, doc);
-            prior.taxonsetInput.setValue(taxonSet, prior);
-            prior.setID(taxonSet.getID() + ".prior");
-            // this sets up the type
-            prior.distInput.setValue(new OneOnX(), prior);
-            // this removes the parametric distribution
-            prior.distInput.setValue(null, prior);
-
-            Logger logger = (Logger) doc.pluginmap.get("tracelog");
-            logger.loggersInput.setValue(prior, logger);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+    	}
+    	
         List<BEASTInterface> selectedPlugins = new ArrayList<>();
-        selectedPlugins.add(prior);
-        g_collapsedIDs.add(prior.getID());
+        List<Distribution> distrs = priorProvider.createDistribution(doc);
+        if (distrs == null) {
+        	return null;
+        }
+        for (Distribution distr : distrs) {
+        	selectedPlugins.add(distr);
+        }
         return selectedPlugins;
+    }
+    
+    class MRCAPriorProvider implements PriorProvider {
+    	@Override
+    	public List<Distribution> createDistribution(BeautiDoc doc) {
+	    	MRCAPrior prior = new MRCAPrior();
+	        try {
+	
+	            List<Tree> trees = new ArrayList<>();
+	            getDoc().scrubAll(true, false);
+	            State state = (State) doc.pluginmap.get("state");
+	            for (StateNode node : state.stateNodeInput.get()) {
+	                if (node instanceof Tree) { // && ((Tree) node).m_initial.get() != null) {
+	                    trees.add((Tree) node);
+	                }
+	            }
+	            int treeIndex = 0;
+	            if (trees.size() > 1) {
+	                String[] treeIDs = new String[trees.size()];
+	                for (int j = 0; j < treeIDs.length; j++) {
+	                    treeIDs[j] = trees.get(j).getID();
+	                }
+	                treeIndex = JOptionPane.showOptionDialog(null, "Select a tree", "MRCA selector",
+	                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+	                        treeIDs, trees.get(0));
+	            }
+	            if (treeIndex < 0) {
+	                return null;
+	            }
+	            prior.treeInput.setValue(trees.get(treeIndex), prior);
+	            TaxonSet taxonSet = new TaxonSet();
+	
+	            TaxonSetDialog dlg = new TaxonSetDialog(taxonSet, getTaxonCandidates(prior), doc);
+	            if (!dlg.showDialog() || dlg.taxonSet.getID() == null || dlg.taxonSet.getID().trim().equals("")) {
+	                return null;
+	            }
+	            taxonSet = dlg.taxonSet;
+	            int i = 1;
+	            String id = taxonSet.getID();
+	            while (doc.pluginmap.containsKey(taxonSet.getID()) && doc.pluginmap.get(taxonSet.getID()) != taxonSet) {
+	            	taxonSet.setID(id + i);
+	            	i++;
+	            }
+	            BEASTObjectPanel.addPluginToMap(taxonSet, doc);
+	            prior.taxonsetInput.setValue(taxonSet, prior);
+	            prior.setID(taxonSet.getID() + ".prior");
+	            // this sets up the type
+	            prior.distInput.setValue(new OneOnX(), prior);
+	            // this removes the parametric distribution
+	            prior.distInput.setValue(null, prior);
+	
+	            Logger logger = (Logger) doc.pluginmap.get("tracelog");
+	            logger.loggersInput.setValue(prior, logger);
+	        } catch (Exception e) {
+	            // TODO: handle exception
+	        }
+	        List<Distribution> selectedPlugins = new ArrayList<>();
+	        selectedPlugins.add(prior);
+	        g_collapsedIDs.add(prior.getID());
+	        return selectedPlugins;
+	    }
+
+		@Override
+		public String getDescription() {
+			return "MRCA prior";
+		}
+    	
     }
 }
