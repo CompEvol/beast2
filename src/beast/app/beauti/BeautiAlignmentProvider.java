@@ -45,24 +45,26 @@ import beast.util.XMLParser;
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
 public class BeautiAlignmentProvider extends BEASTObject {
 	/** map extension to importer class names **/
-	static Map<String, AlignmentImporter> importers = null;
+	static List<AlignmentImporter> importers = null;
     /**
      * directory to pick up importers from *
      */
     final static String[] IMPLEMENTATION_DIR = {"beast.app"};
 
 	private void initImporters() {
-		importers = new HashMap<>();
+		importers = new ArrayList<>();
+        // add standard importers
+		importers.add(new NexusImporter());
+		importers.add(new XMLImporter());
+       	importers.add(new FastaImporter());
+
         // build up list of data types
         List<String> importerClasses = AddOnManager.find(AlignmentImporter.class, IMPLEMENTATION_DIR);
         for (String _class: importerClasses) {
         	try {
         		if (!_class.startsWith(this.getClass().getName())) {
 					AlignmentImporter importer = (AlignmentImporter) Class.forName(_class).newInstance();
-					String [] extensions = importer.getFileExtensions();
-					for (String ext : extensions) {
-						importers.put(ext, importer);
-					}
+					importers.add(importer);
         		}
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -70,17 +72,6 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			}
         }
         
-        // add standard importers
-        NexusImporter importer = new NexusImporter();
-		importers.put("nex", importer);
-		importers.put("nxs", importer);
-		importers.put("nexus", importer);
-        XMLImporter importer2 = new XMLImporter();
-		importers.put("xml", importer2);
-        FastaImporter importer3 = new FastaImporter();
-        for (String ext : new String[]{"fa","fas","fst","fasta","fna","ffn","faa","frn"}) {
-        	importers.put(ext, importer3);
-        }
 	}
 
 	final public Input<BeautiSubTemplate> template = new Input<>("template", "template to be used after creating a new alignment. ", Validate.REQUIRED);
@@ -104,7 +95,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		if (importers == null) {
 			initImporters();
 		}
-		List<String> extensions = new ArrayList<>(importers.keySet());
+		Set<String> extensions = new HashSet<>();
+		for (AlignmentImporter importer : importers) {
+			for (String extension : importer.getFileExtensions()) {
+				extensions.add(extension);
+			}
+		}
         File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
                 new File(Beauti.g_sDir), "Alignment files", extensions.toArray(new String[]{}));
         if (files != null && files.length > 0) {
@@ -126,11 +122,31 @@ public class BeautiAlignmentProvider extends BEASTObject {
         List<BEASTInterface> selectedBEASTObjects = new ArrayList<>();
         List<MRCAPrior> calibrations = new ArrayList<>();
         for (File file : files) {
-            String fileName = file.getName();
-			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-			Alignment alignment;
-			if (importers.containsKey(fileExtension)) {
-				AlignmentImporter importer = importers.get(fileExtension);
+			// create list of importers that can handle the file
+			List<AlignmentImporter> availableImporters = new ArrayList<>();
+			for (AlignmentImporter importer : importers) {
+				if (importer.canHandleFile(file)) {
+					availableImporters.add(importer);
+				}
+			}
+			
+			if (availableImporters.size() > 0) {
+				AlignmentImporter importer = availableImporters.get(0);
+				if (availableImporters.size() > 1) {
+					// let user choose an importer
+					List<String> descriptions = new ArrayList<>();
+					for (AlignmentImporter i : availableImporters) {
+						descriptions.add(((BEASTInterface)i).getDescription());
+					}
+					String option = (String)JOptionPane.showInputDialog(null, "Which importer is appropriate", "Option",
+		                    JOptionPane.WARNING_MESSAGE, null, descriptions.toArray(), descriptions.get(0));
+					if (option == null) {
+						return selectedBEASTObjects;
+					}
+					int i = descriptions.indexOf(option);
+					importer = availableImporters.get(i);
+				}
+				
 				// get a fresh instance
 				try {
 					importer = importer.getClass().newInstance();
@@ -142,7 +158,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				selectedBEASTObjects.addAll(list);
 			} else {
                 JOptionPane.showMessageDialog(null,
-                        "Unsupported sequence file extension.",
+                        "Unsupported sequence file.",
                         "Error", JOptionPane.ERROR_MESSAGE);
 			}
 			
@@ -304,6 +320,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		return null;
 	}
 
+	@Description("NEXUS file importer")
 	class NexusImporter implements AlignmentImporter {
 
 		@Override
@@ -369,6 +386,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		}
 	}
 	
+	@Description("BEAST XML file importer")
 	class XMLImporter implements AlignmentImporter {
 
 		@Override
@@ -385,6 +403,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		}
 		
 	}
+
+	@Description("Fasta file importer")
 	class FastaImporter implements AlignmentImporter {
 
 		@Override
