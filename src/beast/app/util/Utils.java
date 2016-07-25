@@ -278,7 +278,7 @@ public class Utils {
             chooser.setMultiSelectionEnabled(allowMultipleSelection);
             //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-            if (description != null) {
+            if (description != null && extensions.length > 1 && extensions[0].length() > 0) {
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
                 chooser.setFileFilter(filter);
             }
