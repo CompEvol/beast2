@@ -144,6 +144,8 @@ public class JPackageDialog extends JPanel {
                 }
             }
         });
+		int size = dataTable.getFont().getSize();
+		dataTable.setRowHeight(20 * size/13);
     }
 
     private void resetPackages() {
