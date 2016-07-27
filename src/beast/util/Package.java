@@ -22,6 +22,8 @@ public class Package {
     protected TreeMap<PackageVersion, URL> availableVersionURLs;
     protected TreeMap<PackageVersion, Set<PackageDependency>> availableVersionDeps;
 
+    protected URL projectURL;
+
     public Package(String name) {
         this.packageName = name;
         this.description = "";
@@ -40,6 +42,14 @@ public class Package {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public URL getProjectURL() {
+        return projectURL;
+    }
+
+    public void setProjectURL(URL url) {
+        this.projectURL = url;
     }
 
     /**
@@ -85,10 +95,6 @@ public class Package {
 
     public Set<PackageDependency> getInstalledVersionDependencies() {
         return installedVersionDeps;
-    }
-
-    public String getStatusString() {
-        return isInstalled() ? installedVersion.getVersionString() : NOT_INSTALLED;
     }
 
     /**
@@ -193,7 +199,7 @@ public class Package {
     public String toHTML() {
         String html = "<html>";
         html += "<h1>" + packageName + "</h1>";
-        html += "<p>Installed version: " + getStatusString() + "</p>";
+        html += "<p>Installed version: " + (isInstalled() ? getInstalledVersion() : "NA") + "</p>";
         html += "<p>Latest version: " + (isAvailable() ? getLatestVersion() : "NA") + "</p>";
         html += "<p>" + description +"</p>";
         html += "</html>";

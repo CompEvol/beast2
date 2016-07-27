@@ -1,5 +1,7 @@
 package beast.app.beauti;
 
+import beast.app.util.Arguments;
+import beast.app.util.Utils;
 import beast.core.Description;
 import beast.util.AddOnManager;
 import beast.util.Package;
@@ -9,11 +11,16 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,6 +73,7 @@ public class JPackageDialog extends JPanel {
         	@Override
 			public void run() {
                 resetPackages();
+                dataTable.updateWidths();
         		isRunning = false;
         	}
         };
@@ -113,40 +121,72 @@ public class JPackageDialog extends JPanel {
     private void createTable() {
         DataTableModel dataTableModel = new DataTableModel();
         dataTable = new PackageTable(dataTableModel);
-        
-        double [] widths = new double[dataTable.getColumnCount()];
-        //double total = 0;
-        for (int i = 0; i < dataTable.getColumnCount(); i++) {
-        	widths[i] = dataTable.getColumnModel().getColumn(i).getWidth();
-        	//total += widths[i]; 
-        }
-        widths[2] /= 4.0;
-        dataTable.getColumnModel().getColumn(2).setPreferredWidth((int) widths[2]);
-        dataTable.getColumnModel().getColumn(2).setMinWidth((int) widths[2]);
-        widths[3] /= 2.0; 
-        dataTable.getColumnModel().getColumn(3).setPreferredWidth((int) widths[3]);
-        widths[4] *= 2.0; 
-        dataTable.getColumnModel().getColumn(4).setPreferredWidth((int) widths[4]);
-        
-        
+        dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
         // TODO:
         // The following would work ...
         //dataTable.setAutoCreateRowSorter(true);
         // ...if all processing was done based on the data in the table, 
         // instead of the row number alone.
+
         dataTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         dataTable.addMouseListener(new MouseAdapter() {
             @Override
-			public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    Package selPackage = getSelectedPackage(dataTable.getSelectedRow());
-                    showDetail(selPackage);
+            public void mouseClicked(MouseEvent e) {
+                if (dataTable.getSelectedColumn() == dataTableModel.linkColumn) {
+                    URL url = getSelectedPackage(dataTable.getSelectedRow()).getProjectURL();
+                    if (url != null) {
+                        try {
+                            Desktop.getDesktop().browse(url.toURI());
+                        } catch (IOException | URISyntaxException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                } else {
+                    if (e.getClickCount() == 2) {
+                        Package selPackage = getSelectedPackage(dataTable.getSelectedRow());
+                        showDetail(selPackage);
+                    }
                 }
             }
         });
+
+        dataTable.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+
+                int row = dataTable.rowAtPoint(e.getPoint());
+                int col = dataTable.columnAtPoint(e.getPoint());
+
+                int currentCursorType = dataTable.getCursor().getType();
+
+                if (col != dataTableModel.linkColumn) {
+                    if (currentCursorType == Cursor.HAND_CURSOR)
+                        dataTable.setCursor(Cursor.getDefaultCursor());
+
+                    return;
+                }
+
+                Package thisPkg = getSelectedPackage(row);
+
+                if (thisPkg.getProjectURL() == null) {
+                    if (currentCursorType == Cursor.HAND_CURSOR)
+                        dataTable.setCursor(Cursor.getDefaultCursor());
+
+                    return;
+                }
+
+                dataTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            }
+        });
+
 		int size = dataTable.getFont().getSize();
 		dataTable.setRowHeight(20 * size/13);
     }
+
 
     private void resetPackages() {
         packageMap.clear();
@@ -353,7 +393,10 @@ public class JPackageDialog extends JPanel {
 	class DataTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 
-		String[] columnNames = {"Name", "Status/Version", "Latest", "Dependencies", "Detail"};
+		String[] columnNames = {"Name", "Installed", "Latest", "Dependencies", "Link", "Detail"};
+
+        public final int linkColumn = 4;
+		ImageIcon linkIcon = Utils.getIcon(BeautiPanel.ICONPATH + "link.png");
 
         @Override
 		public int getColumnCount() {
@@ -372,12 +415,14 @@ public class JPackageDialog extends JPanel {
                 case 0:
                     return aPackage.getName();
                 case 1:
-                    return aPackage.getStatusString();
+                    return aPackage.getInstalledVersion();
                 case 2:
-                    return aPackage.isAvailable() ? aPackage.getLatestVersion() : "not available";
+                    return aPackage.getLatestVersion();
                 case 3:
                     return aPackage.getDependenciesString();
                 case 4:
+                    return aPackage.getProjectURL() != null ? linkIcon : null ;
+                case 5:
                     return aPackage.getDescription();
                 default:
                     throw new IllegalArgumentException("unknown column, " + col);
@@ -457,6 +502,14 @@ public class JPackageDialog extends JPanel {
         }
 
         @Override
+        public Class<?> getColumnClass(int column) {
+            if (column != ((DataTableModel)getModel()).linkColumn)
+                return String.class;
+            else
+                return ImageIcon.class;
+        }
+
+        @Override
         public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
             Component c =  super.prepareRenderer(renderer, row, column);
 
@@ -489,6 +542,71 @@ public class JPackageDialog extends JPanel {
             }
 
             return c;
+        }
+
+        /**
+         *  Calculate the width based on the widest cell renderer for the
+         *  given column.
+         *
+         * @param cIdx column index
+         * @return maximum width.
+         */
+        private int getColumnDataWidth(int cIdx)
+        {
+            int preferredWidth = 0;
+            int maxWidth = getColumnModel().getColumn(cIdx).getMaxWidth();
+
+            for (int row = 0; row < getRowCount(); row++)
+            {
+                preferredWidth = Math.max(preferredWidth, getCellDataWidth(row, cIdx));
+
+                //  We've exceeded the maximum width, no need to check other rows
+
+                if (preferredWidth >= maxWidth)
+                    break;
+            }
+
+            preferredWidth = Math.max(preferredWidth, getHeaderWidth(cIdx));
+
+            return preferredWidth;
+        }
+
+        /*
+         *  Get the preferred width for the specified cell
+         */
+        private int getCellDataWidth(int row, int column)
+        {
+            //  Inovke the renderer for the cell to calculate the preferred width
+
+            TableCellRenderer cellRenderer = getCellRenderer(row, column);
+            Component c = prepareRenderer(cellRenderer, row, column);
+
+            return c.getPreferredSize().width + 2*getIntercellSpacing().width;
+        }
+
+        /*
+         *  Get the preferred width for the specified header
+         */
+        private int getHeaderWidth(int cIdx)
+        {
+            //  Inovke the renderer for the cell to calculate the preferred width
+
+            TableColumn column = getColumnModel().getColumn(cIdx);
+            TableCellRenderer cellRenderer = getDefaultRenderer(String.class);
+            Component c = cellRenderer.getTableCellRendererComponent(this, column.getHeaderValue(), false, false, -1, cIdx);
+
+            return c.getPreferredSize().width + 2*getIntercellSpacing().width;
+        }
+
+
+        void updateWidths() {
+            for (int cIdx = 0; cIdx < getColumnCount(); cIdx++) {
+                int width = getColumnDataWidth(cIdx);
+
+                TableColumn column = getColumnModel().getColumn(cIdx);
+                getTableHeader().setResizingColumn(column);
+                column.setWidth(width);
+            }
         }
     }
 }

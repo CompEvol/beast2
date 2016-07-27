@@ -219,7 +219,15 @@ public class AddOnManager {
                     packageMap.put(packageName, pkg);
                 }
 
+                if (addon.hasAttribute("projectURL"))
+                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+
                 PackageVersion installedVersion = new PackageVersion(packageVersionString);
+
+                if (addon.hasAttribute("projectURL") &&
+                        !(pkg.getLatestVersion() != null && installedVersion.compareTo(pkg.getLatestVersion())<0))
+                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+
                 Set<PackageDependency> installedVersionDependencies =
                         new TreeSet<>((o1, o2) -> o1.dependencyName.compareTo(o2.dependencyName));
 
@@ -308,8 +316,12 @@ public class AddOnManager {
                         pkg.setDescription(element.getAttribute("description"));
 
                         PackageVersion packageVersion = new PackageVersion(element.getAttribute("version"));
-                        Set<PackageDependency> packageDependencies = new HashSet<>();
 
+                        if (element.hasAttribute("projectURL") &&
+                                !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
+                            pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
+
+                        Set<PackageDependency> packageDependencies = new HashSet<>();
                         NodeList depNodes = element.getElementsByTagName("depends");
                         for (int j = 0; j < depNodes.getLength(); j++) {
                             Element dependson = (Element) depNodes.item(j);
@@ -1383,7 +1395,7 @@ public class AddOnManager {
 
         // Define headers here - need to know lengths
         String nameHeader = "Name";
-        String statusHeader = "Installation Status";
+        String statusHeader = "Installed Version";
         String latestHeader = "Latest Version";
         String depsHeader = "Dependencies";
         String descriptionHeader = "Description";
@@ -1402,7 +1414,7 @@ public class AddOnManager {
             packageList.add(pkg);
 
             maxNameWidth = Math.max(pkg.getName().length(), maxNameWidth);
-            maxStatusWidth = Math.max(pkg.getStatusString().length(), maxStatusWidth);
+            maxStatusWidth = Math.max(pkg.isInstalled() ? pkg.getInstalledVersion().toString().length() : 2, maxStatusWidth);
             maxLatestWidth = Math.max(maxLatestWidth, pkg.isAvailable()
                             ? pkg.getLatestVersion().toString().length()
                             :  Math.max(2, maxStatusWidth));
@@ -1436,7 +1448,7 @@ public class AddOnManager {
         for (Package pkg : packageList) {
         	if (pkg.getName().equals(BEAST_PACKAGE_NAME)) {
         		ps.printf(nameFormat, pkg.getName()); ps.print(sep);
-		        ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
+		        ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : "NA"); ps.print(sep);
 		        ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
 		        ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
 		        ps.printf("%s\n", pkg.getDescription());
@@ -1450,7 +1462,7 @@ public class AddOnManager {
         for (Package pkg : packageList) {
         	if (!pkg.getName().equals(BEAST_PACKAGE_NAME)) {
 	            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
-	            ps.printf(statusFormat, pkg.getStatusString()); ps.print(sep);
+	            ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : "NA"); ps.print(sep);
 	            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
 	            ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
 	            ps.printf("%s\n", pkg.getDescription());

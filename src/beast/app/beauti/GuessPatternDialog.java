@@ -559,7 +559,7 @@ public class GuessPatternDialog extends JDialog {
                 }
                 
                if (trait.trim().length() == 0) {
-            	   JOptionPane.showMessageDialog(m_parent, "Could not find traint information in the file. " +
+            	   JOptionPane.showMessageDialog(m_parent, "Could not find trait information in the file. " +
             			   "Perhaps this is not a tab-delimited but space file?");
                }
             } catch (Exception e) {
