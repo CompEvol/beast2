@@ -63,6 +63,8 @@ public class JPackageRepositoryDialog extends JDialog {
         // Assemble table
         final RepoTableModel repoTableModel = new RepoTableModel(urls);
         final JTable repoTable = new JTable(repoTableModel);
+		int size = repoTable.getFont().getSize();
+		repoTable.setRowHeight(20 * size/13);
         repoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(repoTable);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
