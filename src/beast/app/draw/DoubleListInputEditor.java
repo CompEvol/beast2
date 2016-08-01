@@ -169,12 +169,14 @@ public class DoubleListInputEditor extends ListInputEditor {
 		void setUpEntry() {
             m_entry = new JTextField();
             m_entry.setName(m_input.getName());
+            int size = m_entry.getFont().getSize();
+            PREFERRED_SIZE = new Dimension(200, 25 * size / 13);
             m_entry.setMinimumSize(PREFERRED_SIZE);
             m_entry.setPreferredSize(PREFERRED_SIZE);
             m_entry.setSize(PREFERRED_SIZE);
             initEntry();
             m_entry.setToolTipText(m_input.getHTMLTipText());
-            m_entry.setMaximumSize(MAX_SIZE);
+            m_entry.setMaximumSize(new Dimension(1024, 25 * size / 13));
 
             m_entry.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
@@ -260,7 +262,8 @@ public class DoubleListInputEditor extends ListInputEditor {
                 m_inputLabel.setToolTipText(tipText);
                 m_inputLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
                 //Dimension size = new Dimension(g_nLabelWidth, 20);
-                Dimension size = new Dimension(200, 20);
+                int fontsize = m_inputLabel.getFont().getSize();
+                Dimension size = new Dimension(200, 20 * fontsize / 13);
                 m_inputLabel.setMaximumSize(size);
                 m_inputLabel.setMinimumSize(size);
                 m_inputLabel.setPreferredSize(size);

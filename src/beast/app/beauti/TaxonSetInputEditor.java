@@ -209,8 +209,10 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         });
         m_table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         m_table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        m_table.getColumnModel().getColumn(0).setPreferredWidth(250);
-        m_table.getColumnModel().getColumn(1).setPreferredWidth(250);
+		int size = m_table.getFont().getSize();
+		m_table.setRowHeight(20 * size/13);
+        m_table.getColumnModel().getColumn(0).setPreferredWidth(250 * size/13);
+        m_table.getColumnModel().getColumn(1).setPreferredWidth(250 * size/13);
 
         JTableHeader header = m_table.getTableHeader();
         header.addMouseListener(new ColumnHeaderListener());
@@ -474,7 +476,8 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         // filterEntry.setPreferredSize(size);
         // filterEntry.setSize(size);
         filterEntry.setToolTipText("Enter regular expression to match taxa");
-        filterEntry.setMaximumSize(new Dimension(1024, 20));
+		int size = filterEntry.getFont().getSize();
+        filterEntry.setMaximumSize(new Dimension(1024, 20 * size/13));
         filterBox.add(filterEntry);
         filterBox.add(Box.createHorizontalGlue());
         filterEntry.getDocument().addDocumentListener(new DocumentListener() {
