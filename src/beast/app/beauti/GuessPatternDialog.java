@@ -134,7 +134,8 @@ public class GuessPatternDialog extends JDialog {
         textRegExp.setText(pattern);
         textRegExp.setColumns(10);
         textRegExp.setToolTipText("Enter regular expression to match taxa");
-        textRegExp.setMaximumSize(new Dimension(1024, 25));
+        int fontsize = textRegExp.getFont().getSize();
+        textRegExp.setMaximumSize(new Dimension(1024 * fontsize/13, 25 * fontsize/13));
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.insets = new Insets(0, 0, 5, 5);
         gbc2.anchor = GridBagConstraints.WEST;

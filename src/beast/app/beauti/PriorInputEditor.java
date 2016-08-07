@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.text.StyledEditorKit.FontSizeAction;
 
 import beast.app.draw.BEASTObjectDialog;
 import beast.app.draw.InputEditor;
@@ -125,7 +126,8 @@ public class PriorInputEditor extends InputEditor.Base {
             itemBox.add(Box.createHorizontalStrut(10));
             itemBox.add(rangeButton);
         }
-        comboBox.setMaximumSize(new Dimension(1024, 24));
+        int fontsize = comboBox.getFont().getSize();
+        comboBox.setMaximumSize(new Dimension(1024 * fontsize / 13, 24 * fontsize / 13));
 
         String tipText = getDoc().tipTextMap.get(beastObject.getID());
         //System.out.println(beastObject.getID());

@@ -327,7 +327,8 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
             });
 
             m_selectBEASTObjectBox.setToolTipText(input.getHTMLTipText());
-            m_selectBEASTObjectBox.setMaximumSize(new Dimension(1024, 200));
+            int fontsize = m_inputLabel.getFont().getSize();
+            m_selectBEASTObjectBox.setMaximumSize(new Dimension(1024, 200 * fontsize / 13));
             box.add(m_selectBEASTObjectBox);
         }
     }

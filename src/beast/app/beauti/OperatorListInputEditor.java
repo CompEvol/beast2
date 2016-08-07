@@ -81,7 +81,8 @@ public class OperatorListInputEditor extends ListInputEditor {
         Dimension size = new Dimension(50, 25);
         weightEntry.setMinimumSize(size);
         weightEntry.setPreferredSize(size);
-        weightEntry.setMaximumSize(new Dimension(50, 50));
+        int fontsize = weightEntry.getFont().getSize();
+        weightEntry.setMaximumSize(new Dimension(50 * fontsize/13, 50 * fontsize/13));
         itemBox.add(weightEntry);
 
         return this;

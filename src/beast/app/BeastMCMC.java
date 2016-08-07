@@ -418,12 +418,13 @@ public class BeastMCMC {
             Box box = Box.createHorizontalBox();
             box.add(new JLabel("Beast XML File: "));
             m_fileEntry = new JTextField();
-            Dimension size = new Dimension(300, 20);
+            int fontsize = m_fileEntry.getFont().getSize();
+            Dimension size = new Dimension(300 * fontsize / 13, 20 * fontsize / 13);
             m_fileEntry.setMinimumSize(size);
             m_fileEntry.setPreferredSize(size);
             m_fileEntry.setSize(size);
             m_fileEntry.setToolTipText("Enter file name of Beast 2 XML file");
-            m_fileEntry.setMaximumSize(new Dimension(1024, 20));
+            m_fileEntry.setMaximumSize(new Dimension(1024 * fontsize / 13, 20 * fontsize / 13));
             box.add(m_fileEntry);
             //box.add(Box.createHorizontalGlue());
 
@@ -459,7 +460,8 @@ public class BeastMCMC {
             m_seedEntry.setPreferredSize(size);
             m_seedEntry.setSize(size);
             m_seedEntry.setToolTipText("Enter seed number used for initialising the random number generator");
-            m_seedEntry.setMaximumSize(new Dimension(1024, 20));
+            int fontsize = m_seedEntry.getFont().getSize();
+            m_seedEntry.setMaximumSize(new Dimension(1024 * fontsize / 13, 20 * fontsize / 13));
             box.add(m_seedEntry);
             box.add(Box.createHorizontalGlue());
             return box;

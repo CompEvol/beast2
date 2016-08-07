@@ -278,7 +278,8 @@ public class IntegerListInputEditor extends ListInputEditor {
                 m_inputLabel.setToolTipText(tipText);
                 m_inputLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
                 //Dimension size = new Dimension(g_nLabelWidth, 20);
-                Dimension size = new Dimension(200, 20);
+                int fontsize = m_inputLabel.getFont().getSize();
+                Dimension size = new Dimension(200 * fontsize / 13, 20 * fontsize / 13);
                 m_inputLabel.setMaximumSize(size);
                 m_inputLabel.setMinimumSize(size);
                 m_inputLabel.setPreferredSize(size);

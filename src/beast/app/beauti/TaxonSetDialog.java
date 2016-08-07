@@ -137,7 +137,8 @@ public class TaxonSetDialog extends JDialog {
         //filterEntry.setPreferredSize(size);
         //filterEntry.setSize(size);
         filterEntry.setToolTipText("Enter regular expression to match taxa");
-        filterEntry.setMaximumSize(new Dimension(1024, 50));
+        int fontsize = filterEntry.getFont().getSize();
+        filterEntry.setMaximumSize(new Dimension(1024 * fontsize / 13, 50 * fontsize / 13));
         box.add(filterEntry);
         box.add(Box.createHorizontalGlue());
 
@@ -198,7 +199,8 @@ public class TaxonSetDialog extends JDialog {
             }
         });
 
-        box.setMaximumSize(new Dimension(400, 100));
+        int fontsize = idEntry.getFont().getSize();
+        box.setMaximumSize(new Dimension(400 * fontsize / 13, 100 * fontsize / 13));
         return box;
     }
     
