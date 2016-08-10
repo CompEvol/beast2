@@ -493,7 +493,7 @@ public class XMLParser {
         		s = s.trim();
         		int i = s.lastIndexOf(" ");
         		if (i > 0) {
-        			String pkgname = s.substring(0, i-1);
+        			String pkgname = s.substring(0, i);
         			String pkgversion = s.substring(i+1);
         			if (!AddOnManager.isInstalled(pkgname, pkgversion)) {
         				unavailablePacakges += s +", ";
