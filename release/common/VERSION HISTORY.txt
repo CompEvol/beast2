@@ -1,10 +1,33 @@
-                    BEAST v2.4.2 2016
+                    BEAST v2.4.3 2016
                  Beast 2 development team 2011-2016
 Version History
-Last updated: June 2016
+Last updated: August 2016
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.3 August 2016
+	
+	BEAUti
+		Support for tip data sampling by setting 'tipsonly' in MRCA Priors
+		Allow packages to specify priors, e.g. multi-monophyletic constraints in BEASTLabs
+		Allow packages to specify file importers, which allows microsattelite support through the BEASTvntr package
+		Gamma distribution allows multiple parameterisations
+		Packages used now encoded in XML, for better error reporting of missing packages
+		Better looking on high-res screens
+		
+	Package Manager
+		Links to documentation available
+		Better layout
+		
+	BEAST
+		allow multiple citations per class
+		allow trait sets with unspecified dates
+		allow multiple arguments to Sum
+		improved error reporting
+		
+	TreeAnnotator fix for phylogepgraphy in low-mem mode.
+	LogCombiner suppress duplicate '=' in tree output
+	
 Version 2.4.2 June 2016
      Applications are scalable, making them visible on high resolution screens
 
