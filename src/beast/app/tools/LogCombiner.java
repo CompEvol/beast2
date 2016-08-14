@@ -539,8 +539,10 @@ public class LogCombiner extends LogAnalyser {
                 String titleString = "<html><center><p>LogCombiner<br>" +
                         "Version " + version.getVersionString() + ", " + version.getDateString() + "</p></center></html>";
 
-                //ConsoleApplication consoleApp =
                 new ConsoleApplication(nameString, aboutString, icon, true);
+                Log.info = System.out;
+                Log.warning = System.out;
+                Log.err = System.err;
 
                 combiner.printTitle(aboutString);
 
