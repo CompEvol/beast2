@@ -467,8 +467,19 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                 stringValue = stringValue.substring(1, stringValue.length()-1);
                             }
                             node.setMetaData(key, stringValue);
-                        } else {
-                            // BEAST doesn't do anything with vectors yet.
+                        } else if (attribctx.attribValue().vector() != null) {
+                        	try {
+	                        	String value = attribctx.attribValue().vector().getText();
+								String str = value.substring(1, value.length() - 1); 
+								String [] strs = str.split(",");
+								Double [] values = new Double[strs.length];
+								for (int j = 0; j < strs.length; j++) {
+									values[j] = Double.parseDouble(strs[j]); 
+								}
+								node.setMetaData(key, values);
+                        	} catch (Exception e) {
+                        		// ignore parsing errors
+                        	}
                         }
                     }
                 }
