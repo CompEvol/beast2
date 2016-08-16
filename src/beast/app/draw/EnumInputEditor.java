@@ -1,5 +1,6 @@
 package beast.app.draw;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,9 @@ public class EnumInputEditor extends InputEditor.Base {
         }
         if (availableValues.size() > 1) {
             m_selectPluginBox = new JComboBox<>(availableValues.toArray(new String[0]));
+            Dimension maxDim = m_selectPluginBox.getPreferredSize();
+            m_selectPluginBox.setMaximumSize(maxDim);
+
             String selectString = input.get().toString();
             m_selectPluginBox.setSelectedItem(selectString);
 

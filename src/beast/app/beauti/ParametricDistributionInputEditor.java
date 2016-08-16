@@ -119,7 +119,6 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 // ignore
             }
 
-            Font font = g.getFont();
             double minValue = 0.1;
             double maxValue = 1;
             try {
@@ -188,6 +187,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             final int NR_OF_TICKS_Y = m_nTicks;
 
             // draw ticks on edge
+            Font font = g.getFont();
             Font smallFont = new Font(font.getName(), font.getStyle(), font.getSize() * 2/3);
             g.setFont(smallFont);
 
@@ -248,7 +248,8 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 g.drawString(ylabels[i], leftMargin - TICK_LENGTH - 1 - sfm.stringWidth(ylabels[i]), y + 3);
             }
 
-            g.setFont(new Font(font.getName(), font.getStyle(), font.getSize() * 10 / 12));
+            int fontHeight = font.getSize() * 10 / 12;
+            g.setFont(new Font(font.getName(), font.getStyle(), fontHeight));
             try {
                 FontMetrics fontMetrics = g.getFontMetrics();
                 String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
@@ -256,23 +257,23 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             	mayBeUnstable = false;
                 for (k = 0; k < 5; k++) {
 
-                    int y = TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * 10;
+                    int y = TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * fontHeight;
 
                 	try {
                         g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), graphWidth / 2 + leftMargin, y);
                     } catch (MathException e) {
                         g.drawString("not available", graphWidth / 2 + leftMargin, y);
                     }
-                    g.drawString(strs[k], graphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - 10, y);
+                    g.drawString(strs[k], graphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - fontHeight, y);
                 }
                 if (mayBeUnstable) {
-                	int x = graphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + graphHeight + bottomMargin + 10;
-                    g.drawString("* numbers", x, y + 20); 
-                    g.drawString("may not be", x, y + 30);                	
-                    g.drawString("accurate", x, y + 40);                	
+                	int x = graphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + graphHeight + bottomMargin + fontHeight;
+                    g.drawString("* numbers", x, y + 2*fontHeight); 
+                    g.drawString("may not be", x, y + 3*fontHeight);                	
+                    g.drawString("accurate", x, y + 4*fontHeight);                	
                 }
                 try {
-                	g.drawString("mean " + format(m_distr.getMean()), graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + 10);
+                	g.drawString("mean " + format(m_distr.getMean()), graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + fontHeight);
                 } catch (RuntimeException e) {
                 	// catch in case it is not implemented.
                 }
