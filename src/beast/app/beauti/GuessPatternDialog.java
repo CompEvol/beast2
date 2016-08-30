@@ -33,17 +33,18 @@ import beast.core.util.Log;
 
 public class GuessPatternDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    public static final String EXAMPLE_FORMAT = "<html>A proper trait file is tab delimited. <br>"
-            + "The first row is always <font color=red>traits</font> followed by the keyword <br>"
-            + "(e.g. <font color=red>species</font> in *BEAST) in the second column and separated <br>"
-            + "by <font color=red>tab</font>. The rest rows are mapping taxa to species, which list <br>"
+    public static final String EXAMPLE_FORMAT = "<html>A proper trait file is tab delimited. "
+            //+ "The first row is always <font color=red>traits</font> followed by the keyword <br>"
+            //+ "(e.g. <font color=red>species</font> in *BEAST) in the second column and separated <br>"
+            //+ "by <font color=red>tab</font>. "
+            + "The rows are mapping taxa to species, which list <br>"
             + "taxon name in the first column and species name in the second column separated by <br>"
             + "<font color=red>tab</font>. For example: <br>" + "traits\tspecies<br>" + "taxon1\tspeciesA<br>"
             + "taxon2\tspeciesA<br>" + "taxon3\tspeciesB<br>" + "... ...<br>"
-            + "Once mapping file is loaded, the trait named by keyword <font color=red>species</font> <br>"
-            + "is displayed in the main panel, and the message of using *BEAST is also displayed on <br>"
-            + "the bottom of main frame.<br>"
-            + "For multi-alignment, the default of *BEAST is unlinking all models: substitution model, <br>"
+            + "Once mapping file is loaded, the trait named by keyword <font color=red>species</font>"
+            + "is displayed in the <br>main panel, and the message of using *BEAST is also displayed on "
+            + "the bottom of main <br>frame. "
+            + "For multi-alignment, the default of *BEAST is unlinking all models: substitution <br>model, "
             + "clock model, and tree models.</html>";
 
     public enum Status {
