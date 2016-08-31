@@ -468,18 +468,21 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                             }
                             node.setMetaData(key, stringValue);
                         } else if (attribctx.attribValue().vector() != null) {
-                        	try {
-	                        	String value = attribctx.attribValue().vector().getText();
-								String str = value.substring(1, value.length() - 1); 
-								String [] strs = str.split(",");
-								Double [] values = new Double[strs.length];
-								for (int j = 0; j < strs.length; j++) {
-									values[j] = Double.parseDouble(strs[j]); 
-								}
-								node.setMetaData(key, values);
-                        	} catch (Exception e) {
-                        		// ignore parsing errors
-                        	}
+                            try {
+
+                                List<NewickParser.AttribValueContext> elementContexts = attribctx.attribValue().vector().attribValue();
+
+                                Double[] values = new Double[elementContexts.size()];
+                                for (int i = 0; i < elementContexts.size(); i++)
+                                    values[i] = Double.parseDouble(elementContexts.get(i).getText());
+
+                                node.setMetaData(key, values);
+
+                            } catch (NumberFormatException ex) {
+                                throw new ParseCancellationException("Encountered vector-valued metadata entry with " +
+                                        "one or more non-numeric elements.");
+                            }
+
                         }
                     }
                 }

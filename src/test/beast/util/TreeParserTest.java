@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import beast.util.TreeParser;
+import org.omg.CORBA.OBJ_ADAPTER;
 
 public class TreeParserTest {
 
@@ -107,6 +108,19 @@ public class TreeParserTest {
 
         TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
         Assert.assertEquals(binaryNewick.split(";")[0], treeParser.getRoot().toNewick());
+
+    }
+
+    @Test
+    public void testVectorMetadata() throws Exception {
+
+        String newick = "((A:1.0,B[&key={1,2,3}]:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        Assert.assertTrue((treeParser.getNode(1).getMetaData("key") instanceof Double[])
+                && ((Double[])(treeParser.getNode(1).getMetaData("key"))).length == 3);
 
     }
 
