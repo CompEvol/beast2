@@ -1,4 +1,4 @@
-// Generated from Newick.g4 by ANTLR 4.5.1
+// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/Newick.g4 by ANTLR 4.5.3
 package beast.util.treeparser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,14 +11,14 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NewickParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
-		T__9=10, FLOAT=11, INT=12, STRING=13, WHITESPACE=14;
+		T__9=10, FLOAT_SCI=11, FLOAT=12, INT=13, STRING=14, WHITESPACE=15;
 	public static final int
 		RULE_tree = 0, RULE_node = 1, RULE_post = 2, RULE_label = 3, RULE_meta = 4, 
 		RULE_attrib = 5, RULE_attribValue = 6, RULE_number = 7, RULE_vector = 8;
@@ -32,8 +32,8 @@ public class NewickParser extends Parser {
 		"'}'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, null, null, null, null, "FLOAT", 
-		"INT", "STRING", "WHITESPACE"
+		null, null, null, null, null, null, null, null, null, null, null, "FLOAT_SCI", 
+		"FLOAT", "INT", "STRING", "WHITESPACE"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -236,7 +236,7 @@ public class NewickParser extends Parser {
 			{
 			setState(40);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT) | (1L << INT) | (1L << STRING))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT_SCI) | (1L << FLOAT) | (1L << INT) | (1L << STRING))) != 0)) {
 				{
 				setState(39);
 				label();
@@ -298,6 +298,7 @@ public class NewickParser extends Parser {
 		try {
 			setState(51);
 			switch (_input.LA(1)) {
+			case FLOAT_SCI:
 			case FLOAT:
 			case INT:
 				enterOuterAlt(_localctx, 1);
@@ -455,6 +456,7 @@ public class NewickParser extends Parser {
 		try {
 			setState(71);
 			switch (_input.LA(1)) {
+			case FLOAT_SCI:
 			case FLOAT:
 			case INT:
 				enterOuterAlt(_localctx, 1);
@@ -495,6 +497,7 @@ public class NewickParser extends Parser {
 	public static class NumberContext extends ParserRuleContext {
 		public TerminalNode INT() { return getToken(NewickParser.INT, 0); }
 		public TerminalNode FLOAT() { return getToken(NewickParser.FLOAT, 0); }
+		public TerminalNode FLOAT_SCI() { return getToken(NewickParser.FLOAT_SCI, 0); }
 		public NumberContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -515,7 +518,7 @@ public class NewickParser extends Parser {
 			{
 			setState(73);
 			_la = _input.LA(1);
-			if ( !(_la==FLOAT || _la==INT) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT_SCI) | (1L << FLOAT) | (1L << INT))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			} else {
 				consume();
@@ -594,13 +597,13 @@ public class NewickParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\20Y\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\21Y\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\3\2\5\2"+
 		"\27\n\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3\37\n\3\f\3\16\3\"\13\3\3\3\3\3\5\3"+
 		"&\n\3\3\3\3\3\3\4\5\4+\n\4\3\4\5\4.\n\4\3\4\3\4\5\4\62\n\4\3\5\3\5\5\5"+
 		"\66\n\5\3\6\3\6\3\6\3\6\7\6<\n\6\f\6\16\6?\13\6\3\6\3\6\3\7\3\7\3\7\3"+
 		"\7\3\b\3\b\3\b\5\bJ\n\b\3\t\3\t\3\n\3\n\3\n\3\n\7\nR\n\n\f\n\16\nU\13"+
-		"\n\3\n\3\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\3\3\2\r\16Z\2\24\3\2\2\2"+
+		"\n\3\n\3\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\3\3\2\r\17Z\2\24\3\2\2\2"+
 		"\4%\3\2\2\2\6*\3\2\2\2\b\65\3\2\2\2\n\67\3\2\2\2\fB\3\2\2\2\16I\3\2\2"+
 		"\2\20K\3\2\2\2\22M\3\2\2\2\24\26\5\4\3\2\25\27\7\3\2\2\26\25\3\2\2\2\26"+
 		"\27\3\2\2\2\27\30\3\2\2\2\30\31\7\2\2\3\31\3\3\2\2\2\32\33\7\4\2\2\33"+
@@ -609,10 +612,10 @@ public class NewickParser extends Parser {
 		"%&\3\2\2\2&\'\3\2\2\2\'(\5\6\4\2(\5\3\2\2\2)+\5\b\5\2*)\3\2\2\2*+\3\2"+
 		"\2\2+-\3\2\2\2,.\5\n\6\2-,\3\2\2\2-.\3\2\2\2.\61\3\2\2\2/\60\7\7\2\2\60"+
 		"\62\5\20\t\2\61/\3\2\2\2\61\62\3\2\2\2\62\7\3\2\2\2\63\66\5\20\t\2\64"+
-		"\66\7\17\2\2\65\63\3\2\2\2\65\64\3\2\2\2\66\t\3\2\2\2\678\7\b\2\28=\5"+
+		"\66\7\20\2\2\65\63\3\2\2\2\65\64\3\2\2\2\66\t\3\2\2\2\678\7\b\2\28=\5"+
 		"\f\7\29:\7\5\2\2:<\5\f\7\2;9\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>@\3"+
-		"\2\2\2?=\3\2\2\2@A\7\t\2\2A\13\3\2\2\2BC\7\17\2\2CD\7\n\2\2DE\5\16\b\2"+
-		"E\r\3\2\2\2FJ\5\20\t\2GJ\7\17\2\2HJ\5\22\n\2IF\3\2\2\2IG\3\2\2\2IH\3\2"+
+		"\2\2\2?=\3\2\2\2@A\7\t\2\2A\13\3\2\2\2BC\7\20\2\2CD\7\n\2\2DE\5\16\b\2"+
+		"E\r\3\2\2\2FJ\5\20\t\2GJ\7\20\2\2HJ\5\22\n\2IF\3\2\2\2IG\3\2\2\2IH\3\2"+
 		"\2\2J\17\3\2\2\2KL\t\2\2\2L\21\3\2\2\2MN\7\13\2\2NS\5\16\b\2OP\7\5\2\2"+
 		"PR\5\16\b\2QO\3\2\2\2RU\3\2\2\2SQ\3\2\2\2ST\3\2\2\2TV\3\2\2\2US\3\2\2"+
 		"\2VW\7\f\2\2W\23\3\2\2\2\f\26 %*-\61\65=IS";

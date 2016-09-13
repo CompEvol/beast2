@@ -16,14 +16,15 @@ attrib: attribKey=STRING '=' attribValue ;
 
 attribValue: number | STRING | vector;
 
-number: INT | FLOAT ;
+number: INT | FLOAT | FLOAT_SCI;
 
 vector: '{' attribValue (',' attribValue)* '}' ;
 
 
 // Lexer rules:
 
-FLOAT : '-'? NNINT ('.' D*) ([eE] '-'? D+)? ;
+FLOAT_SCI: '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D+)?)) ([eE] '-'? D+);
+FLOAT : '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D*)));
 INT : '-'? NNINT;
 fragment NNINT : '0' | NZD D* ;
 fragment NZD : [1-9] ;
