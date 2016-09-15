@@ -1,10 +1,6 @@
 package beast.app.beauti;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -33,19 +29,25 @@ import beast.core.util.Log;
 
 public class GuessPatternDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    public static final String EXAMPLE_FORMAT = "<html>A proper trait file is tab delimited. "
-            //+ "The first row is always <font color=red>traits</font> followed by the keyword <br>"
-            //+ "(e.g. <font color=red>species</font> in *BEAST) in the second column and separated <br>"
-            //+ "by <font color=red>tab</font>. "
-            + "The rows are mapping taxa to species, which list <br>"
-            + "taxon name in the first column and species name in the second column separated by <br>"
-            + "<font color=red>tab</font>. For example: <br>" + "traits\tspecies<br>" + "taxon1\tspeciesA<br>"
-            + "taxon2\tspeciesA<br>" + "taxon3\tspeciesB<br>" + "... ...<br>"
-            + "Once mapping file is loaded, the trait named by keyword <font color=red>species</font>"
-            + "is displayed in the <br>main panel, and the message of using *BEAST is also displayed on "
-            + "the bottom of main <br>frame. "
-            + "For multi-alignment, the default of *BEAST is unlinking all models: substitution <br>model, "
-            + "clock model, and tree models.</html>";
+
+    private static String TRAIT_FILE_HELP_MESSAGE =
+            "This option allows trait values (such as species, tip dates and sample locations) " +
+                    "to be specified  using a file which links each taxon " +
+                    "with a trait value.  The file must contain one row per " +
+                    "taxon, with each row containing the taxon name and the " +
+                    "trait value separated by a TAB (not a space!) character.\n" +
+                    "\n" +
+                    "For instance, a file specifying the ages of three taxa named " +
+                    "taxonA, taxonB and taxonC should contain the following:\n" +
+                    "\n" +
+                    "taxonA 0.0\n" +
+                    "taxonB 0.1\n" +
+                    "taxonC 0.2\n" +
+                    "\n" +
+                    "where the gap between each taxon name and the numeric value " +
+                    "representing the age must be a TAB.";
+
+
 
     public enum Status {
         canceled, pattern, trait
@@ -207,7 +209,7 @@ public class GuessPatternDialog extends JDialog {
         JButton btnHelp = new JButton("?");
         btnHelp.setToolTipText("Show format of trait file");
         btnHelp.addActionListener(e -> {
-                JOptionPane.showMessageDialog(m_parent, EXAMPLE_FORMAT);
+            WrappedOptionPane.showWrappedMessageDialog(this, TRAIT_FILE_HELP_MESSAGE);
             });
         GridBagConstraints gbc_btnHelp = new GridBagConstraints();
         gbc_btnHelp.insets = new Insets(0, 0, 5, 5);
