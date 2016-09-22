@@ -69,8 +69,10 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
+import beast.math.distributions.Normal;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.Uniform;
+import beast.util.AddOnManager;
 import beast.util.JSONProducer;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
@@ -2451,6 +2453,14 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
 	public void addMRCAPrior(MRCAPrior mrcaPrior) {
 			Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
+			if (tree == null) {
+				for (String key : pluginmap.keySet()) {
+					if (key.startsWith("Tree.t:")) {
+						tree = (Tree) pluginmap.get(key);
+						break;
+					}
+				}
+			}
 			// TODO: make sure we have the appropriate tree
 			CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
 			mrcaPrior.treeInput.setValue(tree, mrcaPrior);
@@ -2470,7 +2480,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 						taxaset.put(taxa.get(i).getID(), taxa.get(i));
 					}
 				}
-				if (distr instanceof Uniform && ((Uniform)distr).lowerInput.get() == ((Uniform)distr).upperInput.get()) {
+				if (distr instanceof Normal && (Double.isInfinite(((Normal)distr).sigmaInput.get().getValue()))) {
 					// it is a 'fixed' calibration, no need to add a distribution
 				} else {
 					prior.pDistributions.setValue(mrcaPrior, prior);

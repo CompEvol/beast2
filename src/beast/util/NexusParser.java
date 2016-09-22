@@ -858,9 +858,9 @@ public class NexusParser {
             			break;
             		case "fixed":
             			// uniform with lower == upper
-            			distr = new Uniform();
-            			distr.initByName("lower", strs3[1], "upper", strs3[1]);
-            			distr.setID("Uniform.0");
+            			distr = new Normal();
+            			distr.initByName("mean", strs3[1], "sigma", "+Infinity");
+            			distr.setID("Normal.0");
             			break;
             		case "offsetlognormal":
             			distr = new LogNormalDistributionModel();
