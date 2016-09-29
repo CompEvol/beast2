@@ -52,7 +52,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         if (clockModelInput.get() != null) {
         	substitutions = substitutionsInput.get();
         }
-
+    }
 
     @Override
     public void init(PrintStream out) {
