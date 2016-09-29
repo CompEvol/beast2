@@ -33,6 +33,15 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 
     @Override
     public void initAndValidate() {
+        int dp = decimalPlacesInput.get();
+        if (dp < 0) {
+            df = null;
+        } else {
+            // just new DecimalFormat("#.######") (with dp time '#' after the decimal)
+            df = new DecimalFormat("#."+new String(new char[dp]).replace('\0', '#'));
+            df.setRoundingMode(RoundingMode.HALF_UP);
+        }
+
         if (parameterInput.get().size() == 0 && clockModelInput.get() == null) {
         	someMetaDataNeedsLogging = false;
         	return;
@@ -44,16 +53,6 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         	substitutions = substitutionsInput.get();
         }
 
-        int dp = decimalPlacesInput.get();
-
-        if (dp < 0) {
-            df = null;
-        } else {
-            // just new DecimalFormat("#.######") (with dp time '#' after the decimal)
-            df = new DecimalFormat("#."+new String(new char[dp]).replace('\0', '#'));
-            df.setRoundingMode(RoundingMode.HALF_UP);
-        }
-    }
 
     @Override
     public void init(PrintStream out) {
