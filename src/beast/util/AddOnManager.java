@@ -846,69 +846,79 @@ public class AddOnManager {
         checkInstalledDependencies(packages);
 
         for (String jarDirName : getBeastDirectories()) {
-            File versionFile = new File(jarDirName + "/version.xml");
-            String packageNameAndVersion = null;
-            if (versionFile.exists()) {
-                try {
-                    // print name and version of package
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    Document doc = factory.newDocumentBuilder().parse(versionFile);
-                    Element addon = doc.getDocumentElement();
-                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
-                    Log.warning.println("Loading package " + packageNameAndVersion);
-                } catch (Exception e) {
-                	// too bad, won't print out any info
+            try {
+                File versionFile = new File(jarDirName + "/version.xml");
+                String packageNameAndVersion = null;
+                if (versionFile.exists()) {
+                    try {
+                        // print name and version of package
+                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                        Document doc = factory.newDocumentBuilder().parse(versionFile);
+                        Element addon = doc.getDocumentElement();
+                        packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                        Log.warning.println("Loading package " + packageNameAndVersion);
+                    } catch (Exception e) {
+                        // too bad, won't print out any info
+
+                        // File is called version.xml, but is not a Beast2 version file
+                        // Log.debug.print("Skipping "+jarDirName+" (not a Beast2 package)");
+                    }
                 }
-            }
-            File jarDir = new File(jarDirName + "/lib");
-            if (!jarDir.exists()) {
-                jarDir = new File(jarDirName + "\\lib");
-            }
-            if (jarDir.exists() && jarDir.isDirectory()) {
-                for (String fileName : jarDir.list()) {
-                    if (fileName.endsWith(".jar")) {
-                        Log.debug.print("Probing: " + fileName + " ");
-                        // check that we are not reload existing classes
-                        String loadedClass = null;
-                        try {
-                            JarInputStream jarFile = new JarInputStream
-                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
-                            JarEntry jarEntry;
+                File jarDir = new File(jarDirName + "/lib");
+                if (!jarDir.exists()) {
+                    jarDir = new File(jarDirName + "\\lib");
+                }
+                if (jarDir.exists() && jarDir.isDirectory()) {
+                    for (String fileName : jarDir.list()) {
+                        if (fileName.endsWith(".jar")) {
+                            Log.debug.print("Probing: " + fileName + " ");
+                            // check that we are not reload existing classes
+                            String loadedClass = null;
+                            try {
+                                JarInputStream jarFile = new JarInputStream
+                                        (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
+                                JarEntry jarEntry;
 
-                            while (loadedClass == null) {
-                                jarEntry = jarFile.getNextJarEntry();
-                                if (jarEntry == null) {
-                                    break;
-                                }
-                                if ((jarEntry.getName().endsWith(".class"))) {
-                                    String className = jarEntry.getName().replaceAll("/", "\\.");
-                                    className = className.substring(0, className.lastIndexOf('.'));
-                                    try {
-                                        /*Object o =*/ Class.forName(className);
-                                        loadedClass = className;
-                                    } catch (Exception e) {
-                                        // TODO: handle exception
+                                while (loadedClass == null) {
+                                    jarEntry = jarFile.getNextJarEntry();
+                                    if (jarEntry == null) {
+                                        break;
                                     }
-                                    if (loadedClass == null && packageNameAndVersion != null) {
-                                    	classToPackageMap.put(className, packageNameAndVersion);
+                                    if ((jarEntry.getName().endsWith(".class"))) {
+                                        String className = jarEntry.getName().replaceAll("/", "\\.");
+                                        className = className.substring(0, className.lastIndexOf('.'));
+                                        try {
+                                            /*Object o =*/
+                                            Class.forName(className);
+                                            loadedClass = className;
+                                        } catch (Exception e) {
+                                            // TODO: handle exception
+                                        }
+                                        if (loadedClass == null && packageNameAndVersion != null) {
+                                            classToPackageMap.put(className, packageNameAndVersion);
+                                        }
                                     }
                                 }
+                                jarFile.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                            jarFile.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
 
 
-                        @SuppressWarnings("deprecation")
-                        URL url = new File(jarDir.getAbsolutePath() + "/" + fileName).toURL();
-                        if (loadedClass == null) {
-                            addURL(url);
-                        } else {
-                            Log.debug.println("Skip loading " + url + ": contains class " + loadedClass + " that is already loaded");
+                            @SuppressWarnings("deprecation")
+                            URL url = new File(jarDir.getAbsolutePath() + "/" + fileName).toURL();
+                            if (loadedClass == null) {
+                                addURL(url);
+                            } else {
+                                Log.debug.println("Skip loading " + url + ": contains class " + loadedClass + " that is already loaded");
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                // File exists, but cannot open the file for some reason
+                Log.debug.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+                Log.warning.println("Skipping "+jarDirName+"/version.xml (unable to open file");
             }
         }
         externalJarsLoaded = true;
