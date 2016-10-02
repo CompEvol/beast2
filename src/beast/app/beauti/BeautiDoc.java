@@ -2486,7 +2486,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 					prior.pDistributions.setValue(mrcaPrior, prior);
 				}
 			}
-			if (t.taxonsetInput.get().size() == 1) {
+			if (t.taxonsetInput.get().size() == 1 && distr != null) {
 				// it is a calibration on a tip -- better start sampling that tip
 		        TipDatesRandomWalker operator = new TipDatesRandomWalker();
 		        t.initAndValidate();
