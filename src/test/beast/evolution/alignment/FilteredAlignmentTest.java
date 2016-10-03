@@ -290,20 +290,68 @@ public class FilteredAlignmentTest extends TestCase {
 
         assertEquals(alignmentToString(data2,0), alignmentToString(data4, 0));
         assertEquals(alignmentToString(data2,1), alignmentToString(data4, 1));
-}
+    }
     
-    String alignmentToString(Alignment data, int iTaxon) throws Exception {
-        int[] states = new int[data.getPatternCount()];
-//        for (int i = 0; i < data.getSiteCount(); i++) {
-//            int iPattern = data.getPatternIndex(i);
-//            int[] sitePattern = data.getPattern(iPattern);
-//            states[i] = sitePattern[iTaxon];
-//        }
+    
+    @Test
+    public void testReordered() throws Exception {
+    	// make sure the order of sites is not affected by filtering
+        Alignment data = getAlignmentNoTInHuman();
+        data.setID("data");
 
-        for (int i = 0; i < data.getPatternCount(); i++) {
-            int[] sitePattern = data.getPattern(i);
+        // second sequence not in alphabetical order
+        FilteredAlignment data2 = new FilteredAlignment();
+        data2.initByName("data", data, "filter", "3:6:1");
+
+        System.out.println("human\t" + alignmentToString(data2, 0) + "\n1chimp\t"
+                + alignmentToString(data2, 1));
+
+        assertEquals(alignmentToString(data2,0), "AACC");
+        assertEquals(alignmentToString(data2,1), "GTAC");
+
+        // first sequence not in alphabetical order
+        FilteredAlignment data3 = new FilteredAlignment();
+        data3.initByName("data", data, "filter", "11:14:1");
+
+        System.out.println("human\t" + alignmentToString(data3, 0) + "\n1chimp\t"
+                + alignmentToString(data3, 1));
+
+        assertEquals(alignmentToString(data3,0), "GGAA");
+        assertEquals(alignmentToString(data3,1), "GTAC");
+
+        // first sequence not in alphabetical order, repeat site
+        FilteredAlignment data4 = new FilteredAlignment();
+        data4.initByName("data", data, "filter", "3:16:4");
+
+        System.out.println("human\t" + alignmentToString(data4, 0) + "\n1chimp\t"
+                + alignmentToString(data4, 1));
+
+        assertEquals(alignmentToString(data4,0), "ACGA");
+        assertEquals(alignmentToString(data4,1), "GGGG");
+
+        // first and second sequence not in alphabetical order
+        FilteredAlignment data5 = new FilteredAlignment();
+        data5.initByName("data", data, "filter", "4:14:3");
+
+        System.out.println("human\t" + alignmentToString(data5, 0) + "\n1chimp\t"
+                + alignmentToString(data5, 1));
+
+        assertEquals(alignmentToString(data5,0), "ACGA");
+        assertEquals(alignmentToString(data5,1), "TGCA");
+    }
+
+    String alignmentToString(Alignment data, int iTaxon) throws Exception {
+        int[] states = new int[data.getSiteCount()];
+        for (int i = 0; i < data.getSiteCount(); i++) {
+            int iPattern = data.getPatternIndex(i);
+            int[] sitePattern = data.getPattern(iPattern);
             states[i] = sitePattern[iTaxon];
         }
+
+//        for (int i = 0; i < data.getPatternCount(); i++) {
+//            int[] sitePattern = data.getPattern(i);
+//            states[i] = sitePattern[iTaxon];
+//        }
         return data.getDataType().state2string(states);
     }
 }
