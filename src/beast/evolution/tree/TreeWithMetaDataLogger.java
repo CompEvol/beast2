@@ -14,6 +14,7 @@ import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.StateNode;
 import beast.core.parameter.Parameter;
+import beast.core.parameter.RealParameter;
 import beast.evolution.branchratemodel.BranchRateModel;
 
 @Description("Logs tree annotated with metadata and/or rates")
@@ -23,7 +24,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     final public Input<List<Function>> parameterInput = new Input<>("metadata", "meta data to be logged with the tree nodes",new ArrayList<>());
     final public Input<BranchRateModel.Base> clockModelInput = new Input<>("branchratemodel", "rate to be logged with branches of the tree");
     final public Input<Boolean> substitutionsInput = new Input<>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
-    final public Input<Integer> decimalPlacesInput = new Input<>("dp", "the number of decimal places to use writing branch lengths and rates, use -1 for full precision (default = full precision)", -1);
+    final public Input<Integer> decimalPlacesInput = new Input<>("dp", "the number of decimal places to use writing branch lengths, rates and real-valued metadata, use -1 for full precision (default = full precision)", -1);
 
     
     boolean someMetaDataNeedsLogging;
@@ -119,14 +120,24 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 		            	if (dim > 1) {
 			            	buf.append('{');
 			            	for (int i = 0; i < dim; i++) {
-				            	buf.append(p.getMatrixValue(node.labelNr, i));
+						if (metadata instanceof RealParameter) {
+							RealParameter rp = (RealParameter) metadata;
+							appendDouble(buf, rp.getMatrixValue(node.labelNr, i));
+						} else {
+							buf.append(p.getMatrixValue(node.labelNr, i));
+						}
 				            	if (i < dim - 1) {
 					            	buf.append(',');
 				            	}
 			            	}
 			            	buf.append('}');
 		            	} else {
-			            	buf.append(metadata.getArrayValue(node.labelNr));
+					if (metadata instanceof RealParameter) {
+						RealParameter rp = (RealParameter) metadata;
+						appendDouble(buf, rp.getArrayValue(node.labelNr));
+					} else {
+						buf.append(metadata.getArrayValue(node.labelNr));
+					}
 		            	}
 		            } else {
 		            	buf.append(metadata.getArrayValue(node.labelNr));
