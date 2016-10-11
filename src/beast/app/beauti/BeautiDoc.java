@@ -1132,7 +1132,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
                 // process MRCA priors
                 for (String id : pluginmap.keySet()) {
-                    if (id.endsWith(".prior")) {
+                    if (id != null && id.endsWith(".prior")) {
                     	BEASTInterface beastObject = pluginmap.get(id);
                         if (beastObject instanceof MRCAPrior) {
                             MRCAPrior prior = (MRCAPrior) beastObject;
@@ -1179,7 +1179,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             templates.add(beautiConfig.hyperPriorTemplate);
             for (BEASTInterface beastObject : pluginmap.values()) {
                 if (beastObject instanceof RealParameter) {
-                    if (beastObject.getID().startsWith("parameter.")) {
+                    if (beastObject.getID() != null && beastObject.getID().startsWith("parameter.")) {
                         PartitionContext context = new PartitionContext(beastObject.getID().substring("parameter.".length()));
                         applyBeautiRules(templates, isInitial, context);
                     }

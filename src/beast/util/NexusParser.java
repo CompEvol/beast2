@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import beast.core.BEASTInterface;
+import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
@@ -844,11 +845,20 @@ public class NexusParser {
             		// next get the calibration
             		str0 = strs[strs.length - 1].trim();
             		String [] strs3 = str0.split("[\\(,\\)]");
+            		RealParameter [] param = new RealParameter[strs3.length];
+            		for (int i = 1; i < strs3.length; i++) {
+            			try {
+            				param[i] = new RealParameter(strs3[i]);
+            				param[i].setID("param." + i);
+            			} catch (Exception  e) {
+							// ignore parsing errors
+						}
+            		}
             		ParametricDistribution distr  = null;
             		switch (strs3[0]) {
             		case "normal":
             			distr = new Normal();
-            			distr.initByName("mean", strs3[1], "sigma", strs3[2]);
+            			distr.initByName("mean", param[1], "sigma", param[2]);
             			distr.setID("Normal.0");
             			break;
             		case "uniform":
@@ -859,32 +869,32 @@ public class NexusParser {
             		case "fixed":
             			// uniform with lower == upper
             			distr = new Normal();
-            			distr.initByName("mean", strs3[1], "sigma", "+Infinity");
+            			distr.initByName("mean", param[1], "sigma", "+Infinity");
             			distr.setID("Normal.0");
             			break;
             		case "offsetlognormal":
             			distr = new LogNormalDistributionModel();
-            			distr.initByName("offset", strs3[1], "M", strs3[2], "S", strs3[3], "meanInRealSpace", true);
+            			distr.initByName("offset", strs3[1], "M", param[2], "S", param[3], "meanInRealSpace", true);
             			distr.setID("LogNormal.0");
             			break;
             		case "lognormal":
             			distr = new LogNormalDistributionModel();
-            			distr.initByName("M", strs3[1], "S", strs3[2], "meanInRealSpace", true);
+            			distr.initByName("M", param[1], "S", param[2], "meanInRealSpace", true);
             			distr.setID("LogNormal.0");
             			break;
             		case "offsetexponential":
             			distr = new Exponential();
-            			distr.initByName("offset", strs3[1], "mean", strs3[2]);
+            			distr.initByName("offset", strs3[1], "mean", param[2]);
             			distr.setID("Exponential.0");
             			break;
             		case "gamma":
             			distr = new Gamma();
-            			distr.initByName("alpha", strs3[1], "beta", strs3[2]);
+            			distr.initByName("alpha", param[1], "beta", param[2]);
             			distr.setID("Gamma.0");
             			break;
             		case "offsetgamma":
             			distr = new Gamma();
-            			distr.initByName("offset", strs3[1], "alpha", strs3[2], "beta", strs3[3]);
+            			distr.initByName("offset", strs3[1], "alpha", param[2], "beta", param[3]);
             			distr.setID("Gamma.0");
             			break;
             		default:
