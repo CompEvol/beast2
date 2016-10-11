@@ -948,7 +948,10 @@ public class Tree extends StateNode implements TreeInterface {
         }
         m_nodes = tmp;
         nodeCount--;
-        leafNodeCount--;
+        if (i < leafNodeCount)
+            leafNodeCount--;
+        else
+            internalNodeCount--;
     }
 
     /**
@@ -962,7 +965,10 @@ public class Tree extends StateNode implements TreeInterface {
         newNode.setNr(nodeCount);
         m_nodes = tmp;
         nodeCount++;
-        leafNodeCount++;
+        if (newNode.getChildCount() > 0)
+            internalNodeCount++;
+        else
+            leafNodeCount++;
     }
 
     public int getDirectAncestorNodeCount() {
