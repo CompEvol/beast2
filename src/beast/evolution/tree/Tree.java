@@ -111,8 +111,11 @@ public class Tree extends StateNode implements TreeInterface {
         // ensure all nodes have their taxon names set up
         String [] taxa = getTaxaNames();
         for (int i = 0; i < getNodeCount() && i < taxa.length; i++) {
-        	if (taxa[i] != null)
-        		m_nodes[i].setID(taxa[i]);
+            if( taxa[i] != null ) {
+                if( m_nodes[i].getID() == null ) {
+                    m_nodes[i].setID(taxa[i]);
+                }
+            }
         }
     }
 
@@ -332,27 +335,32 @@ public class Tree extends StateNode implements TreeInterface {
      */
     public String [] getTaxaNames() {
          if (m_sTaxaNames == null || (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) || m_sTaxaNames.length == 0) {
-            final TaxonSet taxonSet = m_taxonset.get();
-            if (taxonSet != null) {
-                final List<String> txs = taxonSet.asStringList();
-                m_sTaxaNames = txs.toArray(new String[txs.size()]);
-            } else {
-                m_sTaxaNames = new String[getNodeCount()];
-                collectTaxaNames(getRoot());
-                List<String> taxaNames = new ArrayList<>();
-                for (String name : m_sTaxaNames) {
-                	if (name != null) {
-                		taxaNames.add(name);
-                	}
-                }
-                m_sTaxaNames = taxaNames.toArray(new String[]{});
-                
+             // take taxa from tree if one exists
+             if( root != null ) {
+                 m_sTaxaNames = new String[getNodeCount()];
+                 collectTaxaNames(getRoot());
+                 List<String> taxaNames = new ArrayList<>();
+                 for (String name : m_sTaxaNames) {
+                     if (name != null) {
+                         taxaNames.add(name);
+                     }
+                 }
+                 m_sTaxaNames = taxaNames.toArray(new String[]{});
+             } else {
+                 // no tree? use taxon set.
+                 final TaxonSet taxonSet = m_taxonset.get();
+                 if (taxonSet != null) {
+                     final List<String> txs = taxonSet.asStringList();
+                     m_sTaxaNames = txs.toArray(new String[txs.size()]);
+                 } else {
+                    Log.err("No taxa specified");
+                 }
             }
         }
 
         // sanity check
         if (m_sTaxaNames.length == 1 && m_sTaxaNames[0] == null) {
-            Log.warning.println("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
+            Log.warning("WARNING: tree interrogated for taxa, but the tree was not initialised properly. To fix this, specify the taxonset input");
         }
         return m_sTaxaNames;
     }
