@@ -415,7 +415,7 @@ public class TreeAnnotator {
 
 
     // Messages to stderr, output to stdout
-    private static PrintStream progressStream = Log.err;
+    static PrintStream progressStream = Log.err;
 
 //    private final String location1Attribute = "longLat1";
 //    private final String location2Attribute = "longLat2";
@@ -445,10 +445,6 @@ public class TreeAnnotator {
         totalTrees = 10000;
         totalTreesUsed = 0;
 
-        //progressStream.println("Reading trees (bar assumes 10,000 trees)...");
-
-        int stepSize = Math.max(totalTrees / 60, 1);
-
         try {
         	if (lowMemory) {
         		treeSet = new MemoryFriendlyTreeSet(inputFileName, burninPercentage);
@@ -461,7 +457,6 @@ public class TreeAnnotator {
         	return;
         }
 
-        
         if (targetOption != Target.USER_TARGET_TREE) {
             try {
             	treeSet.reset();
@@ -502,12 +497,26 @@ public class TreeAnnotator {
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
 
             progressStream.println("Total trees have " + totalTrees + ", where " + totalTreesUsed + " are used.");
-//            if (burninPercentage > 0) {
-//                progressStream.println("Ignoring first " + burninPercentage + "% trees.");
-//            }
 
             progressStream.println("Total unique clades: " + cladeSystem.getCladeMap().keySet().size());
             progressStream.println();
+        }  else {
+            // even when a user specificed target tree is provided we still need to count the totalTreesUsed for subsequent steps.
+            treeSet.reset();
+            while (treeSet.hasNext()) {
+                Tree tree = treeSet.next();
+                tree.getLeafNodeCount();
+                if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
+                    SAmode = true;
+                    Log.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
+                            "summary analysis.");
+                    if (heightsOption == HeightsSummary.CA_HEIGHTS) {
+                        throw new RuntimeException("The common ancestor height is not \n available for trees with sampled " +
+                                "ancestors. Please choose \n another height summary option");
+                    }
+                }
+                totalTreesUsed++;
+            }
         }
 
         Tree targetTree = null;
@@ -555,13 +564,13 @@ public class TreeAnnotator {
         progressStream.println("0              25             50             75            100");
         progressStream.println("|--------------|--------------|--------------|--------------|");
 
-        stepSize = Math.max(totalTreesUsed / 60, 1);
+        int stepSize = Math.max(totalTreesUsed / 60, 1);
         int reported = 0;
 
         // this call increments the clade counts and it shouldn't
         // this is remedied with removeClades call after while loop below
         cladeSystem = new CladeSystem(targetTree);
-        int totalTreesUsed = 0;
+        int totalTreesUsedNew = 0;
         try {
             int counter = 0;
             treeSet.reset();
@@ -578,14 +587,13 @@ public class TreeAnnotator {
             	    }
                     progressStream.flush();
                 }
-                totalTreesUsed++;
+                totalTreesUsedNew++;
                 counter++;
         	}
         	
             cladeSystem.removeClades(targetTree.getRoot(), true);
-            //progressStream.println("totalTreesUsed=" + totalTreesUsed);
-            this.totalTreesUsed = totalTreesUsed;
-            cladeSystem.calculateCladeCredibilities(totalTreesUsed);
+            this.totalTreesUsed = totalTreesUsedNew;
+            cladeSystem.calculateCladeCredibilities(totalTreesUsedNew);
         } catch (Exception e) {
             Log.err.println("Error Parsing Input Tree: " + e.getMessage());
             return;
@@ -639,7 +647,7 @@ public class TreeAnnotator {
 			processMetaData(child);
 		}
 		Set<String> metaDataNames = node.getMetaDataNames(); 
-		if (metaDataNames != null) {
+		if (metaDataNames != null && !metaDataNames.isEmpty()) {
 			String metadata = "";
 			for (String name : metaDataNames) {
 				Object value = node.getMetaData(name);

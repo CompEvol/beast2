@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import beast.core.util.Log;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 
 public class TreeSetParser {
 	/**
@@ -281,7 +282,7 @@ public class TreeSetParser {
 		String s = fin.readLine();
 		fileRead += s.length();
 		if (fileRead > fileMarked - 10) {
-			Log.warning.print("*");
+			TreeAnnotator.progressStream.print("*");
 			fileMarked += fileStep;
 			k++;
 		}
