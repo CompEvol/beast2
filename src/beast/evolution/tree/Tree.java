@@ -60,7 +60,7 @@ public class Tree extends StateNode implements TreeInterface {
      * array of taxa names for the nodes in the tree
      * such that m_sTaxaNames[node.getNr()] == node.getID()*
      */
-    String[] m_sTaxaNames = null;
+    protected String[] m_sTaxaNames = null;
 
     /**
      * Trait set which specifies leaf node times.

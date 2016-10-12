@@ -164,7 +164,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         super.initAndValidate();
-        
+        m_sTaxaNames = null;
+
         if (sortNodesAlphabetically) {
 	        // correct for node ordering: ensure order is alphabetical
 	        for (int i = 0; i < getNodeCount() && i < labels.size(); i++) {
