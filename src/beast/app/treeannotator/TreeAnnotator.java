@@ -619,7 +619,7 @@ public class TreeAnnotator {
             annotateTree(cladeSystem, targetTree.getRoot(), null, heightsOption);
 
             if( heightsOption == HeightsSummary.CA_HEIGHTS ) {
-                setTreeHeightsByCA(targetTree);
+                setTreeHeightsByCA(targetTree, targetOption);
             }
         } catch (Exception e) {
         	e.printStackTrace();
@@ -1510,7 +1510,7 @@ public class TreeAnnotator {
         boolean handleAttribute(Node node, String attributeName, double[] values);
     }
 
-    boolean setTreeHeightsByCA(Tree targetTree) throws IOException
+    boolean setTreeHeightsByCA(Tree targetTree, Target targetOption) throws IOException
              {
         progressStream.println("Setting node heights...");
         progressStream.println("0              25             50             75            100");
@@ -1574,7 +1574,10 @@ public class TreeAnnotator {
             counter++;
 
         }
-        targetTree.initAndValidate();
+
+        if (targetOption != Target.USER_TARGET_TREE)
+            targetTree.initAndValidate();
+
         cladeSystem.removeClades(targetTree.getRoot(), true);
         for (int k = 0; k < clades; ++k) {
             ths[k] /= totalTreesUsed;
