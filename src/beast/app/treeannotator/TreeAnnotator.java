@@ -25,23 +25,8 @@
 
 package beast.app.treeannotator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.io.*;
+import java.util.*;
 
 import javax.swing.JFrame;
 
@@ -87,22 +72,85 @@ public class TreeAnnotator {
     	abstract boolean hasNext();
     	abstract Tree next() throws IOException;
     	abstract void reset() throws IOException;
+
+
+        String inputFileName;
+        int burninCount = 0;
+        int totalTrees = 0;
+        boolean isNexus = true;
+
+        /** determine number of trees in the file,
+    	 * and number of trees to skip as burnin
+    	 * @throws IOException
+    	 * @throws FileNotFoundException **/
+    	void countTrees(int burninPercentage) throws IOException  {
+            BufferedReader fin = new BufferedReader(new FileReader(new File(inputFileName)));
+            if (!fin.ready()) {
+            	throw new IOException("File appears empty");
+            }
+        	String str = fin.readLine();
+            if (!str.toUpperCase().trim().startsWith("#NEXUS")) {
+            	// the file contains a list of Newick trees instead of a list in Nexus format
+            	isNexus = false;
+            	if (str.trim().length() > 0) {
+            		totalTrees = 1;
+            	}
+            }
+            while (fin.ready()) {
+            	str = fin.readLine();
+                if (isNexus) {
+                    if (str.trim().toLowerCase().startsWith("tree ")) {
+                    	totalTrees++;
+                    }
+                } else if (str.trim().length() > 0) {
+            		totalTrees++;
+                }
+            }
+            fin.close();
+
+            burninCount = Math.max(0, (burninPercentage * totalTrees)/100);
+
+            progressStream.println("Processing " + (totalTrees - burninCount) + " trees from file" +
+                    (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% = " + burninCount + " trees." : "."));
+		}
+
     }    
     
     class FastTreeSet extends TreeSet {
     	int current = 0;
     	Tree [] trees;
-    	
+
     	public FastTreeSet(String inputFileName, int burninPercentage) throws IOException  {
-            progressStream.println("0              25             50             75            100");
-            progressStream.println("|--------------|--------------|--------------|--------------|");
-    		TreeSetParser parser = new TreeSetParser(burninPercentage, false);
-	      	Node [] roots = parser.parseFile(inputFileName);
-	      	trees = new Tree[roots.length];
-	      	int i = 0;
-	      	for (Node root : roots) {
-	      		trees[i++] = new Tree(root);
-	      	}
+            this.inputFileName = inputFileName;
+            countTrees(burninPercentage);
+
+            List<Tree> parsedTrees;
+            if (isNexus) {
+                NexusParser nexusParser = new NexusParser();
+                nexusParser.parseFile(new File(inputFileName));
+                parsedTrees = nexusParser.trees;
+            } else {
+                BufferedReader fin = new BufferedReader(new FileReader(inputFileName));
+                parsedTrees = new ArrayList<>();
+                while (fin.ready()) {
+                    String line = fin.readLine().trim();
+
+                    Tree thisTree;
+                    try {
+                        thisTree = new TreeParser(null, line, 0, false);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        thisTree = new TreeParser(null, line, 1, false);
+                    }
+
+                    parsedTrees.add(thisTree);
+                }
+                fin.close();
+            }
+
+            int treesToUse = parsedTrees.size() - burninCount;
+	      	trees = new Tree[treesToUse];
+            for (int i=burninCount; i<parsedTrees.size(); i++)
+                trees[i-burninCount] = parsedTrees.get(i);
 		}
 
 		@Override
@@ -127,55 +175,19 @@ public class TreeAnnotator {
     	int lineNr;
         public Map<String, String> translationMap = null;
         public List<String> taxa;
-    	
-        int burninCount = 0;
-        int totalTrees = 0;
-        boolean isNexus = true;
-        BufferedReader fin;
-        String inputFileName;
+
         // label count origin for NEXUS trees
         int origin = -1;
-       
+
+        BufferedReader fin;
+
         MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws IOException  {
     		this.inputFileName = inputFileName;
-    		init(burninPercentage);
-        	progressStream.println("Processing " + (totalTrees - burninCount) + " trees from file" +
-                    (burninPercentage > 0 ? " after ignoring first " + burninPercentage + "% = " + burninCount + " trees." : "."));
-    		
-    		
+    		countTrees(burninPercentage);
+
+            fin = new BufferedReader(new FileReader(inputFileName));
     	}
 
-    	/** determine number of trees in the file,
-    	 * and number of trees to skip as burnin 
-    	 * @throws IOException 
-    	 * @throws FileNotFoundException **/
-    	private void init(int burninPercentage) throws IOException  {
-            fin = new BufferedReader(new FileReader(new File(inputFileName)));
-            if (!fin.ready()) {
-            	throw new IOException("File appears empty");
-            }
-        	String str = nextLine();
-            if (!str.toUpperCase().trim().startsWith("#NEXUS")) {
-            	// the file contains a list of Newick trees instead of a list in Nexus format
-            	isNexus = false;
-            	if (str.trim().length() > 0) {
-            		totalTrees = 1;
-            	}
-            }
-            while (fin.ready()) {
-            	str = nextLine();
-                if (isNexus) {
-                    if (str.trim().toLowerCase().startsWith("tree ")) {
-                    	totalTrees++;
-                    }
-                } else if (str.trim().length() > 0) {
-            		totalTrees++;
-                }            	
-            }
-            fin.close();
-            
-            burninCount = Math.max(0, (burninPercentage * totalTrees)/100);
-		}
 
     	@Override
 		void reset() throws FileNotFoundException  {
