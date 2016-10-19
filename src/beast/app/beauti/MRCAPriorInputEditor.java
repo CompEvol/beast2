@@ -166,6 +166,9 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 				MRCAPrior prior = (MRCAPrior) list.get(itemNr);
 				doc.disconnect(prior, "prior", "distribution");
 				doc.disconnect(prior, "tracelog", "log");
+				if (prior.onlyUseTipsInput.get()) {
+					disableTipSampling();
+				}
 				doc.unregisterPlugin(prior);
 				refreshPanel();
 			}        	
