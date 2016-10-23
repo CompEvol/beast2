@@ -875,12 +875,12 @@ public class NexusParser {
             		case "offsetlognormal":
             			distr = new LogNormalDistributionModel();
             			distr.initByName("offset", strs3[1], "M", param[2], "S", param[3], "meanInRealSpace", true);
-            			distr.setID("LogNormal.0");
+            			distr.setID("LogNormalDistributionModel.0");
             			break;
             		case "lognormal":
             			distr = new LogNormalDistributionModel();
             			distr.initByName("M", param[1], "S", param[2], "meanInRealSpace", true);
-            			distr.setID("LogNormal.0");
+            			distr.setID("LogNormalDistributionModel.0");
             			break;
             		case "offsetexponential":
             			distr = new Exponential();
