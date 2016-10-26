@@ -119,12 +119,12 @@ public class Utils6 {
 			// /Library/Frameworks/CUDA.framework
 			// /Developer/NVIDIA
 			// /usr/local/cuda
+			// there is evidence of CUDA being installed on this computer
+			// try to create a BeagleTreeLikelihood using a separate process
+			try {
 			if (new File("/Library/Frameworks/CUDA.framework").exists() ||
 					new File("/Developer/NVIDIA").exists() ||
 					new File("/usr/local/cuda").exists()) {
-				// there is evidence of CUDA being installed on this computer
-				// try to create a BeagleTreeLikelihood using a separate process
-				try {
 				      String java = System.getenv("java.home");
 				      if (java == null) {
 				    	  java ="/usr/bin/java";
@@ -157,9 +157,9 @@ public class Utils6 {
 				    	  return false;
 				      }
 				    }
-				    catch (Exception err) {
-				      err.printStackTrace();
-				    }
+				}
+		    catch (Exception err) {
+			      err.printStackTrace();
 			}
 			
 		}
