@@ -29,7 +29,7 @@ import beast.app.util.Utils6;
  * remainder of BEAST can be compiled against Java 1.8
  * **/
 public class BeastLauncher {
-	private static String getVersion() {return "2.4.3";}
+	private static String getVersion() {return "2.4.4";}
 	private static String getMajorVersion() {return "2.4";}
 	
 	private static String pathDelimiter;

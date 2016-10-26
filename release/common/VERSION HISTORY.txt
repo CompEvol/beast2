@@ -1,14 +1,23 @@
-                    BEAST v2.4.3 2016
+                    BEAST v2.4.4 2016
                  Beast 2 development team 2011-2016
 Version History
-Last updated: August 2016
+Last updated: November 2016
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.4 November 2016
+	Fix that prevented starting any BEAST application on Mac Sierra
+	
+	Smooth out some issues with importing Nexus files in BEAUti
+	
+	TreeAnnotator fix for use with user defined trees to annotate
+	
+	Allow smaller log files by logging fewer significant digits of metadata
+
 Version 2.4.3 August 2016
 	
 	BEAUti
-		Support for tip data sampling by setting 'tipsonly' in MRCA Priors
+		Support for tip date sampling by setting 'tipsonly' in MRCA Priors
 		Allow packages to specify priors, e.g. multi-monophyletic constraints in BEASTLabs
 		Allow packages to specify file importers, which allows microsattelite support through the BEASTvntr package
 		Gamma distribution allows multiple parameterisations
