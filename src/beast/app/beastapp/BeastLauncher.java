@@ -276,7 +276,7 @@ public class BeastLauncher {
         if (Utils6.isWindows()) {
             return System.getProperty("user.home") + "\\BEAST\\" + getMajorVersion();
         }
-        if (Utils6.isMac()) {
+        if (Utils6.isMac() && !Utils6.isMacSierra()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + getMajorVersion();
         }
         // Linux and unices

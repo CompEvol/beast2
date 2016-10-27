@@ -621,7 +621,7 @@ public class AddOnManager {
         if (Utils.isWindows()) {
             return System.getProperty("user.home") + "\\BEAST\\" + beastVersion.getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils.isMac() && !Utils.isMacSierra()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         // Linux and unices

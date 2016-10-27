@@ -190,6 +190,26 @@ public class Utils {
         return System.getProperty("os.name").toLowerCase().startsWith("mac");
     }
 
+    public static boolean isMacSierra() {
+		if (!isMac()) {
+			return false;
+		}
+        String version = System.getProperty("os.version");
+        if (version != null) {
+    		String[] versions = version.split("\\.");
+    		if (versions.length > 2) {
+    			try {
+    				int majorVersion = Integer.parseInt(versions[0]);
+    				int minorVersion = Integer.parseInt(versions[1]);
+    				return ((majorVersion == 10 && minorVersion >= 12) || majorVersion > 10);
+    			} catch (NumberFormatException e) {
+    				// ignore
+    			}
+    		}
+        }
+    	return false;
+	}
+
     public static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
