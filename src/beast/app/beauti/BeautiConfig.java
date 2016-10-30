@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,11 +166,13 @@ public class BeautiConfig extends BEASTObject {
     }
 
     /**
+     * if fileArray == null, then use getAlignments(doc)
      * @param doc
      * @param parent
+     * @param fileArray
      * @return a list of alignments based on the user selected alignment provider
      */
-    public List<BEASTInterface> selectAlignments(BeautiDoc doc, JComponent parent) {
+    public List<BEASTInterface> selectAlignments(BeautiDoc doc, JComponent parent, File[] fileArray) {
         List<BeautiAlignmentProvider> providers = alignmentProvider;
         BeautiAlignmentProvider selectedProvider = null;
         if (providers.size() == 1) {
@@ -183,7 +186,7 @@ public class BeautiConfig extends BEASTObject {
                 return null;
             }
         }
-        List<BEASTInterface> beastObjects = selectedProvider.getAlignments(doc);
+        List<BEASTInterface> beastObjects = selectedProvider.getAlignments(doc, fileArray);
         // create taxon sets, if any
         if (beastObjects != null) {
 	        for (BEASTInterface o : beastObjects) {

@@ -156,7 +156,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
             	SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-		                addFiles(files);
+						addItem(files);
 					}
 				});
             }   // end filesDropped
@@ -218,46 +218,6 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
         return buttonBox;
     }
-
-    private void addFiles(File[] fileArray) {
-        List<BEASTInterface> beastObjects = null;
-
-        List<BeautiAlignmentProvider> providers = doc.beautiConfig.alignmentProvider;
-        BeautiAlignmentProvider selectedProvider = null;
-        if (providers.size() == 1) {
-            selectedProvider = providers.get(0);
-        } else {
-            selectedProvider = (BeautiAlignmentProvider) JOptionPane.showInputDialog(this, "Select what to add",
-                    "Add partition",
-                    JOptionPane.QUESTION_MESSAGE, null, providers.toArray(),
-                    providers.get(0));
-            if (selectedProvider == null) {
-                return;
-            }
-        }
-
-        beastObjects = selectedProvider.getAlignments(doc, fileArray);
-
-        // create taxon sets, if any
-        if (beastObjects != null) {
-	        for (BEASTInterface o : beastObjects) {
-	        	if (o instanceof Alignment) {
-	        		try {
-						BeautiDoc.createTaxonSet((Alignment) o, doc);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-	        	}
-	        }
-        }
-
-        // Component c = this;
-        if (beastObjects != null) {
-            refreshPanel();
-        }
-    }
-
-
 
 	/**
      * This method just adds the two buttons (with add()) and does not add any glue or struts before or after.
@@ -1095,13 +1055,17 @@ public class AlignmentListInputEditor extends ListInputEditor {
 
 	@Override
 	protected void addItem() {
-		List<BEASTInterface> beastObjects = doc.beautiConfig.selectAlignments(doc, this);
+		addItem(null);
+	} // addItem
+
+	private void addItem(File[] fileArray) {
+		List<BEASTInterface> beastObjects = doc.beautiConfig.selectAlignments(doc, this, fileArray);
 
 		// Component c = this;
 		if (beastObjects != null) {
 			refreshPanel();
 		}
-	} // addItem
+	}
 
 	void delItem() {
 		int[] selected = getTableRowSelection();

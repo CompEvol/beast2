@@ -116,6 +116,10 @@ public class BeautiAlignmentProvider extends BEASTObject {
      * @return
      */
     public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files) {
+		if (files == null) {
+			// merge "+ button" and "drag drop" function
+			return getAlignments(doc);
+		}
 		if (importers == null) {
 			initImporters();
 		}
