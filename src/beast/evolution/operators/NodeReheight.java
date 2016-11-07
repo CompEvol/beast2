@@ -40,7 +40,7 @@ public class NodeReheight extends TreeOperator {
         final List<Taxon> list = taxonSetInput.get().taxonsetInput.get();
         
         if (list.size() <= 1) {
-        	Log.warning.println("NodeReheight operator requires at least 2 taxa while the taxon set (id=" + taxonSetInput.get().getID() +") has only " + list.size() + " taxa. "
+        	Log.err.println("NodeReheight operator requires at least 2 taxa while the taxon set (id=" + taxonSetInput.get().getID() +") has only " + list.size() + " taxa. "
         			+ "If the XML file was set up in BEAUti, this probably means a taxon assignment needs to be set up in the taxonset panel.");
         	// assume we are in BEAUti, back off for now
         	return;
