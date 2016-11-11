@@ -50,7 +50,6 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.MCMC;
-import beast.core.Operator;
 import beast.core.StateNode;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
@@ -104,8 +103,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public boolean autoSetClockRate = true;
 
-    public boolean autoUpdateOperatorWeights = true;
-
     public boolean autoUpdateFixMeanSubstRate = true;
     /**
      * flags for whether parameters can be linked.
@@ -129,11 +126,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     private String templateName = null;
     private String templateFileName = STANDARD_TEMPLATE;
-
-    // used to scale *BEAST and StarBEAST2 species (tree) operator rates
-    // so that 20% of operator weights is dedicated to species operators
-    final private double speciesOperatorsFraction = 0.20;
-    private double speciesOperatorsScale = -1.0;
 
     Map<String, String> tipTextMap = new HashMap<>();
 
@@ -725,10 +717,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         determinePartitions();
         scrubAll(false, false);
 
-        if (autoUpdateOperatorWeights) {
-            reweightSpeciesPartitionOperators();
-        }
-
         // String xml = new XMLProducer().toXML(mcmc.get(), );
         String spec = null;
         if (file.getPath().toLowerCase().endsWith(".json")) {
@@ -739,10 +727,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         FileWriter outfile = new FileWriter(file);
         outfile.write(spec);
         outfile.close();
-
-        if (autoUpdateOperatorWeights) {
-            revertSpeciesPartitionOperators();
-        }
     } // save
 
     private String toJSON() {
@@ -775,9 +759,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 	    }
 	    if (allowLinking) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
-	    }
-	    if (!autoUpdateOperatorWeights) {
-	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateOperatorWeights";
 	    }
 	    if (!autoUpdateFixMeanSubstRate) {
 	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
@@ -818,8 +799,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         beauti.autoSetClockRate.setSelected(autoSetClockRate);
         allowLinking = beautiStatus.contains("allowLinking");
         beauti.allowLinking.setSelected(allowLinking);
-        autoUpdateOperatorWeights = !beautiStatus.contains("noAutoUpdateOperatorWeights");
-        beauti.autoUpdateOperatorWeights.setSelected(autoUpdateOperatorWeights);
         autoUpdateFixMeanSubstRate = !beautiStatus.contains("noAutoUpdateFixMeanSubstRate");
         beauti.autoUpdateFixMeanSubstRate.setSelected(autoUpdateFixMeanSubstRate);
 
@@ -1497,48 +1476,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         determinePartitions();
     }
 
-    /**
-      * Reweight total weight of operators that work on the Species partition to 20%
-      * of total operator weights. This helps *BEAST analyses in convergence. For non
-      * *BEAST analyses, this bit of code has no effect.
-      */
-    private void reweightSpeciesPartitionOperators() {
-    	if (!(mcmc.get() instanceof MCMC)) return;
-
-    	List<Operator> speciesOperators = new ArrayList<>();
-    	double geneOperatorsWeight = 0;
-    	double speciesOperatorsWeight = 0;
-    	for (Operator operator : ((MCMC)mcmc.get()).operatorsInput.get()) {
-			if (operator.getID().endsWith("Species")) {
-				speciesOperators.add(operator);
-				speciesOperatorsWeight += operator.getWeight();
-			} else {
-			    geneOperatorsWeight += operator.getWeight();
-			}
-    	}
-
-        // we have a Species-related operator AND an alignment
-    	if (speciesOperatorsWeight > 0 && geneOperatorsWeight > 0) {
-    	    final double targetWeight = (speciesOperatorsFraction * geneOperatorsWeight) / (1.0 - speciesOperatorsFraction);
-    		speciesOperatorsScale = targetWeight / speciesOperatorsWeight;
-    		for (Operator operator : speciesOperators) {
-    			operator.m_pWeight.setValue(operator.getWeight() * speciesOperatorsScale, operator);
-    		}
-    	} else {
-    	    speciesOperatorsScale = -1.0;
-    	}
-	}
-
-    private void revertSpeciesPartitionOperators() {
-        if (!(mcmc.get() instanceof MCMC)) return;
-        if (speciesOperatorsScale < 0.0) return;
-
-        for (Operator operator : ((MCMC)mcmc.get()).operatorsInput.get()) {
-            if (operator.getID().endsWith("Species")) {
-                operator.m_pWeight.setValue(operator.getWeight() / speciesOperatorsScale, operator);
-            }
-        }
-    }
 
 	public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template)  {
         BEASTInterface data = template.createSubNet(context, true);
