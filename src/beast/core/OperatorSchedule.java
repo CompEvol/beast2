@@ -343,7 +343,7 @@ public class OperatorSchedule extends BEASTObject {
 	   	double geneOperatorsWeight = 0;
 	   	double speciesOperatorsWeight = 0;
 	   	for (Operator operator : operators) {
-			if (operator.getID().endsWith("Species")) {
+			if (operator.getID() != null && operator.getID().endsWith("Species")) {
 				speciesOperators.add(operator);
 				speciesOperatorsWeight += operator.getWeight();
 			} else {
