@@ -26,7 +26,8 @@ public class OperatorScheduleTest extends TestCase {
 		schedule.initAndValidate();
 		schedule.addOperator(operator1);
 		schedule.addOperator(operator2);
-		schedule.reweightSpeciesPartitionOperators();
+		// selectOperator() causes reweighting
+		schedule.selectOperator();
 
 		// weights have not changed
 		assertEquals(1.0, operator1.getWeight());
@@ -36,7 +37,8 @@ public class OperatorScheduleTest extends TestCase {
 		operator3.setID("scaleOperator.Species");
 		operator3.initByName("parameter", parameter, "weight", 20.0);
 		schedule.addOperator(operator3);
-		schedule.reweightSpeciesPartitionOperators();
+		// selectOperator() causes reweighting
+		schedule.selectOperator();
 
 		assertEquals(1.0, operator1.getWeight());
 		assertEquals(3.0, operator2.getWeight());
@@ -47,7 +49,9 @@ public class OperatorScheduleTest extends TestCase {
 		operator4.setID("scaleOperator2.Species");
 		operator4.initByName("parameter", parameter, "weight", 20.0);
 		schedule.addOperator(operator4);
-		schedule.reweightSpeciesPartitionOperators();
+		// selectOperator() causes reweighting
+		schedule.selectOperator();
+
 		assertEquals(1.0, operator1.getWeight());
 		assertEquals(3.0, operator2.getWeight());
 		// operator3 & 4 get 20% of weight in proportions 1:20

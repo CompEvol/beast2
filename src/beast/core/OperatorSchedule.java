@@ -64,6 +64,8 @@ public class OperatorSchedule extends BEASTObject {
     OptimisationTransform transform = OptimisationTransform.none;
     boolean autoOptimise = true;
     boolean detailedRejection = false;
+    
+    private boolean reweighted = false;
 
     @Override
     public void initAndValidate() {
@@ -84,12 +86,8 @@ public class OperatorSchedule extends BEASTObject {
     public void addOperator(final Operator p) {
         operators.add(p);
         p.setOperatorSchedule(this);
+        reweighted = false;
         totalWeight += p.getWeight();
-        cumulativeProbs = new double[operators.size()];
-        cumulativeProbs[0] = operators.get(0).getWeight() / totalWeight;
-        for (int i = 1; i < operators.size(); i++) {
-            cumulativeProbs[i] = operators.get(i).getWeight() / totalWeight + cumulativeProbs[i - 1];
-        }
     }
 
     /**
@@ -98,6 +96,10 @@ public class OperatorSchedule extends BEASTObject {
      * @return
      */
     public Operator selectOperator() {
+    	if (!reweighted) {
+    		reweightSpeciesPartitionOperators();
+    		reweighted = true;
+    	}
         final int operatorIndex = Randomizer.randomChoice(cumulativeProbs);
         return operators.get(operatorIndex);
     }
@@ -336,7 +338,7 @@ public class OperatorSchedule extends BEASTObject {
      * of total operator weights. This helps *BEAST analyses in convergence. For non
      * *BEAST analyses, this bit of code has no effect.
      */
-   public void reweightSpeciesPartitionOperators() {
+   private void reweightSpeciesPartitionOperators() {
 	   	List<Operator> speciesOperators = new ArrayList<>();
 	   	double geneOperatorsWeight = 0;
 	   	double speciesOperatorsWeight = 0;
