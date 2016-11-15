@@ -355,7 +355,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		printBeautiState(f);
 		
 		// 4. set chain-length to 10M, log every 10K
-		warning("4. set chaing-length to 10M, log every 10K");
+		warning("4. set chain-length to 10M, log every 10K");
 		f = f.selectTab("MCMC");
 		beautiFrame.textBox("chainLength").selectAll().setText("10000000");
 		beautiFrame.button("tracelog.editButton").click();
