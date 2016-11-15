@@ -98,7 +98,15 @@ public class CompoundDistribution extends Distribution {
         if (ignore) {
         	return logP;
         }
+        int workAvailable = 0;
         if (useThreads) {
+	        for (Distribution dists : pDistributions.get()) {
+	            if (dists.isDirtyCalculation()) {
+	            	workAvailable++;
+	            }
+	        }
+        }
+        if (useThreads && workAvailable > 1) {
             logP = calculateLogPUsingThreads();
         } else {
             for (Distribution dists : pDistributions.get()) {
