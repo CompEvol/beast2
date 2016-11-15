@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +40,6 @@ import beast.math.distributions.MRCAPrior;
 import beast.util.AddOnManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
-
 
 
 @Description("Class for creating new alignments to be edited by AlignmentListInputEditor")
@@ -408,9 +408,16 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		
 	}
 
+	enum dtype { userdefined, aminoacid, nucleotide};
 	@Description("Fasta file importer")
 	class FastaImporter implements AlignmentImporter {
-
+		dtype datatype = dtype.userdefined;
+		
+		public FastaImporter() {
+			super();
+			datatype = dtype.userdefined;
+		}
+		
 		@Override
 		public String[] getFileExtensions() {
 			return new String[]{"fa","fas","fst","fasta","fna","ffn","faa","frn"};
@@ -480,7 +487,8 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			            data = data.replace(missing.charAt(0), DataType.MISSING_CHAR);
 			            data = data.replace(gap.charAt(0), DataType.GAP_CHAR);
 
-			            if (mayBeAminoacid && datatype.equals("nucleotide") && !data.matches("[ACGTUXNacgtuxn?_-]+")) {
+			            if (mayBeAminoacid && datatype.equals("nucleotide") && 
+			            		guessSequenceType(data).equals("aminoacid")) {
 			            	datatype = "aminoacid";
 			            	totalCount = 20;
 			            	for (Sequence seq : alignment.sequenceInput.get()) {
@@ -497,6 +505,29 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			        String ID = file.getName();
 			        ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 			        alignment.setID(ID);
+
+			        if (mayBeAminoacid) {
+			        	switch (this.datatype) {
+				        	case userdefined:
+				        		// make user choose 
+					        	JComboBox<String> jcb = new JComboBox<>(new String[]{"aminoacid", "nucleotide", "all are aminoacid", "all are nucleotide"});
+					        	jcb.setEditable(true);
+					        	jcb.setSelectedItem(datatype);
+					        	JOptionPane.showMessageDialog(null, jcb, "Choose the datatype of alignmnet " + alignment.getID(), JOptionPane.QUESTION_MESSAGE);
+					        	switch ((String) jcb.getSelectedItem()) {
+						        	case "aminoacid": datatype = "aminoacid"; break;
+						        	case "nucleotide": datatype = "nucleotide"; break;
+						        	case "all are aminoacid": datatype = "aminoacid"; this.datatype = dtype.aminoacid; break;
+						        	case "all are nucleotide": datatype = "nucleotide"; this.datatype = dtype.nucleotide; break;
+					        	}
+					        	break;
+				        	case aminoacid:
+				        		datatype = "aminoacid";
+				        		break;
+				        	case nucleotide:
+				        		datatype = "nucleotide";
+			        	}
+			        }
 					alignment.dataTypeInput.setValue(datatype, alignment);
 			        alignment.initAndValidate();
 			        selectedBEASTObjects.add(alignment);
@@ -506,6 +537,71 @@ public class BeautiAlignmentProvider extends BEASTObject {
 		    	}
 			return selectedBEASTObjects;
 		}
+		
+	    /** Ported from jebl2
+	     * Guess type of sequence from contents.
+	     * @param seq the sequence
+	     * @return SequenceType.NUCLEOTIDE or SequenceType.AMINO_ACID, if sequence is believed to be of that type.
+	     *         If the sequence contains characters that are valid for neither of these two sequence
+	     *         types, then this method returns null.
+	     */
+	    public String guessSequenceType(final String seq) {
+
+	        int canonicalNucStates = 0;
+	        int undeterminedStates = 0;
+	        // true length, excluding any gaps
+	        int sequenceLength = seq.length();
+	        final int seqLen = sequenceLength;
+
+	        boolean onlyValidNucleotides = true;
+	        boolean onlyValidAminoAcids = true;
+
+	        // do not use toCharArray: it allocates an array size of sequence
+	        for(int k = 0; (k < seqLen) && (onlyValidNucleotides || onlyValidAminoAcids); ++k) {
+	            final char c = seq.charAt(k);
+	            final boolean isNucState = ("ACGTUXNacgtuxn?_-".indexOf(c) > -1);
+	            final boolean isAminoState = true;
+
+	            onlyValidNucleotides &= isNucState;
+	            onlyValidAminoAcids &= isAminoState;
+
+	            if (onlyValidNucleotides) {
+	                assert(isNucState);
+	                if (("ACGTacgt".indexOf(c) > -1)) {
+	                    ++canonicalNucStates;
+	                } else {
+	                    if (("?_-".indexOf(c) > -1)) {
+	                        --sequenceLength;
+	                    } else if( ("UXNuxn".indexOf(c) > -1)) {
+	                        ++undeterminedStates;
+	                    }
+	                }
+	            }
+	        }
+
+	        String result = "aminoacid";
+	        if (onlyValidNucleotides) {  // only nucleotide states
+	            // All sites are nucleotides (actual or ambigoues). If longer than 100 sites, declare it a nuc
+	            if( sequenceLength >= 100 ) {
+	                result = "nucleotide";
+	            } else {
+	                // if short, ask for 70% of ACGT or N
+	                final double threshold = 0.7;
+	                final int nucStates = canonicalNucStates + undeterminedStates;
+	                // note: This implicitely assumes that every valid nucleotide
+	                // symbol is also a valid amino acid. This is true since we
+	                // added support for the 21st amino acid, U (Selenocysteine)
+	                // in AminoAcids.java.
+	                result = nucStates >= sequenceLength * threshold ? "nucleotide" : "aminoacid";
+	            }
+	        } else if (onlyValidAminoAcids) {
+	            result = "aminoacid";
+	        } else {
+	            result = null;
+	        }
+	        return result;
+	    }
+
 		
 	}
 
