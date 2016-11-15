@@ -130,7 +130,7 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
         }
 
         if (!mode.equals(MODE.BEAST)) {
-        	Log.warning.println("If you encounter infinities, or chaing getting stuck, consider using a more robust "
+        	Log.warning.println("If you encounter infinities, or chains getting stuck, consider using a more robust "
         			+ "eigen system, by setting the eigenSystem input, e.g. "
         			+ "eigenSystem=\"beast.evolution.substitutionmodel.RobustEigenSystem\" "
         			+ "available from the beast-classic package.");
