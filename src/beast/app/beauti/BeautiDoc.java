@@ -2438,6 +2438,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 					// it is a 'fixed' calibration, no need to add a distribution
 				} else {
 					prior.pDistributions.setValue(mrcaPrior, prior);
+					connect(mrcaPrior, "tracelog", "log");
 				}
 			}
 			if (t.taxonsetInput.get().size() == 1 && distr != null) {
