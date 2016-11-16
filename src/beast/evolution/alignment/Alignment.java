@@ -307,7 +307,7 @@ public class Alignment extends Map<String> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            throw new RuntimeException(e);
         }
         sanityCheckCalcPatternsSetUpAscertainment(log);
     }
