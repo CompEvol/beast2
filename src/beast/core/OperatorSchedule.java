@@ -10,7 +10,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +36,21 @@ public class OperatorSchedule extends BEASTObject {
 
     final public Input<Integer> autoOptimizeDelayInput = new Input<>("autoOptimizeDelay", "number of samples to skip before auto optimisation kicks in (default=10000)", 10000);
 
+    // the following inputs are for to deal with schedules nested inside other schedules
+    // this allows operators to be grouped, and a percentage of operator weights to be 
+    // assigned to a group of operators.
+    final public Input<List<Operator>> operatorsInput = new Input<>("operator", "operator that the schedule can choose from. Any operators "
+    		+ "added by other classes (e.g. MCMC) will be added if there are no duplicates.", new ArrayList<>());
+    final public Input<List<OperatorSchedule>> subschedulesInput = new Input<>("subschedule", "operator schedule representing a subset of"
+    		+ "the weight of the operators it contains.", new ArrayList<>());
+    final public Input<Double> weightInput = new Input<>("weight", "weight with which this operator schedule is selected. Only used when "
+    		+ "this operator schedule is nested inside other schedules. This weight is relative to other operators and operator schedules "
+    		+ "of the parent schedule.", 100.0);
+    final public Input<Boolean> weightIsPercentageInput = new Input<>("weightIsPercentage", "indicates weight is a percentage of total weight instead of a relative weight", false);
+    final public Input<String> operatorPatternInput = new Input<>("operatorPattern", "Regular expression matching operator IDs of operators of parent schedule");
+
+    
+    
     /**
      * list of operators in the schedule *
      */
@@ -73,6 +90,38 @@ public class OperatorSchedule extends BEASTObject {
         autoOptimise = autoOptimiseInput.get();
         autoOptimizeDelay = autoOptimizeDelayInput.get();
         detailedRejection = detailedRejectionInput.get();
+        operators.addAll(operatorsInput.get());
+        for (Operator o : operators) {
+        	o.setOperatorSchedule(this);
+        }
+        
+        // sanity check: make sure weight percentages add to less than 100%
+        double sumPercentage = 0;
+        for (OperatorSchedule o : subschedulesInput.get()) {
+        	if (o.weightIsPercentageInput.get()) {
+        		sumPercentage += o.weightInput.get();
+        	}
+        }
+        if (sumPercentage > 100) {
+        	throw new IllegalArgumentException("Sum of percentages of subschedules should not exceed 100%. Reduce the weight of subschedules.");
+        }
+        if (Math.abs(sumPercentage - 100) < 1e-6 && operators.size() > 0) {
+        	throw new IllegalArgumentException("Sum of percentages of subschedules add to 100%, so operators in main schedule will be ignored. Reduce the weight of subschedules.");
+        }
+        
+        // sanity check: warn if operators appear in multiple schedules
+    	Set<Operator> allOperators = new LinkedHashSet<>();
+    	allOperators.addAll(operators);
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+    		for (Operator o : os.operators) {
+    			if (allOperators.contains(o)) {
+    				Log.warning("WARNING: Operator " + o.getID() + " is contained in multiple operator schedules.\n"
+    						+ "Operator weighting may not work as expected.");
+    			}
+    			allOperators.add(o);
+    		}
+    	}
+
     }
 
     public void setStateFileName(final String name) {
@@ -84,12 +133,39 @@ public class OperatorSchedule extends BEASTObject {
      * @param p
      */
     public void addOperator(final Operator p) {
+    	// check for duplicates
+    	for (Operator o : operators) {
+    		if (o == p) {
+    			// operator was already added earlier
+    			return;
+    		}
+    	}
         operators.add(p);
         p.setOperatorSchedule(this);
         reweighted = false;
         totalWeight += p.getWeight();
     }
 
+    /** used to add operators to subschedules matching a pattern **/ 
+    protected void addOperators(List<Operator> ops) {
+    	if (operatorPatternInput.get() == null || operatorPatternInput.get().trim().equals("")) {
+    		return;
+    	}
+		String operatorPattern = operatorPatternInput.get();
+		for (Operator o : ops) {
+			if (o.getID() != null && o.getID().matches(operatorPattern)) {
+		    	for (Operator o2 : operators) {
+		    		if (o2 == o) {
+		    			// operator was already added earlier
+		    			return;
+		    		}
+		    	}
+				operators.add(o);
+			}
+		}
+    	reweighted = false;
+    }
+    
     /**
      * randomly select an operator with probability proportional to the weight
      * of the operator
@@ -97,7 +173,7 @@ public class OperatorSchedule extends BEASTObject {
      */
     public Operator selectOperator() {
     	if (!reweighted) {
-    		reweightSpeciesPartitionOperators();
+    		reweightOperators();
     		reweighted = true;
     	}
         final int operatorIndex = Randomizer.randomChoice(cumulativeProbs);
@@ -156,6 +232,8 @@ public class OperatorSchedule extends BEASTObject {
         formatter.format(headerFormat, PR_ACCEPT);
         out.println(": The acceptance probability (" + NUM_ACCEPT + " as a fraction of the total proposals for this operator).");
         out.println();
+        
+        formatter.close();
     }
 
     protected static String prettyPrintOperator(
@@ -333,6 +411,112 @@ public class OperatorSchedule extends BEASTObject {
     }
 
 
+    /** 
+     * collect all operators (both local and from sub schedules) and calculate weight for each of them 
+     * **/
+    private void reweightOperators() {
+    	Set<Operator> allOperators = new LinkedHashSet<>();
+    	Set<Operator> subOperators = new LinkedHashSet<>();
+    	allOperators.addAll(operators);
+    	
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+    		os.addOperators(operators);
+    		subOperators.addAll(os.operators);
+    	}
+    	allOperators.addAll(subOperators);
+
+    	Set<Operator> localOperators = new LinkedHashSet<>();
+    	localOperators.addAll(allOperators);
+    	localOperators.removeAll(subOperators);
+    	
+    	// set up operators list and raw weights
+    	operators.clear();
+    	for (Operator o : localOperators) {
+    		operators.add(o);
+    	}
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+    		for (Operator o : os.operators) {
+        		operators.add(o);
+    		}
+    	}
+    	// operatorCount can double count operators that appear in multiple operator schedules
+    	int operatorCount = operators.size();
+
+    	double [] weights = new double[operatorCount];
+    	int i = 0;
+    	for (Operator o : localOperators) {
+    		weights[i++] = o.getWeight();
+    	}
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+    		for (Operator o : os.operators) {
+        		weights[i++] = o.getWeight();    			
+    		}
+    	}
+    	
+    	// calculate weights per OperatorSchedule
+    	double localWeight = 0;
+    	for (Operator o : localOperators) {
+    		localWeight += o.getWeight();
+    	}
+    	
+    	double totalSubSchedulePercentage = 0;
+    	double totalSubScheduleWeight = 0;
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+    		if (os.weightIsPercentageInput.get()) {
+    			totalSubSchedulePercentage += os.weightInput.get();
+    		} else {
+    			totalSubScheduleWeight += os.weightInput.get();
+    		}
+    	}
+    	double totalWeight = totalSubSchedulePercentage >= 100 ? 100 :
+    			(localWeight + totalSubScheduleWeight) * 100 / (100-totalSubSchedulePercentage);
+    	
+    	// reweight local operators
+    	double localFactor = (1/totalWeight);    	
+    	i = 0;
+    	for (Operator o : localOperators) {
+    		weights[i++] *= localFactor;
+    	}
+
+    	// reweight operators of sub OperatorSchedules
+    	for (OperatorSchedule os : subschedulesInput.get()) {
+	    	localWeight = 0;
+	    	for (Operator o : os.operators) {
+	    		localWeight += o.getWeight();
+	    	}
+	    	double factor;
+    		if (!os.weightIsPercentageInput.get()) {
+    			factor = (os.weightInput.get() / localWeight) * (1/totalWeight);
+    		} else {
+    			factor = (os.weightInput.get() / 100) * 1.0/localWeight;
+    		}
+	    	for (Operator o : os.operators) {
+	    		weights[i++] *= factor;
+	    	}
+    	}
+
+    	
+    	// calc cumulative probabilities
+        cumulativeProbs = new double[weights.length];
+        cumulativeProbs[0] = weights[0];
+        for (i = 1; i < operators.size(); i++) {
+            cumulativeProbs[i] = weights[i] + cumulativeProbs[i - 1];
+        }
+
+        // log results
+    	Log.trace("operator weight cumulativeProbs");
+        for (i = 0; i < operatorCount; i++) {
+        	Log.trace(operators.get(i).getID() + " " + weights[i] + " " + cumulativeProbs[i]);
+        }
+    }
+
+    /** handy for unit tests **/
+    public double [] getCummulativeProbs() {
+    	return cumulativeProbs.clone();
+    }
+    
+    
+    
     /**
      * Reweight total weight of operators that work on the Species partition to 20%
      * of total operator weights. This helps *BEAST analyses in convergence. For non
