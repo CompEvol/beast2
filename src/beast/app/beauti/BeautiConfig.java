@@ -126,7 +126,7 @@ public class BeautiConfig extends BEASTObject {
     		"    <beast version='2.0'\n" +
     		"    	       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
     		"    	<!-- Parameter Hyper Prior -->\n" +
-    		"    	        <subtemplate id='HyperPrior' class='beast.math.distributions.Prior' mainid='HyperPrior.$(n)'>\n" +
+    		"    	        <subtemplate spec='beast.app.beauti.BeautiSubTemplate' id='HyperPrior' class='beast.math.distributions.Prior' mainid='HyperPrior.$(n)'>\n" +
     		"    	<![CDATA[\n" +
     		"    	        <beastObject id='HyperPrior.$(n)' spec='Prior' x='@parameter.$(n)'>\n" +
     		"    	            <distr spec='OneOnX'/>\n" +
@@ -134,14 +134,14 @@ public class BeautiConfig extends BEASTObject {
     		"\n" +
     		"    	        <beastObject id='hyperScaler.$(n)' spec='ScaleOperator' scaleFactor='0.5' weight='0.1' parameter='@parameter.$(n)'/>\n" +
     		"    	]]>\n" +
-    		"    	            <connect srcID='parameter.$(n)'            targetID='state' inputName='stateNode' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"    	            <connect spec='beast.app.beauti.BeautiConnector' srcID='parameter.$(n)'            targetID='state' inputName='stateNode' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
     		"\n" +
-    		"    	            <connect srcID='hyperScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Scale hyper parameter $(n)</connect>\n" +
+    		"    	            <connect spec='beast.app.beauti.BeautiConnector' srcID='hyperScaler.$(n)'          targetID='mcmc' inputName='operator' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Scale hyper parameter $(n)</connect>\n" +
     		"\n" +
-    		"    	            <connect srcID='parameter.$(n)'            targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
-    		"    	            <connect srcID='HyperPrior.$(n)'           targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"    	            <connect spec='beast.app.beauti.BeautiConnector' srcID='parameter.$(n)'            targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
+    		"    	            <connect spec='beast.app.beauti.BeautiConnector' srcID='HyperPrior.$(n)'           targetID='tracelog' inputName='log'  if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'/>\n" +
     		"\n" +
-    		"    	            <connect srcID='HyperPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Hyper prior for parameter $(n)</connect>\n" +
+    		"    	            <connect spec='beast.app.beauti.BeautiConnector' srcID='HyperPrior.$(n)'           targetID='prior' inputName='distribution' if='inposterior(parameter.$(n)) and parameter.$(n)/estimate=true'>Hyper prior for parameter $(n)</connect>\n" +
     		"    	        </subtemplate>\n" +
     		"    	</beast>\n";
     
