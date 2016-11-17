@@ -40,6 +40,8 @@ public class OperatorScheduleTest extends TestCase {
 		
 		// weights have not changed
 		probs = schedule.getCummulativeProbs();
+		assertEquals(2, probs.length);
+		assertEquals(2,  schedule.operators.size());
 		assertEquals(1.0/4.0, probs[0], 1e-15);
 		assertEquals(4.0/4.0, probs[1], 1e-15);
 	}
@@ -62,6 +64,7 @@ public class OperatorScheduleTest extends TestCase {
 
 		probs = schedule.getCummulativeProbs();
 		assertEquals(3, probs.length);
+		assertEquals(3,  schedule.operators.size());
 		assertEquals(1.0/5.0, probs[0], 1e-15);
 		assertEquals(4.0/5.0, probs[1], 1e-15);
 		assertEquals(5.0/5.0, probs[2], 1e-15);
@@ -92,6 +95,7 @@ public class OperatorScheduleTest extends TestCase {
 
 		probs = schedule.getCummulativeProbs();
 		assertEquals(4, probs.length);
+		assertEquals(4,  schedule.operators.size());
 		assertEquals(1.0/5.0, probs[0], 1e-15);
 		assertEquals(4.0/5.0, probs[1], 1e-15);
 		assertEquals(4.5/5.0, probs[2], 1e-15);
@@ -117,6 +121,7 @@ public class OperatorScheduleTest extends TestCase {
 
 		probs = schedule.getCummulativeProbs();
 		assertEquals(3, probs.length);
+		assertEquals(3,  schedule.operators.size());
 		assertEquals(1.0/8.0, probs[0], 1e-15);
 		assertEquals(4.0/8.0, probs[1], 1e-15);
 		assertEquals(8.0/8.0, probs[2], 1e-15);
@@ -147,6 +152,7 @@ public class OperatorScheduleTest extends TestCase {
 
 		probs = schedule.getCummulativeProbs();
 		assertEquals(4, probs.length);
+		assertEquals(4,  schedule.operators.size());
 		assertEquals(1.0/8.0, probs[0], 1e-15);
 		assertEquals(4.0/8.0, probs[1], 1e-15);
 		assertEquals(6.0/8.0, probs[2], 1e-15);
@@ -182,11 +188,12 @@ public class OperatorScheduleTest extends TestCase {
 		schedule.selectOperator();
 
 		probs = schedule.getCummulativeProbs();
+		assertEquals(4, probs.length);
+		assertEquals(4,  schedule.operators.size());
 		assertEquals(1.0/10.0, probs[0], 1e-15);
 		assertEquals(4.0/10.0, probs[1], 1e-15);
 		assertEquals(8.0/10.0, probs[2], 1e-15);
 		assertEquals(10.0/10.0, probs[3], 1e-15);
-		assertEquals(4, probs.length);
 	}
 
 	/** as testOperatorSchedulePlain() but with 2 nested schedules weighted by percentage
@@ -215,11 +222,12 @@ public class OperatorScheduleTest extends TestCase {
 		schedule.selectOperator();
 
 		probs = schedule.getCummulativeProbs();
+		assertEquals(4, probs.length);
+		assertEquals(4,  schedule.operators.size());
 		assertEquals(1.25/10.0, probs[0], 1e-15);
 		assertEquals(5.0/10.0, probs[1], 1e-15);
 		assertEquals(7.0/10.0, probs[2], 1e-15);
 		assertEquals(10.0/10.0, probs[3], 1e-15);
-		assertEquals(4, probs.length);
 	}
 
 	/** as testOperatorSchedulePlain() but with 2 nested schedules, one weighted by percentage, one weighted by relative weight
@@ -237,21 +245,22 @@ public class OperatorScheduleTest extends TestCase {
 		subSchedule.initByName("operator", operator3, "weight", 4.0, "weightIsPercentage", false, "operatorPattern", "^.*\\.Species$");
 		
 		OperatorSchedule subSchedule2 = new OperatorSchedule();
-		subSchedule2.initByName("operator", operator3, "weight", 20.0, "weightIsPercentage", true, "operatorPattern", "^.*\\.Species2$");
+		subSchedule2.initByName(/*"operator", operator3, */"weight", 20.0, "weightIsPercentage", true, "operatorPattern", "^.*\\.Species$");
 		
 		schedule.subschedulesInput.setValue(subSchedule, schedule);
 		schedule.subschedulesInput.setValue(subSchedule2, schedule);
 		schedule.initAndValidate();
-		schedule.addOperator(operator3);
+		//schedule.addOperator(operator3);
 		
 		// selectOperator() causes reweighting
 		schedule.selectOperator();
 
 		probs = schedule.getCummulativeProbs();
+		assertEquals(4, probs.length);
+		assertEquals(4,  schedule.operators.size());
 		assertEquals(1.0/10.0, probs[0], 1e-15);
 		assertEquals(4.0/10.0, probs[1], 1e-15);
 		assertEquals(8.0/10.0, probs[2], 1e-15);
 		assertEquals(10.0/10.0, probs[3], 1e-15);
-		assertEquals(4, probs.length);
 	}
 }

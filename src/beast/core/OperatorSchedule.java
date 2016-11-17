@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -147,7 +148,7 @@ public class OperatorSchedule extends BEASTObject {
     }
 
     /** used to add operators to subschedules matching a pattern **/ 
-    protected void addOperators(List<Operator> ops) {
+    protected void addOperators(Collection<Operator> ops) {
     	if (operatorPatternInput.get() == null || operatorPatternInput.get().trim().equals("")) {
     		return;
     	}
@@ -418,9 +419,11 @@ public class OperatorSchedule extends BEASTObject {
     	Set<Operator> allOperators = new LinkedHashSet<>();
     	Set<Operator> subOperators = new LinkedHashSet<>();
     	allOperators.addAll(operators);
-    	
     	for (OperatorSchedule os : subschedulesInput.get()) {
-    		os.addOperators(operators);
+    		allOperators.addAll(os.operators);
+    	}
+    	for (OperatorSchedule os : subschedulesInput.get()) {    	
+    		os.addOperators(allOperators);
     		subOperators.addAll(os.operators);
     	}
     	allOperators.addAll(subOperators);
