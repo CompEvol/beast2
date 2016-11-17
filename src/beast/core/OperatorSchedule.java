@@ -507,10 +507,10 @@ public class OperatorSchedule extends BEASTObject {
         }
 
         // log results
-    	Log.trace("operator weight cumulativeProbs");
-        for (i = 0; i < operatorCount; i++) {
-        	Log.trace(operators.get(i).getID() + " " + weights[i] + " " + cumulativeProbs[i]);
-        }
+    	//Log.debug("operator weight cumulativeProbs");
+        //for (i = 0; i < operatorCount; i++) {
+        //	Log.debug(operators.get(i).getID() + " " + weights[i] + " " + cumulativeProbs[i]);
+        //}
     }
 
     /** handy for unit tests **/
@@ -518,46 +518,5 @@ public class OperatorSchedule extends BEASTObject {
     	return cumulativeProbs.clone();
     }
     
-    
-    
-    /**
-     * Reweight total weight of operators that work on the Species partition to 20%
-     * of total operator weights. This helps *BEAST analyses in convergence. For non
-     * *BEAST analyses, this bit of code has no effect.
-     */
-   private void reweightSpeciesPartitionOperators() {
-	   	List<Operator> speciesOperators = new ArrayList<>();
-	   	double geneOperatorsWeight = 0;
-	   	double speciesOperatorsWeight = 0;
-	   	for (Operator operator : operators) {
-			if (operator.getID() != null && operator.getID().endsWith("Species")) {
-				speciesOperators.add(operator);
-				speciesOperatorsWeight += operator.getWeight();
-			} else {
-			    geneOperatorsWeight += operator.getWeight();
-			}
-	   	}
-	
-	    // we have a Species-related operator AND an alignment
-	   	if (speciesOperatorsWeight > 0 && geneOperatorsWeight > 0) {
-		   	double speciesOperatorsFraction = 0.20;
-	   	    final double targetWeight = (speciesOperatorsFraction * geneOperatorsWeight) / (1.0 - speciesOperatorsFraction);
-	   		double speciesOperatorsScale = targetWeight / speciesOperatorsWeight;
-	   		for (Operator operator : speciesOperators) {
-	   			operator.m_pWeight.setValue(operator.getWeight() * speciesOperatorsScale, operator);
-	   		}
-	   	}
-
-        totalWeight = 0;
-	   	for (Operator operator : operators) {
-	        totalWeight += operator.getWeight();
-	   	}
-
-        cumulativeProbs = new double[operators.size()];
-        cumulativeProbs[0] = operators.get(0).getWeight() / totalWeight;
-        for (int i = 1; i < operators.size(); i++) {
-            cumulativeProbs[i] = operators.get(i).getWeight() / totalWeight + cumulativeProbs[i - 1];
-        }
-   }
    
 } // class OperatorSchedule

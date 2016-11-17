@@ -229,6 +229,8 @@
 
 ]]>
             <connect srcID='treeLikelihood.$(n)'         targetID='likelihood' inputName='distribution' if="isInitializing"/>
+            <!-- for backward compatibility when loading pre v2.4.4 XML -->	
+			<connect srcID="operatorSchedule"            targetID="mcmc" inputName="operatorschedule" if="inposterior(Tree.t:Species)"/>
 
             <connect srcID='treelog.t:$(n)'              targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 
@@ -338,6 +340,10 @@
 
 <!-- framework for main model -->
     <run spec="MCMC" id="mcmc" storeEvery="5000" chainLength="10000000">
+    	<operatorschedule id="operatorSchedule" spec="OperatorSchedule">
+    		<!-- assign 20% of all weight to operators that apply to the Species partition -->
+    		<subschedule id="operatorSubschedule" spec="OperatorSchedule" weight="20" weightIsPercentage="true" operatorPattern="^.*Species$"/>
+    	</operatorschedule>
 
         <state storeEvery='5000' id='state'>
 	        <stateNode idref='popSize'/> 
