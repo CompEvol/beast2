@@ -174,6 +174,13 @@ public class MRCAPrior extends Distribution {
 
     // would be nice to use nodeRef's, but they are not preserved :(
     public Node getCommonAncestor() {
+        nodesTraversed = new boolean[tree.getNodeCount()];
+        Node n = getCommonAncestorInternal();
+        assert ! (useRoot && !n.isRoot() ) ;
+        return n;
+    }
+
+    private Node getCommonAncestorInternal() {
         Node cur = tree.getNode(taxonIndex[0]);
 
         for (int k = 1; k < taxonIndex.length; ++k) {
@@ -214,7 +221,6 @@ public class MRCAPrior extends Distribution {
             		isMonophyletic = true;
             		m = tree.getNode(taxonIndex[0]);
             	} else {
-	                nodesTraversed = new boolean[tree.getNodeCount()];
 	                nseen = 0;
                 	m = getCommonAncestor();
 	                isMonophyletic = (nseen == 2 * taxonIndex.length - 1);
