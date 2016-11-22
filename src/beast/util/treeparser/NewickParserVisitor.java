@@ -1,4 +1,4 @@
-// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/Newick.g4 by ANTLR 4.5.3
+// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/NewickParser.g4 by ANTLR 4.5.3
 package beast.util.treeparser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
-public interface NewickVisitor<T> extends ParseTreeVisitor<T> {
+public interface NewickParserVisitor<T> extends ParseTreeVisitor<T> {
 	/**
 	 * Visit a parse tree produced by {@link NewickParser#tree}.
 	 * @param ctx the parse tree
@@ -58,6 +58,12 @@ public interface NewickVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNumber(NewickParser.NumberContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NewickParser#attribNumber}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAttribNumber(NewickParser.AttribNumberContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NewickParser#vector}.
 	 * @param ctx the parse tree

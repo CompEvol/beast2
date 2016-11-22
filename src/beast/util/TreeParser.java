@@ -31,6 +31,8 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import beast.util.treeparser.NewickParser;
+import beast.util.treeparser.NewickParserBaseVisitor;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -51,9 +53,7 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeUtils;
-import beast.util.treeparser.NewickBaseVisitor;
 import beast.util.treeparser.NewickLexer;
-import beast.util.treeparser.NewickParser;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -366,9 +366,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         // Traverse parse tree, constructing BEAST tree along the way
 
         NewickASTVisitor visitor = new NewickASTVisitor();
-        Node root = visitor.visit(parseTree);
 
-        return root;
+        return visitor.visit(parseTree);
     }
 
 
@@ -402,7 +401,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * Visits each component of the AST built from the Newick string, constructing
      * a BEAST tree along the way.
      */
-    class NewickASTVisitor extends NewickBaseVisitor<Node> {
+    class NewickASTVisitor extends NewickParserBaseVisitor<Node> {
 
         private int numberedNodeCount = 0;
 
@@ -459,11 +458,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     for (NewickParser.AttribContext attribctx : postCtx.meta().attrib()) {
                         String key = attribctx.attribKey.getText();
 
-                        if (attribctx.attribValue().number() != null) {
+                        if (attribctx.attribValue().attribNumber() != null) {
                             node.setMetaData(key, Double.parseDouble(
-                                    attribctx.attribValue().number().getText()));
-                        } else if (attribctx.attribValue().STRING() != null) {
-                            String stringValue = attribctx.attribValue().STRING().getText();
+                                    attribctx.attribValue().attribNumber().getText()));
+                        } else if (attribctx.attribValue().ASTRING() != null) {
+                            String stringValue = attribctx.attribValue().ASTRING().getText();
                             if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
                                 stringValue = stringValue.substring(1, stringValue.length()-1);
                             }
