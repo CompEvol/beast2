@@ -18,7 +18,7 @@ fragment D : [0-9] ;
 OPENA: '[&' -> mode(ATTRIB_MODE);
 
 STRING :
-    ~[,():;\[\]]+  // these chars don't need quotes
+    [a-zA-Z0-9|#*%/.\-+_&]+  // these chars don't need quotes
     | '"' .*? '"'
     | '\'' .*? '\''
     ;
@@ -39,7 +39,7 @@ AFLOAT : '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D*)));
 AINT : '-'? NNINT;
 
 ASTRING :
-    ~[,[\]{}=]+  // these chars don't need quotes
+    [a-zA-Z0-9|#*%/.\-+_&:]+  // these chars don't need quotes
     | '"' .*? '"'
     | '\'' .*? '\''
     ;
