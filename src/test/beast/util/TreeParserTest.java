@@ -114,13 +114,13 @@ public class TreeParserTest {
     @Test
     public void testVectorMetadata() throws Exception {
 
-        String newick = "((A:1.0,B[&key={1,2,3}]:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
+        String newick = "((A:1.0,B[&key:s={1,2,3}]:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
 
         boolean isLabeled = true;
 
         TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
-        Assert.assertTrue((treeParser.getNode(1).getMetaData("key") instanceof Double[])
-                && ((Double[])(treeParser.getNode(1).getMetaData("key"))).length == 3);
+        Assert.assertTrue((treeParser.getNode(1).getMetaData("key:s") instanceof Double[])
+                && ((Double[])(treeParser.getNode(1).getMetaData("key:s"))).length == 3);
 
     }
 
