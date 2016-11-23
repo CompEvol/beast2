@@ -18,8 +18,9 @@ public class NewickParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		SEMI=1, COMMA=2, OPENP=3, CLOSEP=4, COLON=5, FLOAT_SCI=6, FLOAT=7, INT=8, 
-		OPENA=9, STRING=10, WHITESPACE=11, EQ=12, ACOMMA=13, OPENV=14, CLOSEV=15, 
-		AFLOAT_SCI=16, AFLOAT=17, AINT=18, ASTRING=19, CLOSEA=20, ATTRIBWS=21;
+		OPENA=9, WHITESPACE=10, STRING=11, EQ=12, ACOMMA=13, OPENV=14, CLOSEV=15, 
+		AFLOAT_SCI=16, AFLOAT=17, AINT=18, AWHITESPACE=19, ASTRING=20, CLOSEA=21, 
+		ATTRIBWS=22;
 	public static final int
 		RULE_tree = 0, RULE_node = 1, RULE_post = 2, RULE_label = 3, RULE_meta = 4, 
 		RULE_attrib = 5, RULE_attribValue = 6, RULE_number = 7, RULE_attribNumber = 8, 
@@ -31,12 +32,12 @@ public class NewickParser extends Parser {
 
 	private static final String[] _LITERAL_NAMES = {
 		null, "';'", null, "'('", "')'", "':'", null, null, null, "'[&'", null, 
-		null, "'='", null, "'{'", "'}'", null, null, null, null, "']'"
+		null, "'='", null, "'{'", "'}'", null, null, null, null, null, "']'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "SEMI", "COMMA", "OPENP", "CLOSEP", "COLON", "FLOAT_SCI", "FLOAT", 
-		"INT", "OPENA", "STRING", "WHITESPACE", "EQ", "ACOMMA", "OPENV", "CLOSEV", 
-		"AFLOAT_SCI", "AFLOAT", "AINT", "ASTRING", "CLOSEA", "ATTRIBWS"
+		"INT", "OPENA", "WHITESPACE", "STRING", "EQ", "ACOMMA", "OPENV", "CLOSEV", 
+		"AFLOAT_SCI", "AFLOAT", "AINT", "AWHITESPACE", "ASTRING", "CLOSEA", "ATTRIBWS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -734,7 +735,7 @@ public class NewickParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\27]\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\30]\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
 		"\2\3\2\5\2\31\n\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3!\n\3\f\3\16\3$\13\3\3\3"+
 		"\3\3\5\3(\n\3\3\3\3\3\3\4\5\4-\n\4\3\4\5\4\60\n\4\3\4\3\4\5\4\64\n\4\3"+
@@ -749,11 +750,11 @@ public class NewickParser extends Parser {
 		"$\"\3\2\2\2%&\7\6\2\2&(\3\2\2\2\'\34\3\2\2\2\'(\3\2\2\2()\3\2\2\2)*\5"+
 		"\6\4\2*\5\3\2\2\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2\2.\60\5\n\6\2"+
 		"/.\3\2\2\2/\60\3\2\2\2\60\63\3\2\2\2\61\62\7\7\2\2\62\64\5\20\t\2\63\61"+
-		"\3\2\2\2\63\64\3\2\2\2\64\7\3\2\2\2\658\5\20\t\2\668\7\f\2\2\67\65\3\2"+
+		"\3\2\2\2\63\64\3\2\2\2\64\7\3\2\2\2\658\5\20\t\2\668\7\r\2\2\67\65\3\2"+
 		"\2\2\67\66\3\2\2\28\t\3\2\2\29:\7\13\2\2:?\5\f\7\2;<\7\17\2\2<>\5\f\7"+
-		"\2=;\3\2\2\2>A\3\2\2\2?=\3\2\2\2?@\3\2\2\2@B\3\2\2\2A?\3\2\2\2BC\7\26"+
-		"\2\2C\13\3\2\2\2DE\7\25\2\2EF\7\16\2\2FG\5\16\b\2G\r\3\2\2\2HL\5\22\n"+
-		"\2IL\7\25\2\2JL\5\24\13\2KH\3\2\2\2KI\3\2\2\2KJ\3\2\2\2L\17\3\2\2\2MN"+
+		"\2=;\3\2\2\2>A\3\2\2\2?=\3\2\2\2?@\3\2\2\2@B\3\2\2\2A?\3\2\2\2BC\7\27"+
+		"\2\2C\13\3\2\2\2DE\7\26\2\2EF\7\16\2\2FG\5\16\b\2G\r\3\2\2\2HL\5\22\n"+
+		"\2IL\7\26\2\2JL\5\24\13\2KH\3\2\2\2KI\3\2\2\2KJ\3\2\2\2L\17\3\2\2\2MN"+
 		"\t\2\2\2N\21\3\2\2\2OP\t\3\2\2P\23\3\2\2\2QR\7\20\2\2RW\5\16\b\2ST\7\17"+
 		"\2\2TV\5\16\b\2US\3\2\2\2VY\3\2\2\2WU\3\2\2\2WX\3\2\2\2XZ\3\2\2\2YW\3"+
 		"\2\2\2Z[\7\21\2\2[\25\3\2\2\2\f\30\"\',/\63\67?KW";

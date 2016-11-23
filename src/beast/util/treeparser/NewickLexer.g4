@@ -17,13 +17,13 @@ fragment D : [0-9] ;
 
 OPENA: '[&' -> mode(ATTRIB_MODE);
 
+WHITESPACE : [ \t\r\n]+ -> skip ;
+
 STRING :
     [a-zA-Z0-9|#*%/.\-+_&]+  // these chars don't need quotes
     | '"' .*? '"'
     | '\'' .*? '\''
     ;
-
-WHITESPACE : [ \t\r\n]+ -> skip ;
 
 // Attrib mode rules
 
@@ -37,6 +37,8 @@ CLOSEV: '}' ;
 AFLOAT_SCI: '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D+)?)) ([eE] '-'? D+);
 AFLOAT : '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D*)));
 AINT : '-'? NNINT;
+
+AWHITESPACE : [ \t\r\n]+ -> skip ;
 
 ASTRING :
     [a-zA-Z0-9|#*%/.\-+_&:]+  // these chars don't need quotes
