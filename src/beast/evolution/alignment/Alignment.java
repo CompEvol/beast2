@@ -107,6 +107,10 @@ public class Alignment extends Map<String> {
     final public Input<Integer> excludetoInput = new Input<>("excludeto", "last site to condition on (but excluding this site), default 0", 0);
     final public Input<Integer> excludeeveryInput = new Input<>("excludeevery", "interval between sites to condition on (default 1)", 1);
 
+	public Input<Integer> m_includefrom = new Input<>("includefrom","first site to condition on, default 0", 0);
+	public Input<Integer> m_includeto = new Input<>("includeto","last site to condition on, default 0", 0);
+	public Input<Integer> m_includeevery = new Input<>("includeevery","interval between sites to condition on (default 1)", 1);
+
     /**
      * list of sequences in the alignment *
      */
@@ -169,6 +173,7 @@ public class Alignment extends Map<String> {
      * From AscertainedAlignment
      */
     Set<Integer> excludedPatterns;
+	List<Integer> m_nIncluded;
 
     /**
      * A flag to indicate if the alignment is ascertained
@@ -365,6 +370,18 @@ public class Alignment extends Map<String> {
                 patternWeight[patternIndex_] = 0;
                 excludedPatterns.add(patternIndex_);
             }
+            
+    		from = m_includefrom.get();
+    		to = m_includeto.get();
+    		every = m_includeevery.get();
+    		m_nIncluded = new ArrayList<>();
+    		for (int i = from; i < to; i += every) {
+    			int patternIndex_ = patternIndex[i];
+    			// reduce weight, so it does not confuse the tree likelihood
+    			patternWeight[patternIndex_] = 0;
+    			m_nIncluded.add(patternIndex_);
+    		}
+
         } else {
         	// sanity check
             int from = excludefromInput.get();
@@ -713,8 +730,12 @@ public class Alignment extends Map<String> {
         return excludedPatterns.size();
     }
 
-    public double getAscertainmentCorrection(double[] patternLogProbs) {
+	public double getAscertainmentCorrection(double[] patternLogProbs) {
         double excludeProb = 0, includeProb = 0, returnProb = 1.0;
+
+        for (int i = 0; i < m_nIncluded.size(); i++) {
+        	includeProb += Math.exp(patternLogProbs[m_nIncluded.get(i)]);
+        }
 
         for (int i : excludedPatterns) {
             excludeProb += Math.exp(patternLogProbs[i]);
@@ -725,7 +746,7 @@ public class Alignment extends Map<String> {
         } else if (excludeProb == 0.0) {
             returnProb = includeProb;
         } else {
-            returnProb = includeProb - excludeProb;
+            returnProb = 1.0 + includeProb - excludeProb;
         }
         return Math.log(returnProb);
     } // getAscertainmentCorrection
