@@ -126,6 +126,21 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			}
 			assertThat(found).as("Could not find beastObject with ID " + id).isEqualTo(true);
 		}
+		List<String> extras = new ArrayList<>();
+		for (BEASTObject node : priors) {
+			boolean found = false;
+			for (String id : ids) {
+				if (node.getID().equals(id)) {
+					found = true;
+				}
+			}
+			if (!found) {
+				extras.add(node.getID());
+			}
+		}
+		if (extras.size() != 0) {
+			System.err.println("Extra ids found: " + Arrays.toString(extras.toArray(new String[]{})));
+		}
 		assertThat(ids.length).as("list of beastObjects do not match").isEqualTo(priors.size());;
 	}
 

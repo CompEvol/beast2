@@ -1402,6 +1402,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         connect(srcBEASTObject, targetID, connector.targetInput);
     }
 
+    
     public void connect(BEASTInterface srcBEASTObject, String targetID, String inputName) {
         try {
         	BEASTInterface target = pluginmap.get(targetID);
@@ -1516,7 +1517,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         // re-determine partitions
         determinePartitions();
-        scrubAll(true, true);
+        scrubAll(true, false);
     }
 
     public void determinePartitions() {
@@ -2042,6 +2043,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             oldPartition = oldContext.partition;
         }
         if (id.indexOf('.') < 0 || !(id.endsWith(oldPartition))) {
+        	if (id.indexOf(':') > 0) {
+        		return id;
+        	}
         	// original id does not contain partition info
         	return id + "." + newPartition;
         }
@@ -2049,6 +2053,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return id;
     }
 
+    
     static public void collectPredecessors(BEASTInterface beastObject, List<BEASTInterface> predecessors) {
         predecessors.add(beastObject);
         if (beastObject instanceof Alignment || beastObject instanceof FilteredAlignment) {

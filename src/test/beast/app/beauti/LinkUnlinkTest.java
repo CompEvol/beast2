@@ -334,6 +334,8 @@ public class LinkUnlinkTest extends BeautiBase {
 		
 		warning("Change to Coalescent - constant population");
 		beautiFrame.comboBox("TreeDistribution").selectItem("Coalescent Constant Population");
+		
+		assertPriorsEqual("CoalescentConstant.t:26", "PopSizePrior.t:26");
 		importAlignment("examples/nexus", new File("47.nex"));
 
 		warning("Link trees");
