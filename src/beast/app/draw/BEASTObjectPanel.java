@@ -212,6 +212,9 @@ public class BEASTObjectPanel extends JPanel {
     public static int countInputs(BEASTInterface beastObject, BeautiDoc doc) {
         int inputCount = 0;
         try {
+        	if (beastObject == null) {
+        		return 0;
+        	}
             List<Input<?>> inputs = beastObject.listInputs();
             for (Input<?> input : inputs) {
                 String fullInputName = beastObject.getClass().getName() + "." + input.getName();
@@ -420,7 +423,7 @@ public class BEASTObjectPanel extends JPanel {
         if (beastObject.getID() == null || beastObject.getID().length() == 0) {
             String id = beastObject.getClass().getName().replaceAll(".*\\.", "");
             int i = 0;
-            while (g_plugins.containsKey(id + i)) {
+            while (g_plugins.containsKey(id + "." + i)) {
                 i++;
             }
             beastObject.setID(id + "." + i);

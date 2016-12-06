@@ -69,6 +69,7 @@ import beast.evolution.tree.Tree;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Normal;
 import beast.math.distributions.ParametricDistribution;
+import beast.math.distributions.Prior;
 import beast.util.JSONProducer;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
@@ -1729,8 +1730,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     /**
      * Create a deep copy of a beastObject, but in a different partition context
-     * First, find all beastObjects that are predecesors of the beastObject to be copied
-     * that are ancestors of statenodes
+     * First, find all beastObjects that are predecessors of the beastObject to be copied
+     * that are ancestors of StateNodes
      *
      * @param beastObject
      * @param parent
@@ -1804,24 +1805,48 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             }
         }
+        
+        // collect priors
+        predecessors.addAll(ancestors);
+        for (BEASTInterface o : predecessors) {
+        	if (o instanceof Prior) {
+                List<BEASTInterface> priorPredecessors = new ArrayList<>();
+                collectPredecessors(o, priorPredecessors);
+                ancestors.addAll(priorPredecessors);
+        	}
+        }
 
-//		Log.info.print(Arrays.toString(predecessors.toArray()));
-//		for (BEASTObject p : ancestors) {
-//			Log.info.print("(");
-//			for (BEASTObject p2 : p.listActivePlugins()) {
-//				if (ancestors.contains(p2)) {
-//					Log.info.print(p2.getID()+ " ");
-//				}
-//			}
-//			Log.info.print(") ");
-//			Log.info.println(p.getID());
-//		}
+		Log.info.print(Arrays.toString(predecessors.toArray()));
+		for (BEASTInterface p : ancestors) {
+			Log.info.print("(");
+			try {
+				for (BEASTInterface p2 : p.listActiveBEASTObjects()) {
+					if (ancestors.contains(p2)) {
+						Log.info.print(p2.getID()+ " ");
+					}
+				}
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+			Log.info.print(") ");
+			Log.info.println(p.getID());
+		}
 
         // now the ancestors contain all beastObjects to be copied
         // make a copy of all individual BEASTObjects, before connecting them up
         Map<String, BEASTInterface> copySet = new HashMap<>();
         for (BEASTInterface beastObject2 : ancestors) {
             String id = beastObject2.getID();
+    		if (id == null) {
+                id = beastObject.getClass().getName().replaceAll(".*\\.", "");
+                int i = 0;
+                while (doc.pluginmap.containsKey(id + "." + i)) {
+                    i++;
+                }
+                id = id + "." + i;
+                beastObject2.setID(id);			
+    		}
+
             String copyID = renameId(id, oldContext, newContext);
             if (!id.equals(copyID)) {
 	            if (doc.pluginmap.containsKey(copyID)) {
@@ -2018,7 +2043,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
         if (id.indexOf('.') < 0 || !(id.endsWith(oldPartition))) {
         	// original id does not contain partition info
-        	return id;
+        	return id + "." + newPartition;
         }
         id = id.substring(0, id.length() - oldPartition.length()) + newPartition;
         return id;

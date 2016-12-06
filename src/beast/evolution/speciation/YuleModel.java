@@ -145,7 +145,8 @@ public class YuleModel extends SpeciesTreeDistribution {
 //    public boolean includeExternalNodesInLikelihoodCalculation() {
 //        return false;
 //    }
-
+    // r = birth - death
+    // a = death/birth
     double calcLogConditioningTerm(double height, double r, double rho, double a) {
         final double ca = 1 - a;
         final double erh = Math.exp(r * height);

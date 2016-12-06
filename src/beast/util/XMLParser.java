@@ -686,6 +686,7 @@ public class XMLParser {
                 if (checkType(classname, beastObject, node)) {
                     return beastObject;
                 }
+                checkType(classname, beastObject, node);
                 throw new XMLParserException(node, "id=" + dRef + ". Expected object of type " + classname + " instead of " + beastObject.getClass().getName(), 106);
             } else if (IDNodeMap.containsKey(dRef)) {
                 final BEASTInterface beastObject = createObject(IDNodeMap.get(dRef), classname);
