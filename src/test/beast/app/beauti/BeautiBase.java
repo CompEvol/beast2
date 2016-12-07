@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,14 +31,18 @@ import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 import beast.app.beauti.Beauti;
 import beast.app.beauti.BeautiDoc;
 import beast.app.util.Utils;
+import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Distribution;
+import beast.core.Function;
 import beast.core.Logger;
 import beast.core.MCMC;
 import beast.core.Operator;
 import beast.core.State;
 import beast.core.StateNode;
+import beast.core.parameter.Parameter;
 import beast.core.util.CompoundDistribution;
+import beast.math.distributions.Prior;
 import beast.util.XMLParser;
 
 
@@ -218,6 +223,29 @@ public class BeautiBase extends FestSwingJUnitTestCase {
 			assertThat(strs[i]).as("expected array value " + strs[i] + " instead of " + o[i].toString()).isEqualTo(o[i].toString());
 		}
 		assertThat(o.length).as("arrays do not match: different lengths").isEqualTo(strs.length);
+	}
+	
+	void assertParameterCountInPriorIs(int i) {
+		// count nr of parameters in Prior objects in prior
+		// including those for prior distributions (Normal, etc)
+		// useful to make sure they do (or do not) get linked
+		Set<Function> parameters = new LinkedHashSet<>();
+		CompoundDistribution prior = (CompoundDistribution) doc.pluginmap.get("prior");
+		for (Distribution p : prior.pDistributions.get()) {
+			if (p instanceof Prior) {
+				Prior p2 = (Prior) p;
+				parameters.add(p2.m_x.get());
+				for (BEASTInterface o : p2.distInput.get().listActiveBEASTObjects()) {
+					if (o instanceof Parameter) {
+						parameters.add((Parameter<?>) o);
+					}
+				}
+			}
+		}
+		System.err.println("Number of parameters in prior = " + parameters.size());
+		if (i >= 0) {
+			assertThat(parameters.size()).as("Expected " + i + " parameters in prior").isEqualTo(i);
+		}
 	}
 	
 	void printBeautiState(JTabbedPaneFixture f) throws InterruptedException {

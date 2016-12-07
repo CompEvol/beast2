@@ -4,12 +4,22 @@ package test.beast.app.beauti;
 
 
 import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.fest.assertions.Assertions;
 import org.fest.swing.data.TableCell;
+import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
+
+import beast.core.BEASTInterface;
+import beast.core.Distribution;
+import beast.core.Function;
+import beast.core.parameter.Parameter;
+import beast.core.util.CompoundDistribution;
+import beast.math.distributions.Prior;
 
 public class LinkUnlinkTest extends BeautiBase {
 
@@ -291,6 +301,8 @@ public class LinkUnlinkTest extends BeautiBase {
 		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "YuleModel.t:47", "ClockPrior.c:47", "YuleBirthRatePrior.t:47", "YuleModel.t:59", "ClockPrior.c:59", "YuleBirthRatePrior.t:59");
 		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.26", "TreeHeight.t:26", "YuleModel.t:26", "birthRate.t:26", "treeLikelihood.47", "TreeHeight.t:47", "clockRate.c:47", "YuleModel.t:47", "birthRate.t:47", "treeLikelihood.59", "TreeHeight.t:59", "clockRate.c:59", "YuleModel.t:59", "birthRate.t:59");
 
+		assertParameterCountInPriorIs(5);		
+
 		selectRows(0, 1, 2);
 
 		warning("Link trees");
@@ -298,17 +310,31 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.button("Link Trees").click();
 		printBeautiState(f);
 
-		warning("Link clocks");
-		selectRows(0, 1, 2);
+		assertParameterCountInPriorIs(3);
+		
+		f.selectTab("Site Model");
+        JComboBoxFixture substModel = beautiFrame.comboBox("substModel");
+        substModel.selectItem("HKY");
+		assertParameterCountInPriorIs(6);		
+		
 		f.selectTab("Partitions");
-		beautiFrame.button("Link Clock Models").click();
+		warning("Link site models");
+		selectRows(0, 1, 2);
+		beautiFrame.button("Link Site Models").click();
 		printBeautiState(f);
+
+		assertParameterCountInPriorIs(6);		
+		beautiFrame.button("Unlink Site Models").click();
+
+		assertParameterCountInPriorIs(12);		
 
 		warning("Delete second partition");
 		f.selectTab("Partitions");
 		selectRows(1);
 		beautiFrame.button("-").click();
 		printBeautiState(f);
+
+		assertParameterCountInPriorIs(8);		
 
 		warning("Delete first partition");
 		f.selectTab("Partitions");
@@ -317,11 +343,15 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.table().selectCell(TableCell.row(0).column(1));
 		beautiFrame.button("-").click();
 		printBeautiState(f);
-		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26");
-
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "KappaPrior.s:59");		
+		assertParameterCountInPriorIs(4);
+		
 		makeSureXMLParses();
 	}
 	
+
+
+
 	@Test
 	public void linkUnlinkTreesAndSetTreePriorTest1() throws Exception {
 		warning("Load gopher data 26.nex, 47.nex");
