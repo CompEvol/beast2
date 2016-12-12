@@ -1120,9 +1120,12 @@ public class XMLParser {
             if (input.get() == input.defaultValue) {
                 beastObject.setInputValue(name, beastObject2);
             } else {
-                throw new XMLParserException("Multiple entries for non-list input " + input.getName());
+                throw new XMLParserException(node, "\nMultiple entries for input \"" + input.getName() + "\" but only single entry expected "
+                		+ "in element \"" + node.getNodeName() + "\"", 130);
             }
             return;
+        } catch (XMLParserException e) {
+        	throw e;
         } catch (Exception e) {
         	if (name.equals("xml:base")) {
         		// ignore xml:base attributes introduces by XML entities

@@ -64,9 +64,9 @@ public class XMLParserException extends Exception {
     // format message and resolve parent
     @Override
 	public String getMessage() {
-        String msg = "\nError " + errorNr + " parsing the xml input file\n\n" + this.msg + super.getMessage();
+        String msg = "\nError " + errorNr + " parsing the xml input file\n\n" + (this.msg != null ? this.msg : "") + super.getMessage();
         if (_node == null) {
-            return "NULL NODE\n" + msg;
+            return "at unknown node (null)\n" + msg;
         }
         String path = "";
         Node node = _node;
