@@ -1056,10 +1056,28 @@ public class XMLParser {
                     name = element;
                 }
                 // resolve base class
-                String classname = BEAST_INTERFACE_CLASS;
+                String specClass = BEAST_INTERFACE_CLASS;
                 if (element2ClassMap.containsKey(element)) {
-                    classname = element2ClassMap.get(element);
+                	specClass = element2ClassMap.get(element);
                 }
+                final String spec = getAttribute(child, "spec");
+                if (spec != null) {
+                	specClass = spec;
+                }                
+                String classname = null;
+        		// determine clazzName from specName, taking name spaces in account
+        		for (String nameSpace : nameSpaces) {
+        			if (classname == null) {
+        				if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
+        					classname = nameSpace + specClass;
+        					break;
+        				}
+        			}
+        		}
+        		if (classname == null) {
+        			classname = specClass;
+        		}
+        		
                 // test for special cases: <xyz>value</xyz>  and <input name="xyz">value</input>
                 // where value is a string
                 boolean done = false;
