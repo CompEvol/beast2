@@ -281,6 +281,7 @@ public class BeastMain {
                                 false, "BEAGLE: specify scaling scheme to use"),
                         new Arguments.Option("help", "Print this information and stop"),
                         new Arguments.Option("version", "Print version and stop"),
+                        new Arguments.Option("strictversions", "Use only package versions as specified in the 'required' attribute"),
                 });
 
         try {
@@ -514,6 +515,10 @@ public class BeastMain {
             }
         }
 
+        if (arguments.hasOption("strictversions")) {
+        	MCMCargs.add("-strictversions");
+        }
+        
         if (beagleShowInfo) {
             BeagleInfo.printResourceList();
             System.exit(0);

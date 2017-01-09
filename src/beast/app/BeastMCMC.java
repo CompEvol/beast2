@@ -28,7 +28,9 @@ package beast.app;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -112,6 +114,7 @@ public class BeastMCMC {
     public void parseArgs(String[] args) throws IOException, XMLParserException, JSONException {
         int i = 0;
         boolean resume = false;
+        boolean useStrictVersions = false;
 
         File beastFile = null;
 
@@ -152,6 +155,9 @@ public class BeastMCMC {
                     } else if (args[i].equals("-prefix")) {
                         System.setProperty("file.name.prefix", args[i + 1].trim());
                         i += 2;
+                    } else if (args[i].equals("-strictversions")) {
+                    	useStrictVersions = true;
+                        i += 1;
                     }
                     if (i == old) {
                         if (i == args.length - 1) {
@@ -250,7 +256,35 @@ public class BeastMCMC {
             Log.info.println("Resuming from file");
         }
 
-        AddOnManager.loadExternalJars();
+        if (useStrictVersions) {
+        	// grab "required" attribute from beast spec
+            if (beastFile.getPath().toLowerCase().endsWith(".json")) {
+            	throw new IllegalArgumentException("The -strictversions flag is not implemented for JSON files yet (only XML files are supported).");
+            } else {
+                BufferedReader fin = new BufferedReader(new FileReader(beastFile));
+                StringBuffer buf = new StringBuffer();
+                String str = null;
+                int lineCount = 0;
+                while (fin.ready() && lineCount < 100) {
+                    str = fin.readLine();
+                    buf.append(str);
+                    buf.append(' ');
+                }
+                fin.close();
+                str = buf.toString();
+                int start = str.indexOf("required=");
+                if (start < 0) {
+                	throw new IllegalArgumentException("Could not find a 'required' attribute in the XML. Add the required attribute, or run without the -strictversions flag");
+                }
+                char c = str.charAt(start + 9);
+                start += 10;
+                int end = str.indexOf(c, start);
+                String packages = str.substring(start, end);
+                AddOnManager.loadExternalJars(packages);
+            }
+        } else {
+            AddOnManager.loadExternalJars();
+        }
         // parse xml
         Randomizer.setSeed(m_nSeed);
         if (beastFile.getPath().toLowerCase().endsWith(".json")) {
