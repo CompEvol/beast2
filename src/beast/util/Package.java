@@ -1,7 +1,5 @@
 package beast.util;
 
-import static beast.util.AddOnManager.NOT_INSTALLED;
-
 import java.net.URL;
 import java.util.*;
 

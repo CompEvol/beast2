@@ -433,16 +433,7 @@ public class AddOnManager {
             // create directory
             URL templateURL = thisPkg.getVersionURL(thisPkgVersion);
             ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-            String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + 
-            		(useArchive ? "/" + ARCHIVE_DIR : "") + 
-            		"/" + thisPkg.getName() +
-            		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
-            if (customDir != null) {
-                dirName = customDir + 
-                		(useArchive ? "/" + ARCHIVE_DIR : "") + 
-                		"/" + thisPkg.getName() +
-                		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
-            }
+            String dirName = getPackageDir(thisPkg, thisPkgVersion, useAppDir, customDir);
             File dir = new File(dirName);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
@@ -464,7 +455,21 @@ public class AddOnManager {
         return dirList;
     }
 
-    /**
+    private static String getPackageDir(Package thisPkg, PackageVersion thisPkgVersion, boolean useAppDir, String customDir) {
+        String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + 
+        		(useArchive ? "/" + ARCHIVE_DIR : "") + 
+        		"/" + thisPkg.getName() +
+        		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
+        if (customDir != null) {
+            dirName = customDir + 
+            		(useArchive ? "/" + ARCHIVE_DIR : "") + 
+            		"/" + thisPkg.getName() +
+            		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
+        }
+        return dirName;
+	}
+
+	/**
      * Get list of installed packages that depend on pkg.
      *
      * @param pkg package for which to retrieve installed dependencies
@@ -505,15 +510,30 @@ public class AddOnManager {
      * @throws IOException thrown if packages cannot be deleted and delete list file cannot be written
      */
     public static String uninstallPackage(Package pkg, boolean useAppDir, String customDir) throws IOException {
+    	return uninstallPackage(pkg, null, useAppDir, customDir);
+    }
+    
+    public static String uninstallPackage(Package pkg, PackageVersion pkgVersion, boolean useAppDir, String customDir) throws IOException {
     	closeClassLoader();
 
-        String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + pkg.getName();
+    	if (pkgVersion == null) {
+    		pkgVersion = pkg.getInstalledVersion();
+    	}
+    	String dirName = getPackageDir(pkg, pkgVersion, useAppDir, customDir);
         if (customDir != null) {
             dirName = customDir + "/" + pkg.getName();
         }
         File dir = new File(dirName);
         List<File> deleteFailed = new ArrayList<>();
         deleteRecursively(dir, deleteFailed);
+        
+        if (useArchive) {
+        	// delete package directory, if it is empty
+        	File parent = dir.getParentFile();
+        	if (parent.list().length == 0) {
+        		parent.delete();
+        	}
+        }
 
         // write deleteFailed to file
         if (deleteFailed.size() > 0) {
@@ -1601,21 +1621,29 @@ public class AddOnManager {
                 for (Package aPackage : packageMap.values()) {
                     if (aPackage.packageName.equals(name)) {
                         processed = true;
-                        if (aPackage.isInstalled()) {
-                            List<String> deps = getInstalledDependencyNames(aPackage, packageMap);
-                            if (deps.isEmpty()) {
-                                Log.debug.println("Start un-installation");
-                                String dir = uninstallPackage(aPackage, useAppDir, customDir);
-                                Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
-                            } else {
-                                Log.info.println("Un-installation aborted: " + name + " is used by these other packages: " +
-                                        String.join(", ", deps) + ".");
-                                Log.info.println("Remove these packages first.");
-                                System.exit(1);
-                            }
+                        if (arguments.hasOption("version")) {
+                        	AddOnManager.useArchive = true;
+                        	String versionString = arguments.getStringOption("version");
+                        	PackageVersion version = new PackageVersion(versionString);
+                            String dir = uninstallPackage(aPackage, version, useAppDir, customDir);
+                            Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
                         } else {
-                            Log.info.println("Un-installation aborted: " + name + " is not installed yet.");
-                            System.exit(1);
+	                        if (aPackage.isInstalled()) {
+	                            List<String> deps = getInstalledDependencyNames(aPackage, packageMap);
+	                            if (deps.isEmpty()) {
+	                                Log.debug.println("Start un-installation");
+	                                String dir = uninstallPackage(aPackage, useAppDir, customDir);
+	                                Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
+	                            } else {
+	                                Log.info.println("Un-installation aborted: " + name + " is used by these other packages: " +
+	                                        String.join(", ", deps) + ".");
+	                                Log.info.println("Remove these packages first.");
+	                                System.exit(1);
+	                            }
+	                        } else {
+	                            Log.info.println("Un-installation aborted: " + name + " is not installed yet.");
+	                            System.exit(1);
+	                        }
                         }
                     }
                 }
