@@ -87,7 +87,10 @@ public class AddOnManager {
 
     public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
 //    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
-
+    public final static String ARCHIVE_DIR = "archive";
+    // flag to indicate archive directory and version numbers in directories are required
+    static boolean useArchive = false;
+    
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "not installed";
     
@@ -369,7 +372,10 @@ public class AddOnManager {
      * @throws IOException thrown if packages cannot be deleted and delete list file cannot be written
      */
     public static void prepareForInstall(Map<Package, PackageVersion> packagesToInstall, boolean useAppDir, String customDir) throws IOException {
-
+    	if (useArchive) {
+    		return;
+    	}
+    	
         Map<Package, PackageVersion> ptiCopy = new HashMap<>(packagesToInstall);
         for (Map.Entry<Package, PackageVersion> entry : ptiCopy.entrySet()) {
             Package thisPkg = entry.getKey();
@@ -427,9 +433,15 @@ public class AddOnManager {
             // create directory
             URL templateURL = thisPkg.getVersionURL(thisPkgVersion);
             ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
-            String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + "/" + thisPkg.getName();
+            String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + 
+            		(useArchive ? "/" + ARCHIVE_DIR : "") + 
+            		"/" + thisPkg.getName() +
+            		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
             if (customDir != null) {
-                dirName = customDir + "/" + thisPkg.getName();
+                dirName = customDir + 
+                		(useArchive ? "/" + ARCHIVE_DIR : "") + 
+                		"/" + thisPkg.getName() +
+                		(useArchive ? "/" + thisPkgVersion.versionString : ""); 
             }
             File dir = new File(dirName);
             if (!dir.exists()) {
@@ -1496,8 +1508,9 @@ public class AddOnManager {
             Arguments arguments = new Arguments(
                     new Arguments.Option[]{
                             new Arguments.Option("list", "List available packages"),
-                            new Arguments.StringOption("add", "NAME", "Install the <NAME> package "),
-                            new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> package "),
+                            new Arguments.StringOption("add", "NAME", "Install the <NAME> package"),
+                            new Arguments.StringOption("del", "NAME", "Uninstall the <NAME> package"),
+                            new Arguments.StringOption("version", "NAME", "Specify package version"),
                             new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
                             new Arguments.StringOption("dir", "DIR", "Install/uninstall package in directory <DIR>. This overrides the useAppDir option"),
                             new Arguments.Option("help", "Show help"),
@@ -1543,17 +1556,24 @@ public class AddOnManager {
             if (arguments.hasOption("list")) {
                 prettyPrintPackageInfo(Log.info, packageMap);
             }
-
+            
             if (arguments.hasOption("add")) {
                 String name = arguments.getStringOption("add");
                 boolean processed = false;
                 for (Package aPackage : packageMap.values()) {
                     if (aPackage.packageName.equals(name)) {
                         processed = true;
-                        if (!aPackage.isInstalled()) {
+                        if (!aPackage.isInstalled() || arguments.hasOption("version")) {
                             Log.debug.println("Determine packages to install");
                             Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
-                            packagesToInstall.put(aPackage, aPackage.getLatestVersion());
+                            if (arguments.hasOption("version")) {
+                            	String versionString = arguments.getStringOption("version");
+                            	PackageVersion version = new PackageVersion(versionString);
+                            	packagesToInstall.put(aPackage, version);
+                            	AddOnManager.useArchive = true;
+                            } else {
+                            	packagesToInstall.put(aPackage, aPackage.getLatestVersion());
+                            }
                             try {
                                 populatePackagesToInstall(packageMap, packagesToInstall);
                             } catch (DependencyResolutionException ex) {
