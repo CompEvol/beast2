@@ -323,7 +323,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
                 for(int i = 2; i < speciesCount+1; ++i) {
                     l += 1./i;
                 }
-                lambda.setValue((1 / rh) * l);
+                setParameterValue(lambda, (1 / rh) * l);
             }
 
             double totBranches = 0;
@@ -336,24 +336,39 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             totBranches /= 2* (streeNodeas.length - 1);
             final RealParameter popm = popMean.get();
             if( popm != null ) {
-                popm.setValue(totBranches);
+            	setParameterValue(popm, totBranches);
             }
             final SpeciesTreePrior speciesTreePrior = speciesTreePriorInput.get();
             if( speciesTreePrior != null ) {
                 final RealParameter popb = speciesTreePrior.popSizesBottomInput.get();
                 if( popb != null ) {
                     for(int i = 0; i < popb.getDimension(); ++i) {
-                      popb.setValue(i, 2*totBranches);
+                    	setParameterValue(popb, i, 2*totBranches);
                     }
                 }
                 final RealParameter popt = speciesTreePrior.popSizesTopInput.get();
                 if( popt != null ) {
                     for(int i = 0; i < popt.getDimension(); ++i) {
-                        popt.setValue(i, totBranches);
+                    	setParameterValue(popt, i, totBranches);
                     }
                 }
             }
         }
+    }
+    
+    /** set parameter value taking bounds in account: if out of bounds, use closest boundary value instead **/
+    private void setParameterValue(RealParameter p, double value) {
+    	setParameterValue(p, 0, value);
+    }
+    
+    private void setParameterValue(RealParameter p, int index, double value) {
+    	if (value < p.getLower()) {
+    		value = p.getLower();
+    	}
+    	if (value > p.getUpper()) {
+    		value = p.getUpper();
+    	}
+    	p.setValue(index, value);
     }
 
     private void randomInitGeneTrees(double speciesTreeHeight) {
