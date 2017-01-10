@@ -36,6 +36,7 @@ public class BeastDialog {
     private final JComboBox<String> logginMode = new JComboBox<>(new String[]{"default: only write new log files",
             "overwrite: overwrite log files",
             "resume: appends log to existing files (if any)"});
+    private final JCheckBox strictVersionCheckBox = new JCheckBox("Only load packages and versions specified in XML");
 
     private final JCheckBox beagleCheckBox = new JCheckBox("Use BEAGLE library if available:");
     private final JCheckBox beagleInfoCheckBox = new JCheckBox("Show list of available BEAGLE resources and Quit");
@@ -124,7 +125,11 @@ public class BeastDialog {
 
         optionPanel.addComponent(logginMode);
 //        optionPanel.addComponent(overwriteCheckBox);
-
+        optionPanel.addComponent(strictVersionCheckBox);
+        strictVersionCheckBox.setToolTipText("Only check this box to run a file with exactly the same packages "
+        		+ "and package versions as specified in the 'required' attribute of the beast element in "
+        		+ "the XML file");
+        
         optionPanel.addSeparator();
 
         seedText.setColumns(12);
@@ -216,6 +221,10 @@ public class BeastDialog {
 
     public int getLogginMode() {
         return logginMode.getSelectedIndex();
+    }
+
+    public boolean useStrictVersions() {
+        return strictVersionCheckBox.isSelected();
     }
 
     public boolean useBeagle() {

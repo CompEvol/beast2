@@ -91,6 +91,10 @@ public class AddOnManager {
     // flag to indicate archive directory and version numbers in directories are required
     static boolean useArchive = false;
     
+    public static void useArchive(boolean useArchive2) {
+    	useArchive = useArchive2;
+    }
+    
     public static final String INSTALLED = "installed";
     public static final String NOT_INSTALLED = "not installed";
     

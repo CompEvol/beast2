@@ -504,6 +504,9 @@ public class BeastMain {
             	Log.err.println("No input file specified");
                 System.exit(1);
             }
+            if (dialog.useStrictVersions()) {
+            	MCMCargs.add("-strictversions");
+            }
 
         } else {
             if (arguments.hasOption("overwrite")) {

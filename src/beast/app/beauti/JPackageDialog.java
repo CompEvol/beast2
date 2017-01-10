@@ -42,6 +42,7 @@ public class JPackageDialog extends JPanel {
     Box buttonBox;
     JFrame frame;
     PackageTable dataTable = null;
+    boolean useLatestVersion = true;
 
     TreeMap<String, Package> packageMap = new TreeMap<>((s1,s2)->{
     	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
@@ -239,6 +240,15 @@ public class JPackageDialog extends JPanel {
 
     private Box createButtonBox() {
         Box box = Box.createHorizontalBox();
+        final JCheckBox latestVersionCheckBox = new JCheckBox("Latest");
+        latestVersionCheckBox.setToolTipText("If selected, only the latest version is installed when hitting the Install/Upgrade button. "
+        		+ "Otherwise, you can select from a list of available versions.");
+        box.add(latestVersionCheckBox);
+        latestVersionCheckBox.addActionListener(e -> {
+        	JCheckBox checkBox = (JCheckBox) e.getSource();
+        	useLatestVersion = checkBox.isSelected();
+        });
+        latestVersionCheckBox.setSelected(useLatestVersion);
         JButton installButton = new JButton("Install/Upgrade");
         installButton.addActionListener(e -> {
             // first get rid of existing packages
@@ -248,10 +258,23 @@ public class JPackageDialog extends JPanel {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
+            AddOnManager.useArchive(!useLatestVersion);
             for (int selRow : selectedRows) {
                 Package selPackage = getSelectedPackage(selRow);
-                if (selPackage != null)
-                    packagesToInstall.put(selPackage, selPackage.getLatestVersion());
+                if (selPackage != null) {
+                	if (useLatestVersion) {
+                		packagesToInstall.put(selPackage, selPackage.getLatestVersion());
+                	} else {
+                		PackageVersion version = (PackageVersion) JOptionPane.showInputDialog( null, "Select Version for " + selPackage.getName(), 
+                				"Select version", 
+                				JOptionPane.QUESTION_MESSAGE, null, 
+                				selPackage.getAvailableVersions().toArray(), selPackage.getAvailableVersions().toArray()[0]);
+                		if (version == null) {
+                			return;
+                		}
+                		packagesToInstall.put(selPackage, version);
+                	}
+                }
             }
 
             try {
