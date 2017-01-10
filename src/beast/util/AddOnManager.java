@@ -523,11 +523,14 @@ public class AddOnManager {
     	if (pkgVersion == null) {
     		pkgVersion = pkg.getInstalledVersion();
     	}
-    	String dirName = getPackageDir(pkg, pkgVersion, useAppDir, customDir);
-        if (customDir != null) {
-            dirName = customDir + "/" + pkg.getName();
-        }
+    	String dirName = getPackageDir(pkg, pkgVersion, useAppDir, customDir);    	
         File dir = new File(dirName);
+        if (!dir.exists()) {
+        	useArchive = !useArchive;
+        	dirName = getPackageDir(pkg, pkgVersion, useAppDir, customDir);
+        	dir = new File(dirName);
+        	useArchive = !useArchive;
+        }
         List<File> deleteFailed = new ArrayList<>();
         deleteRecursively(dir, deleteFailed);
         

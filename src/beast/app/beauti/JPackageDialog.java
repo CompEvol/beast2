@@ -333,13 +333,15 @@ public class JPackageDialog extends JPanel {
                             List<String> deps = getInstalledDependencyNames(selPackage, packageMap);
 
                             if (deps.isEmpty()) {
-                                String result = uninstallPackage(selPackage, false, null);
+                                String result = uninstallPackage(selPackage, selPackage.getInstalledVersion(), false, null);
 
                                 if (result != null) {
                                     if (removedPackageNames.length() > 0)
                                         removedPackageNames.append(", ");
                                     removedPackageNames.append("'")
                                             .append(selPackage.getName())
+                                            .append(" v")
+                                            .append(selPackage.getInstalledVersion())
                                             .append("'");
                                 }
                             } else {
