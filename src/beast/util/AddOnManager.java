@@ -862,16 +862,61 @@ public class AddOnManager {
         }
 
         dirs.addAll(subDirs);
+        dirs.addAll(getLatestBeastArchiveDirectories(dirs));
         return dirs;
     }
     
-    public static List<String> getLatestBeastArchiveDirectories() {
+    /*
+     * Get directories from archive, if not already loaded when traversing visitedDirs.
+     * Only add the latest version from the archive.
+     */
+    private static List<String> getLatestBeastArchiveDirectories(List<String> visitedDirs) {
         List<String> dirs = new ArrayList<>();
-        String FILESEPARATOR = (Utils.isWindows() ? "\\" : "/");
+        String FILESEPARATOR = "/"; //(Utils.isWindows() ? "\\" : "/");
 
     	String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
     	File archiveDir = new File(dir);
     	if (archiveDir.exists()) {
+    		
+    		// determine which packages will already be loaded
+        	Set<String> alreadyLoaded = new HashSet<>();
+        	for (String d : visitedDirs) {
+        		File dir2 = new File(d);
+        		if (dir2.isDirectory()) {
+                    File versionFile = new File(dir2 + "/version.xml");
+                    if (versionFile.exists()) {
+                        try {
+                            // find name of package
+                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                            Document doc = factory.newDocumentBuilder().parse(versionFile);
+                            Element addon = doc.getDocumentElement();
+                            alreadyLoaded.add(addon.getAttribute("name"));
+                        } catch (Exception e) {
+                            // too bad, won't print out any info
+                        }
+                    }
+
+        			alreadyLoaded.add(dir2.getName());
+    	        	for (String f : dir2.list()) {
+    	        		File dir3 = new File(f);
+    	        		if (dir3.isDirectory()) {
+    	                    versionFile = new File(dir3 + "/version.xml");
+    	                    if (versionFile.exists()) {
+    	                        try {
+    	                            // find name of package
+    	                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    	                            Document doc = factory.newDocumentBuilder().parse(versionFile);
+    	                            Element addon = doc.getDocumentElement();
+    	                            alreadyLoaded.add(addon.getAttribute("name"));
+    	                        } catch (Exception e) {
+    	                            // too bad, won't print out any info
+    	                        }
+    	                    }
+    	        		}
+    	        	}    		
+        		}
+        	}
+    		
         	for (String f : archiveDir.list()) {
         		File f2 = new File(dir + FILESEPARATOR + f);
         		if (f2.isDirectory()) {
@@ -887,7 +932,10 @@ public class AddOnManager {
         				String versionDir = versionDirs[k];
         				File vDir = new File(f2.getPath() + FILESEPARATOR + versionDir);
         				if (vDir.exists() && new File(vDir.getPath() + FILESEPARATOR + "version.xml").exists()) {
-        					dirs.add(vDir.getPath());
+        					// check it is not already loaded
+        					if (!alreadyLoaded.contains(f)) {
+        						dirs.add(vDir.getPath());
+        					}
         					break;
         				}
         				k--;
@@ -913,9 +961,6 @@ public class AddOnManager {
         checkInstalledDependencies(packages);
 
         for (String jarDirName : getBeastDirectories()) {
-        	loadPacakge(jarDirName);
-        }
-        for (String jarDirName : getLatestBeastArchiveDirectories()) {
         	loadPacakge(jarDirName);
         }
         externalJarsLoaded = true;
