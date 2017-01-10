@@ -91,8 +91,8 @@ public class AddOnManager {
     // flag to indicate archive directory and version numbers in directories are required
     static boolean useArchive = false;
     
-    public static void useArchive(boolean useArchive2) {
-    	useArchive = useArchive2;
+    public static void useArchive(boolean _useArchive) {
+    	useArchive = _useArchive;
     }
     
     public static final String INSTALLED = "installed";
@@ -860,11 +860,41 @@ public class AddOnManager {
                 }
             }
         }
-        // check version dependencies
-
 
         dirs.addAll(subDirs);
+        return dirs;
+    }
+    
+    public static List<String> getLatestBeastArchiveDirectories() {
+        List<String> dirs = new ArrayList<>();
+        String FILESEPARATOR = (Utils.isWindows() ? "\\" : "/");
 
+    	String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
+    	File archiveDir = new File(dir);
+    	if (archiveDir.exists()) {
+        	for (String f : archiveDir.list()) {
+        		File f2 = new File(dir + FILESEPARATOR + f);
+        		if (f2.isDirectory()) {
+        			// this may be a package directory -- pick the latest directory
+        			String [] versionDirs = f2.list();
+        			Arrays.sort(versionDirs, (v1, v2) -> {
+        				PackageVersion pv1 = new PackageVersion(v1);
+        				PackageVersion pv2 = new PackageVersion(v2);
+        				return (pv1.compareTo(pv2));
+        			});
+        			int k = versionDirs.length - 1;
+        			while (k >= 0) {
+        				String versionDir = versionDirs[k];
+        				File vDir = new File(f2.getPath() + FILESEPARATOR + versionDir);
+        				if (vDir.exists() && new File(vDir.getPath() + FILESEPARATOR + "version.xml").exists()) {
+        					dirs.add(vDir.getPath());
+        					break;
+        				}
+        				k--;
+        			}
+        		}
+    		}        		
+    	}
         return dirs;
     } // getBeastDirectories
 
@@ -883,6 +913,9 @@ public class AddOnManager {
         checkInstalledDependencies(packages);
 
         for (String jarDirName : getBeastDirectories()) {
+        	loadPacakge(jarDirName);
+        }
+        for (String jarDirName : getLatestBeastArchiveDirectories()) {
         	loadPacakge(jarDirName);
         }
         externalJarsLoaded = true;
