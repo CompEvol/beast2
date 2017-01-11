@@ -1,7 +1,7 @@
-                    BEAST v2.4.4 2016
-                 Beast 2 development team 2011-2016
+                    BEAST v2.4.5 2017
+                 Beast 2 development team 2011-2017
 
-Last updated: November 2016
+Last updated: January 2017
 
 Contents:
 1) INTRODUCTION
@@ -121,12 +121,21 @@ BEAST arguments:
     -beagle_double BEAGLE: use double precision if available
     -beagle_scaling BEAGLE: specify scaling scheme to use
     -help Print this information and stop
+    -version Print version and stop
+    -strictversions Use only package versions as specified in the 'required' attribute
 
 For example:
 
      java -jar lib/beast.jar -seed 123456 -overwrite input.xml
 
-___________________________________________________________________________
+On Linux, there is a bin directory inside the beast directory that has 
+a number of scripts for starting programs, including beast, and beauti, 
+so to start beast (or beauti) from a terminal, you can use
+
+/path/to/beast/bin/beast
+
+with one of the arguments above.
+_________________________________________________________________
 5) ANALYZING RESULTS
 
 We have produced a powerful graphical program for analysing MCMC log files
