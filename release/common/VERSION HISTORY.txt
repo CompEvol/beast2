@@ -1,10 +1,29 @@
-                    BEAST v2.4.4 2016
-                 Beast 2 development team 2011-2016
+                    BEAST v2.4.5 2017
+                 Beast 2 development team 2011-2017
 Version History
-Last updated: November 2016
+Last updated: January 2017
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.5 January 2017
+
+	BEAUti
+		Clone fix that deals with edited priors
+		Package manager can now install specific package versions, not only the latest
+		Improved data type guessing on importing FASTA files
+		Log MRCAPriors imported through NEXUS files
+		
+	BEAST
+		Added -strictversions flag to indicate only package versions specified in XML should be loaded.
+		Tree parser fixes
+		StarBeastStartState now takes bounds of parameters it sets in account
+		Allow nested operator schedules
+		Improved error reporting
+		
+	Package manager
+		Added -version flag to specify exactly which package version to install.	
+
+
 Version 2.4.4 November 2016
 	Fix that prevented starting any BEAST application on Mac Sierra
 	
