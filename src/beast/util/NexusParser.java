@@ -368,10 +368,7 @@ public class NexusParser {
 
             //dimensions ntax=12 nchar=898;
             if (str.toLowerCase().contains("dimensions")) {
-                while (str.indexOf(';') < 0) {
-                    str += nextLine(fin);
-                }
-                str = str.replace(";", " ");
+            	str = getNextDataBlock(str, fin);
 
                 final String character = getAttValue("nchar", str);
                 if (character == null) {
@@ -383,10 +380,7 @@ public class NexusParser {
                     taxonCount = Integer.parseInt(taxa);
                 }
             } else if (str.toLowerCase().contains("format")) {
-                while (str.indexOf(';') < 0) {
-                    str += nextLine(fin);
-                }
-                str = str.replace(";", " ");
+            	str = getNextDataBlock(str, fin);
 
                 //format datatype=dna interleave=no gap=-;
                 final String dataTypeName = getAttValue("datatype", str);
@@ -716,6 +710,18 @@ public class NexusParser {
         return alignment;
     } // parseDataBlock
 
+    private String getNextDataBlock(String str, BufferedReader fin) throws IOException {
+        while (str.indexOf(';') < 0) {
+            str += nextLine(fin);
+        }
+        str = str.replace(";", " ");
+
+		if (str.toLowerCase().matches(".*matrix.*")) {
+			// will only get here when there
+			throw new IllegalArgumentException("Mallformed nexus file: perhaps a semi colon is missing before 'matrix'");
+		}
+		return str;
+    }
 
     /**
      * parse assumptions block
