@@ -1216,7 +1216,7 @@ public class TreeAnnotator {
     Set<String> attributeNames = new HashSet<>();
     TaxonSet taxa = null;
 
-    static boolean processBivariateAttributes = false;
+    static boolean processBivariateAttributes = true;
 
 //    static {
 //        try {
@@ -1399,7 +1399,8 @@ public class TreeAnnotator {
                         new Arguments.Option("help", "option to print this message"),
                         new Arguments.Option("forceDiscrete", "forces integer traits to be treated as discrete traits."),
                         new Arguments.Option("lowMem", "use less memory, which is a bit slower."),
-                        new Arguments.RealOption("hpd2D", "the HPD interval to be used for the bivariate traits")
+                        new Arguments.RealOption("hpd2D", "the HPD interval to be used for the bivariate traits"),
+                        new Arguments.Option("nohpd2D", "suppress calculation of HPD intervals for the bivariate traits")
                 });
 
         try {
@@ -1408,6 +1409,10 @@ public class TreeAnnotator {
             progressStream.println(ae);
             printUsage(arguments);
             System.exit(1);
+        }
+
+        if (arguments.hasOption("nohpd2D")) {
+        	processBivariateAttributes = false;
         }
 
         if (arguments.hasOption("forceDiscrete")) {
