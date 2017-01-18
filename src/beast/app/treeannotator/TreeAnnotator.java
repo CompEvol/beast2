@@ -65,9 +65,10 @@ public class TreeAnnotator {
 
     private static boolean forceIntegerToDiscrete = false;
 
+    static boolean processSA = true;
+
     private boolean SAmode = false;
 
-    
     abstract class TreeSet {
     	abstract boolean hasNext();
     	abstract Tree next() throws IOException;
@@ -221,7 +222,7 @@ public class TreeAnnotator {
             if (str == null) {
                 return null;
             }
-            if (str.contains("[")) {
+            if (str.matches("^\\s*\\[.*")) {
                 final int start = str.indexOf('[');
                 int end = str.indexOf(']', start);
                 while (end < 0) {
@@ -475,7 +476,7 @@ public class TreeAnnotator {
             	while (treeSet.hasNext()) {
             		Tree tree = treeSet.next();
                     tree.getLeafNodeCount();
-                    if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
+                    if (tree.getDirectAncestorNodeCount() > 0 && !SAmode && processSA) {
                         SAmode = true;
                         Log.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
                                 "summary analysis.");
@@ -518,7 +519,7 @@ public class TreeAnnotator {
             while (treeSet.hasNext()) {
                 Tree tree = treeSet.next();
                 tree.getLeafNodeCount();
-                if (tree.getDirectAncestorNodeCount() > 0 && !SAmode) {
+                if (tree.getDirectAncestorNodeCount() > 0 && !SAmode && processSA) {
                     SAmode = true;
                     Log.err.println("A tree with a sampled ancestor is found. Turning on\n the sampled ancestor " +
                             "summary analysis.");
@@ -1217,7 +1218,7 @@ public class TreeAnnotator {
     TaxonSet taxa = null;
 
     static boolean processBivariateAttributes = true;
-
+    
 //    static {
 //        try {
 //            System.loadLibrary("jri");
@@ -1400,7 +1401,8 @@ public class TreeAnnotator {
                         new Arguments.Option("forceDiscrete", "forces integer traits to be treated as discrete traits."),
                         new Arguments.Option("lowMem", "use less memory, which is a bit slower."),
                         new Arguments.RealOption("hpd2D", "the HPD interval to be used for the bivariate traits"),
-                        new Arguments.Option("nohpd2D", "suppress calculation of HPD intervals for the bivariate traits")
+                        new Arguments.Option("nohpd2D", "suppress calculation of HPD intervals for the bivariate traits"),
+                        new Arguments.Option("noSA", "interpret the tree set as begin from a not being from a sampled ancestor analysis, even if there are zero branch lengths in the tree set")
                 });
 
         try {
@@ -1413,6 +1415,10 @@ public class TreeAnnotator {
 
         if (arguments.hasOption("nohpd2D")) {
         	processBivariateAttributes = false;
+        }
+        
+        if (arguments.hasOption("noSA")) {
+        	processSA = false;
         }
 
         if (arguments.hasOption("forceDiscrete")) {
