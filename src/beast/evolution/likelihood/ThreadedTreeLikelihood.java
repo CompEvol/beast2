@@ -313,6 +313,17 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 		return logP;
 	}
     
+    /* return copy of pattern log likelihoods for each of the patterns in the alignment */
+	public double [] getPatternLogLikelihoods() {
+		double [] patternLogLikelihoods = new double[dataInput.get().getPatternCount()];
+		int i = 0;
+		for (TreeLikelihood b : treelikelihood) {
+			double [] d = b.getPatternLogLikelihoods();
+			System.arraycopy(d, 0, patternLogLikelihoods, i, d.length);
+			i += d.length;
+		}
+		return patternLogLikelihoods;
+	} // getPatternLogLikelihoods
 	
     /** CalculationNode methods **/
 

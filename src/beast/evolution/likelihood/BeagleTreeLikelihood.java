@@ -1152,4 +1152,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             return DEFAULT;
         }
     }
+    
+    @Override
+    public double [] getPatternLogLikelihoods() {
+        beagle.getSiteLogLikelihoods(patternLogLikelihoods);
+		return patternLogLikelihoods.clone();
+	}
+
 }

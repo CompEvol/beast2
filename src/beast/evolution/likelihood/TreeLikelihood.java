@@ -52,7 +52,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
     final public Input<Boolean> m_useAmbiguities = new Input<>("useAmbiguities", "flag to indicate that sites containing ambiguous states should be handled instead of ignored (the default)", false);
     final public Input<Boolean> m_useTipLikelihoods = new Input<>("useTipLikelihoods", "flag to indicate that partial likelihoods are provided at the tips", false);
-    
+    final public Input<String> implementationInput = new Input<>("implementation", "name of class that implements this treelikelihood potentially more efficiently. "
+    		+ "This class will be tried first, with the TreeLikelihood as fallback implementation. "
+    		+ "When multi-threading, multiple objects can be created.", "beast.evolution.likelihood.BeagleTreeLikelihood");
     
     public static enum Scaling {none, always, _default};
     final public Input<Scaling> scaling = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
@@ -472,6 +474,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         }
         return update;
     } // traverseWithBRM
+
+    /* return copy of pattern log likelihoods for each of the patterns in the alignment */
+	public double [] getPatternLogLikelihoods() {
+		if (beagle != null) {
+			return beagle.getPatternLogLikelihoods();
+		}
+		return patternLogLikelihoods.clone();
+	} // getPatternLogLikelihoods
 
     /** CalculationNode methods **/
 
