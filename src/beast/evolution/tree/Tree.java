@@ -994,4 +994,22 @@ public class Tree extends StateNode implements TreeInterface {
     public TaxonSet getTaxonset() {
         return m_taxonset.get();
     }
+    
+    
+    /** 
+     * Determine whether a child was replaced in a binary tree 
+     **/
+    public boolean childrenChanged(int nodeNr) {
+        Node node = m_nodes[nodeNr];
+        Node old = m_storedNodes[nodeNr];
+        if (node.getLeft().getNr() == old.getLeft().getNr() &&
+                node.getRight().getNr() == old.getRight().getNr()) {
+                return false;
+        }
+        if (node.getLeft().getNr() == old.getRight().getNr() &&
+                node.getRight().getNr() == old.getLeft().getNr()) {
+                return false;
+        }
+        return true;
+    }
 } // class Tree
