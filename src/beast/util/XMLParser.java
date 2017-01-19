@@ -683,7 +683,10 @@ public class XMLParser {
             }
             if (IDMap.containsKey(dRef)) {
                 final BEASTInterface beastObject = IDMap.get(dRef);
-                if (checkType(classname, beastObject, node)) {
+                // TODO: testing for "Alignment" is a hack for a common problem
+                // occurring in many templates. As long as packages are not debugged
+                // this hack should stay in place, but should eventually (v2.5?) be removed.
+                if (classname.equals("Alignment") || checkType(classname, beastObject, node)) {
                     return beastObject;
                 }
                 checkType(classname, beastObject, node);
