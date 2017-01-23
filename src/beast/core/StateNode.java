@@ -125,6 +125,9 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
 
     /** ensure XML identifiers get proper escape sequences **/
     private String normalise(String str) {
+    	if (str == null) {
+    		return null;
+    	}
     	str = str.replaceAll("&", "&amp;");    	
     	str = str.replaceAll("'", "&apos;");
     	str = str.replaceAll("\"", "&quot;");
