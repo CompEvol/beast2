@@ -109,7 +109,7 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      * for storing a state *
      */
     final public void toXML(PrintStream out) {
-        out.print("<statenode id='" + getID() + "'>");
+        out.print("<statenode id='" + normalise(getID()) + "'>");
         out.print(toString());
         out.print("</statenode>\n");
     }
@@ -118,9 +118,19 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      * stores a state node in XML format, to be restored by fromXML() *
      */
     final public String toXML() {
-        return "<statenode id='" + getID() + "'>" +
+        return "<statenode id='" + normalise(getID()) + "'>" +
                 toString() +
                 "</statenode>\n";
+    }
+
+    /** ensure XML identifiers get proper escape sequences **/
+    private String normalise(String str) {
+    	str = str.replaceAll("&", "&amp;");    	
+    	str = str.replaceAll("'", "&apos;");
+    	str = str.replaceAll("\"", "&quot;");
+    	str = str.replaceAll("<", "&lt;");
+    	str = str.replaceAll(">", "&gt;");
+    	return str;
     }
 
     /**
