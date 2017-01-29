@@ -76,7 +76,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         final Double[][] sample = new Double[size][];
         for (int i = 0; i < sample.length; i++) {
             final double p = Randomizer.nextDouble();
-            sample[i] = new Double[]{inverseCumulativeProbability(p)+offsetInput.get()};
+            sample[i] = new Double[]{inverseCumulativeProbability(p)};
         }
         return sample;
 
