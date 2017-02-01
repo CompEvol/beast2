@@ -310,6 +310,7 @@ public class Logger extends BEASTObject {
     	// remove trailing dots on labels
     	header = header.replaceAll("\\.\\.", ".");
     	header = header.replaceAll("\\.\t", "\t");
+    	header = header.replaceAll("\\.$", "");
 		return header;
 	}
 
@@ -500,7 +501,7 @@ public class Logger extends BEASTObject {
             m_logger.log(sampleNr, out);
         }
 
-        // Aquire log string and trim excess tab
+        // Acquire log string and trim excess tab
         String logContent;
         try {
             logContent = baos.toString("ASCII").trim();
