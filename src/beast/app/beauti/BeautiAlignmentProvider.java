@@ -513,7 +513,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 					        	JComboBox<String> jcb = new JComboBox<>(new String[]{"aminoacid", "nucleotide", "all are aminoacid", "all are nucleotide"});
 					        	jcb.setEditable(true);
 					        	jcb.setSelectedItem(datatype);
-					        	JOptionPane.showMessageDialog(null, jcb, "Choose the datatype of alignmnet " + alignment.getID(), JOptionPane.QUESTION_MESSAGE);
+					        	JOptionPane.showMessageDialog(null, jcb, "Choose the datatype of alignment " + alignment.getID(), JOptionPane.QUESTION_MESSAGE);
 					        	switch ((String) jcb.getSelectedItem()) {
 						        	case "aminoacid": datatype = "aminoacid"; break;
 						        	case "nucleotide": datatype = "nucleotide"; break;
