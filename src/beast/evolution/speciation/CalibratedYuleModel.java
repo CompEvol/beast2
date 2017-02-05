@@ -539,7 +539,9 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
                     ll += cs[0] * Math.log1p(-Math.exp(-lam * hs[0])) - lam * hs[0] - lfactorials[cs[0]];
                     for (int i = 1; i < cs.length - 1; ++i) {
                         final int c = cs[i];
-                        ll += c * (Math.log1p(-Math.exp(-lam * (hs[i] - hs[i - 1]))) - lam * hs[i - 1]);
+                        if( c > 0 ) {
+                        	ll += c * (Math.log1p(-Math.exp(-lam * (hs[i] - hs[i - 1]))) - lam * hs[i - 1]);
+                        }
                         ll += -lam * hs[i] - lfactorials[c];
                     }
                     ll += -lam * (cs[calCount] + 1) * hs[calCount - 1] - lfactorials[cs[calCount] + 1];
