@@ -154,6 +154,11 @@ public class OperatorListInputEditor extends ListInputEditor {
                 if (beastObject2 instanceof StateNode && ((StateNode) beastObject2).isEstimatedInput.get()) {
                     name += beastObject2.getID() + " ";
                 }
+                // issue https://github.com/CompEvol/beast2/issues/661
+                if (name.length() > 100) {
+                	name += "... ";
+                	break;
+                }
             }
         } catch (Exception e) {
             // ignore
