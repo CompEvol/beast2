@@ -113,8 +113,12 @@ public class Utils6 {
 				+ "rm -r /Developer/NVIDIA<br>"
 				+ "rm -r /usr/local/cuda<br>"
 				+ "You may need 'sudo rm' instead of 'rm'</html>";
-				
-		if (isMac()) {
+        boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
+        if (forceJava) {
+        	// don't need to check if Beagle (and thus CUDA) is never loaded
+        	return true;
+        }
+        if (isMac()) {
 			// check any of these directories exist
 			// /Library/Frameworks/CUDA.framework
 			// /Developer/NVIDIA
