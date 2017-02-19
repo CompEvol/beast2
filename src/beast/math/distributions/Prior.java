@@ -56,6 +56,9 @@ public class Prior extends Distribution {
             }
         }
         logP = dist.calcLogP(x);
+        if (logP == Double.POSITIVE_INFINITY) {
+        	logP = Double.NEGATIVE_INFINITY;
+        }
         return logP;
     }
     
