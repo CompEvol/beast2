@@ -152,12 +152,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
 				}
 				
 				// get a fresh instance
-				try {
-					importer = importer.getClass().newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				//try {
+				//	importer = importer.getClass().newInstance();
+				//} catch (InstantiationException | IllegalAccessException e) {
+				//	// TODO Auto-generated catch block
+				//	e.printStackTrace();
+				//}
 				List<BEASTInterface> list = importer.loadFile(file);
 				selectedBEASTObjects.addAll(list);
 			} else {
@@ -515,18 +515,23 @@ public class BeautiAlignmentProvider extends BEASTObject {
 					        	jcb.setSelectedItem(datatype);
 					        	JOptionPane.showMessageDialog(null, jcb, "Choose the datatype of alignment " + alignment.getID(), JOptionPane.QUESTION_MESSAGE);
 					        	switch ((String) jcb.getSelectedItem()) {
-						        	case "aminoacid": datatype = "aminoacid"; break;
-						        	case "nucleotide": datatype = "nucleotide"; break;
-						        	case "all are aminoacid": datatype = "aminoacid"; this.datatype = dtype.aminoacid; break;
-						        	case "all are nucleotide": datatype = "nucleotide"; this.datatype = dtype.nucleotide; break;
+						        	case "aminoacid": datatype = "aminoacid"; totalCount = 20; break;
+						        	case "nucleotide": datatype = "nucleotide"; totalCount = 4; break;
+						        	case "all are aminoacid": datatype = "aminoacid"; this.datatype = dtype.aminoacid; totalCount = 20; break;
+						        	case "all are nucleotide": datatype = "nucleotide"; this.datatype = dtype.nucleotide; totalCount = 4; break;
 					        	}
 					        	break;
 				        	case aminoacid:
 				        		datatype = "aminoacid";
+				        		totalCount = 20;
 				        		break;
 				        	case nucleotide:
 				        		datatype = "nucleotide";
+				        		totalCount = 4;
 			        	}
+		            	for (Sequence seq : alignment.sequenceInput.get()) {
+		            		seq.totalCountInput.setValue(totalCount, seq);
+		            	}
 			        }
 					alignment.dataTypeInput.setValue(datatype, alignment);
 			        alignment.initAndValidate();
