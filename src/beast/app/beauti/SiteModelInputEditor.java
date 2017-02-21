@@ -1,5 +1,6 @@
 package beast.app.beauti;
 
+
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -322,12 +323,12 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
 	    	if (!isAllClocksAreEqual) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
-	    		fixMeanRatesValidateLabel.setToolTipText("Not all clocks are equal. Are you sure this is what you want?");
+	    		fixMeanRatesValidateLabel.setToolTipText("Not all substitution rates are equal. Are you sure this is what you want?");
 	    	} else if (parameters.size() == 1) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
 	    		fixMeanRatesValidateLabel.setToolTipText("At least 2 clock models should have their rate estimated");
-	    	} else if (parameters.size() < doc.alignments.size()) {
+	    	} else if (parameters.size() < doc.getPartitions("SiteModel").size()) {
 	    		fixMeanRatesValidateLabel.setVisible(true);
 	    		fixMeanRatesValidateLabel.m_circleColor = Color.orange;
 	    		fixMeanRatesValidateLabel.setToolTipText("Not all partitions have their rate estimated");
