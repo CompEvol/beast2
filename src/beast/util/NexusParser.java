@@ -179,13 +179,15 @@ public class NexusParser {
 //                    treeParser = new TreeParser(m_taxa, str, 1);
 //                }
 
-                for (final NexusParserListener listener : listeners) {
-                    listener.treeParsed(trees.size(), treeParser);
-                }
 
                 if (translationMap != null) treeParser.translateLeafIds(translationMap);
 
                 trees.add(treeParser);
+
+                // this needs to go after translation map or listeners have an incomplete tree!
+                for (final NexusParserListener listener : listeners) {
+                    listener.treeParsed(trees.size(), treeParser);
+                }
 
 //				Node tree = treeParser.getRoot();
 //				tree.sort();

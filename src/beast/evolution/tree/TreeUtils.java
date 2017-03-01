@@ -34,55 +34,35 @@ public class TreeUtils {
 
     public static Comparator<Node> createNodeDensityComparator() {
 
-        return new Comparator<Node>() {
-
-            @Override
-			public int compare(Node node1, Node node2) {
-                return node2.getLeafNodeCount() - node1.getLeafNodeCount();
-            }
-
-//            public boolean equals(Node node1, Node node2) {
-//                return node1.getLeafNodeCount() == node2.getLeafNodeCount();
-//            }
-        };
+        return (node1, node2) -> node2.getLeafNodeCount() - node1.getLeafNodeCount();
     }
 
 
     public static Comparator<Node> createNodeDensityMinNodeHeightComparator() {
 
-        return new Comparator<Node>() {
+        return (node1, node2) -> {
+            int larger = node1.getLeafNodeCount() - node2.getLeafNodeCount();
 
-            @Override
-			public int compare(Node node1, Node node2) {
-                int larger = node1.getLeafNodeCount() - node2.getLeafNodeCount();
+            if (larger != 0) return larger;
 
-                if (larger != 0) return larger;
-
-                double tipRecent = getMinNodeHeight(node1) - getMinNodeHeight(node2);
-                if (tipRecent > 0.0) return -1;
-                if (tipRecent < 0.0) return 1;
-                return 0;
-            }
-
+            double tipRecent = getMinNodeHeight(node1) - getMinNodeHeight(node2);
+            if (tipRecent > 0.0) return -1;
+            if (tipRecent < 0.0) return 1;
+            return 0;
         };
     }
 
     public static Comparator<Node> createReverseNodeDensityMinNodeHeightComparator() {
-        return new Comparator<Node>() {
-
-            @Override
-			public int compare(Node node1, Node node2) {
-                int larger = node2.getLeafNodeCount() - node1.getLeafNodeCount();
+        return (node1, node2) -> {
+            int larger = node2.getLeafNodeCount() - node1.getLeafNodeCount();
 
 
-                if (larger != 0) return larger;
+            if (larger != 0) return larger;
 
-                double tipRecent = getMinNodeHeight(node2) - getMinNodeHeight(node1);
-                if (tipRecent > 0.0) return -1;
-                if (tipRecent < 0.0) return 1;
-                return 0;
-            }
-
+            double tipRecent = getMinNodeHeight(node2) - getMinNodeHeight(node1);
+            if (tipRecent > 0.0) return -1;
+            if (tipRecent < 0.0) return 1;
+            return 0;
         };
     }
 
@@ -136,7 +116,7 @@ public class TreeUtils {
                                              Node[] mrca) {
 
         if (node.isLeaf()) {
-            if (leafNodes.contains(tree.getTaxonId(node))) {
+            if (leafNodes.contains(node.getID())) {
                 if (cardinality == 1) {
                     mrca[0] = node;
                 }
