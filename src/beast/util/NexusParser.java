@@ -182,12 +182,14 @@ public class NexusParser {
 
                 if (translationMap != null) treeParser.translateLeafIds(translationMap);
 
-                trees.add(treeParser);
 
                 // this needs to go after translation map or listeners have an incomplete tree!
                 for (final NexusParserListener listener : listeners) {
                     listener.treeParsed(trees.size(), treeParser);
                 }
+
+                // this must come after listener or trees.size() gives the wrong index to treeParsed
+                trees.add(treeParser);
 
 //				Node tree = treeParser.getRoot();
 //				tree.sort();
