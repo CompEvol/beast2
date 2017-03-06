@@ -62,6 +62,7 @@ import beast.app.BEASTVersion2;
 import beast.app.beastapp.BeastMain;
 import beast.app.util.Arguments;
 import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.util.Log;
@@ -1035,6 +1036,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
+                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                     // too bad, won't print out any info
 

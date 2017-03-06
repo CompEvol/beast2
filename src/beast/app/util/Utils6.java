@@ -55,6 +55,7 @@ public class Utils6 {
 
     //Splash
     static Window splashScreen;
+    static Canvas can;
     /*
         This could live in the desktop script.
         However we'd like to get it on the screen as quickly as possible.
@@ -62,10 +63,10 @@ public class Utils6 {
     public static void startSplashScreen()
     {
         Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
-        int width=img.getWidth(null), height=img.getHeight(null);
+        int width=2 * img.getWidth(null), height=img.getHeight(null);
         Window win=new Window( new Frame() );
         win.pack();
-        Canvas can = new Canvas();
+        can = new Canvas();
         can.setSize( width, height ); // why is this necessary?
         Toolkit tk=Toolkit.getDefaultToolkit();
         Dimension dim=tk.getScreenSize();
@@ -78,15 +79,29 @@ public class Utils6 {
         mt.addImage(img,0);
         try { mt.waitForAll(); } catch ( Exception e ) { }
         Graphics gr=can.getBufferedGraphics();
-        gr.drawImage(img, 0, 0, can);
+        gr.drawImage(img, width / 4, 0, can);
         win.setVisible(true);
         win.toFront();
         splashScreen = win;
     }
+    
+    public static void logToSplashScreen(String msg) {
+    	if (splashScreen != null) {
+            Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
+            Graphics gr=can.getBufferedGraphics();
+            gr.drawImage(img, can.getWidth() / 4, 0, can);
+            gr.drawString(msg, 1, can.getHeight() - 3);
+            can.repaint();
+    		
+    	}
+    }
+
 
     public static void endSplashScreen() {
-        if ( splashScreen != null )
+        if ( splashScreen != null ) {
             splashScreen.dispose();
+        	can = null;
+    	}
     }
 
 

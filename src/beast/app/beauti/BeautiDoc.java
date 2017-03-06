@@ -43,6 +43,7 @@ import org.xml.sax.SAXException;
 import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditorFactory;
+import beast.app.util.Utils6;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Description;
@@ -545,6 +546,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             && template.getName().toLowerCase().endsWith(".xml")) {
                         if (!loadedTemplates.contains(template.getName())) {
                         	Log.warning.println("Processing " + template.getAbsolutePath());
+                        	Utils6.logToSplashScreen("Processing " + template.getName());
                             loadedTemplates.add(template.getName());
                             String xml2 = load(template.getAbsolutePath());
                             if (!xml2.contains("<mergepoint ")) {
