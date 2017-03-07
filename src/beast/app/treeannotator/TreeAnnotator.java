@@ -69,10 +69,10 @@ public class TreeAnnotator {
 
     private boolean SAmode = false;
 
-    abstract class TreeSet {
-    	abstract boolean hasNext();
-    	abstract Tree next() throws IOException;
-    	abstract void reset() throws IOException;
+    public abstract class TreeSet {
+    	public abstract boolean hasNext();
+    	public abstract Tree next() throws IOException;
+    	public abstract void reset() throws IOException;
 
 
         String inputFileName;
@@ -117,7 +117,7 @@ public class TreeAnnotator {
 
     }    
     
-    class FastTreeSet extends TreeSet {
+    public class FastTreeSet extends TreeSet {
     	int current = 0;
     	Tree [] trees;
 
@@ -155,22 +155,22 @@ public class TreeAnnotator {
 		}
 
 		@Override
-		boolean hasNext() {
+		public boolean hasNext() {
 			return current < trees.length;
 		}
 
 		@Override
-		Tree next()  {
+		public Tree next()  {
 			return trees[current++];
 		}
 
 		@Override
-		void reset()  {
+		public void reset()  {
 			current = 0;
 		}
     }
     
-    class MemoryFriendlyTreeSet extends TreeSet {
+    public class MemoryFriendlyTreeSet extends TreeSet {
 //    	Tree [] trees;
     	int current = 0;
     	int lineNr;
@@ -182,7 +182,7 @@ public class TreeAnnotator {
 
         BufferedReader fin;
 
-        MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws IOException  {
+        public MemoryFriendlyTreeSet(String inputFileName, int burninPercentage) throws IOException  {
     		this.inputFileName = inputFileName;
     		countTrees(burninPercentage);
 
@@ -191,7 +191,7 @@ public class TreeAnnotator {
 
 
     	@Override
-		void reset() throws FileNotFoundException  {
+    	public void reset() throws FileNotFoundException  {
     		current = 0;
             fin = new BufferedReader(new FileReader(new File(inputFileName)));
             lineNr = 0;
@@ -340,12 +340,12 @@ public class TreeAnnotator {
     	
     	
     	@Override
-		boolean hasNext() {
+    	public boolean hasNext() {
     		return current < totalTrees;
     	}
     	
     	@Override
-		Tree next() throws IOException {
+    	public Tree next() throws IOException {
 			String str = nextLine();
     		if (!isNexus) {
                 TreeParser treeParser;
