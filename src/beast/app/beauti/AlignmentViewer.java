@@ -187,9 +187,12 @@ public class AlignmentViewer extends JPanel {
                         try {
                             int code = Integer.valueOf(patternAtTaxon[j]);
                             if (code + '0' == headerChar[i]) {
-                                tableData[j][i + 1] = integerColorMap[0][Math.min(code, integerColorMap[0].length - 1)];
+                                // Prevent Exception when accessing integerColorMap
+                                code = Math.min(Math.max(code, 0), integerColorMap[0].length - 1);
+                                tableData[j][i + 1] = integerColorMap[0][code];
                             } else {
-                                tableData[j][i + 1] = integerColorMap[1][Math.min(code, integerColorMap[1].length - 1)];
+                                code = Math.min(Math.max(code, 0), integerColorMap[0].length - 1);
+                                tableData[j][i + 1] = integerColorMap[1][code];
                             }
                         } catch (NumberFormatException e) {
                             // State cannot be interpreted as a number.
