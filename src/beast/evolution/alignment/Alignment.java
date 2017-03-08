@@ -718,7 +718,7 @@ public class Alignment extends Map<String> {
     }
 
     boolean isAmbiguousState(int state) {
-        return (state >= 0 && state < maxStateCount);
+        return (state < 0 || state >= maxStateCount);
     }
 
     //Methods from AscertainedAlignment
