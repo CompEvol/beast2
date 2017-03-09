@@ -381,90 +381,7 @@ public class MCMC extends Runnable {
         	Log.warning.println("Please wait while BEAST takes " + burnIn + " pre-burnin samples");
         }
         for (int sampleNr = -burnIn; sampleNr <= chainLength; sampleNr++) {
-            final int currentState = sampleNr;
-
-            state.store(currentState);
-//            if (m_nStoreEvery > 0 && sample % m_nStoreEvery == 0 && sample > 0) {
-//                state.storeToFile(sample);
-//            	operatorSchedule.storeToFile();
-//            }
-
-            final Operator operator = operatorSchedule.selectOperator();
-
-            if (printDebugInfo) System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
-
-            final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
-            Evaluator evaluator = null;
-
-            if (evaluatorDistribution != null) {
-                evaluator = new Evaluator() {
-                    @Override
-                    public double evaluate() {
-                        double logP = 0.0;
-
-                        state.storeCalculationNodes();
-                        state.checkCalculationNodesDirtiness();
-
-                        try {
-                            logP = evaluatorDistribution.calculateLogP();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.exit(1);
-                        }
-
-                        state.restore();
-                        state.store(currentState);
-
-                        return logP;
-                    }
-                };
-            }
-            final double logHastingsRatio = operator.proposal(evaluator);
-
-            if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
-
-            	if (operator.requiresStateInitialisation()) {
-            		state.storeCalculationNodes();
-            		state.checkCalculationNodesDirtiness();
-            	}
-
-                newLogLikelihood = posterior.calculateLogP();
-
-                logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
-                if (printDebugInfo) System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
-
-                if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
-                    // accept
-                    oldLogLikelihood = newLogLikelihood;
-                    state.acceptCalculationNodes();
-
-                    if (sampleNr >= 0) {
-                        operator.accept();
-                    }
-                    if (printDebugInfo) System.err.print(" accept");
-                } else {
-                    // reject
-                    if (sampleNr >= 0) {
-                        operator.reject(newLogLikelihood == Double.NEGATIVE_INFINITY ? -1 : 0);
-                    }
-                    state.restore();
-                    state.restoreCalculationNodes();
-                    if (printDebugInfo) System.err.print(" reject");
-                }
-                state.setEverythingDirty(false);
-            } else {
-                // operation failed
-                if (sampleNr >= 0) {
-                    operator.reject(-2);
-                }
-                state.restore();
-				if (!operator.requiresStateInitialisation()) {
-                    state.setEverythingDirty(false);
-                    state.restoreCalculationNodes();
-				}
-				if (printDebugInfo) System.err.print(" direct reject");
-            }
-            log(sampleNr);
+            final Operator operator = composeProposal(sampleNr);
 
             if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
@@ -519,6 +436,97 @@ public class MCMC extends Runnable {
         if (corrections > 0) {
         	Log.err.println("\n\nNB: " + corrections + " posterior calculation corrections were required. This analysis may not be valid!\n\n");
         }
+    }
+
+    /**
+     * The MCMC algorithm to compose proposal distributions and the operators.
+     * @param currState the current state
+     * @return the selected {@link beast.core.Operator}
+     */
+    protected Operator composeProposal(final int currState) {
+        state.store(currState);
+//            if (m_nStoreEvery > 0 && sample % m_nStoreEvery == 0 && sample > 0) {
+//                state.storeToFile(sample);
+//            	operatorSchedule.storeToFile();
+//            }
+
+        final Operator operator = operatorSchedule.selectOperator();
+
+        if (printDebugInfo) System.err.print("\n" + currState + " " + operator.getName()+ ":");
+
+        final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
+        Evaluator evaluator = null;
+
+        if (evaluatorDistribution != null) {
+            evaluator = new Evaluator() {
+                @Override
+                public double evaluate() {
+                    double logP = 0.0;
+
+                    state.storeCalculationNodes();
+                    state.checkCalculationNodesDirtiness();
+
+                    try {
+                        logP = evaluatorDistribution.calculateLogP();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
+
+                    state.restore();
+                    state.store(currState);
+
+                    return logP;
+                }
+            };
+        }
+        final double logHastingsRatio = operator.proposal(evaluator);
+
+        if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
+
+            if (operator.requiresStateInitialisation()) {
+                state.storeCalculationNodes();
+                state.checkCalculationNodesDirtiness();
+            }
+
+            newLogLikelihood = posterior.calculateLogP();
+
+            logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
+            if (printDebugInfo) System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
+
+            if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
+                // accept
+                oldLogLikelihood = newLogLikelihood;
+                state.acceptCalculationNodes();
+
+                if (currState >= 0) {
+                    operator.accept();
+                }
+                if (printDebugInfo) System.err.print(" accept");
+            } else {
+                // reject
+                if (currState >= 0) {
+                    operator.reject(newLogLikelihood == Double.NEGATIVE_INFINITY ? -1 : 0);
+                }
+                state.restore();
+                state.restoreCalculationNodes();
+                if (printDebugInfo) System.err.print(" reject");
+            }
+            state.setEverythingDirty(false);
+        } else {
+            // operation failed
+            if (currState >= 0) {
+                operator.reject(-2);
+            }
+            state.restore();
+            if (!operator.requiresStateInitialisation()) {
+                state.setEverythingDirty(false);
+                state.restoreCalculationNodes();
+            }
+            if (printDebugInfo) System.err.print(" direct reject");
+        }
+        log(currState);
+        return operator;
     }
 
     private boolean isTooDifferent(double logLikelihood, double originalLogP) {
