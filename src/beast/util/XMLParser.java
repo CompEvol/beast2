@@ -912,6 +912,18 @@ public class XMLParser {
 		    				((List)args[i]).addAll(values);
 		    			} else {
 		    				args[i] = getValue(param, types[i], inputInfo);
+		    				// deal with the case where the Input type has a String constructor
+		    				// and the args[i] is a String -- we need to invoke the String constructor 
+		    				if (args[i].getClass().equals(String.class) && types[i] != String.class) {
+		    				    for (Constructor<?> argctor : types[i].getDeclaredConstructors()) {
+		    				    	Class<?>[] argtypes  = argctor.getParameterTypes();
+		    				    	if (argtypes.length == 1 && argtypes[0] == String.class) {
+		    				    		Object o = argctor.newInstance(args[i]);
+		    				    		args[i] = o;
+		    				    		break;
+		    				    	}
+		    				    }
+		    				}
 		    			}
 		    		}
 
