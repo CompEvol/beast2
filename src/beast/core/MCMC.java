@@ -381,7 +381,7 @@ public class MCMC extends Runnable {
         	Log.warning.println("Please wait while BEAST takes " + burnIn + " pre-burnin samples");
         }
         for (int sampleNr = -burnIn; sampleNr <= chainLength; sampleNr++) {
-            final Operator operator = composeProposal(sampleNr);
+            final Operator operator = propagateState(sampleNr);
 
             if (debugFlag && sampleNr % 3 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
@@ -439,12 +439,13 @@ public class MCMC extends Runnable {
     }
 
     /**
-     * The MCMC algorithm to compose proposal distributions and the operators.
-     * @param currState the current state
+     * Perform a single MCMC propose+accept/reject step.
+     *
+     * @param sampleNr the index of the current MCMC step
      * @return the selected {@link beast.core.Operator}
      */
-    protected Operator composeProposal(final int currState) {
-        state.store(currState);
+    protected Operator propagateState(final int sampleNr) {
+        state.store(sampleNr);
 //            if (m_nStoreEvery > 0 && sample % m_nStoreEvery == 0 && sample > 0) {
 //                state.storeToFile(sample);
 //            	operatorSchedule.storeToFile();
@@ -452,7 +453,7 @@ public class MCMC extends Runnable {
 
         final Operator operator = operatorSchedule.selectOperator();
 
-        if (printDebugInfo) System.err.print("\n" + currState + " " + operator.getName()+ ":");
+        if (printDebugInfo) System.err.print("\n" + sampleNr + " " + operator.getName()+ ":");
 
         final Distribution evaluatorDistribution = operator.getEvaluatorDistribution();
         Evaluator evaluator = null;
@@ -474,7 +475,7 @@ public class MCMC extends Runnable {
                     }
 
                     state.restore();
-                    state.store(currState);
+                    state.store(sampleNr);
 
                     return logP;
                 }
@@ -499,13 +500,13 @@ public class MCMC extends Runnable {
                 oldLogLikelihood = newLogLikelihood;
                 state.acceptCalculationNodes();
 
-                if (currState >= 0) {
+                if (sampleNr >= 0) {
                     operator.accept();
                 }
                 if (printDebugInfo) System.err.print(" accept");
             } else {
                 // reject
-                if (currState >= 0) {
+                if (sampleNr >= 0) {
                     operator.reject(newLogLikelihood == Double.NEGATIVE_INFINITY ? -1 : 0);
                 }
                 state.restore();
@@ -515,7 +516,7 @@ public class MCMC extends Runnable {
             state.setEverythingDirty(false);
         } else {
             // operation failed
-            if (currState >= 0) {
+            if (sampleNr >= 0) {
                 operator.reject(-2);
             }
             state.restore();
@@ -525,7 +526,7 @@ public class MCMC extends Runnable {
             }
             if (printDebugInfo) System.err.print(" direct reject");
         }
-        log(currState);
+        log(sampleNr);
         return operator;
     }
 
