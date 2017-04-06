@@ -16,7 +16,7 @@ import beast.core.Loggable;
 @Description("Logger to report statistics of a tree")
 public class TreeStatLogger extends CalculationNode implements Loggable, Function {
     final public Input<Tree> treeInput = new Input<>("tree", "tree to report height for.", Validate.REQUIRED);
-    final public Input<Boolean> logHeigthInput = new Input<>("logHeigth", "If true, tree height will be logged.", true);
+    final public Input<Boolean> logHeigthInput = new Input<>("logHeight", "If true, tree height will be logged.", true);
     final public Input<Boolean> logLengthInput = new Input<>("logLength", "If true, tree length will be logged.", true);
 
     @Override
