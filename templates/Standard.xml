@@ -62,6 +62,7 @@
 	        beast.util.ClusterTree.trait,
 	        beast.util.ClusterTree.estimate,
 	        beast.util.ClusterTree.nodetype,
+	        beast.util.ClusterTree.distance,
 	        beast.evolution.substitutionmodel.WAG.rates,
 	        beast.evolution.substitutionmodel.WAG.frequencies,
 	        beast.evolution.substitutionmodel.JTT.rates,
