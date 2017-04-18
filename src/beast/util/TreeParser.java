@@ -663,7 +663,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     @Override
     public void initStateNodes() {
         if (m_initial.get() != null) {
-            m_initial.get().assignFrom(this);
+            m_initial.get().assignFromWithoutID(this);
         }
     }
 

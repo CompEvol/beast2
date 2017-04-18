@@ -43,21 +43,25 @@
 	        beast.evolution.tree.Tree.trait,
 	        beast.evolution.tree.Tree.taxa,
 	        beast.evolution.tree.Tree.taxonset,
+	        beast.evolution.tree.Tree.nodetype,
 	        beast.evolution.tree.RandomTree.trait,
 	        beast.evolution.tree.RandomTree.initial,
 	        beast.evolution.tree.RandomTree.taxa,
 	        beast.evolution.tree.RandomTree.taxonset,
 	        beast.evolution.tree.RandomTree.estimate,
+	        beast.evolution.tree.RandomTree.nodetype,
 	        beast.util.TreeParser.initial,
 	        beast.util.TreeParser.taxa,
 	        beast.util.TreeParser.taxonset,
 	        beast.util.TreeParser.trait,
 	        beast.util.TreeParser.estimate,
+	        beast.util.TreeParser.nodetype,
 	        beast.util.ClusterTree.initial,
 	        beast.util.ClusterTree.taxa,
 	        beast.util.ClusterTree.taxonset,
 	        beast.util.ClusterTree.trait,
 	        beast.util.ClusterTree.estimate,
+	        beast.util.ClusterTree.nodetype,
 	        beast.evolution.substitutionmodel.WAG.rates,
 	        beast.evolution.substitutionmodel.WAG.frequencies,
 	        beast.evolution.substitutionmodel.JTT.rates,
@@ -125,6 +129,11 @@
             isVisible='false'
         />
 		<mergepoint id='aux-initilisation-panels'/>
+		<panel spec='BeautiPanelConfig' panelname="Starting tree" tiptext="Starting tree"
+            path='init'
+            hasPartitions="none" icon='6.png.x' forceExpansion='TRUE'
+            isVisible='false'
+        />
 
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
@@ -226,7 +235,7 @@
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='isInitializing'/>
 
             <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 <!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
@@ -286,7 +295,7 @@
 
         <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
 <![CDATA[
-            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false'>
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' initial="@Tree.t:$(n)">
                 <taxa idref='data'/>
                 <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
             		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
@@ -295,18 +304,18 @@
 ]]>
         </subtemplate>
 
-<!-- Cluster tree (for UPGMA) -->
+<!-- Cluster tree (defaults to UPGMA) -->
 
-        <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.t:$(n)'>
+        <subtemplate id='ClusterTree' class='beast.util.ClusterTree' mainid='ClusterTree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.ClusterTree' id='UPGMATree.t:$(n)' clusterType='upgma' estimate='false' taxa='@$(n)'/>
+        <tree spec='beast.util.ClusterTree' id='ClusterTree.t:$(n)' initial="@Tree.t:$(n)" clusterType='upgma' estimate='false' taxa='@$(n)'/>
 ]]>
         </subtemplate>
 
 <!-- Newick tree -->
-        <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.t:$(n)'>
+        <subtemplate id='NewickTree' class='beast.util.TreeParser' mainid='NewickTree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false' taxa='@$(n)' newick=""/>
+        <tree_ spec='beast.util.TreeParser' id='NewickTree.t:$(n)' initial="@Tree.t:$(n)" estimate='false' taxa='@$(n)' newick=""/>
 ]]>
         </subtemplate>
 
