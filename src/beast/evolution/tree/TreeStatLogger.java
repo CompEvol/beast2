@@ -16,20 +16,22 @@ import beast.core.Loggable;
 @Description("Logger to report statistics of a tree")
 public class TreeStatLogger extends CalculationNode implements Loggable, Function {
     final public Input<Tree> treeInput = new Input<>("tree", "tree to report height for.", Validate.REQUIRED);
-    final public Input<Boolean> logHeigthInput = new Input<>("logHeight", "If true, tree height will be logged.", true);
+    @Deprecated
+    final public Input<Boolean> logHeigthInput = new Input<>("logHeigth", "If true, tree height will be logged (unless logHeight input = false).", true);
+    final public Input<Boolean> logHeightInput = new Input<>("logHeight", "If true, tree height will be logged.", true);
     final public Input<Boolean> logLengthInput = new Input<>("logLength", "If true, tree length will be logged.", true);
 
     @Override
     public void initAndValidate() {
-    	if (!logHeigthInput.get() && !logLengthInput.get()) {
-    		Log.warning.println("TreeStatLogger " + getID() + "logs nothing. Set logHeigth=true or logLength=true to log at least something");
+    	if ((!logHeigthInput.get() || !logHeightInput.get()) && !logLengthInput.get()) {
+    		Log.warning.println("TreeStatLogger " + getID() + "logs nothing. Set logHeight=true or logLength=true to log at least something");
     	}
     }
 
     @Override
     public void init(PrintStream out) {
         final Tree tree = treeInput.get();
-        if (logHeigthInput.get()) {
+        if (logHeigthInput.get() && logHeightInput.get()) {
             out.print(tree.getID() + ".height\t");
         }
         if (logLengthInput.get()) {
@@ -40,7 +42,7 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
     @Override
     public void log(int sample, PrintStream out) {
         final Tree tree = treeInput.get();
-        if (logHeigthInput.get()) {
+        if (logHeigthInput.get() && logHeightInput.get()) {
         	out.print(tree.getRoot().getHeight() + "\t");
         }
         if (logLengthInput.get()) {
@@ -65,7 +67,7 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
 
     @Override
     public int getDimension() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -75,6 +77,9 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
 
     @Override
     public double getArrayValue(int dim) {
-        return treeInput.get().getRoot().getHeight();
+    	if (dim == 0) {
+    		return treeInput.get().getRoot().getHeight();
+    	}
+    	return getLength(treeInput.get());
     }
 }
