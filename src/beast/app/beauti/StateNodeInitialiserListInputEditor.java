@@ -1,8 +1,10 @@
 package beast.app.beauti;
 
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -14,7 +16,11 @@ import beast.app.draw.InputEditor;
 import beast.app.draw.ListInputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
+import beast.core.MCMC;
+import beast.core.State;
+import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.evolution.tree.Tree;
 
 public class StateNodeInitialiserListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;
@@ -115,4 +121,84 @@ public class StateNodeInitialiserListInputEditor extends ListInputEditor {
 		itemBox.add(Box.createHorizontalGlue());
 		return this;
 	}
+
+    public static boolean customConnector(BeautiDoc doc) {
+        // scrub Tree initialisers
+    	
+        // 0. collect state node info
+        List<StateNodeInitialiser> inits = ((MCMC)doc.mcmc.get()).initialisersInput.get();
+        State state = ((MCMC)doc.mcmc.get()).startStateInput.get();
+        List<StateNode> stateNodes = state.stateNodeInput.get();
+        List<Tree> trees = new ArrayList<>();
+        for (StateNode s: stateNodes) {
+        	if (s instanceof Tree) {
+        		trees.add((Tree) s);
+        	}
+        }        
+        List<List<StateNode>> initStateNodes = new ArrayList<>();
+        for (StateNodeInitialiser init : inits) {
+        	List<StateNode> initStateNodes0 = new ArrayList<>();
+        	init.getInitialisedStateNodes(initStateNodes0);
+        	for (int i = initStateNodes0.size() - 1; i >= 0; i--) {
+        		if (!(initStateNodes0.get(i) instanceof Tree)) {
+        			initStateNodes0.remove(i);
+        		}
+        	}
+        	initStateNodes.add(initStateNodes0);
+        }
+        // 1. remove initialisers that have no stateNode in state
+        for (int i = inits.size() - 1; i >= 0; i--) {
+        	boolean found = false;
+        	for (StateNode stateNode : initStateNodes.get(i)) {
+        		if (trees.contains(stateNode)) {
+        			found = true;
+        			break;
+        		}
+        	}
+        	if (!found) {
+        		inits.remove(i);
+        		initStateNodes.remove(i);
+        	}
+        }
+        // 2. remove initialisers that share stateNodes
+        for (int i = inits.size() - 1; i >= 0; i--) {
+            for (int j = i - 1; j >= 0; j--) {
+            	boolean found = false;
+            	for (StateNode stateNode : initStateNodes.get(i)) {
+            		if (initStateNodes.get(j).contains(stateNode)) {
+            			found = true;
+            			break;
+            		}
+            	}
+            	if (found) {
+            		inits.remove(i);
+            		initStateNodes.remove(i);
+            	}
+            }
+        }
+
+        // 3. add RandomTree for those trees not having a stateNodeInitialiser
+        boolean [] hasInitialiser = new boolean[trees.size()];
+        for (int i = inits.size() - 1; i >= 0; i--) {
+        	for (StateNode stateNode : initStateNodes.get(i)) {
+        		int k = trees.indexOf(stateNode);
+        		if (k >= 0) {
+        			hasInitialiser[k] = true;
+        			break;
+        		}
+        	}
+        }
+        for (int i = 0; i < hasInitialiser.length; i++) {
+        	if (!hasInitialiser[i]) {
+        		for (BeautiSubTemplate tmp : doc.beautiConfig.subTemplates) {
+        			if (tmp.getID().equals("RandomTree")) {
+        				PartitionContext partition = doc.getContextFor(trees.get(i));
+        				Object o = tmp.createSubNet(partition, false);
+        				inits.add((StateNodeInitialiser) o);
+        			}
+        		}
+        	}
+        }
+    	return true;
+    }
 }

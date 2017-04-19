@@ -237,6 +237,7 @@
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='isInitializing'/>
+			<connect method="beast.app.beauti.StateNodeInitialiserListInputEditor.customConnector"/>
 
             <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 <!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
