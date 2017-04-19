@@ -279,23 +279,32 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// do the actual linking
 		for (int i = 1; i < selected.length; i++) {
 			int rowNr = selected[i];
-			Object old = tableData[rowNr][columnNr];
-			tableData[rowNr][columnNr] = tableData[selected[0]][columnNr];
+			link(columnNr, rowNr, selected[0]);
+		}
+	}
+	
+	/** links partition in row "rowToLink" with partition in "rowToLinkWith" so that
+	 * after linking there is only one partition for context "columnNr", namely that
+	 * of "rowToLinkWith"
+	 */
+	private void link(int columnNr, int rowToLink, int rowToLinkWith) {
+		Object old = tableData[rowToLink][columnNr];
+		tableData[rowToLink][columnNr] = tableData[rowToLinkWith][columnNr];
+		try {
+			updateModel(columnNr, rowToLink);
+		} catch (Exception ex) {
+			Log.warning.println(ex.getMessage());
+			// unlink if we could not link
+			tableData[rowToLink][columnNr] = old;
 			try {
-				updateModel(columnNr, rowNr);
-			} catch (Exception ex) {
-				Log.warning.println(ex.getMessage());
-				// unlink if we could not link
-				tableData[rowNr][columnNr] = old;
-				try {
-					updateModel(columnNr, rowNr);
-				} catch (Exception ex2) {
-					// ignore
-				}
+				updateModel(columnNr, rowToLink);
+			} catch (Exception ex2) {
+				// ignore
 			}
 		}
 	}
 
+	
 	private void unlink(int columnNr) {
 		int[] selected = getTableRowSelection();
 		for (int i = 1; i < selected.length; i++) {
@@ -1275,11 +1284,25 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			Alignment alignment = alignments.remove(rowNr);
 			getDoc().delAlignmentWithSubnet(alignment);
 			try {
+				List<Alignment> newAlignments = new ArrayList<>();
 				for (int j = 0; j < filters.length; j++) {
 					FilteredAlignment f = new FilteredAlignment();
 					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeInput.get());
 					f.setID(alignment.getID() + ids[j]);
 					getDoc().addAlignmentWithSubnet(f, getDoc().beautiConfig.partitionTemplate.get());
+					newAlignments.add(f);
+				}
+				alignments.addAll(newAlignments);
+				partitionCount = alignments.size();
+				tableData = null; 
+				initTableData();			
+				if (newAlignments.size() == 2) {
+					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
+				} else {
+					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 3);
+					tableData = null; 
+					initTableData();			
+					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
