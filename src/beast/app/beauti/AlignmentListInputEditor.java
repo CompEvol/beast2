@@ -94,6 +94,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
      * The button for deleting an alignment in the alignment list.
      */
     JButton delButton;
+    protected SmallButton replaceButton;
 
 	private JScrollPane scrollPane;
 
