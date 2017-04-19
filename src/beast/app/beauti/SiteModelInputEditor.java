@@ -170,6 +170,21 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
         String categories = categoryCountEntry.getText();
         try {
             int categoryCount = Integer.parseInt(categories);
+        	RealParameter shapeParameter = ((SiteModel) m_input.get()).shapeParameterInput.get();
+            if (!gammaShapeEditor.getComponent().isVisible() && categoryCount >= 2) {
+            	// we are flipping from no gamma to gamma heterogeneity accross sites
+            	// so set the estimate flag on the shape parameter
+            	shapeParameter.isEstimatedInput.setValue(true, shapeParameter);            	
+            } else if (gammaShapeEditor.getComponent().isVisible() && categoryCount < 2) {
+            	// we are flipping from with gamma to no gamma heterogeneity accross sites
+            	// so unset the estimate flag on the shape parameter
+            	shapeParameter.isEstimatedInput.setValue(false, shapeParameter);            	
+            }
+            Object o = ((ParameterInputEditor)gammaShapeEditor).getComponent();
+            if (o instanceof ParameterInputEditor) {
+	            ParameterInputEditor e = (ParameterInputEditor) o;
+	            e.m_isEstimatedBox.setSelected(shapeParameter.isEstimatedInput.get());
+            }
             gammaShapeEditor.getComponent().setVisible(categoryCount >= 2);
             repaint();
         } catch (java.lang.NumberFormatException e) {
