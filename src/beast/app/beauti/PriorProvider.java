@@ -21,4 +21,14 @@ public interface PriorProvider {
 	
 	/** return description to be used in drop-down box for selecting among PriorProviders **/
 	public String getDescription();
+	
+	/** 
+	 * A provider can check that the document contains components it can provide
+	 * a prior for, e.g. a prior over a geographical region can only be provided
+	 * if there is a partition with geographical info in it. 
+	 * @return true if a prior can be provided for this document, false otherwise.
+	 **/
+	default public boolean canProvidePrior(BeautiDoc doc) {
+		return true;
+	}
 }

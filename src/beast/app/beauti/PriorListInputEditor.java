@@ -249,8 +249,12 @@ public class PriorListInputEditor extends ListInputEditor {
     	if (priorProviders.size() > 1) {
 			// let user choose a PriorProvider
 			List<String> descriptions = new ArrayList<>();
+			List<PriorProvider> availableProviders = new ArrayList<>();
 			for (PriorProvider i : priorProviders) {
-				descriptions.add(i.getDescription());
+				if (i.canProvidePrior(doc)) {
+					descriptions.add(i.getDescription());
+					availableProviders.add(i);
+				}
 			}
 			String option = (String)JOptionPane.showInputDialog(null, "Which prior do you want to add", "Option",
                     JOptionPane.WARNING_MESSAGE, null, descriptions.toArray(), descriptions.get(0));
@@ -258,7 +262,7 @@ public class PriorListInputEditor extends ListInputEditor {
 				return null;
 			}
 			int i = descriptions.indexOf(option);
-			priorProvider = priorProviders.get(i);
+			priorProvider = availableProviders.get(i);
 
     	}
     	
