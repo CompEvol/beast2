@@ -1299,7 +1299,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				if (newAlignments.size() == 2) {
 					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
 				} else {
-					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 3);
+					link(TREE_COLUMN, alignments.size() - 2, alignments.size() - 3);
 					tableData = null; 
 					initTableData();			
 					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
