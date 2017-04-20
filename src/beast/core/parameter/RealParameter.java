@@ -96,7 +96,7 @@ public class RealParameter extends Parameter.Base<Double> {
         int nScaled = 0;
 
         for (int i = 0; i < values.length; i++) {
-            if (values[i] == 0)
+            if (values[i] == 0.0)
                 continue;
 
             values[i] *= scale;
