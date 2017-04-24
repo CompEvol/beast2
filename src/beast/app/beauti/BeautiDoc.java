@@ -1521,15 +1521,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // re-determine partitions
         determinePartitions();
         scrubAll(true, false);
-        
-        // refresh pluginmap
-//        pluginmap.clear();
-//        reversePluginmap.clear();
-//        List<BEASTInterface> ancestors = new ArrayList<>();
-//        collectPredecessors(mcmc.get(), ancestors);
-//        for (BEASTInterface bi : ancestors) {
-//        	registerPlugin(bi);
-//        }
     }
 
     public void determinePartitions() {
