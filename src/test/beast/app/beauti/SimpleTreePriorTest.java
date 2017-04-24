@@ -53,10 +53,10 @@ public class SimpleTreePriorTest extends BeautiBase {
 		warning("Change to Birth-Death");
 		beautiFrame.comboBox("TreeDistribution").selectItem("Birth Death Model");
 		printBeautiState(f);
-		assertStateEquals("Tree.t:anolis", "birthRate2.t:anolis", "relativeDeathRate2.t:anolis");
+		assertStateEquals("Tree.t:anolis", "BDBirthRate.t:anolis", "BDDeathRate.t:anolis");
 		assertOperatorsEqual("BirthDeathTreeScaler.t:anolis", "BirthDeathTreeRootScaler.t:anolis", "BirthDeathUniformOperator.t:anolis", "BirthDeathSubtreeSlide.t:anolis", "BirthDeathNarrow.t:anolis", "BirthDeathWide.t:anolis", "BirthDeathWilsonBalding.t:anolis", "BirthRateScaler.t:anolis", "DeathRateScaler.t:anolis");
 		assertPriorsEqual("BirthDeath.t:anolis", "BirthRatePrior.t:anolis", "DeathRatePrior.t:anolis");
-		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BirthDeath.t:anolis", "birthRate2.t:anolis", "relativeDeathRate2.t:anolis");
+		assertTraceLogEqual("posterior", "likelihood", "prior", "treeLikelihood.anolis", "TreeHeight.t:anolis", "BirthDeath.t:anolis", "BDBirthRate.t:anolis", "BDDeathRate.t:anolis");
 
 		makeSureXMLParses();
 	}
