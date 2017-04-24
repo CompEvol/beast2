@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1520,6 +1521,15 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // re-determine partitions
         determinePartitions();
         scrubAll(true, false);
+        
+        // refresh pluginmap
+        pluginmap.clear();
+        reversePluginmap.clear();
+        List<BEASTInterface> ancestors = new ArrayList<>();
+        collectPredecessors(mcmc.get(), ancestors);
+        for (BEASTInterface bi : ancestors) {
+        	registerPlugin(bi);
+        }
     }
 
     public void determinePartitions() {

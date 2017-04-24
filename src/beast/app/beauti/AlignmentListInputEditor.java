@@ -302,6 +302,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				// ignore
 			}
 		}
+		MRCAPriorInputEditor.customConnector(doc);
 	}
 
 	
@@ -1177,6 +1178,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				e.printStackTrace();
 			}
 		}
+		MRCAPriorInputEditor.customConnector(doc);
 		refreshPanel();
 	} // delItem
 
