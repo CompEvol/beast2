@@ -110,7 +110,7 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      */
     final public void toXML(PrintStream out) {
         out.print("<statenode id='" + normalise(getID()) + "'>");
-        out.print(toString());
+        out.print(normalise(toString()));
         out.print("</statenode>\n");
     }
 
@@ -119,7 +119,7 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
      */
     final public String toXML() {
         return "<statenode id='" + normalise(getID()) + "'>" +
-                toString() +
+                normalise(toString()) +
                 "</statenode>\n";
     }
 
