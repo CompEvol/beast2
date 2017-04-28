@@ -4,8 +4,8 @@ sudo: false
 jdk:
     - oraclejdk8
       
-before_install:
-  - cd java
+#before_install:
+#  - cd java
   
 script:
   - ant test
