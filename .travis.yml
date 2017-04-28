@@ -9,4 +9,7 @@ jdk:
   
 script:
   - ant travis
-  - ant junitb # already compiled
+#  - ant junitb # already compiled
+
+
+
