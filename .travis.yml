@@ -8,4 +8,4 @@ jdk:
 #  - cd java
   
 script:
-  - ant test
+  - ant travis
