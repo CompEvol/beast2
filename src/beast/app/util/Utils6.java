@@ -88,7 +88,7 @@ public class Utils6 {
     public static void logToSplashScreen(String msg) {
     	if (splashScreen != null) {
             Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
-            Graphics gr=can.getBufferedGraphics();
+            Graphics gr = can.getBufferedGraphics();
             gr.drawImage(img, can.getWidth() / 4, 0, can);
             gr.drawString(msg, 1, can.getHeight() - 3);
             can.repaint();
@@ -101,6 +101,7 @@ public class Utils6 {
         if ( splashScreen != null ) {
             splashScreen.dispose();
         	can = null;
+        	splashScreen = null;
     	}
     }
 
