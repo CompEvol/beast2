@@ -717,7 +717,11 @@ public class Node extends BEASTObject {
         children.set(childIndex, node);
     }
 
-
+    /**
+     * @param m_left new left child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public void setLeft(final Node m_left) {
         if (children.size() == 0) {
             children.add(m_left);
@@ -726,6 +730,11 @@ public class Node extends BEASTObject {
         }
     }
 
+    /**
+     * @return left child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public Node getLeft() {
         if (children.size() == 0) {
             return null;
@@ -733,6 +742,11 @@ public class Node extends BEASTObject {
         return children.get(0);
     }
 
+    /**
+     * @param m_right new right child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public void setRight(final Node m_right) {
         switch (children.size()) {
             case 0:
@@ -746,6 +760,11 @@ public class Node extends BEASTObject {
         }
     }
 
+    /**
+     * @return right child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public Node getRight() {
         if (children.size() <= 1) {
             return null;
