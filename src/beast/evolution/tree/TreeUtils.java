@@ -327,8 +327,9 @@ public class TreeUtils {
 
     /**
      * get tree topology in Newick that is sorted by taxa labels or node indexes.
+     *
      * @param node
-     * @param isTaxaLabel       if true, then print taxa label instead of node index
+     * @param isTaxaLabel if true, then print taxa label instead of node index
      * @return
      */
     public static String sortedNewickTopology(Node node, boolean isTaxaLabel) {

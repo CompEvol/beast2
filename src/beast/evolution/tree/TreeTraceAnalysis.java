@@ -143,7 +143,9 @@ public class TreeTraceAnalysis {
 
     /**
      * Recursive function for constructing a Newick tree representation
-     * in the given buffer.
+     * in the given buffer. This string representation defines the
+     * topology of a tree for the purposes of determining samples that
+     * have identical topologies.
      *
      * @param node
      * @return
