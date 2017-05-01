@@ -134,16 +134,16 @@ public class NexusParser {
             processSets();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IOException("Around line " + lineNr + "\n" + e.getMessage());
+            throw new IOException("Around line " + (lineNr+1) + "\n" + e.getMessage());
         }
     } // parseFile
 
 	private void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
-        String str = fin.readLine().trim();
+        String str = readLine(fin).trim();
         while (str.equals("")) {
-            str = fin.readLine().trim();
+            str = readLine(fin).trim();
         }
 
         int origin = -1;
@@ -242,11 +242,11 @@ public class NexusParser {
 
         final Map<String, String> translationMap = new HashMap<>();
 
-        String line = reader.readLine();
+        String line = readLine(reader);
         final StringBuilder translateBlock = new StringBuilder();
         while (line != null && !line.trim().toLowerCase().equals(";")) {
             translateBlock.append(line.trim());
-            line = reader.readLine();
+            line = readLine(reader);
         }
         final String[] taxaTranslations = translateBlock.toString().split(",");
         for (final String taxaTranslation : taxaTranslations) {

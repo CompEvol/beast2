@@ -253,9 +253,9 @@ public class TreeAnnotator {
 
         private void parseTreesBlock() throws IOException  {
             // read to first non-empty line within trees block
-            String str = fin.readLine().trim();
+            String str = readLine().trim();
             while (str.equals("")) {
-                str = fin.readLine().trim();
+                str = readLine().trim();
             }
 
             // if first non-empty line is "translate" then parse translate block
