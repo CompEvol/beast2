@@ -979,6 +979,11 @@ public class Tree extends StateNode implements TreeInterface {
             leafNodeCount++;
     }
 
+    /**
+     * @return the number of direct ancestors in this tree. Direct ancestor nodes conceptually have a single child. However
+     * this is determined by whether the node's parent has the same height as the node, since that signifies a zero branch length
+     * and the parent node with the same height as the child node is regarded as "fake".
+     */
     public int getDirectAncestorNodeCount() {
         int directAncestorNodeCount = 0;
         for (int i = 0; i < leafNodeCount; i++) {

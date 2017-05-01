@@ -764,7 +764,7 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return true if this leaf actually represent a direct ancestor
+     * @return true if this leaf actually represents a direct ancestor
      * (i.e. is on the end of a zero-length branch)
      */
     public boolean isDirectAncestor() {
