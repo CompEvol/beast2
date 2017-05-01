@@ -1,4 +1,4 @@
-// Generated from /home/tvaughan/code/beast_and_friends/beast2/src/beast/util/treeparser/NewickParser.g4 by ANTLR 4.5.3
+// Generated from NewickParser.g4 by ANTLR 4.5
 package beast.util.treeparser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NewickParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.5", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -105,11 +105,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitTree(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitTree(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final TreeContext tree() throws RecognitionException {
@@ -171,11 +166,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitNode(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitNode(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final NodeContext node() throws RecognitionException {
@@ -234,8 +224,11 @@ public class NewickParser extends Parser {
 		public LabelContext label() {
 			return getRuleContext(LabelContext.class,0);
 		}
-		public MetaContext meta() {
-			return getRuleContext(MetaContext.class,0);
+		public List<MetaContext> meta() {
+			return getRuleContexts(MetaContext.class);
+		}
+		public MetaContext meta(int i) {
+			return getRuleContext(MetaContext.class,i);
 		}
 		public NumberContext number() {
 			return getRuleContext(NumberContext.class,0);
@@ -251,11 +244,6 @@ public class NewickParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitPost(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitPost(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -284,13 +272,22 @@ public class NewickParser extends Parser {
 				}
 			}
 
-			setState(49);
+			setState(52);
 			_la = _input.LA(1);
 			if (_la==COLON) {
 				{
 				setState(47);
 				match(COLON);
-				setState(48);
+				setState(49);
+				_la = _input.LA(1);
+				if (_la==OPENA) {
+					{
+					setState(48);
+					meta();
+					}
+				}
+
+				setState(51);
 				((PostContext)_localctx).length = number();
 				}
 			}
@@ -325,32 +322,27 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitLabel(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitLabel(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LabelContext label() throws RecognitionException {
 		LabelContext _localctx = new LabelContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_label);
 		try {
-			setState(53);
+			setState(56);
 			switch (_input.LA(1)) {
 			case FLOAT_SCI:
 			case FLOAT:
 			case INT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(51);
+				setState(54);
 				number();
 				}
 				break;
 			case STRING:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(52);
+				setState(55);
 				match(STRING);
 				}
 				break;
@@ -392,11 +384,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitMeta(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitMeta(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MetaContext meta() throws RecognitionException {
@@ -406,27 +393,27 @@ public class NewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(55);
+			setState(58);
 			match(OPENA);
-			setState(56);
+			setState(59);
 			attrib();
-			setState(61);
+			setState(64);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==ACOMMA) {
 				{
 				{
-				setState(57);
+				setState(60);
 				match(ACOMMA);
-				setState(58);
+				setState(61);
 				attrib();
 				}
 				}
-				setState(63);
+				setState(66);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(64);
+			setState(67);
 			match(CLOSEA);
 			}
 		}
@@ -459,11 +446,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttrib(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttrib(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AttribContext attrib() throws RecognitionException {
@@ -472,11 +454,11 @@ public class NewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66);
+			setState(69);
 			((AttribContext)_localctx).attribKey = match(ASTRING);
-			setState(67);
+			setState(70);
 			match(EQ);
-			setState(68);
+			setState(71);
 			attribValue();
 			}
 		}
@@ -511,39 +493,34 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttribValue(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttribValue(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AttribValueContext attribValue() throws RecognitionException {
 		AttribValueContext _localctx = new AttribValueContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_attribValue);
 		try {
-			setState(73);
+			setState(76);
 			switch (_input.LA(1)) {
 			case AFLOAT_SCI:
 			case AFLOAT:
 			case AINT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(70);
+				setState(73);
 				attribNumber();
 				}
 				break;
 			case ASTRING:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(71);
+				setState(74);
 				match(ASTRING);
 				}
 				break;
 			case OPENV:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(72);
+				setState(75);
 				vector();
 				}
 				break;
@@ -578,11 +555,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitNumber(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitNumber(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final NumberContext number() throws RecognitionException {
@@ -592,7 +564,7 @@ public class NewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(75);
+			setState(78);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT_SCI) | (1L << FLOAT) | (1L << INT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -628,11 +600,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttribNumber(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttribNumber(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AttribNumberContext attribNumber() throws RecognitionException {
@@ -642,7 +609,7 @@ public class NewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(77);
+			setState(80);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AFLOAT_SCI) | (1L << AFLOAT) | (1L << AINT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -685,11 +652,6 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitVector(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitVector(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final VectorContext vector() throws RecognitionException {
@@ -699,27 +661,27 @@ public class NewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(79);
+			setState(82);
 			match(OPENV);
-			setState(80);
+			setState(83);
 			attribValue();
-			setState(85);
+			setState(88);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==ACOMMA) {
 				{
 				{
-				setState(81);
+				setState(84);
 				match(ACOMMA);
-				setState(82);
+				setState(85);
 				attribValue();
 				}
 				}
-				setState(87);
+				setState(90);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(88);
+			setState(91);
 			match(CLOSEV);
 			}
 		}
@@ -735,29 +697,30 @@ public class NewickParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\30]\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\30`\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
 		"\2\3\2\5\2\31\n\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3!\n\3\f\3\16\3$\13\3\3\3"+
 		"\3\3\5\3(\n\3\3\3\3\3\3\4\5\4-\n\4\3\4\5\4\60\n\4\3\4\3\4\5\4\64\n\4\3"+
-		"\5\3\5\5\58\n\5\3\6\3\6\3\6\3\6\7\6>\n\6\f\6\16\6A\13\6\3\6\3\6\3\7\3"+
-		"\7\3\7\3\7\3\b\3\b\3\b\5\bL\n\b\3\t\3\t\3\n\3\n\3\13\3\13\3\13\3\13\7"+
-		"\13V\n\13\f\13\16\13Y\13\13\3\13\3\13\3\13\2\2\f\2\4\6\b\n\f\16\20\22"+
-		"\24\2\4\3\2\b\n\3\2\22\24]\2\26\3\2\2\2\4\'\3\2\2\2\6,\3\2\2\2\b\67\3"+
-		"\2\2\2\n9\3\2\2\2\fD\3\2\2\2\16K\3\2\2\2\20M\3\2\2\2\22O\3\2\2\2\24Q\3"+
-		"\2\2\2\26\30\5\4\3\2\27\31\7\3\2\2\30\27\3\2\2\2\30\31\3\2\2\2\31\32\3"+
-		"\2\2\2\32\33\7\2\2\3\33\3\3\2\2\2\34\35\7\5\2\2\35\"\5\4\3\2\36\37\7\4"+
-		"\2\2\37!\5\4\3\2 \36\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#%\3\2\2\2"+
-		"$\"\3\2\2\2%&\7\6\2\2&(\3\2\2\2\'\34\3\2\2\2\'(\3\2\2\2()\3\2\2\2)*\5"+
-		"\6\4\2*\5\3\2\2\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2\2.\60\5\n\6\2"+
-		"/.\3\2\2\2/\60\3\2\2\2\60\63\3\2\2\2\61\62\7\7\2\2\62\64\5\20\t\2\63\61"+
-		"\3\2\2\2\63\64\3\2\2\2\64\7\3\2\2\2\658\5\20\t\2\668\7\r\2\2\67\65\3\2"+
-		"\2\2\67\66\3\2\2\28\t\3\2\2\29:\7\13\2\2:?\5\f\7\2;<\7\17\2\2<>\5\f\7"+
-		"\2=;\3\2\2\2>A\3\2\2\2?=\3\2\2\2?@\3\2\2\2@B\3\2\2\2A?\3\2\2\2BC\7\27"+
-		"\2\2C\13\3\2\2\2DE\7\26\2\2EF\7\16\2\2FG\5\16\b\2G\r\3\2\2\2HL\5\22\n"+
-		"\2IL\7\26\2\2JL\5\24\13\2KH\3\2\2\2KI\3\2\2\2KJ\3\2\2\2L\17\3\2\2\2MN"+
-		"\t\2\2\2N\21\3\2\2\2OP\t\3\2\2P\23\3\2\2\2QR\7\20\2\2RW\5\16\b\2ST\7\17"+
-		"\2\2TV\5\16\b\2US\3\2\2\2VY\3\2\2\2WU\3\2\2\2WX\3\2\2\2XZ\3\2\2\2YW\3"+
-		"\2\2\2Z[\7\21\2\2[\25\3\2\2\2\f\30\"\',/\63\67?KW";
+		"\4\5\4\67\n\4\3\5\3\5\5\5;\n\5\3\6\3\6\3\6\3\6\7\6A\n\6\f\6\16\6D\13\6"+
+		"\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\5\bO\n\b\3\t\3\t\3\n\3\n\3\13\3\13"+
+		"\3\13\3\13\7\13Y\n\13\f\13\16\13\\\13\13\3\13\3\13\3\13\2\2\f\2\4\6\b"+
+		"\n\f\16\20\22\24\2\4\3\2\b\n\3\2\22\24a\2\26\3\2\2\2\4\'\3\2\2\2\6,\3"+
+		"\2\2\2\b:\3\2\2\2\n<\3\2\2\2\fG\3\2\2\2\16N\3\2\2\2\20P\3\2\2\2\22R\3"+
+		"\2\2\2\24T\3\2\2\2\26\30\5\4\3\2\27\31\7\3\2\2\30\27\3\2\2\2\30\31\3\2"+
+		"\2\2\31\32\3\2\2\2\32\33\7\2\2\3\33\3\3\2\2\2\34\35\7\5\2\2\35\"\5\4\3"+
+		"\2\36\37\7\4\2\2\37!\5\4\3\2 \36\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3\2\2"+
+		"\2#%\3\2\2\2$\"\3\2\2\2%&\7\6\2\2&(\3\2\2\2\'\34\3\2\2\2\'(\3\2\2\2()"+
+		"\3\2\2\2)*\5\6\4\2*\5\3\2\2\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2\2"+
+		".\60\5\n\6\2/.\3\2\2\2/\60\3\2\2\2\60\66\3\2\2\2\61\63\7\7\2\2\62\64\5"+
+		"\n\6\2\63\62\3\2\2\2\63\64\3\2\2\2\64\65\3\2\2\2\65\67\5\20\t\2\66\61"+
+		"\3\2\2\2\66\67\3\2\2\2\67\7\3\2\2\28;\5\20\t\29;\7\r\2\2:8\3\2\2\2:9\3"+
+		"\2\2\2;\t\3\2\2\2<=\7\13\2\2=B\5\f\7\2>?\7\17\2\2?A\5\f\7\2@>\3\2\2\2"+
+		"AD\3\2\2\2B@\3\2\2\2BC\3\2\2\2CE\3\2\2\2DB\3\2\2\2EF\7\27\2\2F\13\3\2"+
+		"\2\2GH\7\26\2\2HI\7\16\2\2IJ\5\16\b\2J\r\3\2\2\2KO\5\22\n\2LO\7\26\2\2"+
+		"MO\5\24\13\2NK\3\2\2\2NL\3\2\2\2NM\3\2\2\2O\17\3\2\2\2PQ\t\2\2\2Q\21\3"+
+		"\2\2\2RS\t\3\2\2S\23\3\2\2\2TU\7\20\2\2UZ\5\16\b\2VW\7\17\2\2WY\5\16\b"+
+		"\2XV\3\2\2\2Y\\\3\2\2\2ZX\3\2\2\2Z[\3\2\2\2[]\3\2\2\2\\Z\3\2\2\2]^\7\21"+
+		"\2\2^\25\3\2\2\2\r\30\"\',/\63\66:BNZ";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
