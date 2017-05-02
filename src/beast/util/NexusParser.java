@@ -38,7 +38,6 @@ import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Normal;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.Uniform;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 
 /**
