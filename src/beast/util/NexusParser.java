@@ -38,6 +38,7 @@ import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Normal;
 import beast.math.distributions.ParametricDistribution;
 import beast.math.distributions.Uniform;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 
 /**
@@ -132,8 +133,25 @@ public class NexusParser {
                 }
             }
             processSets();
+
+        } catch (TreeParser.TreeParsingException e) {
+            int errorLine = lineNr + 1;
+
+            if (e.getLineNum() != null)
+                errorLine += e.getLineNum()-1;
+
+            String errorMsg = "Encountered error interpreting the Newick string found around line " +
+                    errorLine + " of the input file.";
+
+            if (e.getCharacterNum() != null)
+                errorMsg += "\nThe parser reports that the error occurred at character " + (e.getCharacterNum()+1)
+                        + " of the Newick string on this line.";
+
+            errorMsg += "\nThe parser gives the following clue:\n" + e.getMessage();
+
+            throw new IOException(errorMsg);
+
         } catch (Exception e) {
-            e.printStackTrace();
             throw new IOException("Around line " + (lineNr+1) + "\n" + e.getMessage());
         }
     } // parseFile

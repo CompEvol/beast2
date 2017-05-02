@@ -40,7 +40,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import beast.core.Description;
@@ -154,14 +153,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             final Node dummy = new Node();
             setRoot(dummy);
         } else {
-            try {
-                setRoot(parseNewick(newickInput.get()));
-            } catch (ParseCancellationException e) {
-                throw new RuntimeException(
-                        "TreeParser cannot make sense of the Newick string " +
-                                "provided.  It gives the following clue:\n" +
-                                e.getMessage());
-            }
+            setRoot(parseNewick(newickInput.get()));
         }
 
         super.initAndValidate();
@@ -343,8 +335,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                     Object offendingSymbol,
                                     int line, int charPositionInLine,
                                     String msg, RecognitionException e) {
-                throw new ParseCancellationException("Error parsing character "
-                        + charPositionInLine + " of Newick string: " + msg);
+                throw new TreeParsingException(msg, charPositionInLine, line);
             }
         };
 
@@ -426,7 +417,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                    continue;  // Skip unnumbered leaves
 
                 if (nodeNrSeen.get(leaf.getNr()))
-                    throw new ParseCancellationException("Duplicate taxon found: " + labels.get(leaf.getNr()));
+                    throw new TreeParsingException("Duplicate taxon found: " + labels.get(leaf.getNr()));
                 else
                     nodeNrSeen.set(leaf.getNr());
             }
@@ -472,12 +463,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
                             value = arrayValues;
                         } catch (NumberFormatException ex) {
-                            throw new ParseCancellationException("Encountered vector-valued metadata entry with " +
+                            throw new TreeParsingException("Encountered vector-valued metadata entry with " +
                                     "one or more non-numeric elements.");
                         }
 
                     } else
-                        throw new ParseCancellationException("Encountered unknown metadata value.");
+                        throw new TreeParsingException("Encountered unknown metadata value.");
 
                     if (isLengthMeta)
                         node.setLengthMetaData(key, value);
@@ -529,7 +520,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
                     int nodeNr = Integer.parseInt(postCtx.label().getText()) - offsetInput.get();
                     if (nodeNr<0)
-                        throw new ParseCancellationException("Node number given " +
+                        throw new TreeParsingException("Node number given " +
                                 "is smaller than current offset (" +
                                 offsetInput.get() + ").  Perhaps offset is " +
                                 "too high?");
@@ -545,7 +536,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
 
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
-                throw new ParseCancellationException("Node with single child found.");
+                throw new TreeParsingException("Node with single child found.");
 
             // Use length-zero edges to binarize multifurcations.
             if (node.getChildCount()>2) {
@@ -590,7 +581,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 return labels.size() - 1;
             }
 
-            throw new ParseCancellationException("Label '" + str + "' in Newick beast.tree could " +
+            throw new TreeParsingException("Label '" + str + "' in Newick beast.tree could " +
                     "not be identified. Perhaps taxa or taxonset is not specified?");
         }
 
@@ -688,6 +679,52 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         if (m_initial.get() != null) {
             stateNodes.add(m_initial.get());
+        }
+    }
+
+    public class TreeParsingException extends RuntimeException {
+        String message;
+        Integer characterNum, lineNum;
+
+        /**
+         * Create new parsing exception.
+         *
+         * @param message      Human-readable error message.
+         * @param characterNum Character offset of error.
+         * @param lineNum      Line offset of error.
+         */
+        TreeParsingException(String message, Integer characterNum, Integer lineNum) {
+            this.message = message;
+            this.characterNum = characterNum;
+            this.lineNum = lineNum;
+        }
+
+        /**
+         * Create new parsing exception
+         *
+         * @param message Human-readable error message.
+         */
+        TreeParsingException(String message) {
+            this(message, null, null);
+        }
+
+        @Override
+        public String getMessage() {
+            return message;
+        }
+
+        /**
+         * @return location of error on line.  (May be null for non-lexer errors.)
+         */
+        public Integer getCharacterNum() {
+            return characterNum;
+        }
+
+        /**
+         * @return line number offset of error. (May be null for non-lexer errors.)
+         */
+        public Integer getLineNum() {
+            return lineNum;
         }
     }
 
