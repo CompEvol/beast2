@@ -124,4 +124,16 @@ public class TreeParserTest {
 
     }
 
+    @Test
+    public void testNodeLengthMetadata() throws Exception {
+
+        String newick = "((A:1.0,B[&key=42]:[&key=2.5]1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        Assert.assertTrue(treeParser.getNode(1).getLengthMetaData("key").equals(2.5));
+        Assert.assertTrue(treeParser.getNode(1).getMetaData("key").equals(42.0));
+    }
+
 }
