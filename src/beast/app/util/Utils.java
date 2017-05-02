@@ -464,11 +464,16 @@ public class Utils {
 	
     public static void logToSplashScreen(String msg) {
     	if (Utils6.splashScreen != null) {
-            Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
-            Graphics gr = Utils6.can.getBufferedGraphics();
-            gr.drawImage(img, Utils6.can.getWidth() / 4, 0, Utils6.can);
-            gr.drawString(msg, 1, Utils6.can.getHeight() - 3);
-            Utils6.can.repaint();
+    		try {
+	            Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
+	            Graphics gr = Utils6.can.getBufferedGraphics();
+	            gr.drawImage(img, Utils6.can.getWidth() / 4, 0, Utils6.can);
+	            gr.drawString(msg, 1, Utils6.can.getHeight() - 3);
+	            Utils6.can.repaint();
+    		} catch (java.lang.NoSuchFieldError e) {
+    			// we are dealing with an older (pre v2.5.6) version of the launcher
+    			// so no feedback
+    		}
     		
     	}
     }
