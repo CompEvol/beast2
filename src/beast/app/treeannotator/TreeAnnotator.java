@@ -1550,7 +1550,7 @@ public class TreeAnnotator {
         cladeSystem.getTreeCladeCodes(targetTree, ctarget);
 
         // temp collecting heights inside loop allocated once
-        double[] hs = new double[clades];
+        double[][] hs = new double[clades][treeSet.totalTrees];
 
         // heights total sum from posterior trees
         double[] ths = new double[clades];
@@ -1567,12 +1567,12 @@ public class TreeAnnotator {
                 int j = postOrderList[k];
                 for (int i = 0; i < clades; ++i) {
                     if( CollectionUtils.isSubSet(ctarget[i], ctree[j]) ) {
-                        hs[i] = tree.getNode(j).getHeight();
+                        hs[i][counter] = tree.getNode(j).getHeight();
                     }
                 }
             }
             for (int k = 0; k < clades; ++k) {
-                ths[k] += hs[k];
+                ths[k] += hs[k][counter];
             }
             totalTreesUsed += 1;
             if (counter > 0 && counter % reportStepSize == 0 && reported < 61) {
@@ -1594,6 +1594,20 @@ public class TreeAnnotator {
             ths[k] /= totalTreesUsed;
             final Node node = targetTree.getNode(k);
             node.setHeight(ths[k]);
+            String attributeName = "CAheight";
+            double [] values = hs[k];
+            double min = values[0];
+            double max = values[0];
+            for (double d : values) {
+            	min = Math.min(d, min);
+            	max = Math.max(d, max);
+            }
+            if (Math.abs(min - max) > 1e-10) {
+	            annotateMeanAttribute(node, attributeName + "_mean", values);
+	            annotateMedianAttribute(node, attributeName + "_median", values);
+	            annotateHPDAttribute(node, attributeName + "_95%_HPD", 0.95, values);
+	            annotateRangeAttribute(node, attributeName + "_range", values);
+            }
         }
 
         assert (totalTreesUsed == this.totalTreesUsed);
