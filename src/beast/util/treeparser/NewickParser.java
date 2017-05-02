@@ -105,6 +105,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitTree(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitTree(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TreeContext tree() throws RecognitionException {
@@ -166,6 +171,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitNode(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitNode(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NodeContext node() throws RecognitionException {
@@ -220,6 +230,8 @@ public class NewickParser extends Parser {
 	}
 
 	public static class PostContext extends ParserRuleContext {
+		public MetaContext nodeMeta;
+		public MetaContext lengthMeta;
 		public NumberContext length;
 		public LabelContext label() {
 			return getRuleContext(LabelContext.class,0);
@@ -245,6 +257,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitPost(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitPost(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final PostContext post() throws RecognitionException {
@@ -268,7 +285,7 @@ public class NewickParser extends Parser {
 			if (_la==OPENA) {
 				{
 				setState(44);
-				meta();
+				((PostContext)_localctx).nodeMeta = meta();
 				}
 			}
 
@@ -283,7 +300,7 @@ public class NewickParser extends Parser {
 				if (_la==OPENA) {
 					{
 					setState(48);
-					meta();
+					((PostContext)_localctx).lengthMeta = meta();
 					}
 				}
 
@@ -321,6 +338,11 @@ public class NewickParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitLabel(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitLabel(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -384,6 +406,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitMeta(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitMeta(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MetaContext meta() throws RecognitionException {
@@ -446,6 +473,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttrib(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttrib(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AttribContext attrib() throws RecognitionException {
@@ -492,6 +524,11 @@ public class NewickParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttribValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttribValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -555,6 +592,11 @@ public class NewickParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitNumber(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitNumber(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NumberContext number() throws RecognitionException {
@@ -599,6 +641,11 @@ public class NewickParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitAttribNumber(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitAttribNumber(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -651,6 +698,11 @@ public class NewickParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NewickParserListener ) ((NewickParserListener)listener).exitVector(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NewickParserVisitor ) return ((NewickParserVisitor<? extends T>)visitor).visitVector(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 

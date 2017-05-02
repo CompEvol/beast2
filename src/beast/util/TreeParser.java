@@ -434,6 +434,59 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             return root;
         }
 
+        private void processMetadata(Node node, MetaContext metaContext, boolean isLengthMeta) {
+            String metaDataString = "";
+            for (int i=0; i<metaContext.attrib().size(); i++) {
+                if (i>0)
+                    metaDataString += ",";
+                metaDataString += metaContext.attrib().get(i).getText();
+            }
+
+            if (isLengthMeta)
+                node.lengthMetaDataString = metaDataString;
+            else
+                node.metaDataString = metaDataString;
+
+            if (!suppressMetadata) {
+                String key;
+                Object value;
+                for (NewickParser.AttribContext attribctx : metaContext.attrib()) {
+                    key = attribctx.attribKey.getText();
+
+                    if (attribctx.attribValue().attribNumber() != null) {
+                        value = Double.parseDouble(attribctx.attribValue().attribNumber().getText());
+                    } else if (attribctx.attribValue().ASTRING() != null) {
+                        String stringValue = attribctx.attribValue().ASTRING().getText();
+                        if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
+                            stringValue = stringValue.substring(1, stringValue.length()-1);
+                        }
+                        value = stringValue;
+                    } else if (attribctx.attribValue().vector() != null) {
+                        try {
+
+                            List<NewickParser.AttribValueContext> elementContexts = attribctx.attribValue().vector().attribValue();
+
+                            Double[] arrayValues = new Double[elementContexts.size()];
+                            for (int i = 0; i < elementContexts.size(); i++)
+                                arrayValues[i] = Double.parseDouble(elementContexts.get(i).getText());
+
+                            value = arrayValues;
+                        } catch (NumberFormatException ex) {
+                            throw new ParseCancellationException("Encountered vector-valued metadata entry with " +
+                                    "one or more non-numeric elements.");
+                        }
+
+                    } else
+                        throw new ParseCancellationException("Encountered unknown metadata value.");
+
+                    if (isLengthMeta)
+                        node.setLengthMetaData(key, value);
+                    else
+                        node.setMetaData(key, value);
+                }
+            }
+        }
+
         @Override
         public Node visitNode(NewickParser.NodeContext ctx) {
             Node node = newNode();
@@ -446,50 +499,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
             // Process metadata
 
-            if (postCtx.meta() != null) {
+            if (postCtx.nodeMeta != null)
+                processMetadata(node, postCtx.nodeMeta, false);
 
-                node.metaDataString = "";
-            	for (MetaContext attr: postCtx.meta()) {
-	                for (int i=0; i<attr.attrib().size(); i++) {
-	                    if (i>0)
-	                        node.metaDataString += ",";
-	                    node.metaDataString += attr.attrib().get(i).getText();
-	                }
-	
-	                if (!suppressMetadata) {
-	                    for (NewickParser.AttribContext attribctx : attr.attrib()) {
-	                        String key = attribctx.attribKey.getText();
-	
-	                        if (attribctx.attribValue().attribNumber() != null) {
-	                            node.setMetaData(key, Double.parseDouble(
-	                                    attribctx.attribValue().attribNumber().getText()));
-	                        } else if (attribctx.attribValue().ASTRING() != null) {
-	                            String stringValue = attribctx.attribValue().ASTRING().getText();
-	                            if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
-	                                stringValue = stringValue.substring(1, stringValue.length()-1);
-	                            }
-	                            node.setMetaData(key, stringValue);
-	                        } else if (attribctx.attribValue().vector() != null) {
-	                            try {
-	
-	                                List<NewickParser.AttribValueContext> elementContexts = attribctx.attribValue().vector().attribValue();
-	
-	                                Double[] values = new Double[elementContexts.size()];
-	                                for (int i = 0; i < elementContexts.size(); i++)
-	                                    values[i] = Double.parseDouble(elementContexts.get(i).getText());
-	
-	                                node.setMetaData(key, values);
-	
-	                            } catch (NumberFormatException ex) {
-	                                throw new ParseCancellationException("Encountered vector-valued metadata entry with " +
-	                                        "one or more non-numeric elements.");
-	                            }
-	
-	                        }
-	                    }
-	                }
-            	}
-            }
+            if (postCtx.lengthMeta != null)
+                processMetadata(node, postCtx.lengthMeta, true);
 
             // Process edge length
 

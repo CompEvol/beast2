@@ -6,7 +6,7 @@ tree: node ';'? EOF;
 
 node: ('(' node (COMMA node)* ')')? post ;
 
-post: label? meta? (':' meta? length=number)? ;
+post: label? nodeMeta=meta? (':' lengthMeta=meta? length=number)? ;
 
 label: number | STRING ;
 

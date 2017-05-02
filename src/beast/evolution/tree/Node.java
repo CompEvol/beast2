@@ -56,6 +56,11 @@ public class Node extends BEASTObject {
     protected Map<String, Object> metaData = new TreeMap<>();
 
     /**
+     * Length metadata for the edge above this node.  Not currently implemented as part of state!
+     */
+    protected Map<String, Object> lengthMetaData = new TreeMap<>();
+
+    /**
      * list of children of this node *
      * Don't use m_left and m_right directly
      * Use getChildCount() and getChild(x) or getChildren() instead
@@ -80,7 +85,7 @@ public class Node extends BEASTObject {
     /**
      * meta-data contained in square brackets in Newick *
      */
-    public String metaDataString;
+    public String metaDataString, lengthMetaDataString;
 
     /**
      * The Tree that this node is a part of.
@@ -359,7 +364,7 @@ public class Node extends BEASTObject {
             buf.append(getNr());
         }
         buf.append(getNewickMetaData());
-        buf.append(":").append(getLength());
+        buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         return buf.toString();
     }
 
@@ -406,7 +411,12 @@ public class Node extends BEASTObject {
         if (printMetaData) {
             buf.append(getNewickMetaData());
         }
-        buf.append(":").append(getLength());
+
+        buf.append(":");
+        if (printMetaData)
+                buf.append(getNewickLengthMetaData());
+        buf.append(getLength());
+
         return buf.toString();
     }
 
@@ -442,7 +452,7 @@ public class Node extends BEASTObject {
         }
         if (!onlyTopology) {
             buf.append(getNewickMetaData());
-            buf.append(":").append(getLength());
+            buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         }
         return buf.toString();
     }
@@ -458,10 +468,17 @@ public class Node extends BEASTObject {
     }
 
     public String getNewickMetaData() {
-        if (metaDataString != null) {
+        if (metaDataString != null)
             return "[&" + metaDataString + ']';
-        }
-        return "";
+        else
+            return "";
+    }
+
+    public String getNewickLengthMetaData() {
+        if (lengthMetaDataString != null)
+            return "[&" + lengthMetaDataString + "]";
+        else
+            return "";
     }
 
     /**
@@ -487,7 +504,14 @@ public class Node extends BEASTObject {
             buf.append(metaDataString);
             buf.append(']');
         }
-        buf.append(":").append(getLength());
+        buf.append(":");
+        if (lengthMetaDataString != null) {
+            buf.append('[');
+            buf.append(lengthMetaDataString);
+            buf.append(']');
+        }
+        buf.append(getLength());
+
         return buf.toString();
     }
 
@@ -556,7 +580,9 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.lengthMetaDataString = lengthMetaDataString;
         node.metaData = new TreeMap<>(metaData);
+        node.lengthMetaData = new TreeMap<>(lengthMetaData);
         node.parent = null;
         node.setID(getID());
 
@@ -574,7 +600,9 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.lengthMetaDataString = lengthMetaDataString;
         node.metaData = new TreeMap<>(metaData);
+        node.lengthMetaData = new TreeMap<>(lengthMetaData);
         node.parent = null;
         node.setID(getID());
         if (getLeft() != null) {
@@ -596,7 +624,9 @@ public class Node extends BEASTObject {
         height = node.height;
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
+        lengthMetaDataString = node.lengthMetaDataString;
         metaData = new TreeMap<>(node.metaData);
+        lengthMetaData = new TreeMap<>(node.lengthMetaData);
         parent = null;
         setID(node.getID());
         if (node.getLeft() != null) {
@@ -629,6 +659,17 @@ public class Node extends BEASTObject {
 
     }
 
+    /**
+     * Add edge length metadata with given key and value.
+     *
+     * @param key key for metadata
+     * @param value value of metadata for this edge length
+     */
+    public void setLengthMetaData(String key, Object value) {
+        startEditing();
+        lengthMetaData.put(key, value);
+    }
+
     public Object getMetaData(final String pattern) {
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
@@ -641,8 +682,16 @@ public class Node extends BEASTObject {
         return 0;
     }
 
+    public Object getLengthMetaData(String key) {
+        return lengthMetaData.get(key);
+    }
+
     public Set<String> getMetaDataNames() {
         return metaData.keySet();
+    }
+
+    public Set<String> getLengthMetaDataNames() {
+        return lengthMetaData.keySet();
     }
 
 
