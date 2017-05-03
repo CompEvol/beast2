@@ -176,7 +176,16 @@ public class BeautiAlignmentProvider extends BEASTObject {
         return selectedBEASTObjects;
     }
     
-    
+    /** this allows subclasses of BeautiAlignmentProvider to be called with pre-defined arguments
+     * for example from a scripting environment (see CompactAnalysis in BEASTLabs). The subclass
+     * can choose to suppress GUI components.
+     * Typical usage is for importing alignments using a standard template. 
+     */
+    public List<BEASTInterface> getAlignments(BeautiDoc doc, File[] files, String [] args) {
+    	List<BEASTInterface> selectedBEASTObjects = getAlignments(doc, files);
+    	return selectedBEASTObjects;
+    }
+        
     protected void addAlignments(BeautiDoc doc, List<BEASTInterface> selectedBEASTObjects) {
         for (BEASTInterface beastObject : selectedBEASTObjects) {
         	if (beastObject instanceof Alignment) {
