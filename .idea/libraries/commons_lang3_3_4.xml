@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="commons-lang3-3.4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../bdmm/lib/commons-lang3-3.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
