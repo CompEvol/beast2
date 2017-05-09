@@ -116,6 +116,7 @@ public class TreeTraceAnalysis {
      * @param targetTree target tree (null implies no target tree)
      */
     public void computeCredibleSet(double credSetProbability, Tree targetTree) {
+        topologiesFrequencySet.setCredSetProbability(credSetProbability);
 
         if (targetTree != null)
             credibleSet = topologiesFrequencySet.getCredibleSet(uniqueNewick(targetTree));
