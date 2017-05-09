@@ -49,23 +49,17 @@ public class TreeTraceAnalysis {
 
     protected int nTrees; // total from original log
 
-    protected FrequencySet<String> topologiesFrequencySet;
+    protected FrequencySet<String> topologiesFrequencySet = new FrequencySet<>();
     protected CredibleSet<String> credibleSet;
 
     protected boolean displayTaxonLabels = true; // false to display node index instead
 
-    public TreeTraceAnalysis() {
-        topologiesFrequencySet = new FrequencySet<>();
-    };
-
+    public TreeTraceAnalysis() { };
 
     public TreeTraceAnalysis(List<Tree> posteriorTreeList, double burninFraction) {
-        topologiesFrequencySet = new FrequencySet<>();
+        this();
 
-        int burnin = (int)Math.round(posteriorTreeList.size()*burninFraction);
-
-        for (int i=burnin; i<posteriorTreeList.size(); i++)
-            addTree(posteriorTreeList.get(i));
+        addAllTrees(posteriorTreeList, burninFraction);
     }
 
     public TreeTraceAnalysis(List<Tree> posteriorTreeList) {
@@ -75,6 +69,17 @@ public class TreeTraceAnalysis {
     public void addTree(Tree tree) {
         analyzeTree(tree);
         nTrees += 1;
+    }
+
+    public void addAllTrees(List<Tree> trees, double burninFraction) {
+        int burnin = (int)Math.round(trees.size()*burninFraction);
+
+        for (int i=burnin; i<trees.size(); i++)
+            addTree(trees.get(i));
+    }
+
+    public void addAllTrees(List<Tree> trees) {
+        addAllTrees(trees, 0);
     }
 
     /**
