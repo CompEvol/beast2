@@ -432,6 +432,10 @@ public class MCMC extends Runnable {
                 state.storeToFile(sampleNr);
                 operatorSchedule.storeToFile();
             }
+            
+            if (posterior.getCurrentLogP() == Double.POSITIVE_INFINITY) {
+            	throw new RuntimeException("Encountered a positive infinite posterior. This is a sign there may be numeric instability in the model.");
+            }
         }
         if (corrections > 0) {
         	Log.err.println("\n\nNB: " + corrections + " posterior calculation corrections were required. This analysis may not be valid!\n\n");
@@ -543,7 +547,7 @@ public class MCMC extends Runnable {
     protected void reportLogLikelihoods(final Distribution distr, final String tabString) {
         final double full =  distr.logP, last = distr.storedLogP;
         final String changed = full == last ? "" : "  **";
-        Log.err.println(tabString + "P(" + distr.getID() + ") = " + full + " (was " + last + ")" + changed);
+        Log.info.println(tabString + "P(" + distr.getID() + ") = " + full + " (was " + last + ")" + changed);
         if (distr instanceof CompoundDistribution) {
             for (final Distribution distr2 : ((CompoundDistribution) distr).pDistributions.get()) {
                 reportLogLikelihoods(distr2, tabString + "\t");
