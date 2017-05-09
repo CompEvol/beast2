@@ -288,9 +288,14 @@ public class NexusParser {
                 str = str.substring(str.toLowerCase().indexOf("ntax=") + 5);
                 str = str.replaceAll(";", "");
                 expectedTaxonCount = Integer.parseInt(str.trim());
-            } else if (str.toLowerCase().trim().equals("taxlabels")) {
+            } else if (str.toLowerCase().trim().startsWith("taxlabels")) {
+            	str = str.trim().substring(9).trim();
+            	boolean initial = (str.equals(""));
                 do {
-                    str = nextLine(fin);
+                	if (initial) {
+                        str = nextLine(fin);
+                	}
+                	initial = true;
                     str = str.replaceAll(";", "");
                     str = str.trim();
                     if (str.length() > 0 && !str.toLowerCase().equals("end")) {
@@ -457,6 +462,7 @@ public class NexusParser {
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
             type.setInputValue("nrOfStates", totalCount);
+            //type.setInputValue("symbols", symbols);
         	type.initAndValidate();
             alignment.setInputValue("userDataType", type);
         }
@@ -564,9 +570,6 @@ public class NexusParser {
         int seqLen = 0;
         while (true) {
             str = nextLine(fin);
-            if (str.contains(";")) {
-                break;
-            }
 
             int start = 0, end;
             final String taxon;
@@ -603,7 +606,7 @@ public class NexusParser {
                 }
             }
             prevTaxon = taxon;
-            final String data = str.substring(end);
+            String data = str.substring(end);
             for (int k = 0; k < data.length(); k++) {
             	if (!Character.isWhitespace(data.charAt(k))) {
             		seqLen++;
@@ -621,12 +624,19 @@ public class NexusParser {
 //			Log.warning.println(taxon);
 //			String data = strs[strs.length - 1];
 
-            if (seqMap.containsKey(taxon)) {
-                seqMap.put(taxon, seqMap.get(taxon).append(data));
-            } else {
-                seqMap.put(taxon, new StringBuilder(data));
-                taxa.add(taxon);
+            data = data.replaceAll(";", "");
+            if (data.trim().length() > 0) {
+	            if (seqMap.containsKey(taxon)) {
+	                seqMap.put(taxon, seqMap.get(taxon).append(data));
+	            } else {
+	                seqMap.put(taxon, new StringBuilder(data));
+	                taxa.add(taxon);
+	            }
             }
+            if (str.contains(";")) {
+                break;
+            }
+
         }
         if (taxonCount > 0 && taxa.size() > taxonCount) {
             throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + taxa);
