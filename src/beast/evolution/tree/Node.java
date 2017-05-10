@@ -25,16 +25,11 @@
 package beast.evolution.tree;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.util.HeapSort;
+
+import java.util.*;
 
 
 @Description("Nodes in building beast.tree data structure.")
@@ -229,8 +224,9 @@ public class Node extends BEASTObject {
 
     /**
      * get all child node under this node, if this node is leaf then list.size() = 0.
+     * This returns all child nodes including this node.
      *
-     * @return
+     * @return all child nodes including this node
      */
     public List<Node> getAllChildNodes() {
         final List<Node> childNodes = new ArrayList<>();
