@@ -426,6 +426,7 @@ public class Node extends BEASTObject {
      * @param onlyTopology  if true, only print topology
      * @return
      */
+    @Deprecated
     public String toNewick(boolean onlyTopology) {
         final StringBuilder buf = new StringBuilder();
         if (getLeft() != null) {
@@ -453,6 +454,46 @@ public class Node extends BEASTObject {
         return buf.toString();
     }
 
+    /**
+     * replace BEAST2 <code>String toNewick(boolean onlyTopology)</code>
+     * in <code>Node</code>, which is restricted to binary tree only.
+     *
+     * @param onlyTopology  if true, only print topology
+     * @param printInternalNodes  if true, print internal nodes
+     * @return no ; in the end
+     */
+    public String toNewick(Node node, boolean onlyTopology, boolean printInternalNodes) {
+        final StringBuilder buf = new StringBuilder();
+
+        List<Node> children = node.getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            Node child = children.get(i);
+            if (i == 0) {
+                buf.append("(");
+                buf.append(toNewick(child, onlyTopology, printInternalNodes));
+            } else {
+                buf.append(',');
+                buf.append(toNewick(child, onlyTopology, printInternalNodes));
+            }
+            // print label
+            if (child.isLeaf() || printInternalNodes) {
+                if (child.getID() == null) {
+                    buf.append(child.getNr());
+                } else {
+                    buf.append(child.getID());
+                }
+            }
+            if (!onlyTopology) {
+                buf.append(child.getNewickMetaData());
+                buf.append(":").append(child.getLength());
+            }
+            // close "("
+            if (i == children.size() -1) {
+                buf.append(")");
+            }
+        }
+        return buf.toString();
+    }
 
     /**
      * @return beast.tree in Newick format with taxon labels for labelled tip nodes
@@ -460,7 +501,8 @@ public class Node extends BEASTObject {
      * If a tip node doesn't have an ID (taxon label) then node number (m_iLabel) is printed.
      */
     public String toNewick() {
-        return toNewick(false);
+//        return toNewick(false);
+        return toNewick(this, false, false) + ";";
     }
 
     public String getNewickMetaData() {

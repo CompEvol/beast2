@@ -1,5 +1,6 @@
 package test.beast.evolution.tree.newick;
 
+import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import junit.framework.TestCase;
 
@@ -35,5 +36,13 @@ public class NewickTreeTest extends TestCase {
             assertEquals(tree, newick+";");
         }
 
+    }
+
+    public void testMultifurcatingTree() {
+        String treeString = "(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);";
+
+        Tree multifurcatingTree = new Tree(treeString, false);
+        String newick = multifurcatingTree.getRoot().toNewick();
+        assertEquals(treeString, newick+";");
     }
 }

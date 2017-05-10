@@ -1,18 +1,14 @@
 package beast.evolution.tree;
 
+import beast.core.*;
+import beast.core.util.Log;
+import beast.evolution.alignment.TaxonSet;
+import beast.util.TreeParser;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.util.Log;
-import beast.evolution.alignment.TaxonSet;
-import beast.util.TreeParser;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"
@@ -209,6 +205,10 @@ public class Tree extends StateNode implements TreeInterface {
      */
     public Tree(final String newick) {
         this(new TreeParser(newick).getRoot());
+    }
+
+    public Tree(final String newick, final boolean binarize) {
+        this(new TreeParser(binarize, newick).getRoot());
     }
 
     /**

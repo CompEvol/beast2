@@ -24,24 +24,6 @@
 */
 package beast.util;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Map;
-
-import beast.util.treeparser.NewickParser;
-import beast.util.treeparser.NewickParser.MetaContext;
-import beast.util.treeparser.NewickParserBaseVisitor;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -54,6 +36,15 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeUtils;
 import beast.util.treeparser.NewickLexer;
+import beast.util.treeparser.NewickParser;
+import beast.util.treeparser.NewickParser.MetaContext;
+import beast.util.treeparser.NewickParserBaseVisitor;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -107,6 +98,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * in place of the node numbers.
      */
     boolean integerLeafLabels = true;
+
+    boolean binarize = true;
 
     /**
      * Ensure the class behaves properly, even when inputs are not specified.
@@ -275,6 +268,16 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     }
 
     /**
+     * TreeParser binarize multifurcations as default, set the flag <code>binarize</code>
+     * to false disallowing to binarize multifurcations.
+     * @param binarize The flag whether to allow to binarize multifurcations
+     * @param newick a string representing a tree in newick format
+     */
+    public TreeParser(final boolean binarize, final String newick) {
+        this(newick, false, true, true, 1, binarize);
+    }
+
+    /**
      * @param newick                a string representing a tree in newick format
      * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
      * @param allowSingleChildNodes true if internal nodes with single children are allowed
@@ -308,6 +311,26 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                       final boolean allowSingleChildNodes,
                       final boolean isLabeled,
                       final int offset) {
+        this(newick, adjustTipHeights, true, true, 1, false);
+    }
+
+    /**
+     * @param newick                a string representing a tree in newick format
+     * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param allowSingleChildNodes true if internal nodes with single children are allowed
+     * @param isLabeled             true if nodes are labeled with taxa labels
+     * @param offset                if isLabeled == false and node labeling starts with x
+     *                              then offset should be x. When isLabeled == true offset should
+     *                              be 1 as by default.
+     * @param binarize              the flag whether to allow to binarize multifurcations
+     */
+    public TreeParser(final String newick,
+                      final boolean adjustTipHeights,
+                      final boolean allowSingleChildNodes,
+                      final boolean isLabeled,
+                      final int offset,
+                      final boolean binarize) {
+        this.binarize = binarize;
 
         newickInput.setValue(newick, this);
         isLabelledNewickInput.setValue(isLabeled, this);
@@ -539,7 +562,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 throw new TreeParsingException("Node with single child found.");
 
             // Use length-zero edges to binarize multifurcations.
-            if (node.getChildCount()>2) {
+            if (binarize && node.getChildCount()>2) {
                 List<Node> children = new ArrayList<>(node.getChildren());
                 Node prevDummy = node;
                 for (int i=1; i<children.size()-1; i++) {
