@@ -634,12 +634,22 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (node.isLeaf()) {
                 return node.getHeight();
             } else {
-                final double left = convertLengthToHeight(node.getLeft(), height - length);
-                if (node.getRight() == null) {
+//                final double left = convertLengthToHeight(node.getLeft(), height - length);
+//                if (node.getRight() == null) {
+//                    return left;
+//                }
+//                final double right = convertLengthToHeight(node.getRight(), height - length);
+//                return Math.min(left, right);
+                List<Node> children = node.getChildren();
+                double left = convertLengthToHeight(children.get(0), height - length);
+                if (children.size() < 2)
                     return left;
+                for (int i = 1; i < children.size(); i++) {
+                    double right = convertLengthToHeight(children.get(i), height - length);
+                    // borrow left to store the min
+                    left = Math.min(left, right);
                 }
-                final double right = convertLengthToHeight(node.getRight(), height - length);
-                return Math.min(left, right);
+                return left;
             }
         }
 
@@ -658,9 +668,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 }
             }
             if (!node.isLeaf()) {
-                offset(node.getLeft(), delta);
-                if (node.getRight() != null) {
-                    offset(node.getRight(), delta);
+//                offset(node.getLeft(), delta);
+//                if (node.getRight() != null) {
+//                    offset(node.getRight(), delta);
+//                }
+                for (Node child : node.getChildren()) {
+                    offset(child, delta);
                 }
             }
         }

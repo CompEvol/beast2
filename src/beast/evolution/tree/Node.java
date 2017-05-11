@@ -462,35 +462,31 @@ public class Node extends BEASTObject {
      * @param printInternalNodes  if true, print internal nodes
      * @return no ; in the end
      */
-    public String toNewick(Node node, boolean onlyTopology, boolean printInternalNodes) {
+    public String toNewick(boolean onlyTopology, boolean printInternalNodes) {
         final StringBuilder buf = new StringBuilder();
 
-        List<Node> children = node.getChildren();
-        for (int i = 0; i < children.size(); i++) {
-            Node child = children.get(i);
-            if (i == 0) {
-                buf.append("(");
-                buf.append(toNewick(child, onlyTopology, printInternalNodes));
-            } else {
+        List<Node> children = getChildren();
+        if (children.size() > 0) {
+            buf.append("(");
+            buf.append(children.get(0).toNewick(onlyTopology, printInternalNodes));
+            for (int i = 1; i < children.size(); i++) {
                 buf.append(',');
-                buf.append(toNewick(child, onlyTopology, printInternalNodes));
+                buf.append(children.get(i).toNewick(onlyTopology, printInternalNodes));
             }
-            // print label
-            if (child.isLeaf() || printInternalNodes) {
-                if (child.getID() == null) {
-                    buf.append(child.getNr());
-                } else {
-                    buf.append(child.getID());
-                }
+            buf.append(")");
+            if ((isLeaf() || printInternalNodes) && getID() != null) {
+                buf.append(getID());
             }
-            if (!onlyTopology) {
-                buf.append(child.getNewickMetaData());
-                buf.append(":").append(child.getLength());
+        } else if (isLeaf() || printInternalNodes) {
+            if (getID() == null) {
+                buf.append(getNr());
+            } else {
+                buf.append(getID());
             }
-            // close "("
-            if (i == children.size() -1) {
-                buf.append(")");
-            }
+        }
+        if (!onlyTopology) {
+            buf.append(getNewickMetaData());
+            buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         }
         return buf.toString();
     }
@@ -502,7 +498,7 @@ public class Node extends BEASTObject {
      */
     public String toNewick() {
 //        return toNewick(false);
-        return toNewick(this, false, false) + ";";
+        return toNewick(false, false); //  + ";"?
     }
 
     public String getNewickMetaData() {

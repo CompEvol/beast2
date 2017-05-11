@@ -18,21 +18,30 @@ public class NewickTreeTest extends TestCase {
     }; //more trees ?
 
 
-    public void testLabeledNewickTrees() throws Exception {
+    public void testTreeParserToString() throws Exception {
 
         for (String tree : trees1) {
 
             TreeParser newickTree = new TreeParser(tree, false, false, true, 1);
+            String newick = newickTree.toString();
 
-//            System.out.println(tree);
-//            System.out.println(newickTree);
+            System.out.println(tree);
+            System.out.println(newick);
 
-            assertEquals("((0:1.0,1:1.0)3:1.0,2:2.0)4:0.0", newickTree.toString());
+            assertEquals("((0:1.0,1:1.0)3:1.0,2:2.0)4:0.0", newick);
         }
+
+    }
+
+    public void testNodeToNewick() throws Exception {
 
         for (String tree : trees2) {
             TreeParser newickTree = new TreeParser(tree, false, false, true, 1);
             String newick = newickTree.getRoot().toNewick();
+
+            System.out.println(tree);
+            System.out.println(newick);
+
             assertEquals(tree, newick+";");
         }
 
@@ -45,4 +54,7 @@ public class NewickTreeTest extends TestCase {
         String newick = multifurcatingTree.getRoot().toNewick();
         assertEquals(treeString, newick+";");
     }
+
+
+
 }
