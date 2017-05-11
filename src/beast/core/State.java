@@ -402,24 +402,29 @@ public class State extends BEASTObject {
         for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
             final Node child = children.item(childIndex);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                final String id = child.getAttributes().getNamedItem("id").getNodeValue();
-                int stateNodeIndex = 0;
-
-                // An init node without ID - should not bring the house down, does it?
-                // I have not checked if the state is restored correctly or not (JH)
-                while (stateNode[stateNodeIndex].getID() != null &&
-                        !stateNode[stateNodeIndex].getID().equals(id)) {
-                    stateNodeIndex++;
-                    if (stateNodeIndex >= stateNode.length) {
-                    	Log.warning.println("Cannot restore statenode id");
-                    	break;
-                    }
-                }
-                if (stateNodeIndex < stateNode.length) {
-	                final StateNode stateNode2 = stateNode[stateNodeIndex].copy();
-	                stateNode2.fromXML(child);
-	                stateNode[stateNodeIndex].assignFromFragile(stateNode2);
-                }
+            	Node idNode = child.getAttributes().getNamedItem("id");
+            	if (idNode != null) {
+	                final String id = idNode.getNodeValue();
+	                int stateNodeIndex = 0;
+	
+	                // An init node without ID - should not bring the house down, does it?
+	                // I have not checked if the state is restored correctly or not (JH)
+	                while (stateNode[stateNodeIndex].getID() != null &&
+	                        !stateNode[stateNodeIndex].getID().equals(id)) {
+	                    stateNodeIndex++;
+	                    if (stateNodeIndex >= stateNode.length) {
+	                    	Log.warning.println("Cannot restore statenode id " + id + " -- item is ignored");
+	                    	break;
+	                    }
+	                }
+	                if (stateNodeIndex < stateNode.length) {
+		                final StateNode stateNode2 = stateNode[stateNodeIndex].copy();
+		                stateNode2.fromXML(child);
+		                stateNode[stateNodeIndex].assignFromFragile(stateNode2);
+	                }
+            	} else {
+                	Log.warning.println("Cannot restore statenode without id -- item is ignored");
+            	}
             }
         }
     }
