@@ -99,7 +99,7 @@ public class TreeParserTest {
     }
 
     @Test
-    public void testMultifurcations() throws Exception {
+    public void testBinarization() throws Exception {
 
         String newick = "((A:1.0,B:1.0,C:1.0):1.0,(D:1.0,E:1.0,F:1.0,G:1.0):1.0):0.0;";
         String binaryNewick = "((A:1.0,(B:1.0,C:1.0):0.0):1.0,(D:1.0,(E:1.0,(F:1.0,G:1.0):0.0):0.0):1.0):0.0;";
@@ -108,6 +108,18 @@ public class TreeParserTest {
 
         TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
         Assert.assertEquals(binaryNewick.split(";")[0], treeParser.getRoot().toNewick());
+
+    }
+
+    @Test
+    public void testMultifurcations() throws Exception {
+
+        String newick = "((A:1.0,B:1.0,C:1.0):1.0,(D:1.0,E:1.0,F:1.0,G:1.0):1.0):0.0;";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1, false);
+        Assert.assertEquals(newick.split(";")[0], treeParser.getRoot().toNewick());
 
     }
 

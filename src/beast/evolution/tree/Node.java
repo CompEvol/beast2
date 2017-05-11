@@ -342,23 +342,24 @@ public class Node extends BEASTObject {
      */
     public String toShortNewick(final boolean printInternalNodeNumbers) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+
+        if (!isLeaf()) {
             buf.append("(");
-            buf.append(getLeft().toShortNewick(printInternalNodeNumbers));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toShortNewick(printInternalNodeNumbers));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toShortNewick(printInternalNodeNumbers));
             }
             buf.append(")");
-            if (getID() != null) {
-                buf.append(getNr());
-            } else if (printInternalNodeNumbers) {
-                buf.append(getNr());
-            }
+        }
 
-        } else {
+        if (isLeaf() || getID() != null || printInternalNodeNumbers) {
             buf.append(getNr());
         }
+
         buf.append(getNewickMetaData());
         buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         return buf.toString();
@@ -375,30 +376,75 @@ public class Node extends BEASTObject {
 
     public String toSortedNewick(int[] maxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
-            buf.append("(");
-            String child1 = getLeft().toSortedNewick(maxNodeInClade, printMetaData);
-            int child1Index = maxNodeInClade[0];
-            if (getRight() != null) {
-                String child2 = getRight().toSortedNewick(maxNodeInClade, printMetaData);
-                int child2Index = maxNodeInClade[0];
-                if (child1Index > child2Index) {
-                    buf.append(child2);
-                    buf.append(",");
-                    buf.append(child1);
+
+        if (!isLeaf()) {
+
+            if (getChildCount() <= 2) {
+                // Computationally cheap method for special case of <=2 children
+
+                buf.append("(");
+                String child1 = getChild(0).toSortedNewick(maxNodeInClade, printMetaData);
+                int child1Index = maxNodeInClade[0];
+                if (getChildCount() > 1) {
+                    String child2 = getChild(1).toSortedNewick(maxNodeInClade, printMetaData);
+                    int child2Index = maxNodeInClade[0];
+                    if (child1Index > child2Index) {
+                        buf.append(child2);
+                        buf.append(",");
+                        buf.append(child1);
+                    } else {
+                        buf.append(child1);
+                        buf.append(",");
+                        buf.append(child2);
+                        maxNodeInClade[0] = child1Index;
+                    }
                 } else {
                     buf.append(child1);
-                    buf.append(",");
-                    buf.append(child2);
-                    maxNodeInClade[0] = child1Index;
                 }
+                buf.append(")");
+                if (getID() != null) {
+                    buf.append(labelNr+1);
+                }
+
             } else {
-                buf.append(child1);
+                // General method for >2 children
+
+                String[] childStrings = new String[getChildCount()];
+                int[] maxNodeNrs = new int[getChildCount()];
+                Integer[] indices = new Integer[getChildCount()];
+                for (int i = 0; i < getChildCount(); i++) {
+                    childStrings[i] = getChild(i).toSortedNewick(maxNodeInClade, printMetaData);
+                    maxNodeNrs[i] = maxNodeInClade[0];
+                    indices[i] = i;
+                }
+
+                Arrays.sort(indices, (i1, i2) -> {
+                    if (maxNodeNrs[i1] < maxNodeNrs[i2])
+                        return -1;
+
+                    if (maxNodeNrs[i1] > maxNodeNrs[i2])
+                        return 1;
+
+                    return 0;
+                });
+
+                maxNodeInClade[0] = maxNodeNrs[maxNodeNrs.length - 1];
+
+                buf.append("(");
+                for (int i = 0; i < indices.length; i++) {
+                    if (i > 0)
+                        buf.append(",");
+
+                    buf.append(childStrings[indices[i]]);
+                }
+
+                buf.append(")");
+
+                if (getID() != null) {
+                    buf.append(labelNr + 1);
+                }
             }
-            buf.append(")");
-            if (getID() != null) {
-                buf.append(labelNr+1);
-            }
+
         } else {
             maxNodeInClade[0] = labelNr;
             buf.append(labelNr + 1);
@@ -428,24 +474,27 @@ public class Node extends BEASTObject {
      */
     public String toNewick(boolean onlyTopology) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+        if (!isLeaf()) {
             buf.append("(");
-            buf.append(getLeft().toNewick(onlyTopology));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toNewick(onlyTopology));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toNewick(onlyTopology));
             }
             buf.append(")");
-            if (getID() != null) {
+
+            if (getID() != null)
                 buf.append(getID());
-            }
         } else {
-            if (getID() == null) {
-                buf.append(labelNr);
-            } else {
+            if (getID() != null)
                 buf.append(getID());
-            }
+            else
+                buf.append(labelNr);
         }
+
         if (!onlyTopology) {
             buf.append(getNewickMetaData());
             buf.append(":").append(getNewickLengthMetaData()).append(getLength());
@@ -484,17 +533,25 @@ public class Node extends BEASTObject {
      */
     public String toString(final List<String> labels) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+
+        if (isLeaf()) {
+            buf.append(labels.get(labelNr));
+        } else {
             buf.append("(");
-            buf.append(getLeft().toString(labels));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toString(labels));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toString(labels));
             }
             buf.append(")");
-        } else {
-            buf.append(labels.get(labelNr));
         }
+
+        if (isLeaf())
+            buf.append(labels.get(labelNr));
+
         if (metaDataString != null) {
             buf.append('[');
             buf.append(metaDataString);
