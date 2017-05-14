@@ -853,6 +853,7 @@ public class JSONParser {
 		// initialise
 		if (initialise) {
 			try {
+            	beastObject.determindClassOfInputs();
 				beastObject.validateInputs();
 				objectsWaitingToInit.add(new BEASTObjectWrapper(beastObject, node));
 				// beastObject.initAndValidate();
