@@ -199,8 +199,8 @@ public class Tree extends StateNode implements TreeInterface {
      * This constructor wraps a new root node in a <code>Tree</code> object, which does not copy the tree.
      * To copy a <code>Tree</code>, either {@link Tree#copy() Tree#copy} or {@link Node#copy() Node#copy}
      * can be used instead, which performs true deep copy.
-     * For example, <code>new Tree(oldTree.copy())</code> which is also equivalent to
-     * <code>new Tree(oldTree.getRoot().copy())</code>.
+     * For example, <code>new Tree(oldTree.getRoot().copy())</code> which is also equivalent to
+     * <code>oldTree.copy()</code>.
      *
      * @param rootNode root <code>Node</code>
      */
