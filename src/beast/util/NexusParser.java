@@ -47,7 +47,7 @@ public class NexusParser {
     /**
      * keep track of nexus file line number, to report when the file does not parse *
      */
-    int lineNr;
+    protected int lineNr;
 
     /**
      * Beast II objects reconstructed from the file*
@@ -155,7 +155,7 @@ public class NexusParser {
         }
     } // parseFile
 
-	private void parseTreesBlock(final BufferedReader fin) throws IOException {
+    protected void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
         String str = readLine(fin).trim();
@@ -278,7 +278,7 @@ public class NexusParser {
         return translationMap;
     }
 
-    private void parseTaxaBlock(final BufferedReader fin) throws IOException {
+    protected void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
         int expectedTaxonCount = -1;
         String str;
@@ -312,8 +312,12 @@ public class NexusParser {
                             	}
                             	taxon = taxon.substring(1, taxon.length() - 1);
                             }
-                            taxa.add(taxon);
-                            taxonList.add(new Taxon(taxon));
+                        	if (!taxa.contains(taxon)) {
+                        		taxa.add(taxon);
+                        	}
+                        	if (!taxonListContains(taxon)) {
+                        		taxonList.add(new Taxon(taxon));
+                        	}
                     	}
                     }
                 } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
@@ -328,7 +332,7 @@ public class NexusParser {
     /**
      * parse calibrations block and create TraitSet *
      */
-    TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
+    protected TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
         final TraitSet traitSet = new TraitSet();
         traitSet.traitNameInput.setValue("date", traitSet);
         String str;
@@ -644,7 +648,9 @@ public class NexusParser {
 
         HashSet<String> sortedAmbiguities = new HashSet<>();
         for (final String taxon : taxa) {
-        	taxonList.add(new Taxon(taxon));
+        	if (!taxonListContains(taxon)) {
+        		taxonList.add(new Taxon(taxon));
+        	}
             final StringBuilder bsData = seqMap.get(taxon);
             String data = bsData.toString().replaceAll("\\s", "");
             seqMap.put(taxon, new StringBuilder(data));
@@ -741,7 +747,16 @@ public class NexusParser {
         return alignment;
     } // parseDataBlock
 
-    private String getNextDataBlock(String str, BufferedReader fin) throws IOException {
+    private boolean taxonListContains(String taxon) {
+    	for (Taxon t : taxonList) {
+    		if (t.getID().equals(taxon)) {
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	private String getNextDataBlock(String str, BufferedReader fin) throws IOException {
         while (str.indexOf(';') < 0) {
             str += nextLine(fin);
         }
@@ -767,7 +782,7 @@ public class NexusParser {
      * end;
      * 
      */
-    void parseAssumptionsBlock(final BufferedReader fin) throws IOException {
+    protected void parseAssumptionsBlock(final BufferedReader fin) throws IOException {
         String str;
         do {
             str = nextLine(fin);
@@ -775,6 +790,7 @@ public class NexusParser {
             	// remove text in brackets (as TreeBase files are wont to contain)
                 str = str.replaceAll("\\(.*\\)", "");
                 // clean up spaces
+                str = str.replaceAll("=", " = ");
                 str = str.replaceAll("^\\s+", "");
                 str = str.replaceAll("\\s*-\\s*", "-");
                 str = str.replaceAll("\\s*\\\\\\s*", "\\\\");
@@ -955,7 +971,7 @@ public class NexusParser {
     }
 
     
-    private void processSets() {
+    protected void processSets() {
     	// create monophyletic MRCAPrior for each taxon set that 
     	// does not already have a calibration associated with it
     	for (TaxonSet taxonset : taxonsets) {
@@ -1044,7 +1060,7 @@ public class NexusParser {
     /**
      * read next line from nexus file that is not a comment and not empty *
      */
-    String nextLine(final BufferedReader fin) throws IOException {
+    protected String nextLine(final BufferedReader fin) throws IOException {
         String str = readLine(fin);
         if (str == null) {
             return null;
