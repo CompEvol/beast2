@@ -1,7 +1,10 @@
 package beast.evolution.speciation;
 
+
+
 import java.util.List;
 
+import beast.core.BEASTInterface;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -9,6 +12,7 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeInterface;
+import beast.math.distributions.MRCAPrior;
 
 
 
@@ -56,7 +60,7 @@ public class YuleModel extends SpeciesTreeDistribution {
             }
         }
     }
-
+    
     @Override
     public double calculateTreeLogLikelihood(final TreeInterface tree) {
         return calculateTreeLogLikelihood(tree, 1, 0);
@@ -108,6 +112,7 @@ public class YuleModel extends SpeciesTreeDistribution {
      * @return
      */
     protected double logCoeff(final int taxonCount) {
+    	//return logGamma(taxonCount + 1);?
         return 0.0;
     }
 
@@ -169,4 +174,28 @@ public class YuleModel extends SpeciesTreeDistribution {
         return false;
     }
 
+    
+    @Override
+    public void validateInputs() {
+        if (conditionalOnRootInput.get()) {
+        	// make sure there is an MRCAPrior on the root
+        	TreeInterface tree = treeInput.get();
+        	int n = tree.getTaxonset().getTaxonCount();
+        	boolean found = false;
+        	for (BEASTInterface o : ((BEASTInterface) tree).getOutputs()) {
+        		if (o instanceof MRCAPrior) {
+        			MRCAPrior prior = (MRCAPrior) o;
+        			int n2 = prior.taxonsetInput.get().taxonsetInput.get().size();
+        			if (n2 == n) {
+        				found = true;
+        			}
+        		}
+        	}
+        	if (!found) {
+        		Log.warning("WARNING: There must be an MRCAPrior on the root when conditionalOnRoot=true, but could not find any");
+        	}
+        }
+
+    	super.validateInputs();
+    }
 }
