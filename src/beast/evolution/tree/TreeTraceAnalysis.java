@@ -270,4 +270,33 @@ public class TreeTraceAnalysis {
         analysis.report(out);
     }
 
+
+    // Deprecated methods and fields:
+    // These are necessary because old code in BEASTLabs depends on these
+
+    @Deprecated
+    public void analyze(double credSetProbability) {
+        computeCredibleSet(credSetProbability);
+    }
+
+    @Deprecated
+    public void analyze() {
+        computeCredibleSet();
+    }
+
+    @Deprecated
+    public int getTotalTreesBurninRemoved() {
+        return getNTrees();
+    }
+
+    @Deprecated
+    public String uniqueNewick(Node node) {
+        return uniqueNewick(new Tree(node));
+    }
+
+    @Deprecated
+    public static double DEFAULT_BURN_IN_FRACTION = 0.1;
+
+    @Deprecated
+    public List<Tree> treeInTrace = new ArrayList<>();
 }
