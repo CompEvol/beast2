@@ -71,7 +71,7 @@ public class NexusParser {
 
     public List<TaxonSet> taxonsets = new ArrayList<>();
 
-    private List<NexusParserListener> listeners = new ArrayList<>();
+    protected List<NexusParserListener> listeners = new ArrayList<>();
 
     /**
      * Adds a listener for client classes that want to monitor progress of the parsing.
@@ -217,7 +217,7 @@ public class NexusParser {
         }
     }
 
-    private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
+    protected List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
 
         Log.warning.println("translation map size = " + translationMap.size());
 
@@ -233,7 +233,7 @@ public class NexusParser {
      * @param translationMap
      * @return minimum key value if keys are a contiguous set of integers starting from zero or one, -1 otherwise
      */
-    private int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
+    protected int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
 
         final SortedSet<Integer> indices = new TreeSet<>();
 
@@ -255,7 +255,7 @@ public class NexusParser {
      *         whereas values are generally descriptive strings.
      * @throws IOException
      */
-    private Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
+    protected Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
 
         final Map<String, String> translationMap = new HashMap<>();
 
@@ -1049,7 +1049,7 @@ public class NexusParser {
     /**
      * read line from nexus file *
      */
-    String readLine(final BufferedReader fin) throws IOException {
+    protected String readLine(final BufferedReader fin) throws IOException {
         if (!fin.ready()) {
             return null;
         }
@@ -1086,7 +1086,7 @@ public class NexusParser {
     /**
      * return attribute value as a string *
      */
-    String getAttValue(final String attribute, final String str) {
+    protected String getAttValue(final String attribute, final String str) {
         final Pattern pattern = Pattern.compile(".*" + attribute + "\\s*=\\s*([^\\s;]+).*");
         final Matcher matcher = pattern.matcher(str.toLowerCase());
         if (!matcher.find()) {
