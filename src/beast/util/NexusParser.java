@@ -334,6 +334,7 @@ public class NexusParser {
      */
     protected TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
         final TraitSet traitSet = new TraitSet();
+        traitSet.setID("traitsetDate");
         traitSet.traitNameInput.setValue("date", traitSet);
         String str;
         do {

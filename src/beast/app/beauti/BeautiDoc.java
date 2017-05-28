@@ -2476,34 +2476,40 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 				}
 			}
 			if (t.taxonsetInput.get().size() == 1 && distr != null) {
-				// it is a calibration on a tip -- better start sampling that tip
-		        TipDatesRandomWalker operator = new TipDatesRandomWalker();
-		        t.initAndValidate();
-		        operator.initByName("taxonset", t, "weight", 1.0, "tree", tree, "windowSize", 1.0);
-		        operator.setID("TipDatesRandomWalker." + t.getID());
-		        MCMC mcmc = (MCMC) this.mcmc.get();
-		        mcmc.operatorsInput.setValue(operator, mcmc);
-		        
-		        // set up date trait
-		        double date = distr.getMean();
-		        TraitSet dateTrait = null;
-		        for (TraitSet ts : tree.m_traitList.get()) {
-		        	if (ts.isDateTrait()) {
-		        		dateTrait = ts;
-		        	}
-		        }
-		        if (dateTrait == null) {
-		        	dateTrait = new TraitSet();
-		        	dateTrait.initByName("traitname", TraitSet.DATE_BACKWARD_TRAIT, "taxa", tree.getTaxonset(), 
-		        			"value", t.taxonsetInput.get().get(0).getID() + "=" + date);
-		        	tree.m_traitList.setValue(dateTrait, tree);
-		        	tree.initAndValidate();
-		        } else {
-		        	dateTrait.traitsInput.setValue(dateTrait.traitsInput.get() + ",\n" +
-		        			t.taxonsetInput.get().get(0).getID() + "=" + date
-		        			, dateTrait);	
-		        }
-		        mrcaPrior.onlyUseTipsInput.setValue(true, mrcaPrior);
+				if (distr instanceof Normal && (Double.isInfinite(((Normal)distr).sigmaInput.get().getValue()))) {
+					// it is a 'fixed' calibration, no need to add a distribution
+				} else {
+					// it is a calibration on a tip -- better start sampling that tip
+			        TipDatesRandomWalker operator = new TipDatesRandomWalker();
+			        t.initAndValidate();
+			        operator.initByName("taxonset", t, "weight", 1.0, "tree", tree, "windowSize", 1.0);
+			        operator.setID("TipDatesRandomWalker." + t.getID());
+			        MCMC mcmc = (MCMC) this.mcmc.get();
+			        mcmc.operatorsInput.setValue(operator, mcmc);
+			        
+			        // set up date trait
+			        double date = distr.getMean();
+			        TraitSet dateTrait = null;
+			        for (TraitSet ts : tree.m_traitList.get()) {
+			        	if (ts.isDateTrait()) {
+			        		dateTrait = ts;
+			        	}
+			        }
+			        if (dateTrait == null) {
+			        	dateTrait = new TraitSet();
+			        	dateTrait.setID("traitsetDate");
+			        	registerPlugin(dateTrait);
+			        	dateTrait.initByName("traitname", TraitSet.DATE_BACKWARD_TRAIT, "taxa", tree.getTaxonset(), 
+			        			"value", t.taxonsetInput.get().get(0).getID() + "=" + date);
+			        	tree.m_traitList.setValue(dateTrait, tree);
+			        	tree.initAndValidate();
+			        } else {
+			        	dateTrait.traitsInput.setValue(dateTrait.traitsInput.get() + ",\n" +
+			        			t.taxonsetInput.get().get(0).getID() + "=" + date
+			        			, dateTrait);	
+			        }
+			        mrcaPrior.onlyUseTipsInput.setValue(true, mrcaPrior);
+				}
 			}
 	}
 
