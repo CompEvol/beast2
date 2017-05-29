@@ -226,7 +226,11 @@
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
-			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+				<up idref="clockRate.c:$(n)"/>
+				<down idref="Tree.t:$(n)"/>
+			</upDownOperator>
+			<upDownOperator id='strictClockUpDownOperator.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
 				<up idref="clockRate.c:$(n)"/>
 				<down idref="Tree.t:$(n)"/>
 			</upDownOperator>
@@ -261,6 +265,18 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
                 Scale up substitution rate c:$(n) and scale down tree t:($n)
             </connect>
+            <connect srcID='strictClockUpDownOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
+                Scale up substitution rate c:$(n) and scale down tree t:($n)
+            </connect>
+            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='up'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='up'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='down'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='down'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and allTipDatesRandomWalker.t:$(n)/weight!=0.0'>Estimates tip dates for tree t:$(n)</connect>
 
