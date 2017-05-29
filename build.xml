@@ -532,6 +532,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
             <argument value="-window"/>
             <argument value="-working"/>
             <argument value="-options"/>
@@ -561,6 +562,7 @@
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
             <argument value="-capture"/>
         </bundleapp>
 
@@ -587,6 +589,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -612,6 +615,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -636,6 +640,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -660,6 +665,7 @@
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">

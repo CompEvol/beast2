@@ -5,6 +5,7 @@
     <minVersion>1.8.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
     <maxHeapSize>4096</maxHeapSize>
+    <opt>-Duser.language=en</opt>
   </jre>    
   <versionInfo>
     <fileDescription>DensiTree</fileDescription>
