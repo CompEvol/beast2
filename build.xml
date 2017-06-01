@@ -216,13 +216,14 @@
 
     <!-- Target for Travis-CI with non-zero exit status on test failure. -->
     <target name="travis" depends="clean, compile-all, junit, junitb">
-        <fail if="junitfailed" message="One or more unit tests failed."/>
+        <fail if="junitfailed" message="One or more CORE BEAST tests failed."/>
+        <fail if="junitbfailed" message="One or more BEAUTI tests failed."/>
     </target>
 
     <!-- testing beauti gui-->
     <target name="junitb">
         <mkdir dir="${report}" />
-        <junit printsummary="yes" failureproperty="junitfailed">
+        <junit printsummary="yes" failureproperty="junitbfailed">
             <!--showoutput='yes'-->
             <classpath>
                 <path refid="classpath" />
