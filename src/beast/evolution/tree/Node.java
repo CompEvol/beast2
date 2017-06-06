@@ -62,11 +62,6 @@ public class Node extends BEASTObject {
      */
     List<Node> children = new ArrayList<>();
 
-//    @Deprecated
-//	private Node m_left;
-//    @Deprecated
-//	private Node m_right;
-
     /**
      * parent node in the beast.tree, null if root *
      */
@@ -802,16 +797,28 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * some methods that are useful for porting from BEAST 1 *
+     * @return the number of children of this node.
      */
     public int getChildCount() {
         return children.size();
     }
 
+    /**
+     * This method returns the i'th child, numbering starting from 0.
+     * getChild(0) returns the same node as getLeft()
+     * getChild(1) returns the same node as getRight()
+     *
+     * This method is unprotected and will throw an ArrayOutOfBoundsException if provided an index larger than getChildCount() - 1, or smaller than 0.
+     *
+     * @return the i'th child of this node.
+     */
     public Node getChild(final int childIndex) {
         return children.get(childIndex);
     }
 
+    /**
+     * This sets the i'th child of this node. Will pad out the children with null's if getChildCount() <= childIndex.
+     */
     public void setChild(final int childIndex, final Node node) {
         while (children.size() <= childIndex) {
             children.add(null);
@@ -820,20 +827,25 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @param m_left new left child
+     * This sets the zero'th (left in binary trees) child of this node.
+     *
+     * @param leftChild new left child
      * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
     @Deprecated
-    public void setLeft(final Node m_left) {
+    public void setLeft(final Node leftChild) {
         if (children.size() == 0) {
-            children.add(m_left);
+            children.add(leftChild);
         } else {
-            children.set(0, m_left);
+            children.set(0, leftChild);
         }
     }
 
     /**
-     * @return left child
+     * This method returns the zero'th child (called left child in binary trees).
+     * Will return null if there are no children.
+     *
+     * @return left child (zero'th child), or null if this node has no children.
      * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
     @Deprecated
@@ -845,25 +857,31 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @param m_right new right child
+     * This sets the second child (index 1, called right child in binary trees). If this node had no children then the left
+     * child will be set to null after this call.
+     *
+     * @param rightChild new right child
      * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
     @Deprecated
-    public void setRight(final Node m_right) {
+    public void setRight(final Node rightChild) {
         switch (children.size()) {
             case 0:
                 children.add(null);
             case 1:
-                children.add(m_right);
+                children.add(rightChild);
                 break;
             default:
-                children.set(1, m_right);
+                children.set(1, rightChild);
                 break;
         }
     }
 
     /**
-     * @return right child
+     * This method returns the second child (index 1, called right child in binary trees).
+     * Will return null if there are no children or only one child.
+     *
+     * @return right child (child 1), or null if this node has no children, or only one child.
      * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
     @Deprecated
