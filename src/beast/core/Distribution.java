@@ -26,6 +26,7 @@ package beast.core;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
@@ -70,6 +71,12 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * @param random random number generator
      */
     public abstract void sample(State state, Random random);
+
+    /**
+     * Field for keeping track of whether a sample has been drawn from this distribution
+     * during this sample run.
+     */
+    public boolean sampledFlag = false;
 
     /**
      * Sample input parameter from its distribution (if one exists)

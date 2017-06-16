@@ -45,6 +45,27 @@ public class DirectSimulator extends Runnable {
         random = new Random(Randomizer.getSeed());
     }
 
+    public void clearSampledFlags(BEASTInterface obj) {
+        if (obj instanceof Distribution)
+            ((Distribution) obj).sampledFlag = false;
+
+        for (String inputName : obj.getInputs().keySet()) {
+            Input input = obj.getInput(inputName);
+
+            if (input.get() == null)
+                continue;
+
+            if (input.get() instanceof List) {
+                for (Object el : ((List)input.get())) {
+                    if (el instanceof BEASTInterface)
+                        clearSampledFlags((BEASTInterface)el);
+                }
+            } else if (input.get() instanceof BEASTInterface) {
+                clearSampledFlags((BEASTInterface)(input.get()));
+            }
+        }
+    }
+
     @Override
     public void run() throws Exception {
 
@@ -54,6 +75,7 @@ public class DirectSimulator extends Runnable {
 
         // Perform simulations
         for (int i=0; i<nSamples; i++) {
+            clearSampledFlags(distribution);
             distribution.sample(state, random);
 
             for (Logger logger : loggers) {

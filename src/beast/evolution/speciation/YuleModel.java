@@ -200,12 +200,17 @@ public class YuleModel extends SpeciesTreeDistribution {
         super.validateInputs();
     }
 
-
     /**
      * Sampling only implemented for no-origin case currently.
      */
     @Override
     public void sample(State state, Random random) {
+
+        if (sampledFlag)
+            return;
+
+        sampledFlag = true;
+
         Tree tree = (Tree) treeInput.get();
         RealParameter birthRate = birthDiffRateParameterInput.get();
 
@@ -250,5 +255,21 @@ public class YuleModel extends SpeciesTreeDistribution {
         }
 
         tree.assignFromWithoutID(new Tree(activeLineages.get(0)));
+    }
+
+    @Override
+    public List<String> getConditions() {
+        List<String> conditions = new ArrayList<>();
+        conditions.add("birthDiffRate");
+
+        return conditions;
+    }
+
+    @Override
+    public List<String> getArguments() {
+        List<String> arguments = new ArrayList<>();
+        arguments.add("tree");
+
+        return arguments;
     }
 }
