@@ -203,6 +203,8 @@ public class CompoundDistribution extends Distribution {
         for (Distribution distribution : pDistributions.get()) {
             conditions.addAll(distribution.getConditions());
         }
+        conditions.removeAll(getArguments());
+
         return conditions;
     }
 
