@@ -72,6 +72,27 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     public abstract void sample(State state, Random random);
 
     /**
+     * Sample input parameter from its distribution (if one exists)
+     *
+     * @param inputName name of input
+     * @param inputValue BEASTInterface value of input
+     * @param state state object (needed for call to sample)
+     * @param random random object (needed for call to sample)
+     * @return Distribution object or null if none found.
+     */
+    public void sampleInputDistribution(String inputName, StateNode inputValue, State state, Random random) {
+        for (BEASTInterface output : inputValue.getOutputs()) {
+            if (output instanceof Distribution) {
+                Distribution distrib = (Distribution) output;
+                if (distrib.getArguments().contains(inputName)) {
+                    distrib.sample(state, random);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * get result from last known calculation, useful for logging
      *
      * @return log probability
@@ -136,36 +157,36 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         if (dim == 0) return getArrayValue();
         return 0;
     }
-    
+
     /**
      * Intended to be overridden by stochastically estimated distributions.
      * Used to disable target distribution consistency checks implemented in
      * the MCMC class which do not apply to stochastic distributions.
-     * 
+     *
      * @return true if stochastic.
      */
     public boolean isStochastic() {
         return false;
     }
 
-    
-    /** 
+
+    /**
      * Return non-stochastic part of a distribution recalculate, if required. 
      * This can be used for debugging purposes to verify that the non-stochastic 
      * part of a distribution is calculated correctly e.g. inside the MCMC loop
-     * 
+     *
      * @return logP if not stochastic, zero otherwise
      */
-	public double getNonStochasticLogP() {
-		if (isStochastic()) {
-			return 0;
-		} else {
+    public double getNonStochasticLogP() {
+        if (isStochastic()) {
+            return 0;
+        } else {
             if (isDirtyCalculation()) {
-            	return calculateLogP();
+                return calculateLogP();
             } else {
-            	return getCurrentLogP();
+                return getCurrentLogP();
             }
-		}
-	}
+        }
+    }
 
 } // class Distribution
