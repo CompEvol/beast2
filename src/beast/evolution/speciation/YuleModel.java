@@ -215,14 +215,22 @@ public class YuleModel extends SpeciesTreeDistribution {
 
         // Simulate tree conditional on new parameters
 
-        List<Node> activeLineages = new ArrayList<>(tree.getExternalNodes());
+        List<Node> activeLineages = new ArrayList<>();
+        for (Node oldLeaf : tree.getExternalNodes()) {
+            Node newLeaf = new Node(oldLeaf.getID());
+            newLeaf.setNr(oldLeaf.getNr());
+            newLeaf.setHeight(0.0);
+            activeLineages.add(newLeaf);
+        }
+
+        int nextNr = activeLineages.size();
 
         double t = 0.0;
         while (activeLineages.size() > 1) {
             int k = activeLineages.size();
             double a = birthRate.getValue() * k;
 
-            t += Math.log(random.nextDouble());
+            t += -Math.log(random.nextDouble())/a;
 
             Node node1 = activeLineages.get(random.nextInt(k));
             Node node2;
@@ -231,6 +239,7 @@ public class YuleModel extends SpeciesTreeDistribution {
             } while (node2.equals(node1));
 
             Node newParent = new Node();
+            newParent.setNr(nextNr++);
             newParent.setHeight(t);
             newParent.addChild(node1);
             newParent.addChild(node2);
@@ -240,5 +249,6 @@ public class YuleModel extends SpeciesTreeDistribution {
             activeLineages.add(newParent);
         }
 
+        tree.assignFromWithoutID(new Tree(activeLineages.get(0)));
     }
 }

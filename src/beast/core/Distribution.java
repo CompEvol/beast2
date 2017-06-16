@@ -84,7 +84,8 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         for (BEASTInterface output : inputValue.getOutputs()) {
             if (output instanceof Distribution) {
                 Distribution distrib = (Distribution) output;
-                if (distrib.getArguments().contains(inputName)) {
+                List<String> distribArgs = distrib.getArguments();
+                if (distribArgs != null && distribArgs.contains(inputName)) {
                     distrib.sample(state, random);
                     break;
                 }
