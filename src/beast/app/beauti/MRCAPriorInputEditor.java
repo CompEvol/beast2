@@ -20,8 +20,11 @@ import beast.app.draw.BooleanInputEditor;
 import beast.app.draw.InputEditor;
 import beast.app.draw.SmallButton;
 import beast.core.BEASTInterface;
+import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.State;
+import beast.core.util.CompoundDistribution;
 import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -167,11 +170,12 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 				doc.disconnect(prior, "prior", "distribution");
 				doc.disconnect(prior, "tracelog", "log");
 				if (prior.onlyUseTipsInput.get()) {
-					disableTipSampling();
+					disableTipSampling(m_beastObject, doc);
 				}
 				doc.unregisterPlugin(prior);
 				refreshPanel();
-			}        	
+			}
+
         });
         itemBox.add(Box.createGlue());
         itemBox.add(deleteButton);
@@ -179,7 +183,38 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
         add(itemBox);
 	}
 	
-    Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
+	public static void customConnector(BeautiDoc doc) {
+		Object o0 = doc.pluginmap.get("prior");
+		if (o0 != null && o0 instanceof CompoundDistribution) {
+			CompoundDistribution p =  (CompoundDistribution) o0;
+			for (Distribution p0 : p.pDistributions.get()) {
+				if (p0 instanceof MRCAPrior) {
+					MRCAPrior prior = (MRCAPrior) p0;
+			        if (prior.treeInput.get() != null) {
+			        	boolean isInState = false;
+			        	for (BEASTInterface o : prior.treeInput.get().getOutputs()) {
+			        		if (o instanceof State) {
+			        			isInState = true;
+			        			break;
+			        		}
+			        	}
+			        	if (!isInState) {
+			        		doc.disconnect(prior, "prior", "distribution");
+			        		doc.disconnect(prior, "tracelog", "log");
+			        		if (prior.onlyUseTipsInput.get()) {
+			        			disableTipSampling(prior, doc);
+			        		}
+			        		doc.unregisterPlugin(prior);
+			        		return;
+			        	}
+					}
+				}
+			}
+		}
+
+	}
+	
+	Set<Taxon> getTaxonCandidates(MRCAPrior prior) {
         Set<Taxon> candidates = new HashSet<>();
         Tree tree = prior.treeInput.get();
         String [] taxa = null;
@@ -240,7 +275,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
                 	if (src.isSelected()) {
                 		enableTipSampling();
                 	} else {
-                		disableTipSampling();
+                		disableTipSampling(m_beastObject, doc);
                 	}
                 });
         	}
@@ -278,7 +313,7 @@ public class MRCAPriorInputEditor extends InputEditor.Base {
 	}
 
     // remove TipDatesRandomWalker from list of operators
-	private void disableTipSampling() {
+	private static void disableTipSampling(BEASTInterface m_beastObject, BeautiDoc doc) {
     	// First, find the operator
     	TipDatesRandomWalker operator = null;
     	MRCAPrior prior = (MRCAPrior) m_beastObject;

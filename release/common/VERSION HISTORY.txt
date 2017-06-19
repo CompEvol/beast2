@@ -1,10 +1,26 @@
                     BEAST v2.4.5 2017
                  Beast 2 development team 2011-2017
 Version History
-Last updated: January 2017
+Last updated: May 2017
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.6 May 2017
+    BEAUti
+	    Starting trees can now be edited (default random, choice of cluster and newick trees)
+	    Allow alignments to be replaced, so old analyses can be used for new data
+		Fix fasta file import bug that marked sequences as amino acid while it should be nucleotide
+	    Keep trees linked when splitting alignment on codon positions
+	    Automatically set estimate flag on shape when choosing rate categories
+	    Fix display of integer alignments
+
+    BEAST
+    	Better documentation
+    	More robust XMLParser
+	    Prevent double counting of offset in ParametricDistribution.sample
+	    
+	DensiTree version updated to v2.2.6
+	
 Version 2.4.5 January 2017
 
 	BEAUti
@@ -22,6 +38,11 @@ Version 2.4.5 January 2017
 		
 	Package manager
 		Added -version flag to specify exactly which package version to install.	
+	
+	TreeAnnotator
+		Now calculates 2D HPDs by default (for phylogeography analyses)
+		Added -nohpd2D flag to suppress 2D HPD calculation
+		Added -noSA flag to suppress tree set being seen as that of a sampled ancestor analysis
 
 
 Version 2.4.4 November 2016

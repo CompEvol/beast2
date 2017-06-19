@@ -215,14 +215,15 @@
     </target>
 
     <!-- Target for Travis-CI with non-zero exit status on test failure. -->
-    <target name="travis" depends="clean, compile-all, junit">
-        <fail if="junitfailed" message="One or more unit tests failed."/>
+    <target name="travis" depends="clean, compile-all, junit, junitb">
+        <fail if="junitfailed" message="One or more CORE BEAST tests failed."/>
+        <fail if="junitbfailed" message="One or more BEAUTI tests failed."/>
     </target>
 
     <!-- testing beauti gui-->
     <target name="junitb">
         <mkdir dir="${report}" />
-        <junit printsummary="yes">
+        <junit printsummary="yes" failureproperty="junitbfailed">
             <!--showoutput='yes'-->
             <classpath>
                 <path refid="classpath" />
@@ -242,8 +243,8 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.4.5" />
-    <property name="version_number" value="2.4.5" />
+    <property name="version" value="2.4.6" />
+    <property name="version_number" value="2.4.6" />
     <property name="release_dir" value="release" />
     <property name="copyright" value="Beast 2 development team 2011-2017" />
 
@@ -532,6 +533,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
             <argument value="-window"/>
             <argument value="-working"/>
             <argument value="-options"/>
@@ -561,6 +563,7 @@
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
             <argument value="-capture"/>
         </bundleapp>
 
@@ -587,6 +590,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -612,6 +616,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -636,6 +641,7 @@
             <option value="-Xmx4g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">
@@ -660,6 +666,7 @@
             <option value="-Xmx1024M"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+            <option value="-Duser.language=en"/>            
         </bundleapp>
 
         <exec executable="codesign">

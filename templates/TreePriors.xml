@@ -107,15 +107,15 @@
                      mainid='BirthDeath.t:$(n)'>
             <![CDATA[
             <distribution id="BirthDeath.t:$(n)" spec="speciation.BirthDeathGernhard08Model" tree='@Tree.t:$(n)'>
-                <birthDiffRate spec='parameter.RealParameter' id="birthRate2.t:$(n)" value='1' lower='0' upper='10000' />
-            	<relativeDeathRate spec='parameter.RealParameter' id="relativeDeathRate2.t:$(n)" value='0.5' lower='0' upper='1' />
+                <birthDiffRate spec='parameter.RealParameter' id="BDBirthRate.t:$(n)" value='1' lower='0' upper='10000' />
+            	<relativeDeathRate spec='parameter.RealParameter' id="BDDeathRate.t:$(n)" value='0.5' lower='0' upper='1' />
             </distribution>
 
-            <prior id='BirthRatePrior.t:$(n)' x='@birthRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
-            <prior id='DeathRatePrior.t:$(n)' x='@relativeDeathRate2.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
+            <prior id='BirthRatePrior.t:$(n)' x='@BDBirthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1000'/></prior>
+            <prior id='DeathRatePrior.t:$(n)' x='@BDDeathRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 
-  		    <scale id='BirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate2.t:$(n)"/>
-  		    <scale id='DeathRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@relativeDeathRate2.t:$(n)"/>
+  		    <scale id='BirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@BDBirthRate.t:$(n)"/>
+  		    <scale id='DeathRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@BDDeathRate.t:$(n)"/>
 ]]>
 			<plate fragment="TreeOperators" var="m" range="BirthDeath"/>
 
@@ -123,37 +123,37 @@
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'>
                 Birth-Death speciation prior on tree t:$(n)
             </connect>
-            <connect srcID='birthRate2.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
-            <connect srcID='relativeDeathRate2.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'/>
+            <connect srcID='BDBirthRate.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDBirthRate.t:$(n)) and BDBirthRate.t:$(n)/estimate=true'/>
+            <connect srcID='BDDeathRate.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDDeathRate.t:$(n)) and BDDeathRate.t:$(n)/estimate=true'/>
 
             <connect srcID='BirthRatePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDBirthRate.t:$(n)) and BDBirthRate.t:$(n)/estimate=true'>
                 Birth-Death speciation process rate of partition t:$(n)
             </connect>
             <connect srcID='DeathRatePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDDeathRate.t:$(n)) and BDDeathRate.t:$(n)/estimate=true'>
                 Death/Birth speciation process relative death rate of partition t:$(n)
             </connect>
 
             <connect srcID='BirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDBirthRate.t:$(n)) and BDBirthRate.t:$(n)/estimate=true'>
                 Scale Death-Birth rate of Yule prior of tree t:$(n)
             </connect>
             <connect srcID='DeathRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'>
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDDeathRate.t:$(n)) and BDDeathRate.t:$(n)/estimate=true'>
                 Scale Death/Birth rate of Yule prior of tree t:$(n)
             </connect>
 
             <connect srcID='BirthDeath.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(BirthDeath.t:$(n)) and inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='birthRate2.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(birthRate2.t:$(n)) and birthRate2.t:$(n)/estimate=true'/>
-            <connect srcID='relativeDeathRate2.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(BirthDeath.t:$(n)) and inposterior(relativeDeathRate2.t:$(n)) and relativeDeathRate2.t:$(n)/estimate=true'/>
+            <connect srcID='BDBirthRate.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDBirthRate.t:$(n)) and BDBirthRate.t:$(n)/estimate=true'/>
+            <connect srcID='BDDeathRate.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(BirthDeath.t:$(n)) and inposterior(BDDeathRate.t:$(n)) and BDDeathRate.t:$(n)/estimate=true'/>
 
-			<connect srcID='birthRate2.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(BirthDeath.t:Species) and inposterior(birthRate2.t:Species)'/>
+			<connect srcID='BDBirthRate.t:Species' targetID='SBI' inputName='birthRate' if='inposterior(BirthDeath.t:Species) and inposterior(BDBirthRate.t:Species)'/>
         </subtemplate>
 
 

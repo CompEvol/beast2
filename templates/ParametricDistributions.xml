@@ -101,34 +101,4 @@
     </mergewith>
 
 
-    <!-- Tree initialisation -->
-    <!-- Random tree -->
-
-    <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
-        <![CDATA[
-            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)'>
-                <taxa spec='Alignment' idref='$(n)'/>
-                <populationModel id='ConstantPopulation.t:$(n)' spec='ConstantPopulation'>
-            		<popSize id='popSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
-	            </populationModel>
-            </tree>
-]]>
-    </subtemplate>
-
-    <!-- Cluster tree (for UPGMA) -->
-
-    <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.t:$(n)'>
-        <![CDATA[
-        <tree spec='beast.util.ClusterTree' id='UPGMATree.t:$(n)' clusterType='upgma' estimate='false'  trait='@datetrait.$(n)' taxa='@$(n)'/>
-]]>
-    </subtemplate>
-
-    <!-- Newick tree -->
-    <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.t:$(n)'>
-        <![CDATA[
-        <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false'  trait='@datetrait.$(n)'  taxa='@$(n)' newick=""/>
-]]>
-    </subtemplate>
-
-
 </beast>

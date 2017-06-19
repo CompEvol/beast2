@@ -95,20 +95,25 @@ public class TraitSet extends BEASTObject {
                 numeric = false;
         }
 
-        // sanity check: did we cover all taxa?
-        for (int i = 0; i < labels.size(); i++) {
-            if (taxonValues[i] == null) {
-                Log.warning.println("WARNING: no trait specified for " + labels.get(i) +": Assumed to be 0");
-                map.put(labels.get(i), i);
-            }
-        }
-
         // find extremes
         minValue = values[0];
         maxValue = values[0];
         for (double value : values) {
             minValue = Math.min(minValue, value);
             maxValue = Math.max(maxValue, value);
+        }
+
+        // sanity check: did we cover all taxa?
+        double defaultValue = 0;
+        if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
+        	defaultValue = maxValue;
+        }
+        for (int i = 0; i < labels.size(); i++) {
+            if (taxonValues[i] == null) {
+                Log.warning.println("WARNING: no trait specified for " + labels.get(i) +": Assumed to be " + defaultValue);
+                map.put(labels.get(i), i);
+                values[i] = defaultValue;
+            }
         }
 
         if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {

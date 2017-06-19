@@ -329,7 +329,21 @@ public class BeautiSubTemplate extends BEASTObject {
         return createSubNet(new PartitionContext(partition), idMap, init);
     }
 
+    /** the subNetDepth is increased 
+     * 1. the first time a subtemplate is created
+     * 2. when a required input is missing from the template and the RequiredInputProvider tries an alternative
+     * It is also increased if (2) fails repeatedly.
+     * It is decreased when createSubNet successfully finished.
+     */
+    int subNetDepth = 0;
+    
     private BEASTInterface createSubNet(PartitionContext context, /*BeautiDoc doc,*/ HashMap<String, BEASTInterface> idMap, boolean init) {
+    	subNetDepth++;
+    	if (subNetDepth > 10) {
+    		// looks like we cannot find what we are looking for
+    		throw new IllegalArgumentException("Potential programmer error: It looks like there is a required input that was not specified in the tenmplate");
+    	}
+    	
         // wrap in a beast element with appropriate name spaces
         String _sXML = "<beast version='2.0' \n" +
                 "namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>\n" +
@@ -446,6 +460,7 @@ public class BeautiSubTemplate extends BEASTObject {
             }
         }
 
+        subNetDepth--;
         //System.err.println(new XMLProducer().toXML(beastObject));
         return beastObject;
     }

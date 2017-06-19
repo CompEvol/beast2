@@ -25,15 +25,6 @@
 package beast.util;
 
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.PriorityQueue;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -44,6 +35,10 @@ import beast.evolution.alignment.distance.Distance;
 import beast.evolution.alignment.distance.JukesCantorDistance;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 
 
 
@@ -65,7 +60,7 @@ import beast.evolution.tree.Tree;
         "<br/>o neighborjoining2 - corrects tree for tip data, unlike plain neighborjoining")
 public class ClusterTree extends Tree implements StateNodeInitialiser {
 
-    enum Type {single, average, complete, upgma, mean, centroid, ward, adjcomplete, neighborjoining, neighborjoining2}
+    public enum Type {single, average, complete, upgma, mean, centroid, ward, adjcomplete, neighborjoining, neighborjoining2}
 
 
     double EPSILON = 1e-10;

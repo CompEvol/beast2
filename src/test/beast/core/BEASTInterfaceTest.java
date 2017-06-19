@@ -146,6 +146,42 @@ public class BEASTInterfaceTest extends TestCase {
 		
 	}
 	
+	@Test
+	public void testInputType() {
+		BEASTi o = new BEASTi();
+		// no input type set yet
+		assertEquals(o.msgInput.getType(), null);
+		assertEquals(o.beastiInput.getType(), null);
+		o.determindClassOfInputs();
+		// all input types are set
+		assertEquals(o.msgInput.getType(), String.class);
+		assertEquals(o.beastiInput.getType(), BEASTi.class);
+
+		o = new BEASTi();
+		// set input type of msgInput but not beastiInput
+		o.setInputValue("value", "Hello world");
+		assertEquals(o.msgInput.getType(), String.class);
+		assertEquals(o.beastiInput.getType(), null);
+		o.determindClassOfInputs();		
+		// all input types are set
+		assertEquals(o.msgInput.getType(), String.class);
+		assertEquals(o.beastiInput.getType(), BEASTi.class);
+
+		// should not crash because input type is set
+		o.msgInput.set("Bye");
+		
+		o = new BEASTi();
+		try {
+			// should crash because input type is not set yet
+			o.msgInput.set("Bye"); 
+			throw new RuntimeException("Should not get here");
+		} catch (IllegalArgumentException e) {
+			// ok
+			System.err.println("OK");
+		}
+		
+		
+	}
 	
 	
 }

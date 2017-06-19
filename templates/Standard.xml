@@ -18,7 +18,8 @@
     <beauticonfig spec='BeautiConfig'
         inputLabelMap='beast.core.MCMC.operator=Operators,
 	        beast.core.MCMC.logger=Loggers,
-			beast.evolution.sitemodel.SiteModel.mutationRate =Substitution Rate'
+			beast.evolution.sitemodel.SiteModel.mutationRate =Substitution Rate,
+			beast.evolution.speciation.YuleModel.birthDiffRate=Birth Rate'
         inlinePlugins ='beast.core.MCMC.distribution,
             beast.evolution.sitemodel.SiteModel.substModel,
             beast.evolution.tree.coalescent.ExponentialGrowth,
@@ -43,21 +44,26 @@
 	        beast.evolution.tree.Tree.trait,
 	        beast.evolution.tree.Tree.taxa,
 	        beast.evolution.tree.Tree.taxonset,
+	        beast.evolution.tree.Tree.nodetype,
 	        beast.evolution.tree.RandomTree.trait,
 	        beast.evolution.tree.RandomTree.initial,
 	        beast.evolution.tree.RandomTree.taxa,
 	        beast.evolution.tree.RandomTree.taxonset,
 	        beast.evolution.tree.RandomTree.estimate,
+	        beast.evolution.tree.RandomTree.nodetype,
 	        beast.util.TreeParser.initial,
 	        beast.util.TreeParser.taxa,
 	        beast.util.TreeParser.taxonset,
 	        beast.util.TreeParser.trait,
 	        beast.util.TreeParser.estimate,
+	        beast.util.TreeParser.nodetype,
 	        beast.util.ClusterTree.initial,
 	        beast.util.ClusterTree.taxa,
 	        beast.util.ClusterTree.taxonset,
 	        beast.util.ClusterTree.trait,
 	        beast.util.ClusterTree.estimate,
+	        beast.util.ClusterTree.nodetype,
+	        beast.util.ClusterTree.distance,
 	        beast.evolution.substitutionmodel.WAG.rates,
 	        beast.evolution.substitutionmodel.WAG.frequencies,
 	        beast.evolution.substitutionmodel.JTT.rates,
@@ -125,6 +131,11 @@
             isVisible='false'
         />
 		<mergepoint id='aux-initilisation-panels'/>
+		<panel spec='BeautiPanelConfig' panelname="Starting tree" tiptext="Starting tree"
+            path='init'
+            hasPartitions="none" icon='6.png.x' forceExpansion='TRUE'
+            isVisible='false'
+        />
 
 		<panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
@@ -210,12 +221,16 @@
 
 
             <prior id='YuleBirthRatePrior.t:$(n)' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
-            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
+            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential"><mean spec="parameter.RealParameter" estimate="false" value="1.0"/></distr></prior>
             <prior id='PropInvariantPrior.s:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
   		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
-			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+				<up idref="clockRate.c:$(n)"/>
+				<down idref="Tree.t:$(n)"/>
+			</upDownOperator>
+			<upDownOperator id='strictClockUpDownOperator.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
 				<up idref="clockRate.c:$(n)"/>
 				<down idref="Tree.t:$(n)"/>
 			</upDownOperator>
@@ -226,7 +241,8 @@
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='isInitializing'/>
+			<connect method="beast.app.beauti.StateNodeInitialiserListInputEditor.customConnector"/>
 
             <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 <!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
@@ -249,6 +265,18 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
                 Scale up substitution rate c:$(n) and scale down tree t:($n)
             </connect>
+            <connect srcID='strictClockUpDownOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
+                Scale up substitution rate c:$(n) and scale down tree t:($n)
+            </connect>
+            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='up'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='up'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='down'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='down'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
 
             <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and allTipDatesRandomWalker.t:$(n)/weight!=0.0'>Estimates tip dates for tree t:$(n)</connect>
 
@@ -286,7 +314,7 @@
 
         <subtemplate id='RandomTree' class='beast.evolution.tree.RandomTree' mainid='RandomTree.t:$(n)'>
 <![CDATA[
-            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false'>
+            <tree spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' initial="@Tree.t:$(n)">
                 <taxa idref='data'/>
                 <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
             		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
@@ -295,18 +323,18 @@
 ]]>
         </subtemplate>
 
-<!-- Cluster tree (for UPGMA) -->
+<!-- Cluster tree (defaults to UPGMA) -->
 
-        <subtemplate id='UPGMATree' class='beast.util.ClusterTree' mainid='UPGMATree.t:$(n)'>
+        <subtemplate id='ClusterTree' class='beast.util.ClusterTree' mainid='ClusterTree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.ClusterTree' id='UPGMATree.t:$(n)' clusterType='upgma' estimate='false' taxa='@$(n)'/>
+        <tree spec='beast.util.ClusterTree' id='ClusterTree.t:$(n)' initial="@Tree.t:$(n)" clusterType='upgma' estimate='false' taxa='@$(n)'/>
 ]]>
         </subtemplate>
 
 <!-- Newick tree -->
-        <subtemplate id='NewickTree' class='beast.util.ClusterTree' mainid='NewickTree.t:$(n)'>
+        <subtemplate id='NewickTree' class='beast.util.TreeParser' mainid='NewickTree.t:$(n)'>
 <![CDATA[
-        <tree spec='beast.util.TreeParser' id='NewickTree.t:$(n)' estimate='false' taxa='@$(n)' newick=""/>
+        <tree_ spec='beast.util.TreeParser' id='NewickTree.t:$(n)' initial="@Tree.t:$(n)" estimate='false' taxa='@$(n)' newick=""/>
 ]]>
         </subtemplate>
 

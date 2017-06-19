@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import beast.util.treeparser.NewickParser;
+import beast.util.treeparser.NewickParser.MetaContext;
 import beast.util.treeparser.NewickParserBaseVisitor;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -39,7 +40,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import beast.core.Description;
@@ -99,6 +99,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             "scale used to multiply internal node heights during parsing. Useful for importing starting from external" +
                     " programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
 
+    public final Input<Boolean> binarizeMultifurcationsInput = new Input<>(
+            "binarizeMultifurcations",
+            "Whether or not to turn multifurcations into sequences of bifurcations. (Default true.)",
+            true);
+
     boolean createUnrecognizedTaxa = false;
 
     /**
@@ -153,14 +158,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             final Node dummy = new Node();
             setRoot(dummy);
         } else {
-            try {
-                setRoot(parseNewick(newickInput.get()));
-            } catch (ParseCancellationException e) {
-                throw new RuntimeException(
-                        "TreeParser cannot make sense of the Newick string " +
-                                "provided.  It gives the following clue:\n" +
-                                e.getMessage());
-            }
+            setRoot(parseNewick(newickInput.get()));
         }
 
         super.initAndValidate();
@@ -316,12 +314,35 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                       final boolean isLabeled,
                       final int offset) {
 
+        this(newick, adjustTipHeights, allowSingleChildNodes, isLabeled, offset, true);
+
+    }
+
+    /**
+     * @param newick                a string representing a tree in newick format
+     * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param allowSingleChildNodes true if internal nodes with single children are allowed
+     * @param isLabeled             true if nodes are labeled with taxa labels
+     * @param offset                if isLabeled == false and node labeling starts with x
+     *                              then offset should be x. When isLabeled == true offset should
+     *                              be 1 as by default.
+     * @param binarizeMultifurcations set to true to convert multifurcations to bifurcations.
+     */
+    public TreeParser(final String newick,
+                      final boolean adjustTipHeights,
+                      final boolean allowSingleChildNodes,
+                      final boolean isLabeled,
+                      final int offset,
+                      final boolean binarizeMultifurcations) {
+
         newickInput.setValue(newick, this);
         isLabelledNewickInput.setValue(isLabeled, this);
         adjustTipHeightsInput.setValue(adjustTipHeights, this);
         allowSingleChildInput.setValue(allowSingleChildNodes, this);
 
         offsetInput.setValue(offset, this);
+
+        binarizeMultifurcationsInput.setValue(binarizeMultifurcations, this);
 
         initAndValidate();
     }
@@ -342,8 +363,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                                     Object offendingSymbol,
                                     int line, int charPositionInLine,
                                     String msg, RecognitionException e) {
-                throw new ParseCancellationException("Error parsing character "
-                        + charPositionInLine + " of Newick string: " + msg);
+                throw new TreeParsingException(msg, charPositionInLine, line);
             }
         };
 
@@ -425,12 +445,92 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                    continue;  // Skip unnumbered leaves
 
                 if (nodeNrSeen.get(leaf.getNr()))
-                    throw new ParseCancellationException("Duplicate taxon found: " + labels.get(leaf.getNr()));
+                    throw new TreeParsingException("Duplicate taxon found: " + labels.get(leaf.getNr()));
                 else
                     nodeNrSeen.set(leaf.getNr());
             }
 
             return root;
+        }
+
+        private void processMetadata(Node node, MetaContext metaContext, boolean isLengthMeta) {
+            String metaDataString = "";
+            for (int i=0; i<metaContext.attrib().size(); i++) {
+                if (i>0)
+                    metaDataString += ",";
+                metaDataString += metaContext.attrib().get(i).getText();
+            }
+
+            if (isLengthMeta)
+                node.lengthMetaDataString = metaDataString;
+            else
+                node.metaDataString = metaDataString;
+
+            if (!suppressMetadata) {
+                String key;
+                Object value;
+                for (NewickParser.AttribContext attribctx : metaContext.attrib()) {
+                    key = attribctx.attribKey.getText();
+
+                    if (attribctx.attribValue().attribNumber() != null) {
+                        value = Double.parseDouble(attribctx.attribValue().attribNumber().getText());
+                    } else if (attribctx.attribValue().ASTRING() != null) {
+                        String stringValue = attribctx.attribValue().ASTRING().getText();
+                        if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
+                            stringValue = stringValue.substring(1, stringValue.length()-1);
+                        }
+                        value = stringValue;
+                    } else if (attribctx.attribValue().vector() != null) {
+                        try {
+
+                            List<NewickParser.AttribValueContext> elementContexts = attribctx.attribValue().vector().attribValue();
+
+                            Double[] arrayValues = new Double[elementContexts.size()];
+                            for (int i = 0; i < elementContexts.size(); i++)
+                                arrayValues[i] = Double.parseDouble(elementContexts.get(i).getText());
+
+                            value = arrayValues;
+                        } catch (NumberFormatException ex) {
+                            throw new TreeParsingException("Encountered vector-valued metadata entry with " +
+                                    "one or more non-numeric elements.");
+                        }
+
+                    } else
+                        throw new TreeParsingException("Encountered unknown metadata value.");
+
+                    if (isLengthMeta)
+                        node.setLengthMetaData(key, value);
+                    else
+                        node.setMetaData(key, value);
+                }
+            }
+        }
+
+        /**
+         * Use zero-length edges to replace multifurcations with a sequence of bifurcations.
+         *
+         * @param node node representing multifurcation
+         */
+        private void binarizeMultifurcation(Node node) {
+             if (node.getChildCount()>2) {
+                List<Node> children = new ArrayList<>(node.getChildren());
+                Node prevDummy = node;
+                for (int i=1; i<children.size()-1; i++) {
+                    Node child = children.get(i);
+
+                    Node dummyNode = newNode();
+                    dummyNode.setNr(-1);
+                    dummyNode.setHeight(0);
+                    prevDummy.addChild(dummyNode);
+
+                    node.removeChild(child);
+                    dummyNode.addChild(child);
+
+                    prevDummy = dummyNode;
+                }
+                node.removeChild(children.get(children.size()-1));
+                prevDummy.addChild(children.get(children.size()-1));
+            }
         }
 
         @Override
@@ -445,48 +545,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
             // Process metadata
 
-            if (postCtx.meta() != null) {
+            if (postCtx.nodeMeta != null)
+                processMetadata(node, postCtx.nodeMeta, false);
 
-                node.metaDataString = "";
-                for (int i=0; i<postCtx.meta().attrib().size(); i++) {
-                    if (i>0)
-                        node.metaDataString += ",";
-                    node.metaDataString += postCtx.meta().attrib().get(i).getText();
-                }
-
-                if (!suppressMetadata) {
-                    for (NewickParser.AttribContext attribctx : postCtx.meta().attrib()) {
-                        String key = attribctx.attribKey.getText();
-
-                        if (attribctx.attribValue().attribNumber() != null) {
-                            node.setMetaData(key, Double.parseDouble(
-                                    attribctx.attribValue().attribNumber().getText()));
-                        } else if (attribctx.attribValue().ASTRING() != null) {
-                            String stringValue = attribctx.attribValue().ASTRING().getText();
-                            if (stringValue.startsWith("\"") || stringValue.startsWith("\'")) {
-                                stringValue = stringValue.substring(1, stringValue.length()-1);
-                            }
-                            node.setMetaData(key, stringValue);
-                        } else if (attribctx.attribValue().vector() != null) {
-                            try {
-
-                                List<NewickParser.AttribValueContext> elementContexts = attribctx.attribValue().vector().attribValue();
-
-                                Double[] values = new Double[elementContexts.size()];
-                                for (int i = 0; i < elementContexts.size(); i++)
-                                    values[i] = Double.parseDouble(elementContexts.get(i).getText());
-
-                                node.setMetaData(key, values);
-
-                            } catch (NumberFormatException ex) {
-                                throw new ParseCancellationException("Encountered vector-valued metadata entry with " +
-                                        "one or more non-numeric elements.");
-                            }
-
-                        }
-                    }
-                }
-            }
+            if (postCtx.lengthMeta != null)
+                processMetadata(node, postCtx.lengthMeta, true);
 
             // Process edge length
 
@@ -512,7 +575,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
                     int nodeNr = Integer.parseInt(postCtx.label().getText()) - offsetInput.get();
                     if (nodeNr<0)
-                        throw new ParseCancellationException("Node number given " +
+                        throw new TreeParsingException("Node number given " +
                                 "is smaller than current offset (" +
                                 offsetInput.get() + ").  Perhaps offset is " +
                                 "too high?");
@@ -528,28 +591,12 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
 
             if (node.getChildCount()==1 && !allowSingleChildInput.get())
-                throw new ParseCancellationException("Node with single child found.");
+                throw new TreeParsingException("Node with single child found.");
 
             // Use length-zero edges to binarize multifurcations.
-            if (node.getChildCount()>2) {
-                List<Node> children = new ArrayList<>(node.getChildren());
-                Node prevDummy = node;
-                for (int i=1; i<children.size()-1; i++) {
-                    Node child = children.get(i);
+            if (binarizeMultifurcationsInput.get())
+                binarizeMultifurcation(node);
 
-                    Node dummyNode = newNode();
-                    dummyNode.setNr(-1);
-                    dummyNode.setHeight(0);
-                    prevDummy.addChild(dummyNode);
-
-                    node.removeChild(child);
-                    dummyNode.addChild(child);
-
-                    prevDummy = dummyNode;
-                }
-                node.removeChild(children.get(children.size()-1));
-                prevDummy.addChild(children.get(children.size()-1));
-            }
 
             return node;
         }
@@ -573,7 +620,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 return labels.size() - 1;
             }
 
-            throw new ParseCancellationException("Label '" + str + "' in Newick beast.tree could " +
+            throw new TreeParsingException("Label '" + str + "' in Newick beast.tree could " +
                     "not be identified. Perhaps taxa or taxonset is not specified?");
         }
 
@@ -603,12 +650,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (node.isLeaf()) {
                 return node.getHeight();
             } else {
-                final double left = convertLengthToHeight(node.getLeft(), height - length);
-                if (node.getRight() == null) {
-                    return left;
-                }
-                final double right = convertLengthToHeight(node.getRight(), height - length);
-                return Math.min(left, right);
+                double minChildHeight = Double.POSITIVE_INFINITY;
+                for (Node child : node.getChildren())
+                    minChildHeight = Math.min(minChildHeight, convertLengthToHeight(child, height - length));
+
+                return minChildHeight;
             }
         }
 
@@ -626,12 +672,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     node.setHeight(0);
                 }
             }
-            if (!node.isLeaf()) {
-                offset(node.getLeft(), delta);
-                if (node.getRight() != null) {
-                    offset(node.getRight(), delta);
-                }
-            }
+            for (Node child : node.getChildren())
+                offset(child, delta);
         }
 
         /**
@@ -663,7 +705,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     @Override
     public void initStateNodes() {
         if (m_initial.get() != null) {
-            m_initial.get().assignFrom(this);
+            m_initial.get().assignFromWithoutID(this);
         }
     }
 
@@ -671,6 +713,52 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public void getInitialisedStateNodes(final List<StateNode> stateNodes) {
         if (m_initial.get() != null) {
             stateNodes.add(m_initial.get());
+        }
+    }
+
+    public class TreeParsingException extends RuntimeException {
+        String message;
+        Integer characterNum, lineNum;
+
+        /**
+         * Create new parsing exception.
+         *
+         * @param message      Human-readable error message.
+         * @param characterNum Character offset of error.
+         * @param lineNum      Line offset of error.
+         */
+        TreeParsingException(String message, Integer characterNum, Integer lineNum) {
+            this.message = message;
+            this.characterNum = characterNum;
+            this.lineNum = lineNum;
+        }
+
+        /**
+         * Create new parsing exception
+         *
+         * @param message Human-readable error message.
+         */
+        TreeParsingException(String message) {
+            this(message, null, null);
+        }
+
+        @Override
+        public String getMessage() {
+            return message;
+        }
+
+        /**
+         * @return location of error on line.  (May be null for non-lexer errors.)
+         */
+        public Integer getCharacterNum() {
+            return characterNum;
+        }
+
+        /**
+         * @return line number offset of error. (May be null for non-lexer errors.)
+         */
+        public Integer getLineNum() {
+            return lineNum;
         }
     }
 

@@ -686,4 +686,81 @@ public class TreeLikelihoodTest extends TestCase {
         assertEquals(logP, -1730.53631739, BEASTTestCase.PRECISION);
     }
 
+    
+    
+    @Test
+    public void testMarginalisationOfLikelihoodBinary() throws Exception {
+    	// test summation over all patterns adds to 1 for binary data
+
+    	Sequence German_ST =  new Sequence("German_ST", "           10110010");
+    	Sequence Dutch_List = new Sequence("Dutch_List", "          11010100");
+    	Sequence English_ST = new Sequence("English_ST", "          11101000");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", German_ST, "sequence", Dutch_List, "sequence", English_ST,
+                "dataType", "binary"
+        );
+
+        Tree tree = BEASTTestCase.getTree(data, "(English_ST:0.22743347188019544,(German_ST:0.10557648379843088,Dutch_List:0.10557648379843088):0.12185698808176457):0.0;");
+
+
+        RealParameter frequencies = new RealParameter("0.683 0.317");
+        Frequencies freqs = new Frequencies();
+        freqs.initByName("frequencies", frequencies);
+        GeneralSubstitutionModel covarion = new GeneralSubstitutionModel();
+        covarion.initByName("frequencies", freqs, "rates", new RealParameter("1.0 1.0"));
+
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", covarion);
+
+        TreeLikelihood likelihood = newTreeLikelihood();
+        likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
+        
+        likelihood.initByName("useAmbiguities", false, "data", data, "tree", tree, "siteModel", siteModel);
+        likelihood.calculateLogP();
+        double [] logPs = likelihood.getPatternLogLikelihoods();
+        double P = 0;
+        for (double d : logPs) {
+        	P += Math.exp(d);
+        }
+        assertEquals(P, 1.0, BEASTTestCase.PRECISION);
+    }
+
+    @Test
+    public void testMarginalisationOfLikelihoodNucleotide() throws Exception {
+    	// test summation over all patterns adds to 1 for nucleotide data
+
+    	Sequence German_ST =  new Sequence("German_ST", "           AAAAAAAAAAAAAAAA CCCCCCCCCCCCCCCC GGGGGGGGGGGGGGGG TTTTTTTTTTTTTTTT");
+    	Sequence Dutch_List = new Sequence("Dutch_List", "          AAAACCCCGGGGTTTT AAAACCCCGGGGTTTT AAAACCCCGGGGTTTT AAAACCCCGGGGTTTT");
+    	Sequence English_ST = new Sequence("English_ST", "          ACGTACGTACGTACGT ACGTACGTACGTACGT ACGTACGTACGTACGT ACGTACGTACGTACGT");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", German_ST, "sequence", Dutch_List, "sequence", English_ST,
+                "dataType", "nucleotide"
+        );
+
+        Tree tree = BEASTTestCase.getTree(data, "(English_ST:0.22743347188019544,(German_ST:0.10557648379843088,Dutch_List:0.10557648379843088):0.12185698808176457):0.0;");
+
+
+        RealParameter frequencies = new RealParameter("0.2 0.3 0.4 0.1");
+        Frequencies freqs = new Frequencies();
+        freqs.initByName("frequencies", frequencies);
+        GeneralSubstitutionModel gsm = new GeneralSubstitutionModel();
+        gsm.initByName("rates", "1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0", "frequencies", freqs);
+
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName("mutationRate", "1.0", "gammaCategoryCount", 1, "substModel", gsm);
+
+        TreeLikelihood likelihood = newTreeLikelihood();
+        likelihood.initByName("data", data, "tree", tree, "siteModel", siteModel);
+
+        likelihood.initByName("useAmbiguities", false, "data", data, "tree", tree, "siteModel", siteModel);
+        likelihood.calculateLogP();
+        double [] logPs = likelihood.getPatternLogLikelihoods();
+        double P = 0;
+        for (double d : logPs) {
+        	P += Math.exp(d);
+        }
+        assertEquals(P, 1.0, BEASTTestCase.PRECISION);
+    }
 } // class TreeLikelihoodTest

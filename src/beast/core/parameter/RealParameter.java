@@ -93,13 +93,21 @@ public class RealParameter extends Parameter.Base<Double> {
      */
     @Override
     public int scale(final double scale) {
+        int nScaled = 0;
+
         for (int i = 0; i < values.length; i++) {
+            if (values[i] == 0.0)
+                continue;
+
             values[i] *= scale;
+            nScaled += 1;
+
             if (values[i] < m_fLower || values[i] > m_fUpper) {
                 throw new IllegalArgumentException("parameter scaled our of range");
             }
         }
-        return values.length;
+
+        return nScaled;
     }
 
 

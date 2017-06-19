@@ -25,16 +25,11 @@
 package beast.evolution.tree;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.util.HeapSort;
+
+import java.util.*;
 
 
 @Description("Nodes in building beast.tree data structure.")
@@ -56,16 +51,16 @@ public class Node extends BEASTObject {
     protected Map<String, Object> metaData = new TreeMap<>();
 
     /**
+     * Length metadata for the edge above this node.  Not currently implemented as part of state!
+     */
+    protected Map<String, Object> lengthMetaData = new TreeMap<>();
+
+    /**
      * list of children of this node *
      * Don't use m_left and m_right directly
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
     List<Node> children = new ArrayList<>();
-
-//    @Deprecated
-//	private Node m_left;
-//    @Deprecated
-//	private Node m_right;
 
     /**
      * parent node in the beast.tree, null if root *
@@ -80,7 +75,7 @@ public class Node extends BEASTObject {
     /**
      * meta-data contained in square brackets in Newick *
      */
-    public String metaDataString;
+    public String metaDataString, lengthMetaDataString;
 
     /**
      * The Tree that this node is a part of.
@@ -224,8 +219,9 @@ public class Node extends BEASTObject {
 
     /**
      * get all child node under this node, if this node is leaf then list.size() = 0.
+     * This returns all child nodes including this node.
      *
-     * @return
+     * @return all child nodes including this node
      */
     public List<Node> getAllChildNodes() {
         final List<Node> childNodes = new ArrayList<>();
@@ -341,25 +337,26 @@ public class Node extends BEASTObject {
      */
     public String toShortNewick(final boolean printInternalNodeNumbers) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+
+        if (!isLeaf()) {
             buf.append("(");
-            buf.append(getLeft().toShortNewick(printInternalNodeNumbers));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toShortNewick(printInternalNodeNumbers));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toShortNewick(printInternalNodeNumbers));
             }
             buf.append(")");
-            if (getID() != null) {
-                buf.append(getNr());
-            } else if (printInternalNodeNumbers) {
-                buf.append(getNr());
-            }
+        }
 
-        } else {
+        if (isLeaf() || getID() != null || printInternalNodeNumbers) {
             buf.append(getNr());
         }
+
         buf.append(getNewickMetaData());
-        buf.append(":").append(getLength());
+        buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         return buf.toString();
     }
 
@@ -374,30 +371,75 @@ public class Node extends BEASTObject {
 
     public String toSortedNewick(int[] maxNodeInClade, boolean printMetaData) {
         StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
-            buf.append("(");
-            String child1 = getLeft().toSortedNewick(maxNodeInClade, printMetaData);
-            int child1Index = maxNodeInClade[0];
-            if (getRight() != null) {
-                String child2 = getRight().toSortedNewick(maxNodeInClade, printMetaData);
-                int child2Index = maxNodeInClade[0];
-                if (child1Index > child2Index) {
-                    buf.append(child2);
-                    buf.append(",");
-                    buf.append(child1);
+
+        if (!isLeaf()) {
+
+            if (getChildCount() <= 2) {
+                // Computationally cheap method for special case of <=2 children
+
+                buf.append("(");
+                String child1 = getChild(0).toSortedNewick(maxNodeInClade, printMetaData);
+                int child1Index = maxNodeInClade[0];
+                if (getChildCount() > 1) {
+                    String child2 = getChild(1).toSortedNewick(maxNodeInClade, printMetaData);
+                    int child2Index = maxNodeInClade[0];
+                    if (child1Index > child2Index) {
+                        buf.append(child2);
+                        buf.append(",");
+                        buf.append(child1);
+                    } else {
+                        buf.append(child1);
+                        buf.append(",");
+                        buf.append(child2);
+                        maxNodeInClade[0] = child1Index;
+                    }
                 } else {
                     buf.append(child1);
-                    buf.append(",");
-                    buf.append(child2);
-                    maxNodeInClade[0] = child1Index;
                 }
+                buf.append(")");
+                if (getID() != null) {
+                    buf.append(labelNr+1);
+                }
+
             } else {
-                buf.append(child1);
+                // General method for >2 children
+
+                String[] childStrings = new String[getChildCount()];
+                int[] maxNodeNrs = new int[getChildCount()];
+                Integer[] indices = new Integer[getChildCount()];
+                for (int i = 0; i < getChildCount(); i++) {
+                    childStrings[i] = getChild(i).toSortedNewick(maxNodeInClade, printMetaData);
+                    maxNodeNrs[i] = maxNodeInClade[0];
+                    indices[i] = i;
+                }
+
+                Arrays.sort(indices, (i1, i2) -> {
+                    if (maxNodeNrs[i1] < maxNodeNrs[i2])
+                        return -1;
+
+                    if (maxNodeNrs[i1] > maxNodeNrs[i2])
+                        return 1;
+
+                    return 0;
+                });
+
+                maxNodeInClade[0] = maxNodeNrs[maxNodeNrs.length - 1];
+
+                buf.append("(");
+                for (int i = 0; i < indices.length; i++) {
+                    if (i > 0)
+                        buf.append(",");
+
+                    buf.append(childStrings[indices[i]]);
+                }
+
+                buf.append(")");
+
+                if (getID() != null) {
+                    buf.append(labelNr + 1);
+                }
             }
-            buf.append(")");
-            if (getID() != null) {
-                buf.append(labelNr+1);
-            }
+
         } else {
             maxNodeInClade[0] = labelNr;
             buf.append(labelNr + 1);
@@ -406,7 +448,12 @@ public class Node extends BEASTObject {
         if (printMetaData) {
             buf.append(getNewickMetaData());
         }
-        buf.append(":").append(getLength());
+
+        buf.append(":");
+        if (printMetaData)
+                buf.append(getNewickLengthMetaData());
+        buf.append(getLength());
+
         return buf.toString();
     }
 
@@ -422,27 +469,30 @@ public class Node extends BEASTObject {
      */
     public String toNewick(boolean onlyTopology) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+        if (!isLeaf()) {
             buf.append("(");
-            buf.append(getLeft().toNewick(onlyTopology));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toNewick(onlyTopology));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toNewick(onlyTopology));
             }
             buf.append(")");
-            if (getID() != null) {
+
+            if (getID() != null)
                 buf.append(getID());
-            }
         } else {
-            if (getID() == null) {
-                buf.append(labelNr);
-            } else {
+            if (getID() != null)
                 buf.append(getID());
-            }
+            else
+                buf.append(labelNr);
         }
+
         if (!onlyTopology) {
             buf.append(getNewickMetaData());
-            buf.append(":").append(getLength());
+            buf.append(":").append(getNewickLengthMetaData()).append(getLength());
         }
         return buf.toString();
     }
@@ -458,10 +508,17 @@ public class Node extends BEASTObject {
     }
 
     public String getNewickMetaData() {
-        if (metaDataString != null) {
+        if (metaDataString != null)
             return "[&" + metaDataString + ']';
-        }
-        return "";
+        else
+            return "";
+    }
+
+    public String getNewickLengthMetaData() {
+        if (lengthMetaDataString != null)
+            return "[&" + lengthMetaDataString + "]";
+        else
+            return "";
     }
 
     /**
@@ -471,23 +528,38 @@ public class Node extends BEASTObject {
      */
     public String toString(final List<String> labels) {
         final StringBuilder buf = new StringBuilder();
-        if (getLeft() != null) {
+
+        if (isLeaf()) {
+            buf.append(labels.get(labelNr));
+        } else {
             buf.append("(");
-            buf.append(getLeft().toString(labels));
-            if (getRight() != null) {
-                buf.append(',');
-                buf.append(getRight().toString(labels));
+            boolean isFirst = true;
+            for (Node child : getChildren()) {
+                if (isFirst)
+                    isFirst = false;
+                else
+                    buf.append(",");
+                buf.append(child.toString(labels));
             }
             buf.append(")");
-        } else {
-            buf.append(labels.get(labelNr));
         }
+
+        if (isLeaf())
+            buf.append(labels.get(labelNr));
+
         if (metaDataString != null) {
             buf.append('[');
             buf.append(metaDataString);
             buf.append(']');
         }
-        buf.append(":").append(getLength());
+        buf.append(":");
+        if (lengthMetaDataString != null) {
+            buf.append('[');
+            buf.append(lengthMetaDataString);
+            buf.append(']');
+        }
+        buf.append(getLength());
+
         return buf.toString();
     }
 
@@ -556,7 +628,9 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.lengthMetaDataString = lengthMetaDataString;
         node.metaData = new TreeMap<>(metaData);
+        node.lengthMetaData = new TreeMap<>(lengthMetaData);
         node.parent = null;
         node.setID(getID());
 
@@ -574,7 +648,9 @@ public class Node extends BEASTObject {
         node.height = height;
         node.labelNr = labelNr;
         node.metaDataString = metaDataString;
+        node.lengthMetaDataString = lengthMetaDataString;
         node.metaData = new TreeMap<>(metaData);
+        node.lengthMetaData = new TreeMap<>(lengthMetaData);
         node.parent = null;
         node.setID(getID());
         if (getLeft() != null) {
@@ -596,7 +672,9 @@ public class Node extends BEASTObject {
         height = node.height;
         labelNr = node.labelNr;
         metaDataString = node.metaDataString;
+        lengthMetaDataString = node.lengthMetaDataString;
         metaData = new TreeMap<>(node.metaData);
+        lengthMetaData = new TreeMap<>(node.lengthMetaData);
         parent = null;
         setID(node.getID());
         if (node.getLeft() != null) {
@@ -629,6 +707,17 @@ public class Node extends BEASTObject {
 
     }
 
+    /**
+     * Add edge length metadata with given key and value.
+     *
+     * @param key key for metadata
+     * @param value value of metadata for this edge length
+     */
+    public void setLengthMetaData(String key, Object value) {
+        startEditing();
+        lengthMetaData.put(key, value);
+    }
+
     public Object getMetaData(final String pattern) {
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
@@ -641,8 +730,16 @@ public class Node extends BEASTObject {
         return 0;
     }
 
+    public Object getLengthMetaData(String key) {
+        return lengthMetaData.get(key);
+    }
+
     public Set<String> getMetaDataNames() {
         return metaData.keySet();
+    }
+
+    public Set<String> getLengthMetaDataNames() {
+        return lengthMetaData.keySet();
     }
 
 
@@ -700,16 +797,28 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * some methods that are useful for porting from BEAST 1 *
+     * @return the number of children of this node.
      */
     public int getChildCount() {
         return children.size();
     }
 
+    /**
+     * This method returns the i'th child, numbering starting from 0.
+     * getChild(0) returns the same node as getLeft()
+     * getChild(1) returns the same node as getRight()
+     *
+     * This method is unprotected and will throw an ArrayOutOfBoundsException if provided an index larger than getChildCount() - 1, or smaller than 0.
+     *
+     * @return the i'th child of this node.
+     */
     public Node getChild(final int childIndex) {
         return children.get(childIndex);
     }
 
+    /**
+     * This sets the i'th child of this node. Will pad out the children with null's if getChildCount() <= childIndex.
+     */
     public void setChild(final int childIndex, final Node node) {
         while (children.size() <= childIndex) {
             children.add(null);
@@ -717,15 +826,29 @@ public class Node extends BEASTObject {
         children.set(childIndex, node);
     }
 
-
-    public void setLeft(final Node m_left) {
+    /**
+     * This sets the zero'th (left in binary trees) child of this node.
+     *
+     * @param leftChild new left child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
+    public void setLeft(final Node leftChild) {
         if (children.size() == 0) {
-            children.add(m_left);
+            children.add(leftChild);
         } else {
-            children.set(0, m_left);
+            children.set(0, leftChild);
         }
     }
 
+    /**
+     * This method returns the zero'th child (called left child in binary trees).
+     * Will return null if there are no children.
+     *
+     * @return left child (zero'th child), or null if this node has no children.
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public Node getLeft() {
         if (children.size() == 0) {
             return null;
@@ -733,19 +856,35 @@ public class Node extends BEASTObject {
         return children.get(0);
     }
 
-    public void setRight(final Node m_right) {
+    /**
+     * This sets the second child (index 1, called right child in binary trees). If this node had no children then the left
+     * child will be set to null after this call.
+     *
+     * @param rightChild new right child
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
+    public void setRight(final Node rightChild) {
         switch (children.size()) {
             case 0:
                 children.add(null);
             case 1:
-                children.add(m_right);
+                children.add(rightChild);
                 break;
             default:
-                children.set(1, m_right);
+                children.set(1, rightChild);
                 break;
         }
     }
 
+    /**
+     * This method returns the second child (index 1, called right child in binary trees).
+     * Will return null if there are no children or only one child.
+     *
+     * @return right child (child 1), or null if this node has no children, or only one child.
+     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     */
+    @Deprecated
     public Node getRight() {
         if (children.size() <= 1) {
             return null;
@@ -764,7 +903,7 @@ public class Node extends BEASTObject {
     }
 
     /**
-     * @return true if this leaf actually represent a direct ancestor
+     * @return true if this leaf actually represents a direct ancestor
      * (i.e. is on the end of a zero-length branch)
      */
     public boolean isDirectAncestor() {

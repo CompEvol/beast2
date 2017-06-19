@@ -410,13 +410,25 @@ public class AppStore {
     }
 
     private void printAppList(List<PackageApp> appList, PrintStream ps) {
-        ps.println("Package         | Class Name      | Description");
-        ps.println("----------------|-----------------|-----------------");
+
+        int maxPNlen = appList.stream().mapToInt(x -> x.packageName.length()).max().orElse(0);
+        maxPNlen = Math.max(maxPNlen+1, 15);
+
+        int maxCNlen = appList.stream().mapToInt(x -> {
+            String[] components = x.className.split("\\.");
+            return components[components.length-1].length();
+        }).max().orElse(0);
+        maxCNlen = Math.max(maxCNlen+1, 15);
+
+        String formatStr = "%-" + maxPNlen + "." + maxPNlen + "s|%-" + maxCNlen + "." + maxCNlen + "s|%s\n";
+
+        ps.format(formatStr, "Package", "Class", "Description");
+        ps.print(String.format(formatStr, "", "", "--------------------").replace(" ", "-"));
+
         for (PackageApp app : appList) {
             String[] fullClassName = app.className.split("\\.");
             String className = fullClassName[fullClassName.length-1];
-            ps.format("%-15.15s | %-15.15s | %s\n",
-                    app.packageName, className, app.description);
+            ps.format(formatStr, app.packageName, className, app.description);
         }
     }
 

@@ -352,6 +352,9 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
                 	throw new IllegalArgumentException("Something is wrong with constraint " + p.getID() + " -- a taxonset must be specified if a monophyletic constraint is enforced.");
                 }
                 final Set<String> usedTaxa = new LinkedHashSet<>();
+                if (taxonSet.asStringList()  == null) {
+                	taxonSet.initAndValidate();
+                }
                 usedTaxa.addAll(taxonSet.asStringList());
                 /* int c = */ traverse(root, usedTaxa, taxonSet.getTaxonCount(), new int[1]);
                 // boolean b = c == nrOfTaxa + 127;

@@ -1036,7 +1036,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
-                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
+                    Utils.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                     // too bad, won't print out any info
 

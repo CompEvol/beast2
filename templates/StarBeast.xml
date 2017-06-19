@@ -221,7 +221,7 @@
                 <down idref="Tree.t:$(n)"/>
             </operator>
 
-            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
+            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential"><mean spec="parameter.RealParameter" estimate="false" value="1.0"/></distr></prior>
             <prior id='PropInvariantPrior.t:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
@@ -283,6 +283,10 @@
             <connect srcID='popSizeTop'       targetID='state' inputName='stateNode' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='SpeciesTreePopSize.Species' inputName='topPopSize' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
             <connect srcID='popSizeTop'       targetID='SpeciesTreeLoggerX' inputName='popSizeTop' if='SpeciesTreePopSize.Species/popFunction!=constant'/>
+
+			<!-- Hack: the updown.all.Species.$(n) can be created when cloning, but should be removed -->
+            <connect srcID='updown.all.Species.$(n)' targetID='mcmc'  inputName='operator' if='inposterior(dummy)'/>
+
 
             <connect srcID='Tree.t:$(n)'      targetID='treeTopFinder' inputName='tree' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='treeTopFinder'    targetID='treePrior.t:$(n)' inputName='treetop' if='SpeciesTreePopSize.Species/popFunction=linear'/>

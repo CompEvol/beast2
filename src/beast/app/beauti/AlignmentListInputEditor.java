@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -93,6 +94,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
      * The button for deleting an alignment in the alignment list.
      */
     JButton delButton;
+    protected SmallButton replaceButton;
 
 	private JScrollPane scrollPane;
 
@@ -208,6 +210,15 @@ public class AlignmentListInputEditor extends ListInputEditor {
         buttonBox.add(delButton);
         buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
 
+        replaceButton = new SmallButton("r", true, SmallButton.ButtonType.square);
+        replaceButton.setName("r");
+        replaceButton.setToolTipText("Replace alignment by one loaded from file");
+        replaceButton.addActionListener(e -> replaceItem());
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+        buttonBox.add(replaceButton);
+        buttonBox.add(Box.createHorizontalStrut(STRUT_SIZE));
+
+        
         splitButton = new JButton("Split");
         splitButton.setName("Split");
         splitButton.setToolTipText("Split alignment into partitions, for example, codon positions");
@@ -268,23 +279,33 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		// do the actual linking
 		for (int i = 1; i < selected.length; i++) {
 			int rowNr = selected[i];
-			Object old = tableData[rowNr][columnNr];
-			tableData[rowNr][columnNr] = tableData[selected[0]][columnNr];
-			try {
-				updateModel(columnNr, rowNr);
-			} catch (Exception ex) {
-				Log.warning.println(ex.getMessage());
-				// unlink if we could not link
-				tableData[rowNr][columnNr] = old;
-				try {
-					updateModel(columnNr, rowNr);
-				} catch (Exception ex2) {
-					// ignore
-				}
-			}
+			link(columnNr, rowNr, selected[0]);
 		}
 	}
+	
+	/** links partition in row "rowToLink" with partition in "rowToLinkWith" so that
+	 * after linking there is only one partition for context "columnNr", namely that
+	 * of "rowToLinkWith"
+	 */
+	private void link(int columnNr, int rowToLink, int rowToLinkWith) {
+		Object old = tableData[rowToLink][columnNr];
+		tableData[rowToLink][columnNr] = tableData[rowToLinkWith][columnNr];
+		try {
+			updateModel(columnNr, rowToLink);
+		} catch (Exception ex) {
+			Log.warning.println(ex.getMessage());
+			// unlink if we could not link
+			tableData[rowToLink][columnNr] = old;
+			try {
+				updateModel(columnNr, rowToLink);
+			} catch (Exception ex2) {
+				// ignore
+			}
+		}
+		MRCAPriorInputEditor.customConnector(doc);
+	}
 
+	
 	private void unlink(int columnNr) {
 		int[] selected = getTableRowSelection();
 		for (int i = 1; i < selected.length; i++) {
@@ -832,6 +853,13 @@ public class AlignmentListInputEditor extends ListInputEditor {
 						e1.printStackTrace();
 					}
 					updateStatus();
+				} else if (e.getButton() == e.BUTTON3) {
+					int alignmemt = table.rowAtPoint(e.getPoint());
+					Alignment alignment = alignments.get(alignmemt);
+					int result = JOptionPane.showConfirmDialog(null, "Do you want to replace alignment " + alignment.getID());
+					if (result == JOptionPane.YES_OPTION) {
+						replaceItem(alignment);
+					}
 				}
 			}
 		});
@@ -1150,9 +1178,71 @@ public class AlignmentListInputEditor extends ListInputEditor {
 				e.printStackTrace();
 			}
 		}
+		MRCAPriorInputEditor.customConnector(doc);
 		refreshPanel();
 	} // delItem
 
+	
+	void replaceItem() {
+		int [] selected = getTableRowSelection();
+		if (selected.length != 1) {
+			// don't know how to replace multiple alignments at the same time
+			// should never get here (button is disabled)
+			return;
+		}
+		Alignment alignment = alignments.get(selected[0]);
+		replaceItem(alignment);
+	}
+	
+	private void replaceItem(Alignment alignment) {
+		BeautiAlignmentProvider provider = new BeautiAlignmentProvider();
+		List<BEASTInterface> list = provider.getAlignments(doc);
+		List<Alignment> alignments = new ArrayList<>();
+		for (BEASTInterface o : list) {
+			if (o instanceof Alignment) {
+				alignments.add((Alignment) o);
+			}
+		}
+		Alignment replacement = null;
+		if (alignments.size() > 1) {
+			JComboBox<Alignment> jcb = new JComboBox<Alignment>(alignments.toArray(new Alignment[]{}));
+			JOptionPane.showMessageDialog( null, jcb, "Select a replacement alignment", JOptionPane.QUESTION_MESSAGE);
+			replacement = (Alignment) jcb.getSelectedItem();
+		} else if (alignments.size() == 1) {
+			replacement = alignments.get(0);
+		}
+		if (replacement != null) {
+			if (!replacement.getDataType().getClass().getName().equals(alignment.getDataType().getClass().getName())) {
+				JOptionPane.showMessageDialog(null, "Data types do not match, so alignment cannot be replaced: " + 
+						replacement.getID() + " " + replacement.getDataType().getClass().getName() + " != " + 
+						alignment.getID() + " " + alignment.getDataType().getClass().getName());
+				return;
+			}
+			// replace alignment
+			Set<BEASTInterface> outputs = new LinkedHashSet<>();
+			outputs.addAll(alignment.getOutputs());
+			for (BEASTInterface o : outputs) {
+				for (Input<?> input : o.listInputs()) {
+					if (input.get() == alignment) {
+						input.setValue(replacement, o);
+						replacement.getOutputs().add(o);
+					} else if (input.get() instanceof List) {
+						@SuppressWarnings("rawtypes")
+						List inputlist = (List) input.get();
+						int i = inputlist.indexOf(alignment);
+						if (i >= 0) {
+							inputlist.set(i, replacement);
+							replacement.getOutputs().add(o);
+						}
+					}
+				}
+			}
+			int i = doc.alignments.indexOf(alignment);
+			doc.alignments.set(i, replacement);
+			refreshPanel();
+		}
+	} // replaceItem
+	
 	void splitItem() {
 		int[] selected = getTableRowSelection();
 		if (selected.length == 0) {
@@ -1196,11 +1286,25 @@ public class AlignmentListInputEditor extends ListInputEditor {
 			Alignment alignment = alignments.remove(rowNr);
 			getDoc().delAlignmentWithSubnet(alignment);
 			try {
+				List<Alignment> newAlignments = new ArrayList<>();
 				for (int j = 0; j < filters.length; j++) {
 					FilteredAlignment f = new FilteredAlignment();
 					f.initByName("data", alignment, "filter", filters[j], "dataType", alignment.dataTypeInput.get());
 					f.setID(alignment.getID() + ids[j]);
 					getDoc().addAlignmentWithSubnet(f, getDoc().beautiConfig.partitionTemplate.get());
+					newAlignments.add(f);
+				}
+				alignments.addAll(newAlignments);
+				partitionCount = alignments.size();
+				tableData = null; 
+				initTableData();			
+				if (newAlignments.size() == 2) {
+					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
+				} else {
+					link(TREE_COLUMN, alignments.size() - 2, alignments.size() - 3);
+					tableData = null; 
+					initTableData();			
+					link(TREE_COLUMN, alignments.size() - 1, alignments.size() - 2);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1225,6 +1329,7 @@ public class AlignmentListInputEditor extends ListInputEditor {
 		status = (getTableRowSelection().length > 0);
 		splitButton.setEnabled(status);
 		delButton.setEnabled(status);
+		replaceButton.setEnabled(getTableRowSelection().length == 1);
 	}
 	
 } // class AlignmentListInputEditor

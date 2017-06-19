@@ -174,6 +174,9 @@ public class MRCAPrior extends Distribution {
 
     // would be nice to use nodeRef's, but they are not preserved :(
     public Node getCommonAncestor() {
+        if (!initialised) {
+            initialise();
+        }
         nodesTraversed = new boolean[tree.getNodeCount()];
         Node n = getCommonAncestorInternal();
         assert ! (useRoot && !n.isRoot() ) ;

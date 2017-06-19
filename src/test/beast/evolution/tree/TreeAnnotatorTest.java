@@ -1,5 +1,8 @@
 package test.beast.evolution.tree;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintStream;
 import java.util.BitSet;
 import java.util.Map;
 
@@ -7,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import beast.app.beauti.BeautiDoc;
 import beast.app.treeannotator.CladeSystem;
 import beast.app.treeannotator.TreeAnnotator;
 import beast.evolution.tree.Tree;
@@ -156,4 +160,41 @@ public class TreeAnnotatorTest {
         Assert.assertEquals(1, maxScoreIndex);
         Assert.assertEquals(1, maxScoreLogIndex);
     }
+    
+    @Test
+    public void testNewickTargetTree() throws Exception {
+    	// create target tree file in temp folder
+    	TreeParser tree = new TreeParser("((A,B),(C,D))");
+    	String tmpFolder = org.fest.util.Files.temporaryFolder().toString();
+    	File target = new File(tmpFolder + "/target.tree");
+        PrintStream outfile = new PrintStream(target);
+        tree.init(outfile);
+        outfile.println();
+        tree.log(0, outfile);
+        outfile.println();
+        tree.close(outfile);
+        outfile.close();
+
+        // create input tree set
+    	File source = new File(tmpFolder + "/source.trees");
+        outfile = new PrintStream(source);
+        for (String treeString : new String[]{
+        		"((A:1,B:1):1,(C:1,D:1):1);",
+                "(((A:1,B:1):1,C:2):2,D:3);", 
+                "((A:2,(B:1,C:1):1):2,D:3);"}) {
+        	outfile.println(treeString);
+        };
+        outfile.close();
+    	
+    	File summary = new File(tmpFolder + "/summary.tree");
+    	
+    	// run tree annotator
+    	String [] args = new String[]{"-target", target.getPath(), source.getPath(), summary.getPath()};
+        TreeAnnotator.main(args);
+        
+        // make sure we get output
+        String summaryString = BeautiDoc.load(summary);
+        System.out.println(summaryString);
+    }
+    
 }

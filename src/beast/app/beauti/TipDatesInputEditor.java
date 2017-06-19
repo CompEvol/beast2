@@ -392,6 +392,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         buttonBox.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox<>(new String[]{"Since some time in the past", "Before the present"});
+        relativeToComboBox.setToolTipText("Whether dates go forward or backward");
         if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             relativeToComboBox.setSelectedIndex(1);
         } else {
@@ -415,7 +416,8 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
         buttonBox.add(Box.createHorizontalGlue());
 
-        JButton guessButton = new JButton("Guess");
+        JButton guessButton = new JButton("Auto-configure");
+        guessButton.setToolTipText("Automatically configure dates based on taxon names");
         guessButton.setName("Guess");
         guessButton.addActionListener(e -> {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
@@ -454,6 +456,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
 
         JButton clearButton = new JButton("Clear");
+        clearButton.setToolTipText("Set all dates to zero");
         clearButton.addActionListener(e -> {
                 try {
                     traitSet.traitsInput.setValue("", traitSet);

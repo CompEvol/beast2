@@ -38,7 +38,7 @@ public class ParameterInputEditor extends BEASTObjectInputEditor {
 	}
 
 	private static final long serialVersionUID = 1L;
-    JCheckBox m_isEstimatedBox;
+    public JCheckBox m_isEstimatedBox;
 
     @Override
     public Class<?> type() {
