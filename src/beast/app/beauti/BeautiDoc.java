@@ -2447,7 +2447,20 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 					}
 				}
 			}
-			// TODO: make sure we have the appropriate tree
+			// make sure we have the appropriate tree:
+            if(alignments.size()>1 ){
+			    String testTaxon =  mrcaPrior.taxonsetInput.get().toString().split("\n")[1].trim();
+			    String[] taxaNames;// = tree.getTaxaNames();
+			    int index=-1;
+			    int j=0;
+			    while (index<0 && j++ < alignments.size()){
+                    tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(j-1).getID());
+                    taxaNames = tree.getTaxaNames();
+                    for (int i=0; i<taxaNames.length && index<0; i++)
+			            if (testTaxon.equals(taxaNames[i])) index=i;
+                }
+            }
+
 			CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
 			mrcaPrior.treeInput.setValue(tree, mrcaPrior);
 			ParametricDistribution distr = mrcaPrior.distInput.get();
