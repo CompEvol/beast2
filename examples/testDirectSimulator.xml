@@ -1,0 +1,31 @@
+<beast version="2.0" namespace="beast.core
+                              :beast.evolution.alignment
+                              :beast.evolution.tree
+                              :beast.evolution.speciation
+                              :beast.core.util
+                              :beast.core.parameter">
+
+
+
+    <run spec="DirectSimulator" nSamples="100">
+
+        <distribution spec="CompoundDistribution">
+            <distribution spec="YuleModel">
+                <tree spec="Tree" id="tree">
+                    <taxonset spec="TaxonSet">
+                        <taxon spec="Taxon" id="t1"/>
+                        <taxon spec="Taxon" id="t2"/>
+                        <taxon spec="Taxon" id="t3"/>
+                        <taxon spec="Taxon" id="t4"/>
+                        <taxon spec="Taxon" id="t5"/>
+                    </taxonset>
+                </tree>
+                <birthDiffRate spec="RealParameter" value="1.0"/>
+            </distribution>
+        </distribution>
+
+        <logger logEvery="1" fileName="$(filebase).trees">
+            <log idref="tree"/>
+        </logger>
+    </run>
+</beast>

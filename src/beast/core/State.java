@@ -106,6 +106,14 @@ public class State extends BEASTObject {
     private HashMap<BEASTInterface, List<BEASTInterface>> outputMap;
 
     /**
+     * Returns a list of BEAST objects
+     * @return
+     */
+    public List<BEASTInterface> getOutputs(BEASTInterface beastInterface) {
+        return outputMap.get(beastInterface);
+    }
+
+    /**
      * Same as m_outputMap, but only for StateNodes indexed by the StateNode number
      * We need this since the StateNode changes regularly, so unlike the output map
      * for BEASTObjects cannot be accessed by the current StateNode as key.

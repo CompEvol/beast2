@@ -2,15 +2,16 @@ package beast.evolution.speciation;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.Input;
+import beast.core.*;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 
@@ -44,7 +45,7 @@ public class YuleModel extends SpeciesTreeDistribution {
         if (conditionalOnRoot && conditionalOnOrigin) {
             throw new RuntimeException("ERROR: Cannot condition on both root and origin.");
         }
-        
+
         // make sure that all tips are at the same height,
         // otherwise this Yule Model is not appropriate
         TreeInterface tree = treeInput.get();
@@ -55,22 +56,22 @@ public class YuleModel extends SpeciesTreeDistribution {
         double height = leafs.get(0).getHeight();
         for (Node leaf : leafs) {
             if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-            	Log.warning.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
+                Log.warning.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
                 break;
             }
         }
     }
-    
+
     @Override
     public double calculateTreeLogLikelihood(final TreeInterface tree) {
         return calculateTreeLogLikelihood(tree, 1, 0);
     }
 
     protected double calculateTreeLogLikelihood(final TreeInterface tree, final double rho, final double a) {
-    	
-    	if (conditionalOnOrigin && tree.getRoot().getHeight() > originHeightParameterInput.get().getValue())
-    		return Double.NEGATIVE_INFINITY;
-    	
+
+        if (conditionalOnOrigin && tree.getRoot().getHeight() > originHeightParameterInput.get().getValue())
+            return Double.NEGATIVE_INFINITY;
+
         final int taxonCount = tree.getLeafNodeCount();
         final double r = birthDiffRateParameterInput.get().getValue();
 
@@ -112,7 +113,7 @@ public class YuleModel extends SpeciesTreeDistribution {
      * @return
      */
     protected double logCoeff(final int taxonCount) {
-    	//return logGamma(taxonCount + 1);?
+        //return logGamma(taxonCount + 1);?
         return 0.0;
     }
 
@@ -135,19 +136,19 @@ public class YuleModel extends SpeciesTreeDistribution {
         if (conditionalOnRoot && node.isRoot()) {
             return (taxonCount - 2) * calcLogConditioningTerm(height, r, rho, a);
         }
-        
+
         final double mrh = -r * height;
         final double z = Math.log(rho + ((1 - rho) - a) * Math.exp(mrh));
         double l = -2 * z + mrh;
-        
+
         if (!conditionalOnOrigin && !conditionalOnRoot && node.isRoot())
-        	l += mrh - z;
-        
+            l += mrh - z;
+
         return l;
-                
+
     } // calcLogNodeProbability
-    
-//    public boolean includeExternalNodesInLikelihoodCalculation() {
+
+    //    public boolean includeExternalNodesInLikelihoodCalculation() {
 //        return false;
 //    }
     // r = birth - death
@@ -161,41 +162,114 @@ public class YuleModel extends SpeciesTreeDistribution {
             return Math.log(ca * (r * rho + ca / height));
         }
     }
-    
+
     @Override
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation()
                 || birthDiffRateParameterInput.get().somethingIsDirty()
                 || (conditionalOnOrigin && originHeightParameterInput.get().somethingIsDirty());
     }
-    
+
     @Override
     public boolean canHandleTipDates() {
         return false;
     }
 
-    
+
     @Override
     public void validateInputs() {
         if (conditionalOnRootInput.get()) {
-        	// make sure there is an MRCAPrior on the root
-        	TreeInterface tree = treeInput.get();
-        	int n = tree.getTaxonset().getTaxonCount();
-        	boolean found = false;
-        	for (BEASTInterface o : ((BEASTInterface) tree).getOutputs()) {
-        		if (o instanceof MRCAPrior) {
-        			MRCAPrior prior = (MRCAPrior) o;
-        			int n2 = prior.taxonsetInput.get().taxonsetInput.get().size();
-        			if (n2 == n) {
-        				found = true;
-        			}
-        		}
-        	}
-        	if (!found) {
-        		Log.warning("WARNING: There must be an MRCAPrior on the root when conditionalOnRoot=true, but could not find any");
-        	}
+            // make sure there is an MRCAPrior on the root
+            TreeInterface tree = treeInput.get();
+            int n = tree.getTaxonset().getTaxonCount();
+            boolean found = false;
+            for (BEASTInterface o : ((BEASTInterface) tree).getOutputs()) {
+                if (o instanceof MRCAPrior) {
+                    MRCAPrior prior = (MRCAPrior) o;
+                    int n2 = prior.taxonsetInput.get().taxonsetInput.get().size();
+                    if (n2 == n) {
+                        found = true;
+                    }
+                }
+            }
+            if (!found) {
+                Log.warning("WARNING: There must be an MRCAPrior on the root when conditionalOnRoot=true, but could not find any");
+            }
         }
 
-    	super.validateInputs();
+        super.validateInputs();
+    }
+
+    /**
+     * Sampling only implemented for no-origin case currently.
+     */
+    @Override
+    public void sample(State state, Random random) {
+
+        if (sampledFlag)
+            return;
+
+        sampledFlag = true;
+
+        Tree tree = (Tree) treeInput.get();
+        RealParameter birthRate = birthDiffRateParameterInput.get();
+
+        // Cause conditional parameters to be sampled
+
+        sampleInputDistribution("birthDiffRate", birthRate, state, random);
+
+        // Simulate tree conditional on new parameters
+
+        List<Node> activeLineages = new ArrayList<>();
+        for (Node oldLeaf : tree.getExternalNodes()) {
+            Node newLeaf = new Node(oldLeaf.getID());
+            newLeaf.setNr(oldLeaf.getNr());
+            newLeaf.setHeight(0.0);
+            activeLineages.add(newLeaf);
+        }
+
+        int nextNr = activeLineages.size();
+
+        double t = 0.0;
+        while (activeLineages.size() > 1) {
+            int k = activeLineages.size();
+            double a = birthRate.getValue() * k;
+
+            t += -Math.log(random.nextDouble())/a;
+
+            Node node1 = activeLineages.get(random.nextInt(k));
+            Node node2;
+            do {
+                node2 = activeLineages.get(random.nextInt(k));
+            } while (node2.equals(node1));
+
+            Node newParent = new Node();
+            newParent.setNr(nextNr++);
+            newParent.setHeight(t);
+            newParent.addChild(node1);
+            newParent.addChild(node2);
+
+            activeLineages.remove(node1);
+            activeLineages.remove(node2);
+            activeLineages.add(newParent);
+        }
+
+        tree.assignFromWithoutID(new Tree(activeLineages.get(0)));
+    }
+
+    @Override
+    public List<String> getConditions() {
+        List<String> conditions = new ArrayList<>();
+        conditions.add("birthDiffRate");
+
+        return conditions;
+    }
+
+    @Override
+    public List<String> getArguments() {
+        List<String> arguments = new ArrayList<>();
+        arguments.add("tree");
+
+        return arguments;
     }
 }
