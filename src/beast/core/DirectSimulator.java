@@ -86,6 +86,8 @@ public class DirectSimulator extends Runnable {
         // Finalize loggers
         for (Logger logger: loggers)
             logger.close();
+
+        System.out.println("Direct simulation of " + nSamples + " samples completed.");
     }
 }
 

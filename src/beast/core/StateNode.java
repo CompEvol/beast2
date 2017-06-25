@@ -212,7 +212,9 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
         }
         hasStartedEditing = true;
         // notify the state
-        state.getEditableStateNode(this.index, operator);
+
+        if (state != null) state.getEditableStateNode(this.index, operator);
+
         store();
     }
 
