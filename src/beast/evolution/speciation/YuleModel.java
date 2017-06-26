@@ -211,12 +211,12 @@ public class YuleModel extends SpeciesTreeDistribution {
 
         sampledFlag = true;
 
-        Tree tree = (Tree) treeInput.get();
-        RealParameter birthRate = birthDiffRateParameterInput.get();
-
         // Cause conditional parameters to be sampled
 
-        sampleInputDistribution("birthDiffRate", birthRate, state, random);
+        sampleConditions(state, random);
+
+        Tree tree = (Tree) treeInput.get();
+        RealParameter birthRate = birthDiffRateParameterInput.get();
 
         // Simulate tree conditional on new parameters
 
@@ -260,7 +260,7 @@ public class YuleModel extends SpeciesTreeDistribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<>();
-        conditions.add("birthDiffRate");
+        conditions.add(birthDiffRateParameterInput.get().getID());
 
         return conditions;
     }
@@ -268,7 +268,7 @@ public class YuleModel extends SpeciesTreeDistribution {
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("tree");
+        arguments.add(treeInput.get().getID());
 
         return arguments;
     }

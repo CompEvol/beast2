@@ -5,13 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Function;
-import beast.core.Input;
+import beast.core.*;
 import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import org.apache.commons.math.MathException;
@@ -83,18 +78,10 @@ public class Prior extends Distribution {
         sampledFlag = true;
 
         // Cause conditional parameters to be sampled
-
-        ParametricDistribution dist = distInput.get();
+        sampleConditions(state, random);
 
         // sample distribution parameters
         Function x = m_x.get();
-        if (x instanceof RealParameter) {
-            sampleInputDistribution("x", (RealParameter) x, state, random);
-        } else if (x instanceof IntegerParameter) {
-            sampleInputDistribution("x", (IntegerParameter) x, state, random);
-        } else {
-            throw new RuntimeException("ERROR: Can't sample from a Function unless it can be cast to a StateNode.");
-        }
 
         Double[] newx;
         try {
@@ -119,15 +106,18 @@ public class Prior extends Distribution {
     @Override
     public List<String> getConditions() {
         List<String> conditions = new ArrayList<>();
-        conditions.addAll(dist.getInputs().keySet());
-
+        conditions.add(dist.getID());
         return conditions;
     }
 
     @Override
     public List<String> getArguments() {
         List<String> arguments = new ArrayList<>();
-        arguments.add("x");
+
+        String id = null;
+        if (m_x.get() != null && m_x.get() instanceof BEASTInterface) {
+            arguments.add(((BEASTInterface)m_x.get()).getID());
+        }
 
         return arguments;
     }
