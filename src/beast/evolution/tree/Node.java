@@ -704,7 +704,13 @@ public class Node extends BEASTObject {
         } else {
             metaData.put(pattern, value);
         }
+    }
 
+    /**
+     * Removes metadata from the node for the given key.
+     */
+    public void removeMetaData(final String key) {
+        metaData.remove(key);
     }
 
     /**
