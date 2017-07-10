@@ -16,11 +16,7 @@
 
 				<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 
-				<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
-					<up idref="clockRate.c:$(n)"/>
-					<down idref="Tree.t:$(n)"/>
-				</upDownOperator>
-				<upDownOperator id='strictClockUpDownOperator.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+				<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 					<up idref="clockRate.c:$(n)"/>
 					<down idref="Tree.t:$(n)"/>
 				</upDownOperator>
@@ -44,21 +40,6 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
                 Scale up substitution rate c:$(n) and scale down tree t:($n)
             </connect>
-            <connect srcID='strictClockUpDownOperator.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
-                Scale up substitution rate c:$(n) and scale down tree t:($n)
-            </connect>
-            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='clockRate.c:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.t:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='strictClockUpDownOperator.c:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'/>
-                     
-            
-            
         </subtemplate>
 
         <!-- Relaxed clock exponential -->
@@ -79,11 +60,7 @@
 		<operator id='ExpCategoriesSwapOperator.c:$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@expRateCategories.c:$(n)'/>
 		<operator id='ExpCategoriesUniform.c:$(n)' spec='UniformOperator' weight="10" parameter='@expRateCategories.c:$(n)'/>
 
-		<upDownOperator id='relaxedUpDownOperatorExp.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
-			<up idref="ucedMean.c:$(n)"/>
-			<down idref="Tree.t:$(n)"/>
-		</upDownOperator>
-		<upDownOperator id='relaxedUpDownOperatorExp.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+		<upDownOperator id='relaxedUpDownOperatorExp.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="ucedMean.c:$(n)"/>
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
@@ -118,20 +95,6 @@
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
-            <connect srcID='relaxedUpDownOperatorExp.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucedMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
-                Up/down scaler for mean rate and tree of partition t:$(n)
-            </connect>
-            <connect srcID='ucedMean.c:$(n)' targetID='relaxedUpDownOperatorExp.t:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='ucedMean.c:$(n)' targetID='relaxedUpDownOperatorExp.c:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='relaxedUpDownOperatorExp.t:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucedMean.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='relaxedUpDownOperatorExp.c:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucedMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucedMean.c:$(n)/estimate=true'/>
-            
-            
             <connect srcID='Tree.t:$(n)' targetID='ExponentialRelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(ExponentialRelaxedClock.c:$(n))'/>
             <connect srcID='Tree.t:$(n)' targetID='rateStat.c:$(n)' inputName='tree' if='inlikelihood(ExponentialRelaxedClock.c:$(n))'/>
 
@@ -165,11 +128,7 @@
 		<operator id='CategoriesSwapOperator.c:$(n)' spec='SwapOperator' howMany="1" weight="10" intparameter='@rateCategories.c:$(n)'/>
 		<operator id='CategoriesUniform.c:$(n)' spec='UniformOperator' weight="10" parameter='@rateCategories.c:$(n)'/>
 
-		<upDownOperator id='relaxedUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
-			<up idref="ucldMean.c:$(n)"/>
-			<down idref="Tree.t:$(n)"/>
-		</upDownOperator>
-		<upDownOperator id='relaxedUpDownOperator.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+		<upDownOperator id='relaxedUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="ucldMean.c:$(n)"/>
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
@@ -215,21 +174,9 @@
                      if='inlikelihood(rateCategories.c:$(n)) and rateCategories.c:$(n)/estimate=true'>Uniformly draw categories of partition c:$(n)
             </connect>
             <connect srcID='relaxedUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
-            <connect srcID='relaxedUpDownOperator.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and ucldMean.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
-                Up/down scaler for mean rate and tree of partition t:$(n)
-            </connect>
-            <connect srcID='ucldMean.c:$(n)' targetID='relaxedUpDownOperator.t:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucldMean.c:$(n)/estimate=true'/>
-            <connect srcID='ucldMean.c:$(n)' targetID='relaxedUpDownOperator.c:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucldMean.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='relaxedUpDownOperator.t:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucldMean.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='relaxedUpDownOperator.c:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(ucldMean.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and ucldMean.c:$(n)/estimate=true'/>
             <connect srcID='Tree.t:$(n)' targetID='RelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(RelaxedClock.c:$(n))'/>
             <connect srcID='Tree.t:$(n)' targetID='rate.c:$(n)' inputName='tree' if='inlikelihood(RelaxedClock.c:$(n))'/>
 
@@ -267,11 +214,7 @@
         <operator id='ClockRateScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="15" parameter="@clockrates.c:$(n)"/>
 
         <operator id='randomClockScaler.c:$(n)' spec='ScaleOperator' scaleAll='false' scaleFactor="0.5" weight="1" parameter="@meanClockRate.c:$(n)"/>
-		<upDownOperator id='randomClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
-			<up idref="meanClockRate.c:$(n)"/>
-			<down idref="Tree.t:$(n)"/>
-		</upDownOperator>
-		<upDownOperator id='randomClockUpDownOperator.t:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="1.5">
+		<upDownOperator id='randomClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 			<up idref="meanClockRate.c:$(n)"/>
 			<down idref="Tree.t:$(n)"/>
 		</upDownOperator>
@@ -317,21 +260,9 @@
                 partition c:$(n)
             </connect>
             <connect srcID='randomClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and meanClockRate.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and meanClockRate.c:$(n)/estimate=true'>
                 Up/down scaler for mean rate and tree of partition c:$(n)
             </connect>
-            <connect srcID='randomClockUpDownOperator.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and meanClockRate.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
-                Up/down scaler for mean rate and tree of partition t:$(n)
-            </connect>
-            <connect srcID='meanClockRate.c:$(n)' targetID='randomClockUpDownOperator.t:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and meanClockRate.c:$(n)/estimate=true'/>
-            <connect srcID='meanClockRate.c:$(n)' targetID='randomClockUpDownOperator.c:$(n)' inputName='up'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and meanClockRate.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='randomClockUpDownOperator.t:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and meanClockRate.c:$(n)/estimate=true'/>
-            <connect srcID='Tree.t:$(n)' targetID='randomClockUpDownOperator.c:$(n)' inputName='down'
-                     if='nooperator(FixMeanRatesOperator) and inlikelihood(meanClockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and meanClockRate.c:$(n)/estimate=true'/>
             <connect srcID='IndicatorsBitFlip.c:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(Indicators.c:$(n))'>Flip indicator bits for random clock of partition c:$(n)
             </connect>
