@@ -830,9 +830,8 @@ public class Node extends BEASTObject {
      * This sets the zero'th (left in binary trees) child of this node.
      *
      * @param leftChild new left child
-     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     * Be aware trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
-    @Deprecated
     public void setLeft(final Node leftChild) {
         if (children.size() == 0) {
             children.add(leftChild);
@@ -846,9 +845,8 @@ public class Node extends BEASTObject {
      * Will return null if there are no children.
      *
      * @return left child (zero'th child), or null if this node has no children.
-     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     * Be aware trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
-    @Deprecated
     public Node getLeft() {
         if (children.size() == 0) {
             return null;
@@ -861,9 +859,8 @@ public class Node extends BEASTObject {
      * child will be set to null after this call.
      *
      * @param rightChild new right child
-     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     * Be aware trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
-    @Deprecated
     public void setRight(final Node rightChild) {
         switch (children.size()) {
             case 0:
@@ -882,9 +879,9 @@ public class Node extends BEASTObject {
      * Will return null if there are no children or only one child.
      *
      * @return right child (child 1), or null if this node has no children, or only one child.
-     * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
+     * Be aware trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
-    @Deprecated
+    
     public Node getRight() {
         if (children.size() <= 1) {
             return null;
