@@ -234,7 +234,8 @@ public class OperatorSchedule extends BEASTObject {
         out.println(": The acceptance probability (" + NUM_ACCEPT + " as a fraction of the total proposals for this operator).");
         out.println();
         
-        formatter.close();
+        // closing the formatter somehow closes PrintStream out, so better not close this here
+        //formatter.close();
     }
 
     protected static String prettyPrintOperator(
