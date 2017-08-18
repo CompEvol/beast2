@@ -13,6 +13,7 @@ import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
+import beast.evolution.tree.TreeUtils;
 import beast.math.distributions.MRCAPrior;
 
 
@@ -52,13 +53,10 @@ public class YuleModel extends SpeciesTreeDistribution {
         if (tree == null) {
             tree = treeIntervalsInput.get().treeInput.get();
         }
-        List<Node> leafs = tree.getExternalNodes();
-        double height = leafs.get(0).getHeight();
-        for (Node leaf : leafs) {
-            if (Math.abs(leaf.getHeight() - height) > 1e-8) {
-                Log.warning.println("WARNING: Yule Model cannot handle dated tips. Use for example a coalescent prior instead.");
-                break;
-            }
+        if (!TreeUtils.isUltrametric(tree)) {
+            Log.warning.println("WARNING: This model (tree prior) cannot handle dated tips. " +
+                    "Please select a tree prior which can, otherwise " +
+                    "results may be invalid.");
         }
     }
 
