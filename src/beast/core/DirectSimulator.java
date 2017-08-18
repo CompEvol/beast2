@@ -12,6 +12,8 @@ import java.util.Random;
  *
  * Created by Tim Vaughan <tgvaughan@gmail.com> on 16/06/17.
  */
+@Description("Runnable for generating a fixed number of samples from a prior distribution" +
+             "using direct simulation.")
 public class DirectSimulator extends Runnable {
 
     public Input<Distribution> distributionInput = new Input<>("distribution",
