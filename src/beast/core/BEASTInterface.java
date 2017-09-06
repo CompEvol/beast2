@@ -94,6 +94,12 @@ public interface BEASTInterface {
           }
       }
       try {
+          validateInputs();
+      } catch (IllegalArgumentException ex) {
+          ex.printStackTrace();
+          throw new RuntimeException("validateInputs() failed! " + ex.getMessage());
+      }
+      try {
           initAndValidate();
       } catch (Exception e) {
           e.printStackTrace();
