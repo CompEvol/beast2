@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
+import beagle.BeagleFactory;
 import beagle.BeagleFlag;
 import beagle.BeagleInfo;
 import beast.app.BEASTVersion2;
@@ -523,8 +524,14 @@ public class BeastMain {
         }
         
         if (beagleShowInfo) {
-            BeagleInfo.printResourceList();
-            System.exit(0);
+            Log.info.println("\n--- BEAGLE RESOURCES ---\n");
+            for (beagle.ResourceDetails details : BeagleFactory.getResourceDetails())
+                Log.info.println(details.toString());
+
+            if (window)
+                return;
+            else
+                System.exit(0);
         }
 
         if (inputFile == null) {
