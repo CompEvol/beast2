@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import beast.util.TreeParser;
-import org.omg.CORBA.OBJ_ADAPTER;
 
 public class TreeParserTest {
 
@@ -148,4 +147,18 @@ public class TreeParserTest {
         Assert.assertTrue(treeParser.getNode(1).getMetaData("key").equals(42.0));
     }
 
+    @Test
+    public void testInternalNodeLabels() throws Exception {
+
+        String newick = "((xmr),((knw)ctm));";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick,false, true, isLabeled, 0, false);
+
+        Assert.assertTrue(treeParser.getNode(0).getID().equals("knw"));
+        Assert.assertTrue(treeParser.getNode(1).getID().equals("xmr"));
+        Assert.assertTrue(treeParser.getNode(0).getParent().getID().equals("ctm"));
+        Assert.assertTrue(treeParser.getNode(1).getParent().getID() == null);
+    }
 }
