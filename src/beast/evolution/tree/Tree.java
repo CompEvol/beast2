@@ -345,7 +345,8 @@ public class Tree extends StateNode implements TreeInterface {
                  m_sTaxaNames = new String[getNodeCount()];
                  collectTaxaNames(getRoot());
                  List<String> taxaNames = new ArrayList<>();
-                 for (String name : m_sTaxaNames) {
+                 for (int i=0; i<m_sTaxaNames.length && i<getLeafNodeCount(); i++) {
+                     String name = m_sTaxaNames[i];
                      if (name != null) {
                          taxaNames.add(name);
                      }
