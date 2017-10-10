@@ -25,7 +25,9 @@
 package beast.core;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Description("Probabilistic representation that can produce " +
@@ -62,6 +64,83 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     public abstract List<String> getConditions();
 
     /**
+     * Recursively sample the state nodes that this distribution is conditional on.
+     * @param state the state to pass to distribution sample methods that this distribution is based on.
+     * @param random random number generator
+     */
+    public final void sampleConditions(State state, Random random) {
+
+        ArrayList<Input> conditionInputs = new ArrayList<>();
+
+        // get all the inputs this distribution is conditional on
+        for (String id : getConditions()) {
+            for (Input input : getInputs().values()) {
+                Object value = input.get();
+                if (value != null && value instanceof BEASTInterface) {
+                    String valueID = ((BEASTInterface) value).getID();
+                    if (valueID != null && valueID.equals(id)) {
+                        conditionInputs.add(input);
+                    }
+                }
+            }
+        }
+
+        // for each calculation node or state node that this distribution is conditional on, sample the condition.
+        for (Input inputCondition : conditionInputs) {
+            Object value = inputCondition.get();
+
+            if (value instanceof StateNode) {
+                sampleStateNode((StateNode) value, state, random);
+            } else if (value instanceof CalculationNode) {
+                sampleCalculationNode((CalculationNode)value, state, random);
+            }
+        }
+    }
+
+    /**
+     * Given a calculation node this method recursively finds all calculation node inputs that this calculation node is
+     * dependent on and calls sampleStateNode or sampleCalculationNode on such inputs recursively.
+     *
+     * @param calculationNode the state node to be sampled
+     * @param state the state to record the new sample value in
+     * @param random a random number generator
+     */
+    private void sampleCalculationNode(CalculationNode calculationNode, State state, Random random) {
+
+        // recursively sample conditions and state nodes
+        for (Input input : calculationNode.getInputs().values()) {
+            Object value = input.get();
+            if (value != null && value instanceof StateNode) {
+                sampleStateNode((StateNode) value, state, random);
+            } else if (value != null && value instanceof CalculationNode) {
+                sampleCalculationNode((CalculationNode) value, state, random);
+            }
+        }
+    }
+
+    /**
+     * Given a state node this method finds the first distribution whose argument matches the ID of this state node
+     * and calls sample(state, random) on that distribution.
+     *
+     * @param stateNode the state node to be sampled
+     * @param state the state to record the new sample value in
+     * @param random a random number generator
+     */
+    private void sampleStateNode(StateNode stateNode, State state, Random random) {
+        // find distribution governing this state node and re-sample.
+        for (BEASTInterface output : stateNode.getOutputs()) {
+            if (output instanceof Distribution) {
+                Distribution distrib = (Distribution) output;
+                List<String> distribArgs = distrib.getArguments();
+                if (distribArgs != null && distribArgs.contains(stateNode.getID())) {
+                    distrib.sample(state, random);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * This method draws new values for the arguments conditional on the current value(s) of the conditionals.
      * <p/>
      * The new values are overwrite the argument values in the provided state.
@@ -70,6 +149,12 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
      * @param random random number generator
      */
     public abstract void sample(State state, Random random);
+
+    /**
+     * Field for keeping track of whether a sample has been drawn from this distribution
+     * during this sample run.
+     */
+    public boolean sampledFlag = false;
 
     /**
      * get result from last known calculation, useful for logging
@@ -136,36 +221,36 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         if (dim == 0) return getArrayValue();
         return 0;
     }
-    
+
     /**
      * Intended to be overridden by stochastically estimated distributions.
      * Used to disable target distribution consistency checks implemented in
      * the MCMC class which do not apply to stochastic distributions.
-     * 
+     *
      * @return true if stochastic.
      */
     public boolean isStochastic() {
         return false;
     }
 
-    
-    /** 
+
+    /**
      * Return non-stochastic part of a distribution recalculate, if required. 
      * This can be used for debugging purposes to verify that the non-stochastic 
      * part of a distribution is calculated correctly e.g. inside the MCMC loop
-     * 
+     *
      * @return logP if not stochastic, zero otherwise
      */
-	public double getNonStochasticLogP() {
-		if (isStochastic()) {
-			return 0;
-		} else {
+    public double getNonStochasticLogP() {
+        if (isStochastic()) {
+            return 0;
+        } else {
             if (isDirtyCalculation()) {
-            	return calculateLogP();
+                return calculateLogP();
             } else {
-            	return getCurrentLogP();
+                return getCurrentLogP();
             }
-		}
-	}
+        }
+    }
 
 } // class Distribution

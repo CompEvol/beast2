@@ -10,10 +10,11 @@
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
     <maxHeapSize>4048</maxHeapSize>
+    <opt>-Duser.language=en</opt>
   </jre>    
   <versionInfo>
     <fileDescription>LogCombiner</fileDescription>    
-    <copyright>Beast 2 development team 2002-2016</copyright>
+    <copyright>Beast 2 development team 2002-2017</copyright>
     <productName>LogCombiner</productName>
     <internalName>LogCombiner</internalName>
     <originalFilename>LogCombiner.exe</originalFilename>    

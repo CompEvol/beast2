@@ -183,6 +183,11 @@ public class CompoundDistribution extends Distribution {
 
     @Override
     public void sample(State state, Random random) {
+        if (sampledFlag)
+            return;
+
+        sampledFlag = true;
+
         for (Distribution distribution : pDistributions.get()) {
             distribution.sample(state, random);
         }
@@ -203,6 +208,8 @@ public class CompoundDistribution extends Distribution {
         for (Distribution distribution : pDistributions.get()) {
             conditions.addAll(distribution.getConditions());
         }
+        conditions.removeAll(getArguments());
+
         return conditions;
     }
 

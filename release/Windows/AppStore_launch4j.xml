@@ -10,10 +10,11 @@
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
     <maxHeapSize>1024</maxHeapSize>
+    <opt>-Duser.language=en</opt>
   </jre>    
   <versionInfo>
     <fileDescription>AppStore</fileDescription>
-    <copyright>Beast 2 development team 2002-2016</copyright>
+    <copyright>Beast 2 development team 2002-2017</copyright>
     <productName>AppStore</productName>
     <internalName>AppStore</internalName>
     <originalFilename>AppStore.exe</originalFilename>

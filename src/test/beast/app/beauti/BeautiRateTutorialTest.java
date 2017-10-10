@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Arrays;
 
@@ -102,6 +103,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("tree");
+		comboBox.pressAndReleaseKeys(KeyEvent.VK_ENTER);
 		cell.stopEditing();
 		printBeautiState(f);
 		assertStateEquals("clockRate.c:RSV2_2", "clockRate.c:RSV2_3", "Tree.t:tree", "birthRate.t:tree");
@@ -126,6 +128,7 @@ public class BeautiRateTutorialTest extends BeautiBase {
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("clock");
+		comboBox.pressAndReleaseKeys(KeyEvent.VK_ENTER);
 		cell.stopEditing();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree");

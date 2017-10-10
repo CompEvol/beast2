@@ -47,7 +47,7 @@ public class NexusParser {
     /**
      * keep track of nexus file line number, to report when the file does not parse *
      */
-    int lineNr;
+    protected int lineNr;
 
     /**
      * Beast II objects reconstructed from the file*
@@ -71,7 +71,7 @@ public class NexusParser {
 
     public List<TaxonSet> taxonsets = new ArrayList<>();
 
-    private List<NexusParserListener> listeners = new ArrayList<>();
+    protected List<NexusParserListener> listeners = new ArrayList<>();
 
     /**
      * Adds a listener for client classes that want to monitor progress of the parsing.
@@ -155,7 +155,7 @@ public class NexusParser {
         }
     } // parseFile
 
-	private void parseTreesBlock(final BufferedReader fin) throws IOException {
+    protected void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
         // read to first non-empty line within trees block
         String str = readLine(fin).trim();
@@ -217,7 +217,7 @@ public class NexusParser {
         }
     }
 
-    private List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
+    protected List<String> getIndexedTranslationMap(final Map<String, String> translationMap, final int origin) {
 
         Log.warning.println("translation map size = " + translationMap.size());
 
@@ -233,7 +233,7 @@ public class NexusParser {
      * @param translationMap
      * @return minimum key value if keys are a contiguous set of integers starting from zero or one, -1 otherwise
      */
-    private int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
+    protected int getIndexedTranslationMapOrigin(final Map<String, String> translationMap) {
 
         final SortedSet<Integer> indices = new TreeSet<>();
 
@@ -255,7 +255,7 @@ public class NexusParser {
      *         whereas values are generally descriptive strings.
      * @throws IOException
      */
-    private Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
+    protected Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
 
         final Map<String, String> translationMap = new HashMap<>();
 
@@ -278,7 +278,7 @@ public class NexusParser {
         return translationMap;
     }
 
-    private void parseTaxaBlock(final BufferedReader fin) throws IOException {
+    protected void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
         int expectedTaxonCount = -1;
         String str;
@@ -288,9 +288,14 @@ public class NexusParser {
                 str = str.substring(str.toLowerCase().indexOf("ntax=") + 5);
                 str = str.replaceAll(";", "");
                 expectedTaxonCount = Integer.parseInt(str.trim());
-            } else if (str.toLowerCase().trim().equals("taxlabels")) {
+            } else if (str.toLowerCase().trim().startsWith("taxlabels")) {
+            	str = str.trim().substring(9).trim();
+            	boolean initial = (str.equals(""));
                 do {
-                    str = nextLine(fin);
+                	if (initial) {
+                        str = nextLine(fin);
+                	}
+                	initial = true;
                     str = str.replaceAll(";", "");
                     str = str.trim();
                     if (str.length() > 0 && !str.toLowerCase().equals("end")) {
@@ -307,8 +312,12 @@ public class NexusParser {
                             	}
                             	taxon = taxon.substring(1, taxon.length() - 1);
                             }
-                            taxa.add(taxon);
-                            taxonList.add(new Taxon(taxon));
+                        	if (!taxa.contains(taxon)) {
+                        		taxa.add(taxon);
+                        	}
+                        	if (!taxonListContains(taxon)) {
+                        		taxonList.add(new Taxon(taxon));
+                        	}
                     	}
                     }
                 } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
@@ -323,8 +332,9 @@ public class NexusParser {
     /**
      * parse calibrations block and create TraitSet *
      */
-    TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
+    protected TraitSet parseCalibrationsBlock(final BufferedReader fin) throws IOException {
         final TraitSet traitSet = new TraitSet();
+        traitSet.setID("traitsetDate");
         traitSet.traitNameInput.setValue("date", traitSet);
         String str;
         do {
@@ -457,6 +467,7 @@ public class NexusParser {
         if (alignment.dataTypeInput.get().equals("standard")) {
         	StandardData type = new StandardData();
             type.setInputValue("nrOfStates", totalCount);
+            //type.setInputValue("symbols", symbols);
         	type.initAndValidate();
             alignment.setInputValue("userDataType", type);
         }
@@ -564,9 +575,6 @@ public class NexusParser {
         int seqLen = 0;
         while (true) {
             str = nextLine(fin);
-            if (str.contains(";")) {
-                break;
-            }
 
             int start = 0, end;
             final String taxon;
@@ -603,7 +611,7 @@ public class NexusParser {
                 }
             }
             prevTaxon = taxon;
-            final String data = str.substring(end);
+            String data = str.substring(end);
             for (int k = 0; k < data.length(); k++) {
             	if (!Character.isWhitespace(data.charAt(k))) {
             		seqLen++;
@@ -621,12 +629,19 @@ public class NexusParser {
 //			Log.warning.println(taxon);
 //			String data = strs[strs.length - 1];
 
-            if (seqMap.containsKey(taxon)) {
-                seqMap.put(taxon, seqMap.get(taxon).append(data));
-            } else {
-                seqMap.put(taxon, new StringBuilder(data));
-                taxa.add(taxon);
+            data = data.replaceAll(";", "");
+            if (data.trim().length() > 0) {
+	            if (seqMap.containsKey(taxon)) {
+	                seqMap.put(taxon, seqMap.get(taxon).append(data));
+	            } else {
+	                seqMap.put(taxon, new StringBuilder(data));
+	                taxa.add(taxon);
+	            }
             }
+            if (str.contains(";")) {
+                break;
+            }
+
         }
         if (taxonCount > 0 && taxa.size() > taxonCount) {
             throw new IOException("Wrong number of taxa. Perhaps a typo in one of the taxa: " + taxa);
@@ -634,7 +649,9 @@ public class NexusParser {
 
         HashSet<String> sortedAmbiguities = new HashSet<>();
         for (final String taxon : taxa) {
-        	taxonList.add(new Taxon(taxon));
+        	if (!taxonListContains(taxon)) {
+        		taxonList.add(new Taxon(taxon));
+        	}
             final StringBuilder bsData = seqMap.get(taxon);
             String data = bsData.toString().replaceAll("\\s", "");
             seqMap.put(taxon, new StringBuilder(data));
@@ -731,7 +748,16 @@ public class NexusParser {
         return alignment;
     } // parseDataBlock
 
-    private String getNextDataBlock(String str, BufferedReader fin) throws IOException {
+    private boolean taxonListContains(String taxon) {
+    	for (Taxon t : taxonList) {
+    		if (t.getID().equals(taxon)) {
+    			return true;
+    		}
+    	}
+		return false;
+	}
+
+	private String getNextDataBlock(String str, BufferedReader fin) throws IOException {
         while (str.indexOf(';') < 0) {
             str += nextLine(fin);
         }
@@ -757,7 +783,7 @@ public class NexusParser {
      * end;
      * 
      */
-    void parseAssumptionsBlock(final BufferedReader fin) throws IOException {
+    protected void parseAssumptionsBlock(final BufferedReader fin) throws IOException {
         String str;
         do {
             str = nextLine(fin);
@@ -765,6 +791,7 @@ public class NexusParser {
             	// remove text in brackets (as TreeBase files are wont to contain)
                 str = str.replaceAll("\\(.*\\)", "");
                 // clean up spaces
+                str = str.replaceAll("=", " = ");
                 str = str.replaceAll("^\\s+", "");
                 str = str.replaceAll("\\s*-\\s*", "-");
                 str = str.replaceAll("\\s*\\\\\\s*", "\\\\");
@@ -945,7 +972,7 @@ public class NexusParser {
     }
 
     
-    private void processSets() {
+    protected void processSets() {
     	// create monophyletic MRCAPrior for each taxon set that 
     	// does not already have a calibration associated with it
     	for (TaxonSet taxonset : taxonsets) {
@@ -1023,7 +1050,7 @@ public class NexusParser {
     /**
      * read line from nexus file *
      */
-    String readLine(final BufferedReader fin) throws IOException {
+    protected String readLine(final BufferedReader fin) throws IOException {
         if (!fin.ready()) {
             return null;
         }
@@ -1034,7 +1061,7 @@ public class NexusParser {
     /**
      * read next line from nexus file that is not a comment and not empty *
      */
-    String nextLine(final BufferedReader fin) throws IOException {
+    protected String nextLine(final BufferedReader fin) throws IOException {
         String str = readLine(fin);
         if (str == null) {
             return null;
@@ -1060,7 +1087,7 @@ public class NexusParser {
     /**
      * return attribute value as a string *
      */
-    String getAttValue(final String attribute, final String str) {
+    protected String getAttValue(final String attribute, final String str) {
         final Pattern pattern = Pattern.compile(".*" + attribute + "\\s*=\\s*([^\\s;]+).*");
         final Matcher matcher = pattern.matcher(str.toLowerCase());
         if (!matcher.find()) {

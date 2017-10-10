@@ -1507,7 +1507,10 @@ public class TreeAnnotator {
 			e.printStackTrace();
 		}
 
-        System.exit(0);
+        if (args.length == 0) {
+        	// only need exit when in GUI mode
+        	System.exit(0);
+        }
     }
 
     /**

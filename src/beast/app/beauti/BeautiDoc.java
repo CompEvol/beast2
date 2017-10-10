@@ -204,9 +204,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 if (args[i].equals("")) {
                     i += 1;
                 } else if (args[i].equals("-capture")) {
-                	// capture stderr and stdout
-                	// already done in beast.app.beauti.Beauti
-                	i += 1;
+                    // capture stderr and stdout
+                    // already done in beast.app.beauti.Beauti
+                    i += 1;
                 } else if (args[i].equals("-xml")) {
                     String fileName = args[i + 1];
                     xml = load(fileName);
@@ -260,7 +260,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 } else if (args[i].equals("-noerr")) {
                     System.setErr(new PrintStream(new OutputStream() {
                         @Override
-						public void write(int b) {
+                        public void write(int b) {
                         }
                     }));
                     i += 1;
@@ -329,7 +329,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         pluginmap.put(beastObject.getID(), beastObject);
         reversePluginmap.put(beastObject, beastObject.getID());
         if (beastObject instanceof Taxon) {
-        	Taxon taxon = (Taxon) beastObject;
+            Taxon taxon = (Taxon) beastObject;
             taxaset.put(taxon.getID(), taxon);
         }
     }
@@ -415,10 +415,10 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     void fireDocHasChanged()  {
         for (BeautiDocListener listener : listeners) {
             try {
-				listener.docHasChanged();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                listener.docHasChanged();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -547,8 +547,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                     if (!template.getAbsolutePath().equals(mainTemplate.getAbsolutePath())
                             && template.getName().toLowerCase().endsWith(".xml")) {
                         if (!loadedTemplates.contains(template.getName())) {
-                        	Log.warning.println("Processing " + template.getAbsolutePath());
-                        	Utils.logToSplashScreen("Processing " + template.getName());
+                            Log.warning.println("Processing " + template.getAbsolutePath());
+                            Utils.logToSplashScreen("Processing " + template.getName());
                             loadedTemplates.add(template.getName());
                             String xml2 = load(template.getAbsolutePath());
                             if (!xml2.contains("<mergepoint ")) {
@@ -568,7 +568,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                         String mergePoint = mergeElement.getAttributes().getNamedItem("point")
                                                 .getNodeValue();
                                         if (!mergePoints.containsKey(mergePoint)) {
-                                        	Log.warning.println("Cannot find merge point named " + mergePoint
+                                            Log.warning.println("Cannot find merge point named " + mergePoint
                                                     + " from " + template.getName()
                                                     + " in template. MergeWith ignored.");
                                         } else {
@@ -585,12 +585,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                                     }
                                 } catch (Exception e) {
                                     if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
-                                    	Log.warning.println(e.getMessage());
+                                        Log.warning.println(e.getMessage());
                                     }
                                 }
                             }
                         } else {
-                        	Log.warning.println("Skipping " + template.getAbsolutePath() + " since "
+                            Log.warning.println("Skipping " + template.getAbsolutePath() + " since "
                                     + template.getName() + " is already processed");
                         }
 
@@ -758,17 +758,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     /** get status of mode-flags in BEAUti, so these can be restored when reloading an XML file **/
     String getBeautiStatus() {
-	    String beautiStatus = "";
-	    if (!autoSetClockRate) {
-	        beautiStatus = "noAutoSetClockRate";
-	    }
-	    if (allowLinking) {
-	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
-	    }
-	    if (!autoUpdateFixMeanSubstRate) {
-	        beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
-	    }
-	    return beautiStatus;
+        String beautiStatus = "";
+        if (!autoSetClockRate) {
+            beautiStatus = "noAutoSetClockRate";
+        }
+        if (allowLinking) {
+            beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "allowLinking";
+        }
+        if (!autoUpdateFixMeanSubstRate) {
+            beautiStatus += (beautiStatus.length() > 0 ? "|" : "") + "noAutoUpdateFixMeanSubstRate";
+        }
+        return beautiStatus;
     }
 
     void extractSequences(String xml) throws XMLParserException, SAXException, IOException, ParserConfigurationException  {
@@ -883,7 +883,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             // replace alignment
             for (BEASTInterface beastObject : pluginmap.values()) {
                 if (beastObject instanceof Alignment) {
-                	// use toArray to prevent ConcurrentModificationException
+                    // use toArray to prevent ConcurrentModificationException
                     for (Object output : beastObject.getOutputs().toArray()) {
                         replaceInputs((BEASTInterface) output, beastObject, alignments.get(0));
                     }
@@ -901,7 +901,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 if (input.get() != null) {
                     if (input.get() instanceof List) {
                         @SuppressWarnings("unchecked")
-						List<BEASTInterface> list = (List<BEASTInterface>) input.get();
+                        List<BEASTInterface> list = (List<BEASTInterface>) input.get();
                         if (list.contains(original)) {
                             list.remove(original);
                             list.add(replacement);
@@ -930,7 +930,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 beautiConfig = (BeautiConfig) beastObject;
                 beautiConfig.setDoc(this);
             } else {
-            	Log.warning.println("template item " + beastObject.getID() + " is ignored");
+                Log.warning.println("template item " + beastObject.getID() + " is ignored");
             }
             BEASTObjectPanel.addPluginToMap(beastObject, this);
         }
@@ -1098,7 +1098,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 setClockRate();
             }
             if (autoUpdateFixMeanSubstRate) {
-            	SiteModelInputEditor.customConnector(this);
+                SiteModelInputEditor.customConnector(this);
             }
 
             // set estimate flag on tree, only if tree occurs in a partition
@@ -1128,7 +1128,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 // process MRCA priors
                 for (String id : pluginmap.keySet()) {
                     if (id != null && id.endsWith(".prior")) {
-                    	BEASTInterface beastObject = pluginmap.get(id);
+                        BEASTInterface beastObject = pluginmap.get(id);
                         if (beastObject instanceof MRCAPrior) {
                             MRCAPrior prior = (MRCAPrior) beastObject;
                             if (prior.treeInput.get().isEstimatedInput.get() == false) {
@@ -1205,11 +1205,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
         Log.trace.print("InPosterior=");
         for (BEASTInterface o : posteriorPredecessors) {
-        	pluginmap.put(o.getID(), o);
-        	Log.trace.print(o.getID() + " ");
-        	//if (!pluginmap.containsKey(o)) {
-        	//	System.err.println("MISSING: " + o.getID());
-        	//}
+            pluginmap.put(o.getID(), o);
+            Log.trace.print(o.getID() + " ");
+            //if (!pluginmap.containsKey(o)) {
+            //	System.err.println("MISSING: " + o.getID());
+            //}
         }
         Log.trace.println();
     }
@@ -1220,43 +1220,43 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //        str = str.replaceAll(".t:\\$\\(n\\)", ".t:" + partition.tree);
 //        str = str.replaceAll("\\$\\(n\\)", partition.partition);
         // optimised code, based on (probably incorrect) profiler output
-		StringBuilder sb = new StringBuilder();
-		int len = str.length();
-		for (int i = 0; i < len; i++) {
-			char c = str.charAt(i);
-			if (c == '.' && i < len - 6) {
-				if (str.charAt(i + 2) == ':' && str.charAt(i + 3) == '$' &&
-						str.charAt(i + 4) == '(' && str.charAt(i + 5) == 'n' && str.charAt(i + 6) == ')') {
-					switch (str.charAt(i+1)) {
-					case 's': // .s:$(n)
-						sb.append(".s:").append(partition.siteModel);
-						i += 6;
-						break;
-					case 'c':
-						sb.append(".c:").append(partition.clockModel);
-						i += 6;
-						break;
-					case 't':
-						sb.append(".t:").append(partition.tree);
-						i += 6;
-						break;
-					default:
-						sb.append('.');
-					}
-				} else {
-					sb.append('.');
-				}
-			} else if (c == '$' && i < len - 3) {
-				if (str.charAt(i + 1) == '(' && str.charAt(i + 2) == 'n' && str.charAt(i + 3) == ')') {
-					sb.append(partition.partition);
-					i+= 3;
-				} else {
-					sb.append(c);
-				}
-			} else {
-				sb.append(c);
-			}
-		}
+        StringBuilder sb = new StringBuilder();
+        int len = str.length();
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            if (c == '.' && i < len - 6) {
+                if (str.charAt(i + 2) == ':' && str.charAt(i + 3) == '$' &&
+                        str.charAt(i + 4) == '(' && str.charAt(i + 5) == 'n' && str.charAt(i + 6) == ')') {
+                    switch (str.charAt(i+1)) {
+                        case 's': // .s:$(n)
+                            sb.append(".s:").append(partition.siteModel);
+                            i += 6;
+                            break;
+                        case 'c':
+                            sb.append(".c:").append(partition.clockModel);
+                            i += 6;
+                            break;
+                        case 't':
+                            sb.append(".t:").append(partition.tree);
+                            i += 6;
+                            break;
+                        default:
+                            sb.append('.');
+                    }
+                } else {
+                    sb.append('.');
+                }
+            } else if (c == '$' && i < len - 3) {
+                if (str.charAt(i + 1) == '(' && str.charAt(i + 2) == 'n' && str.charAt(i + 3) == ')') {
+                    sb.append(partition.partition);
+                    i+= 3;
+                } else {
+                    sb.append(c);
+                }
+            } else {
+                sb.append(c);
+            }
+        }
         return sb.toString();
     }
 
@@ -1298,18 +1298,18 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     void setClockRate()  {
-    	boolean needsEstimationBySPTree = false;
+        boolean needsEstimationBySPTree = false;
         if (pluginmap.containsKey("Tree.t:Species")) {
-        	Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
-	        // check whether there is a calibration
-	        for (Object beastObject : sptree.getOutputs()) {
-	            if (beastObject instanceof MRCAPrior) {
-	                MRCAPrior prior = (MRCAPrior) beastObject;
-	                if (prior.distInput.get() != null) {
-	                    needsEstimationBySPTree = true;
-	                }
-	            }
-	        }
+            Tree sptree = (Tree) pluginmap.get("Tree.t:Species");
+            // check whether there is a calibration
+            for (Object beastObject : sptree.getOutputs()) {
+                if (beastObject instanceof MRCAPrior) {
+                    MRCAPrior prior = (MRCAPrior) beastObject;
+                    if (prior.distInput.get() != null) {
+                        needsEstimationBySPTree = true;
+                    }
+                }
+            }
         }
 
         BEASTInterface likelihood = pluginmap.get("likelihood");
@@ -1377,7 +1377,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         } catch (Exception e) {
             // ignore
-        	Log.warning.println(e.getClass().getName() + " " + e.getMessage());
+            Log.warning.println(e.getClass().getName() + " " + e.getMessage());
         }
 
         // }});
@@ -1406,13 +1406,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         connect(srcBEASTObject, targetID, connector.targetInput);
     }
 
-    
+
     public void connect(BEASTInterface srcBEASTObject, String targetID, String inputName) {
         try {
-        	BEASTInterface target = pluginmap.get(targetID);
+            BEASTInterface target = pluginmap.get(targetID);
             if (target == null) {
-            	Log.trace.println("BeautiDoc: Could not find object " + targetID);
-            	return;
+                Log.trace.println("BeautiDoc: Could not find object " + targetID);
+                return;
             }
             // prevent duplication inserts in list
             Object o = target.getInputValue(inputName);
@@ -1444,7 +1444,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public void disconnect(BEASTInterface srcBEASTObject, String targetID, String inputName) {
         try {
-        	BEASTInterface target = pluginmap.get(targetID);
+            BEASTInterface target = pluginmap.get(targetID);
             if (target == null) {
                 return;
             }
@@ -1464,8 +1464,8 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             } else {
                 if (input.get() != null && input.get() instanceof BEASTInterface &&
-                		input.get() == srcBEASTObject) {
-                        //((BEASTInterface) input.get()).getID().equals(targetID)) {
+                        input.get() == srcBEASTObject) {
+                    //((BEASTInterface) input.get()).getID().equals(targetID)) {
                     input.setValue(null, target);
                 }
             }
@@ -1483,7 +1483,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
 
-	public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template)  {
+    public BEASTInterface addAlignmentWithSubnet(PartitionContext context, BeautiSubTemplate template)  {
         BEASTInterface data = template.createSubNet(context, true);
         alignments.add((Alignment) data);
         // re-determine partitions
@@ -1713,7 +1713,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     private void warning(String s) {
         if (Boolean.valueOf(System.getProperty("beast.debug"))) {
-        	Log.warning.print(s);
+            Log.warning.print(s);
         }
     }
 
@@ -1743,9 +1743,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * @return
      */
     static public BEASTInterface deepCopyPlugin(BEASTInterface beastObject, BEASTInterface parent, MCMC mcmc,
-    										PartitionContext oldContext,
-                                            PartitionContext newContext, BeautiDoc doc, List<BEASTInterface> tabooList)
-          {
+                                                PartitionContext oldContext,
+                                                PartitionContext newContext, BeautiDoc doc, List<BEASTInterface> tabooList)
+    {
         /** taboo = list of beastObjects that should not be copied **/
         Set<BEASTInterface> taboo = new HashSet<>();
         taboo.add(parent);
@@ -1767,7 +1767,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         taboo.addAll(mcmc.loggersInput.get());
         // add exception for *BEAST logger (perhaps need to be generalised?)
         if (doc.pluginmap.containsKey("SpeciesTreeLoggerX")) {
-        	taboo.add(doc.pluginmap.get("SpeciesTreeLoggerX"));
+            taboo.add(doc.pluginmap.get("SpeciesTreeLoggerX"));
         }
         // add trees
         for (StateNode node : mcmc.startStateInput.get().stateNodeInput.get()) {
@@ -1776,12 +1776,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             }
         }
         // add MRCAPriors
-		for (String id : doc.pluginmap.keySet()) {
-			BEASTInterface o = doc.pluginmap.get(id);
-			if (o instanceof MRCAPrior) {
-				taboo.add(o);
-			}
-		}
+        for (String id : doc.pluginmap.keySet()) {
+            BEASTInterface o = doc.pluginmap.get(id);
+            if (o instanceof MRCAPrior) {
+                taboo.add(o);
+            }
+        }
         if (tabooList != null) {
             taboo.addAll(tabooList);
         }
@@ -1794,7 +1794,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // itself
         Set<BEASTInterface> ancestors = new HashSet<>();
         collectAncestors(beastObject, ancestors, taboo);
-		Log.info.print(Arrays.toString(ancestors.toArray()));
+        Log.info.print(Arrays.toString(ancestors.toArray()));
         for (BEASTInterface beastObject2 : predecessors) {
             if (beastObject2 instanceof StateNode) {
                 Set<BEASTInterface> ancestors2 = new HashSet<>();
@@ -1810,155 +1810,155 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             }
         }
-        
+
         // collect priors
         predecessors.addAll(ancestors);
         for (BEASTInterface o : predecessors) {
-        	if (o instanceof Prior) {
+            if (o instanceof Prior) {
                 List<BEASTInterface> priorPredecessors = new ArrayList<>();
                 collectPredecessors(o, priorPredecessors);
                 ancestors.addAll(priorPredecessors);
-        	}
+            }
         }
 
-		Log.info.print(Arrays.toString(predecessors.toArray()));
-		for (BEASTInterface p : ancestors) {
-			Log.info.print("(");
-			try {
-				for (BEASTInterface p2 : p.listActiveBEASTObjects()) {
-					if (ancestors.contains(p2)) {
-						Log.info.print(p2.getID()+ " ");
-					}
-				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			}
-			Log.info.print(") ");
-			Log.info.println(p.getID());
-		}
+        Log.info.print(Arrays.toString(predecessors.toArray()));
+        for (BEASTInterface p : ancestors) {
+            Log.info.print("(");
+            try {
+                for (BEASTInterface p2 : p.listActiveBEASTObjects()) {
+                    if (ancestors.contains(p2)) {
+                        Log.info.print(p2.getID()+ " ");
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            Log.info.print(") ");
+            Log.info.println(p.getID());
+        }
 
         // now the ancestors contain all beastObjects to be copied
         // make a copy of all individual BEASTObjects, before connecting them up
         Map<String, BEASTInterface> copySet = new HashMap<>();
         for (BEASTInterface beastObject2 : ancestors) {
             String id = beastObject2.getID();
-    		if (id == null) {
+            if (id == null) {
                 id = beastObject.getClass().getName().replaceAll(".*\\.", "");
                 int i = 0;
                 while (doc.pluginmap.containsKey(id + "." + i)) {
                     i++;
                 }
                 id = id + "." + i;
-                beastObject2.setID(id);			
-    		}
+                beastObject2.setID(id);
+            }
 
             String copyID = renameId(id, oldContext, newContext);
             if (!id.equals(copyID)) {
-	            if (doc.pluginmap.containsKey(copyID)) {
-	            	BEASTInterface org = doc.pluginmap.get(copyID);
-	                copySet.put(id, org);
-	            } else {
-	            	BEASTInterface copy;
-					try {
-						copy = beastObject2.getClass().newInstance();
-		            	copy.setID(copyID);
-		                copySet.put(id, copy);
-					} catch (InstantiationException | IllegalAccessException e) {
-						e.printStackTrace();
-						throw new RuntimeException("Programmer error: every object in the model should have a default constructor that is publicly accessible");
-					}
-	            }
+                if (doc.pluginmap.containsKey(copyID)) {
+                    BEASTInterface org = doc.pluginmap.get(copyID);
+                    copySet.put(id, org);
+                } else {
+                    BEASTInterface copy;
+                    try {
+                        copy = beastObject2.getClass().newInstance();
+                        copy.setID(copyID);
+                        copySet.put(id, copy);
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Programmer error: every object in the model should have a default constructor that is publicly accessible");
+                    }
+                }
             }
             Log.warning.println("Copy: " + id + " -> " + copyID);
         }
 
         // set all inputs of copied beastObjects + outputs to taboo
-		for (BEASTInterface beastObject2 : ancestors) {
+        for (BEASTInterface beastObject2 : ancestors) {
             String id = beastObject2.getID();
             BEASTInterface copy = copySet.get(id);
             if (copy != null) {
-            	Log.warning.println("Processing: " + id + " -> " + copy.getID());
-            // set inputs
-            for (Input<?> input : beastObject2.listInputs()) {
-                if (input.get() != null) {
-                    if (input.get() instanceof List) {
-                        // handle lists
-                    	//((List)copy.getInput(input.getName())).clear();
-                        for (Object o : (List<?>) input.get()) {
-                            if (o instanceof BEASTInterface) {
-                            	BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, oldContext, newContext, doc);
-                            	// make sure it is not already in the list
-                            	Object o2 = copy.getInput(input.getName()).get();
-                            	boolean alreadyInList = false;
-                            	if (o2 instanceof List) {
-                            		List<?> currentList = (List<?>) o2;
-	                            	for (Object v : currentList) {
-	                            		if (v == value) {
-	                            			alreadyInList = true;
-	                            			break;
-	                            		}
-	                            	}
-                            	}
-                            	if (!alreadyInList) {
-                            		// add to the list
-                            		copy.setInputValue(input.getName(), value);
-                            	}
-                            } else {
-                                // it is a primitive value
-                            	if (copy instanceof Parameter.Base && input.getName().equals("value")) {
-                            	//	// prevent appending to parameter values
-                            		Parameter.Base<?> p = ((Parameter.Base<?>) copy);
-                            		((List<?>) p.valuesInput.get()).clear();
-                            	}
-                                copy.setInputValue(input.getName(), input.get());
+                Log.warning.println("Processing: " + id + " -> " + copy.getID());
+                // set inputs
+                for (Input<?> input : beastObject2.listInputs()) {
+                    if (input.get() != null) {
+                        if (input.get() instanceof List) {
+                            // handle lists
+                            //((List)copy.getInput(input.getName())).clear();
+                            for (Object o : (List<?>) input.get()) {
+                                if (o instanceof BEASTInterface) {
+                                    BEASTInterface value = getCopyValue((BEASTInterface) o, copySet, oldContext, newContext, doc);
+                                    // make sure it is not already in the list
+                                    Object o2 = copy.getInput(input.getName()).get();
+                                    boolean alreadyInList = false;
+                                    if (o2 instanceof List) {
+                                        List<?> currentList = (List<?>) o2;
+                                        for (Object v : currentList) {
+                                            if (v == value) {
+                                                alreadyInList = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (!alreadyInList) {
+                                        // add to the list
+                                        copy.setInputValue(input.getName(), value);
+                                    }
+                                } else {
+                                    // it is a primitive value
+                                    if (copy instanceof Parameter.Base && input.getName().equals("value")) {
+                                        //	// prevent appending to parameter values
+                                        Parameter.Base<?> p = ((Parameter.Base<?>) copy);
+                                        ((List<?>) p.valuesInput.get()).clear();
+                                    }
+                                    copy.setInputValue(input.getName(), input.get());
+                                }
                             }
-                        }
-                    } else if (input.get() instanceof BEASTInterface) {
-                        // handle BEASTObject
-                    	BEASTInterface value = getCopyValue((BEASTInterface) input.get(), copySet, oldContext, newContext, doc);
-                        copy.setInputValue(input.getName(), value);
-                    } else if (input.get() instanceof String) {
-                		// may need to replace partition info
-                		String s = (String) input.get();
-                		s = s.replaceAll("\\.c:[a-zA-Z0-9_]*", ".c:" + newContext.clockModel);
-                		s = s.replaceAll("\\.s:[a-zA-Z0-9_]*", ".s:" + newContext.siteModel);
-                		s = s.replaceAll("\\.t:[a-zA-Z0-9_]*", ".t:" + newContext.tree);
-                		copy.setInputValue(input.getName(), s);
-                	} else {
-                        // it is a primitive value
-                		copy.setInputValue(input.getName(), input.get());
-                	}
-                }
-            }
-
-            // set outputs
-            for (Object output : beastObject2.getOutputs()) {
-                if (taboo.contains(output) && output != parent) {
-                	BEASTInterface output2 = getCopyValue((BEASTInterface)output, copySet, oldContext, newContext, doc);
-                    for (Input<?> input : ((BEASTInterface)output).listInputs()) {
-                        // do not add state node initialisers automatically
-                        if (input.get() instanceof List &&
-                                // do not update state node initialisers
-                                !(taboo.contains(output2) && input.getName().equals("init"))) {
-                            List<?> list = (List<?>) input.get();
-                            if (list.contains(beastObject2)) {
-                            	List<?> list2 = (List<?>)output2.getInput(input.getName()).get();
-                            	if (!list2.contains(copy)) {
-                            		output2.setInputValue(input.getName(), copy);
-                            	}
-                            }
+                        } else if (input.get() instanceof BEASTInterface) {
+                            // handle BEASTObject
+                            BEASTInterface value = getCopyValue((BEASTInterface) input.get(), copySet, oldContext, newContext, doc);
+                            copy.setInputValue(input.getName(), value);
+                        } else if (input.get() instanceof String) {
+                            // may need to replace partition info
+                            String s = (String) input.get();
+                            s = s.replaceAll("\\.c:[a-zA-Z0-9_]*", ".c:" + newContext.clockModel);
+                            s = s.replaceAll("\\.s:[a-zA-Z0-9_]*", ".s:" + newContext.siteModel);
+                            s = s.replaceAll("\\.t:[a-zA-Z0-9_]*", ".t:" + newContext.tree);
+                            copy.setInputValue(input.getName(), s);
+                        } else {
+                            // it is a primitive value
+                            copy.setInputValue(input.getName(), input.get());
                         }
                     }
-
                 }
-            }
 
-            copySet.put(id, copy);
-    		//Log.warning.println(base.operatorsAsString());
+                // set outputs
+                for (Object output : beastObject2.getOutputs()) {
+                    if (taboo.contains(output) && output != parent) {
+                        BEASTInterface output2 = getCopyValue((BEASTInterface)output, copySet, oldContext, newContext, doc);
+                        for (Input<?> input : ((BEASTInterface)output).listInputs()) {
+                            // do not add state node initialisers automatically
+                            if (input.get() instanceof List &&
+                                    // do not update state node initialisers
+                                    !(taboo.contains(output2) && input.getName().equals("init"))) {
+                                List<?> list = (List<?>) input.get();
+                                if (list.contains(beastObject2)) {
+                                    List<?> list2 = (List<?>)output2.getInput(input.getName()).get();
+                                    if (!list2.contains(copy)) {
+                                        output2.setInputValue(input.getName(), copy);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                copySet.put(id, copy);
+                //Log.warning.println(base.operatorsAsString());
             }
         }
 
-		// deep copy must be obtained from copyset, before sorting
+        // deep copy must be obtained from copyset, before sorting
         // since the sorting changes (deletes items) from the copySet map
         BEASTInterface deepCopy = copySet.get(beastObject.getID());
 
@@ -1991,7 +1991,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                 }
             } catch (Exception e) {
                 // ignore
-            	Log.warning.print(e.getMessage());
+                Log.warning.print(e.getMessage());
             }
             if (doc != null) {
                 doc.addPlugin(copy);
@@ -2047,17 +2047,17 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             oldPartition = oldContext.partition;
         }
         if (id.indexOf('.') < 0 || !(id.endsWith(oldPartition))) {
-        	if (id.indexOf(':') > 0) {
-        		return id;
-        	}
-        	// original id does not contain partition info
-        	return id + "." + newPartition;
+            if (id.indexOf(':') > 0) {
+                return id;
+            }
+            // original id does not contain partition info
+            return id + "." + newPartition;
         }
         id = id.substring(0, id.length() - oldPartition.length()) + newPartition;
         return id;
     }
 
-    
+
     static public void collectPredecessors(BEASTInterface beastObject, List<BEASTInterface> predecessors) {
         predecessors.add(beastObject);
         if (beastObject instanceof Alignment || beastObject instanceof FilteredAlignment) {
@@ -2091,7 +2091,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public void renamePartition(int partitionID, String oldName, String newName)  {
-    	Log.warning.println("renamePartition: " + partitionID + " " + oldName + " " + newName);
+        Log.warning.println("renamePartition: " + partitionID + " " + oldName + " " + newName);
         // sanity check: make sure newName is not already in use by another partition
         String newsuffix = null;
         switch (partitionID) {
@@ -2154,7 +2154,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         String[] keyset = pluginmap.keySet().toArray(new String[0]);
         for (String key : keyset) {
             if (key.endsWith(oldsuffix)) {
-            	BEASTInterface beastObject = pluginmap.remove(key);
+                BEASTInterface beastObject = pluginmap.remove(key);
                 key = key.substring(0, key.indexOf(oldsuffix)) + newsuffix;
                 pluginmap.put(key, beastObject);
             }
@@ -2407,105 +2407,121 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      * and assign taxonset to the alignment
      * **/
     static void createTaxonSet(Alignment a, BeautiDoc doc) {
-		List<String> taxaNames = a.getTaxaNames();
-		TaxonSet taxonset = new TaxonSet();
+        List<String> taxaNames = a.getTaxaNames();
+        TaxonSet taxonset = new TaxonSet();
         for (final String taxaName : taxaNames) {
-        	taxonset.taxonsetInput.get().add(doc.getTaxon(taxaName));
+            taxonset.taxonsetInput.get().add(doc.getTaxon(taxaName));
         }
         taxonset.setID("TaxonSet0." + a.getID());
         try {
-			taxonset.initAndValidate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		doc.registerPlugin(taxonset);
-	}
+            taxonset.initAndValidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        doc.registerPlugin(taxonset);
+    }
 
     /** create Taxon with given name, reuse if a taxon
      *  with this name already exists
      **/
-	public Taxon getTaxon(String taxaName) {
-    	if (taxaset.keySet().contains(taxaName)) {
-    		return taxaset.get(taxaName);
-    	} else {
-    		try {
-    			Taxon taxon = new Taxon(taxaName);
-    			registerPlugin(taxon);
-    			return taxon;
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-		return null;
-	}
+    public Taxon getTaxon(String taxaName) {
+        if (taxaset.keySet().contains(taxaName)) {
+            return taxaset.get(taxaName);
+        } else {
+            try {
+                Taxon taxon = new Taxon(taxaName);
+                registerPlugin(taxon);
+                return taxon;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
-	public void addMRCAPrior(MRCAPrior mrcaPrior) {
-			Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
-			if (tree == null) {
-				for (String key : pluginmap.keySet()) {
-					if (key.startsWith("Tree.t:")) {
-						tree = (Tree) pluginmap.get(key);
-						break;
-					}
-				}
-			}
-			// TODO: make sure we have the appropriate tree
-			CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
-			mrcaPrior.treeInput.setValue(tree, mrcaPrior);
-			ParametricDistribution distr = mrcaPrior.distInput.get();
+    public void addMRCAPrior(MRCAPrior mrcaPrior) {
+        Tree tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(0).getID());
+        if (tree == null) {
+            for (String key : pluginmap.keySet()) {
+                if (key.startsWith("Tree.t:")) {
+                    tree = (Tree) pluginmap.get(key);
+                    break;
+                }
+            }
+        }
+        // make sure we have the appropriate tree:
+        if(alignments.size()>1 ){
+            String testTaxon =  mrcaPrior.taxonsetInput.get().toString().split("\n")[1].trim();
+            String[] taxaNames;// = tree.getTaxaNames();
+            int index=-1;
+            int j=0;
+            while (index<0 && j++ < alignments.size()){
+                tree = (Tree) pluginmap.get("Tree.t:" + alignments.get(j-1).getID());
+                taxaNames = tree.getTaxaNames();
+                for (int i=0; i<taxaNames.length && index<0; i++)
+                    if (testTaxon.equals(taxaNames[i])) index=i;
+            }
+        }
 
-			TaxonSet t = mrcaPrior.taxonsetInput.get();
-			if (taxaset.keySet().contains(t.getID())) {
-				Log.warning.println("taxonset " + t.getID() + " already exists: MRCAPrior " + mrcaPrior.getID() + " can not be added");
-			} else {
-				taxaset.put(t.getID(), t);
-				// ensure TaxonSets are not duplicated
-				List<Taxon> taxa = t.taxonsetInput.get();
-				for (int i = 0; i< taxa.size(); i++) {
-					if (taxaset.containsKey(taxa.get(i).getID())) {
-						taxa.set(i, taxaset.get(taxa.get(i).getID()));
-					} else {
-						taxaset.put(taxa.get(i).getID(), taxa.get(i));
-					}
-				}
-				if (distr instanceof Normal && (Double.isInfinite(((Normal)distr).sigmaInput.get().getValue()))) {
-					// it is a 'fixed' calibration, no need to add a distribution
-				} else {
-					prior.pDistributions.setValue(mrcaPrior, prior);
-					connect(mrcaPrior, "tracelog", "log");
-				}
-			}
-			if (t.taxonsetInput.get().size() == 1 && distr != null) {
-				// it is a calibration on a tip -- better start sampling that tip
-		        TipDatesRandomWalker operator = new TipDatesRandomWalker();
-		        t.initAndValidate();
-		        operator.initByName("taxonset", t, "weight", 1.0, "tree", tree, "windowSize", 1.0);
-		        operator.setID("TipDatesRandomWalker." + t.getID());
-		        MCMC mcmc = (MCMC) this.mcmc.get();
-		        mcmc.operatorsInput.setValue(operator, mcmc);
-		        
-		        // set up date trait
-		        double date = distr.getMean();
-		        TraitSet dateTrait = null;
-		        for (TraitSet ts : tree.m_traitList.get()) {
-		        	if (ts.isDateTrait()) {
-		        		dateTrait = ts;
-		        	}
-		        }
-		        if (dateTrait == null) {
-		        	dateTrait = new TraitSet();
-		        	dateTrait.initByName("traitname", TraitSet.DATE_BACKWARD_TRAIT, "taxa", tree.getTaxonset(), 
-		        			"value", t.taxonsetInput.get().get(0).getID() + "=" + date);
-		        	tree.m_traitList.setValue(dateTrait, tree);
-		        	tree.initAndValidate();
-		        } else {
-		        	dateTrait.traitsInput.setValue(dateTrait.traitsInput.get() + ",\n" +
-		        			t.taxonsetInput.get().get(0).getID() + "=" + date
-		        			, dateTrait);	
-		        }
-		        mrcaPrior.onlyUseTipsInput.setValue(true, mrcaPrior);
-			}
-	}
+        CompoundDistribution prior = (CompoundDistribution) pluginmap.get("prior");
+        mrcaPrior.treeInput.setValue(tree, mrcaPrior);
+        ParametricDistribution distr = mrcaPrior.distInput.get();
+
+        TaxonSet t = mrcaPrior.taxonsetInput.get();
+        if (taxaset.keySet().contains(t.getID())) {
+            Log.warning.println("taxonset " + t.getID() + " already exists: MRCAPrior " + mrcaPrior.getID() + " can not be added");
+        } else {
+            taxaset.put(t.getID(), t);
+            // ensure TaxonSets are not duplicated
+            List<Taxon> taxa = t.taxonsetInput.get();
+            for (int i = 0; i< taxa.size(); i++) {
+                if (taxaset.containsKey(taxa.get(i).getID())) {
+                    taxa.set(i, taxaset.get(taxa.get(i).getID()));
+                } else {
+                    taxaset.put(taxa.get(i).getID(), taxa.get(i));
+                }
+            }
+            if (distr instanceof Normal && (Double.isInfinite(((Normal)distr).sigmaInput.get().getValue()))) {
+                // it is a 'fixed' calibration, no need to add a distribution
+            } else {
+                prior.pDistributions.setValue(mrcaPrior, prior);
+                connect(mrcaPrior, "tracelog", "log");
+            }
+        }
+        if (t.taxonsetInput.get().size() == 1 && distr != null) {
+            // only add operators if it is NOT a 'fixed' calibration
+            if (!(distr instanceof Normal && (Double.isInfinite(((Normal)distr).sigmaInput.get().getValue())))) {
+                TipDatesRandomWalker operator = new TipDatesRandomWalker();
+                t.initAndValidate();
+                operator.initByName("taxonset", t, "weight", 1.0, "tree", tree, "windowSize", 1.0);
+                operator.setID("TipDatesRandomWalker." + t.getID());
+                MCMC mcmc = (MCMC) this.mcmc.get();
+                mcmc.operatorsInput.setValue(operator, mcmc);
+            }
+            // set up date trait
+            double date = distr.getMean();
+            TraitSet dateTrait = null;
+            for (TraitSet ts : tree.m_traitList.get()) {
+                if (ts.isDateTrait()) {
+                    dateTrait = ts;
+                }
+            }
+            if (dateTrait == null) {
+                dateTrait = new TraitSet();
+                dateTrait.setID("traitsetDate");
+                registerPlugin(dateTrait);
+                dateTrait.initByName("traitname", TraitSet.DATE_BACKWARD_TRAIT, "taxa", tree.getTaxonset(),
+                        "value", t.taxonsetInput.get().get(0).getID() + "=" + date);
+                tree.m_traitList.setValue(dateTrait, tree);
+                tree.initAndValidate();
+            } else {
+                dateTrait.traitsInput.setValue(dateTrait.traitsInput.get() + ",\n" +
+                                t.taxonsetInput.get().get(0).getID() + "=" + date
+                        , dateTrait);
+            }
+            mrcaPrior.onlyUseTipsInput.setValue(true, mrcaPrior);
+        }
+    }
 
 
 } // class BeautiDoc
