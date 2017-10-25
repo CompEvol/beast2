@@ -1,12 +1,12 @@
 package beast.evolution.datatype;
 
+import beast.core.BEASTObject;
+import beast.core.Description;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import beast.core.BEASTObject;
-import beast.core.Description;
 
 
 
@@ -239,7 +239,9 @@ public interface DataType {
 
         @Override
         public int[] getStatesForCode(int state) {
-            return mapCodeToStateSet[state];
+            return mapCodeToStateSet == null
+                    ? new int[]{state}
+                    : mapCodeToStateSet[state];
         }
 
         @Override
