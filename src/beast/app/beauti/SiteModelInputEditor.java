@@ -63,8 +63,7 @@ public class SiteModelInputEditor extends BEASTObjectInputEditor {
     		operator = new DeltaExchangeOperator();
     		try {
     			operator.setID("FixMeanMutationRatesOperator");
-				operator.initByName("weight", 2.0, "delta", 0.75,
-						"parameter", new RealParameter(new Double[] { 1., 1., 1., 1. }));
+				operator.initByName("weight", 2.0, "delta", 0.75);
 			} catch (Throwable e1) {
 				// ignore initAndValidate exception
 			}
