@@ -1,4 +1,4 @@
-// Generated from NewickParser.g4 by ANTLR 4.5
+// Generated from NewickParser.g4 by ANTLR 4.7
 package beast.util.treeparser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NewickParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -122,6 +122,7 @@ public class NewickParser extends Parser {
 			setState(20);
 			node();
 			setState(22);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==SEMI) {
 				{
@@ -186,6 +187,7 @@ public class NewickParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(37);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==OPENP) {
 				{
@@ -272,6 +274,7 @@ public class NewickParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(42);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT_SCI) | (1L << FLOAT) | (1L << INT) | (1L << STRING))) != 0)) {
 				{
@@ -281,6 +284,7 @@ public class NewickParser extends Parser {
 			}
 
 			setState(45);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==OPENA) {
 				{
@@ -290,12 +294,14 @@ public class NewickParser extends Parser {
 			}
 
 			setState(52);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==COLON) {
 				{
 				setState(47);
 				match(COLON);
 				setState(49);
+				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==OPENA) {
 					{
@@ -351,6 +357,7 @@ public class NewickParser extends Parser {
 		enterRule(_localctx, 6, RULE_label);
 		try {
 			setState(56);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case FLOAT_SCI:
 			case FLOAT:
@@ -537,6 +544,7 @@ public class NewickParser extends Parser {
 		enterRule(_localctx, 12, RULE_attribValue);
 		try {
 			setState(76);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case AFLOAT_SCI:
 			case AFLOAT:
@@ -610,7 +618,10 @@ public class NewickParser extends Parser {
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT_SCI) | (1L << FLOAT) | (1L << INT))) != 0)) ) {
 			_errHandler.recoverInline(this);
-			} else {
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
 				consume();
 			}
 			}
@@ -660,7 +671,10 @@ public class NewickParser extends Parser {
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << AFLOAT_SCI) | (1L << AFLOAT) | (1L << AINT))) != 0)) ) {
 			_errHandler.recoverInline(this);
-			} else {
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
 				consume();
 			}
 			}
@@ -749,22 +763,22 @@ public class NewickParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\30`\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30`\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
 		"\2\3\2\5\2\31\n\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3!\n\3\f\3\16\3$\13\3\3\3"+
 		"\3\3\5\3(\n\3\3\3\3\3\3\4\5\4-\n\4\3\4\5\4\60\n\4\3\4\3\4\5\4\64\n\4\3"+
 		"\4\5\4\67\n\4\3\5\3\5\5\5;\n\5\3\6\3\6\3\6\3\6\7\6A\n\6\f\6\16\6D\13\6"+
 		"\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\5\bO\n\b\3\t\3\t\3\n\3\n\3\13\3\13"+
 		"\3\13\3\13\7\13Y\n\13\f\13\16\13\\\13\13\3\13\3\13\3\13\2\2\f\2\4\6\b"+
-		"\n\f\16\20\22\24\2\4\3\2\b\n\3\2\22\24a\2\26\3\2\2\2\4\'\3\2\2\2\6,\3"+
-		"\2\2\2\b:\3\2\2\2\n<\3\2\2\2\fG\3\2\2\2\16N\3\2\2\2\20P\3\2\2\2\22R\3"+
-		"\2\2\2\24T\3\2\2\2\26\30\5\4\3\2\27\31\7\3\2\2\30\27\3\2\2\2\30\31\3\2"+
-		"\2\2\31\32\3\2\2\2\32\33\7\2\2\3\33\3\3\2\2\2\34\35\7\5\2\2\35\"\5\4\3"+
-		"\2\36\37\7\4\2\2\37!\5\4\3\2 \36\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3\2\2"+
-		"\2#%\3\2\2\2$\"\3\2\2\2%&\7\6\2\2&(\3\2\2\2\'\34\3\2\2\2\'(\3\2\2\2()"+
-		"\3\2\2\2)*\5\6\4\2*\5\3\2\2\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2\2"+
-		".\60\5\n\6\2/.\3\2\2\2/\60\3\2\2\2\60\66\3\2\2\2\61\63\7\7\2\2\62\64\5"+
-		"\n\6\2\63\62\3\2\2\2\63\64\3\2\2\2\64\65\3\2\2\2\65\67\5\20\t\2\66\61"+
+		"\n\f\16\20\22\24\2\4\3\2\b\n\3\2\22\24\2a\2\26\3\2\2\2\4\'\3\2\2\2\6,"+
+		"\3\2\2\2\b:\3\2\2\2\n<\3\2\2\2\fG\3\2\2\2\16N\3\2\2\2\20P\3\2\2\2\22R"+
+		"\3\2\2\2\24T\3\2\2\2\26\30\5\4\3\2\27\31\7\3\2\2\30\27\3\2\2\2\30\31\3"+
+		"\2\2\2\31\32\3\2\2\2\32\33\7\2\2\3\33\3\3\2\2\2\34\35\7\5\2\2\35\"\5\4"+
+		"\3\2\36\37\7\4\2\2\37!\5\4\3\2 \36\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3\2"+
+		"\2\2#%\3\2\2\2$\"\3\2\2\2%&\7\6\2\2&(\3\2\2\2\'\34\3\2\2\2\'(\3\2\2\2"+
+		"()\3\2\2\2)*\5\6\4\2*\5\3\2\2\2+-\5\b\5\2,+\3\2\2\2,-\3\2\2\2-/\3\2\2"+
+		"\2.\60\5\n\6\2/.\3\2\2\2/\60\3\2\2\2\60\66\3\2\2\2\61\63\7\7\2\2\62\64"+
+		"\5\n\6\2\63\62\3\2\2\2\63\64\3\2\2\2\64\65\3\2\2\2\65\67\5\20\t\2\66\61"+
 		"\3\2\2\2\66\67\3\2\2\2\67\7\3\2\2\28;\5\20\t\29;\7\r\2\2:8\3\2\2\2:9\3"+
 		"\2\2\2;\t\3\2\2\2<=\7\13\2\2=B\5\f\7\2>?\7\17\2\2?A\5\f\7\2@>\3\2\2\2"+
 		"AD\3\2\2\2B@\3\2\2\2BC\3\2\2\2CE\3\2\2\2DB\3\2\2\2EF\7\27\2\2F\13\3\2"+
