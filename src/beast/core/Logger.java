@@ -364,7 +364,7 @@ public class Logger extends BEASTObject {
                 fileNameInput.setValue(fileName, this);
             }
             if (System.getProperty("file.name.prefix") != null) {
-                fileName = System.getProperty("file.name.prefix") + "/" + fileName;
+                fileName = System.getProperty("file.name.prefix") + fileName;
             }
             switch (FILE_MODE) {
                 case only_new:// only open file if the file does not already exists

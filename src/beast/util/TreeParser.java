@@ -34,11 +34,7 @@ import java.util.Map;
 import beast.util.treeparser.NewickParser;
 import beast.util.treeparser.NewickParser.MetaContext;
 import beast.util.treeparser.NewickParserBaseVisitor;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -354,7 +350,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
      * @return root node of tree
      */
     public Node parseNewick(String newick) {
-        ANTLRInputStream input = new ANTLRInputStream(newick);
+        CharStream charStream = CharStreams.fromString(newick);
 
         // Custom parse/lexer error listener
         BaseErrorListener errorListener = new BaseErrorListener() {
@@ -369,7 +365,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         // Use lexer to produce token stream
 
-        NewickLexer lexer = new NewickLexer(input);
+        NewickLexer lexer = new NewickLexer(charStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(errorListener);
 

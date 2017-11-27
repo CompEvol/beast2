@@ -492,8 +492,12 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         int[] states = new int[patternCount];
 
         for (i = 0; i < patternCount; i++) {
-            int state = data.getPattern(taxon, i);
-            states[i] = state;
+            int code = data.getPattern(taxon, i);
+            int[] statesForCode = data.getDataType().getStatesForCode(code);
+            if (statesForCode.length==1)
+                states[i] = statesForCode[0];
+            else
+                states[i] = code; // Causes ambiguous states to be ignored.
         }
 
         beagle.setTipStates(nodeIndex, states);

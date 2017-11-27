@@ -19,13 +19,23 @@
 
 FROM openjdk:8
 
-RUN apt-get update && apt-get install -y ant tightvncserver twm
+# Install Apache Ant
+RUN apt-get update && apt-get install -y ant
 
+# Install and configure VNC server
+RUN apt-get update && apt-get install -y tightvncserver twm
 ENV DISPLAY :0
 ENV USER root
 RUN mkdir /root/.vnc
 RUN echo password | vncpasswd -f > /root/.vnc/passwd
 RUN chmod 600 /root/.vnc/passwd
+
+# Install BEAGLE
+RUN apt-get update && apt-get install -y build-essential autoconf automake libtool pkg-config
+RUN cd /root && git clone --depth=1 https://github.com/beagle-dev/beagle-lib.git
+RUN cd /root/beagle-lib && ./autogen.sh && ./configure --prefix=/usr/local && make install
+ENV LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
+RUN ldconfig
 
 # Ant build fails if the repo dir isn't named beast2
 RUN mkdir /root/beast2

@@ -1,25 +1,5 @@
 package beast.app.beauti;
 
-import java.awt.*;
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EventObject;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-
 import beast.app.draw.BEASTObjectInputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -27,6 +7,16 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+
+import javax.swing.*;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.text.DateFormat;
+import java.time.format.DateTimeParseException;
+import java.util.EventObject;
+import java.util.List;
 
 public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
@@ -51,6 +41,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
     JScrollPane scrollPane;
     List<Taxon> taxonsets;
+
+    JRadioButton numericRadioButton, formattedDateRadioButton;
+    ButtonGroup radioButtonGroup;
+    JComboBox<String> dateFormatComboBox;
 
     @Override
     public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption isExpandOption, boolean addButtons) {
@@ -111,7 +105,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
     private Component createListBox() {
         taxa = traitSet.taxaInput.get().asStringList();
-        String[] columnData = new String[]{"Name", "Date", "Height"};
+        String[] columnData = new String[]{"Name", "Date (raw value)", "Height"};
         tableData = new Object[taxa.size()][3];
         convertTraitToTableData();
         // set up table.
@@ -147,15 +141,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             public boolean stopCellEditing() {
                 table.removeEditor();
                 String text = m_textField.getText();
-//                try {
-//                    Double.parseDouble(text);
-//                } catch (Exception e) {
-//                	try {
-//                		Date.parse(text);
-//                	} catch (Exception e2) {
-//                        return false;
-//					}
-//                }
+
                 tableData[m_iRow][m_iCol] = text;
                 convertTableDataToTrait();
                 convertTraitToTableData();
@@ -204,60 +190,33 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         table.setRowHeight(24 * fontsize / 13);
         scrollPane = new JScrollPane(table);
 
-// AJD: This ComponentListener breaks the resizing of the tip dates table, so I have removed it.
-//        scrollPane.addComponentListener(new ComponentListener() {
-//            @Override
-//            public void componentShown(ComponentEvent e) {}
-//
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                Component c = (Component) e.getSource();
-//                while (c.getParent() != null && !(c.getParent() instanceof JSplitPane)) {
-//                    c = c.getParent();
-//                }
-//                if (c.getParent() != null) {
-//                    Dimension preferredSize = c.getSize();
-//                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
-//                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
-//                    scrollPane.setPreferredSize(preferredSize);
-//                } else if (doc.getFrame() != null) {
-//                    Dimension preferredSize = doc.getFrame().getSize();
-//                    preferredSize.height = Math.max(preferredSize.height - 170, 0);
-//                    preferredSize.width = Math.max(preferredSize.width - 25, 0);
-//                    scrollPane.setPreferredSize(preferredSize);
-//                }
-//            }
-//
-//            @Override
-//            public void componentMoved(ComponentEvent e) {}
-//
-//            @Override
-//            public void componentHidden(ComponentEvent e) {}
-//        });
-
         return scrollPane;
     } // createListBox
 
+    private void clearTable(boolean heightsOnly) {
+         for (int i = 0; i < tableData.length; i++) {
+            tableData[i][0] = taxa.get(i);
+            if (!heightsOnly)
+                tableData[i][1] = "0";
+             tableData[i][2] = "0";
+        }
+    }
+
     /* synchronise table with data from traitSet BEASTObject */
     private void convertTraitToTableData() {
-        for (int i = 0; i < tableData.length; i++) {
-            tableData[i][0] = taxa.get(i);
-            tableData[i][1] = "0";
-            tableData[i][2] = "0";
-        }
+        clearTable(false);
+
         String[] traits = traitSet.traitsInput.get().split(",");
         for (String trait : traits) {
             trait = trait.replaceAll("\\s+", " ");
             String[] strs = trait.split("=");
             if (strs.length != 2) {
                 break;
-                //throw new Exception("could not parse trait: " + trait);
             }
+
             String taxonID = normalize(strs[0]);
             int taxonIndex = taxa.indexOf(taxonID);
-//            if (taxonIndex < 0) {
-//                throw new Exception("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
-//            }
+
             if (taxonIndex >= 0) {
                 tableData[taxonIndex][1] = normalize(strs[1]);
                 tableData[taxonIndex][0] = taxonID;
@@ -265,22 +224,37 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             	Log.warning.println("WARNING: File contains taxon " + taxonID + " that cannot be found in alignment");
             }
         }
-        if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
-            Double minDate = Double.MAX_VALUE;
-            for (int i = 0; i < tableData.length; i++) {
-                minDate = Math.min(minDate, parseDate((String) tableData[i][1]));
+
+        try {
+            if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
+                Double minDate = Double.MAX_VALUE;
+                for (int i = 0; i < tableData.length; i++) {
+                    minDate = Math.min(minDate, traitSet.convertValueToDouble((String) tableData[i][1]));
+                }
+                for (int i = 0; i < tableData.length; i++) {
+                    tableData[i][2] = traitSet.convertValueToDouble((String) tableData[i][1]) - minDate;
+                }
+            } else {
+                Double maxDate = 0.0;
+                for (int i = 0; i < tableData.length; i++) {
+                    maxDate = Math.max(maxDate, traitSet.convertValueToDouble((String) tableData[i][1]));
+                }
+                for (int i = 0; i < tableData.length; i++) {
+                    tableData[i][2] = maxDate - traitSet.convertValueToDouble((String) tableData[i][1]);
+                }
             }
-            for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = parseDate((String) tableData[i][1]) - minDate;
-            }
-        } else {
-            Double maxDate = 0.0;
-            for (int i = 0; i < tableData.length; i++) {
-                maxDate = Math.max(maxDate, parseDate((String) tableData[i][1]));
-            }
-            for (int i = 0; i < tableData.length; i++) {
-                tableData[i][2] = maxDate - parseDate((String) tableData[i][1]);
-            }
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error interpreting one or more trait values as a formatted date or numeric value.",
+                    "Date parsing error",
+                    JOptionPane.ERROR_MESSAGE);
+            clearTable(true);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error interpreting one or more trait values as a numeric value.",
+                    "Date parsing error",
+                    JOptionPane.ERROR_MESSAGE);
+            clearTable(true);
         }
 
         if (table != null) {
@@ -290,53 +264,6 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
         }
     } // convertTraitToTableData
-
-    private double parseDate(String str) {
-        // default, try to interpret the string as a number
-        try {
-            return Double.parseDouble(str);
-        } catch (NumberFormatException e) {
-            // does not look like a number, try parsing it as a date
-                if (str.matches(".*[a-zA-Z].*")) {
-                    str = str.replace('/', '-');
-                }
-
-            //try {
-
-                // unfortunately this deprecated date parser is the most flexible around at the moment...
-                long time = Date.parse(str);
-                Date date = new Date(time);
-
-                // AJD
-                // Ideally we would use a non-deprecated method like this one instead but it seems to have
-                // far less support for different date formats.
-                // for example it fails on "12-Oct-2014"
-                //dateFormat.setLenient(true);
-                //Date date = dateFormat.parse(str);
-
-                Calendar calendar = dateFormat.getCalendar();
-                calendar.setTime(date);
-
-                // full year (e.g 2015)
-                int year = calendar.get(Calendar.YEAR);
-                double days = calendar.get(Calendar.DAY_OF_YEAR);
-
-                double daysInYear = 365.0;
-
-                if (calendar instanceof GregorianCalendar &&(((GregorianCalendar) calendar).isLeapYear(year))) {
-                    daysInYear = 366.0;
-                }
-
-                double dateAsDecimal = year + days/daysInYear;
-
-                return dateAsDecimal;
-            //}
-            //catch (ParseException e1) {
-            //    System.err.println("*** WARNING: Failed to parse '" + str + "' as date using dateFormat " + dateFormat);
-            //}
-        }
-        //return 0;
-    } // parseStrings
 
     private String normalize(String str) {
         if (str.charAt(0) == ' ') {
@@ -372,9 +299,30 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     private Box createButtonBox() {
         Box buttonBox = Box.createHorizontalBox();
 
-        JLabel label = new JLabel("Dates specified as: ");
+        JLabel label = new JLabel("Dates specified: ");
+        label.setAlignmentY(Component.TOP_ALIGNMENT);
         label.setMaximumSize(label.getPreferredSize());
         buttonBox.add(label);
+
+        Box formatBox = Box.createVerticalBox();
+        Box formatBoxFirstLine = Box.createHorizontalBox();
+        Box formatBoxSecondLine = Box.createHorizontalBox();
+
+        radioButtonGroup = new ButtonGroup();
+        numericRadioButton = new JRadioButton("numerically as");
+        numericRadioButton.setToolTipText("Interpret values as numerical times.");
+
+        if (traitSet.dateTimeFormatInput.get() == null)
+            numericRadioButton.setSelected(true);
+
+        numericRadioButton.addActionListener(e -> {
+            traitSet.dateTimeFormatInput.setValue(null, traitSet);
+            refreshPanel();
+        });
+
+        radioButtonGroup.add(numericRadioButton);
+        formatBoxFirstLine.add(numericRadioButton);
+
         unitsComboBox = new JComboBox<>(TraitSet.Units.values());
         unitsComboBox.setSelectedItem(traitSet.unitsInput.get());
         unitsComboBox.addActionListener(e -> {
@@ -387,9 +335,10 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 }
             });
         Dimension d = unitsComboBox.getPreferredSize();
-        unitsComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, unitsComboBox.getPreferredSize().height));
+        unitsComboBox.setMaximumSize(unitsComboBox.getPreferredSize());
         unitsComboBox.setSize(d);
-        buttonBox.add(unitsComboBox);
+        unitsComboBox.setEnabled(numericRadioButton.isSelected());
+        formatBoxFirstLine.add(unitsComboBox);
 
         relativeToComboBox = new JComboBox<>(new String[]{"Since some time in the past", "Before the present"});
         relativeToComboBox.setToolTipText("Whether dates go forward or backward");
@@ -411,12 +360,57 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                 }
                 convertTraitToTableData();
             });
-        relativeToComboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, relativeToComboBox.getPreferredSize().height));
-        buttonBox.add(relativeToComboBox);
+        relativeToComboBox.setMaximumSize(relativeToComboBox.getPreferredSize());
+        relativeToComboBox.setEnabled(numericRadioButton.isSelected());
+        formatBoxFirstLine.add(relativeToComboBox);
+        formatBoxFirstLine.add(Box.createHorizontalGlue());
+        formatBox.add(formatBoxFirstLine);
+
+        formattedDateRadioButton = new JRadioButton("as dates with format");
+        formattedDateRadioButton.setToolTipText("Interpret values as dates with the given format.");
+
+        if (traitSet.dateTimeFormatInput.get() != null)
+            formattedDateRadioButton.setSelected(true);
+
+        formattedDateRadioButton.addActionListener(e -> {
+            traitSet.dateTimeFormatInput.setValue(dateFormatComboBox.getSelectedItem(), traitSet);
+            refreshPanel();
+        });
+        radioButtonGroup.add(formattedDateRadioButton);
+        formatBoxSecondLine.add(formattedDateRadioButton);
+
+        String[] dateFormatExamples = {
+                "dd/M/yyyy",
+                "M/dd/yyyy",
+                "yyyy/M/dd",
+                "dd-M-yyyy",
+                "M-dd-yyyy",
+                "yyyy-M-dd"};
+
+        dateFormatComboBox = new JComboBox<>(dateFormatExamples);
+        dateFormatComboBox.setToolTipText("Set format used to parse date values");
+        dateFormatComboBox.setEditable(true);
+        if (traitSet.dateTimeFormatInput.get() != null)
+            dateFormatComboBox.setSelectedItem(traitSet.dateTimeFormatInput.get());
+        else
+            dateFormatComboBox.setSelectedItem(dateFormatExamples[0]);
+        dateFormatComboBox.setMaximumSize(dateFormatComboBox.getPreferredSize());
+        dateFormatComboBox.setEnabled(formattedDateRadioButton.isSelected());
+        dateFormatComboBox.addActionListener(e -> {
+            traitSet.dateTimeFormatInput.setValue(dateFormatComboBox.getSelectedItem(), traitSet);
+            refreshPanel();
+        });
+
+        formatBoxSecondLine.add(dateFormatComboBox);
+        formatBoxSecondLine.add(Box.createHorizontalGlue());
+        formatBox.add(formatBoxSecondLine);
+        formatBox.setAlignmentY(TOP_ALIGNMENT);
+        buttonBox.add(formatBox);
 
         buttonBox.add(Box.createHorizontalGlue());
 
         JButton guessButton = new JButton("Auto-configure");
+        guessButton.setAlignmentY(TOP_ALIGNMENT);
         guessButton.setToolTipText("Automatically configure dates based on taxon names");
         guessButton.setName("Guess");
         guessButton.addActionListener(e -> {
@@ -435,18 +429,15 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                             if (match == null) {
                                 return;
                             }
-                            double date = parseDate(match);
                             if (trait.length() > 0) {
                                 trait += ",";
                             }
-                            trait += taxon + "=" + date;
+                            trait += taxon + "=" + match;
                         }
                         break;
                 }
                 try {
                     traitSet.traitsInput.setValue(trait, traitSet);
-                    convertTraitToTableData();
-                    convertTableDataToTrait();
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }
@@ -456,6 +447,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
 
         JButton clearButton = new JButton("Clear");
+        clearButton.setAlignmentY(TOP_ALIGNMENT);
         clearButton.setToolTipText("Set all dates to zero");
         clearButton.addActionListener(e -> {
                 try {

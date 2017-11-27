@@ -8,7 +8,7 @@ OPENP: '(' ;
 CLOSEP: ')' ;
 COLON: ':' ;
 
-FLOAT_SCI: '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D+)?)) ([eE] '-'? D+);
+FLOAT_SCI: '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D+)?)) ([eE] ('-'|'+')? D+);
 FLOAT : '-'? ((NNINT? ('.' D+)) | (NNINT ('.' D*)));
 INT : '-'? NNINT;
 fragment NNINT : '0' | NZD D* ;
