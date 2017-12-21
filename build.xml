@@ -24,7 +24,7 @@
         <fileset dir="${lib}" includes="colt.jar"/>
         <fileset dir="${lib}" includes="fest.jar"/>
         <fileset dir="${lib}" includes="junit-4.8.2.jar"/>
-        <fileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
+        <fileset dir="${lib}" includes="antlr-runtime-4.5.jar"/>
     </path>
 
     <!--
@@ -135,7 +135,7 @@
             <zipgroupfileset dir="${lib}" includes="beagle.jar" />
             <zipgroupfileset dir="${lib}" includes="colt.jar" />
             <zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
-            <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
+            <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.5.jar"/>
         </jar>
         <jar jarfile="${dist}/launcher.jar">
             <fileset dir="${build}">
