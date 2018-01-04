@@ -94,6 +94,12 @@ public interface BEASTInterface {
           }
       }
       try {
+          validateInputs();
+      } catch (IllegalArgumentException ex) {
+          ex.printStackTrace();
+          throw new RuntimeException("validateInputs() failed! " + ex.getMessage());
+      }
+      try {
           initAndValidate();
       } catch (Exception e) {
           e.printStackTrace();
@@ -420,6 +426,18 @@ public interface BEASTInterface {
         }
     }
 
+    
+    /** Determine class of all of the inputs of this object 
+     * if that has not already happened
+     */
+    default public void determindClassOfInputs() {
+    	for (Input<?> input : listInputs()) {
+    		if (input.getType() == null) {
+    			input.determineClass(this);
+    		}
+    	}
+    }
+    
 }
 
 

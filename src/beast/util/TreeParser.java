@@ -34,13 +34,6 @@ import java.util.Map;
 import beast.util.treeparser.NewickParser;
 import beast.util.treeparser.NewickParser.MetaContext;
 import beast.util.treeparser.NewickParserBaseVisitor;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import beast.core.Description;
 import beast.core.Input;
@@ -54,6 +47,9 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeUtils;
 import beast.util.treeparser.NewickLexer;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 @Description("Create beast.tree by parsing from a specification of a beast.tree in Newick format " +
         "(includes parsing of any meta data in the Newick string).")
@@ -98,6 +94,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
     public final Input<Double> scaleInput = new Input<>("scale",
             "scale used to multiply internal node heights during parsing. Useful for importing starting from external" +
                     " programs, for instance, RaxML tree rooted using Path-o-gen.", 1.0);
+
+    public final Input<Boolean> binarizeMultifurcationsInput = new Input<>(
+            "binarizeMultifurcations",
+            "Whether or not to turn multifurcations into sequences of bifurcations. (Default true.)",
+            true);
 
     boolean createUnrecognizedTaxa = false;
 
@@ -309,12 +310,35 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                       final boolean isLabeled,
                       final int offset) {
 
+        this(newick, adjustTipHeights, allowSingleChildNodes, isLabeled, offset, true);
+
+    }
+
+    /**
+     * @param newick                a string representing a tree in newick format
+     * @param adjustTipHeights      true if the tip heights should be adjusted to 0 (i.e. contemporaneous) after reading in tree.
+     * @param allowSingleChildNodes true if internal nodes with single children are allowed
+     * @param isLabeled             true if nodes are labeled with taxa labels
+     * @param offset                if isLabeled == false and node labeling starts with x
+     *                              then offset should be x. When isLabeled == true offset should
+     *                              be 1 as by default.
+     * @param binarizeMultifurcations set to true to convert multifurcations to bifurcations.
+     */
+    public TreeParser(final String newick,
+                      final boolean adjustTipHeights,
+                      final boolean allowSingleChildNodes,
+                      final boolean isLabeled,
+                      final int offset,
+                      final boolean binarizeMultifurcations) {
+
         newickInput.setValue(newick, this);
         isLabelledNewickInput.setValue(isLabeled, this);
         adjustTipHeightsInput.setValue(adjustTipHeights, this);
         allowSingleChildInput.setValue(allowSingleChildNodes, this);
 
         offsetInput.setValue(offset, this);
+
+        binarizeMultifurcationsInput.setValue(binarizeMultifurcations, this);
 
         initAndValidate();
     }
@@ -478,6 +502,33 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             }
         }
 
+        /**
+         * Use zero-length edges to replace multifurcations with a sequence of bifurcations.
+         *
+         * @param node node representing multifurcation
+         */
+        private void binarizeMultifurcation(Node node) {
+             if (node.getChildCount()>2) {
+                List<Node> children = new ArrayList<>(node.getChildren());
+                Node prevDummy = node;
+                for (int i=1; i<children.size()-1; i++) {
+                    Node child = children.get(i);
+
+                    Node dummyNode = newNode();
+                    dummyNode.setNr(-1);
+                    dummyNode.setHeight(0);
+                    prevDummy.addChild(dummyNode);
+
+                    node.removeChild(child);
+                    dummyNode.addChild(child);
+
+                    prevDummy = dummyNode;
+                }
+                node.removeChild(children.get(children.size()-1));
+                prevDummy.addChild(children.get(children.size()-1));
+            }
+        }
+
         @Override
         public Node visitNode(NewickParser.NodeContext ctx) {
             Node node = newNode();
@@ -539,25 +590,9 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                 throw new TreeParsingException("Node with single child found.");
 
             // Use length-zero edges to binarize multifurcations.
-            if (node.getChildCount()>2) {
-                List<Node> children = new ArrayList<>(node.getChildren());
-                Node prevDummy = node;
-                for (int i=1; i<children.size()-1; i++) {
-                    Node child = children.get(i);
+            if (binarizeMultifurcationsInput.get())
+                binarizeMultifurcation(node);
 
-                    Node dummyNode = newNode();
-                    dummyNode.setNr(-1);
-                    dummyNode.setHeight(0);
-                    prevDummy.addChild(dummyNode);
-
-                    node.removeChild(child);
-                    dummyNode.addChild(child);
-
-                    prevDummy = dummyNode;
-                }
-                node.removeChild(children.get(children.size()-1));
-                prevDummy.addChild(children.get(children.size()-1));
-            }
 
             return node;
         }
@@ -611,12 +646,11 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             if (node.isLeaf()) {
                 return node.getHeight();
             } else {
-                final double left = convertLengthToHeight(node.getLeft(), height - length);
-                if (node.getRight() == null) {
-                    return left;
-                }
-                final double right = convertLengthToHeight(node.getRight(), height - length);
-                return Math.min(left, right);
+                double minChildHeight = Double.POSITIVE_INFINITY;
+                for (Node child : node.getChildren())
+                    minChildHeight = Math.min(minChildHeight, convertLengthToHeight(child, height - length));
+
+                return minChildHeight;
             }
         }
 
@@ -634,12 +668,8 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
                     node.setHeight(0);
                 }
             }
-            if (!node.isLeaf()) {
-                offset(node.getLeft(), delta);
-                if (node.getRight() != null) {
-                    offset(node.getRight(), delta);
-                }
-            }
+            for (Node child : node.getChildren())
+                offset(child, delta);
         }
 
         /**

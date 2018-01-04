@@ -273,7 +273,7 @@ public class Logger extends BEASTObject {
     } // init
 
     /** remove indicators of partition context from header of a log file **/
-    private String sanitiseHeader(String header) {
+    public String sanitiseHeader(String header) {
     	// collect partitions
     	String partitionPrefix = null, clockPrefix = null, sitePrefix = null, treePrefix = null;
     	for (int i = 0; i < header.length(); i++) {
@@ -364,7 +364,7 @@ public class Logger extends BEASTObject {
                 fileNameInput.setValue(fileName, this);
             }
             if (System.getProperty("file.name.prefix") != null) {
-                fileName = System.getProperty("file.name.prefix") + "/" + fileName;
+                fileName = System.getProperty("file.name.prefix") + fileName;
             }
             switch (FILE_MODE) {
                 case only_new:// only open file if the file does not already exists
@@ -378,9 +378,13 @@ public class Logger extends BEASTObject {
                         }
                         // Check with user what to do next
                         Log.info.println("Trying to write file " + fileName + " but the file already exists (perhaps use the -overwrite flag?).");
+                        if (System.getProperty("beast.useWindow") != null) {
+                        	// we are using the BEAST console, so no input is possible
+                        	throw new IllegalArgumentException();
+						}
                         Log.info.println("Overwrite (Y/N)?:");
                         Log.info.flush();
-                        final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+                        final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	                        
                         final String msg = stdin.readLine();
                         if (!msg.toLowerCase().equals("y")) {
                         	Log.info.println("Exiting now.");

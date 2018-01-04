@@ -44,8 +44,8 @@ public class GuessPatternDialog extends JDialog {
                     "taxonB 0.1\n" +
                     "taxonC 0.2\n" +
                     "\n" +
-                    "where the gap between each taxon name and the numeric value " +
-                    "representing the age must be a TAB.";
+                    "where the gap between each taxon name and its corresponding " +
+                    "trait value must be a TAB.";
 
 
 

@@ -73,6 +73,6 @@ public class TraitSetTest {
 	            "value", "t1=10");
 	    // The trait actually represents the age of the taxa relative to
 	    // each other with arbitrary zero, so we test it like this.
-	    assertEquals(10.0, timeTrait.getValue("t0")-timeTrait.getValue("t1"), 1e-7);
+	    assertEquals(0.0, timeTrait.getValue("t0")-timeTrait.getValue("t1"), 1e-7);
 	}
 }

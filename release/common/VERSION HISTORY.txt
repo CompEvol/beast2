@@ -1,10 +1,45 @@
-                    BEAST v2.4.5 2017
+                    BEAST v2.4.7 2017
                  Beast 2 development team 2011-2017
 Version History
-Last updated: May 2017
+Last updated: July 2017
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.4.7 July 2017
+BEAUti
+	Relabel buttons: "Guess" is now "Auto configure" in tip dates panel. "+" button on priors panel is now "+ Add Prior".
+	More sensible default date value for taxa without date specified in tip dates panel.
+	Make sure the appropriate tree is used in MRCAprior.
+	Make sure tips with 'fixed' distributions imported from Nexus do not get estimated.
+	Robustify NEXUS parser.
+	Taxa could be duplicated in taxon list in NexusParser.
+	Prevent accidentally cloning of up-down-all operator in StarBeast.
+	
+BEAST
+	Default locale set to English so full stops are used in NEXUS output.
+ 	Warn if Yule (or BD) conditions on root, but no root MRCAPrior is set.
+	Robustify resume 
+	Suppress "Overwrite (Y/N)?" message when BEAST runs in console.
+	Stop chain when encountering a +infinity posterior.
+	Check that taxon set is specified when using RandomTree.
+	Normalise stateNodes so XML characters ('"&<>) get escaped properly when writing state files.
+
+
+Appstore
+	Improved formatting of app list.
+
+TreeAnnotator 
+	Now adds common ancestor height estimates as attributes.
+
+API updates:
+	Changed access levels of a few methods in nexus parser.
+	Add Tree scale and ScaleOperator test.
+	Add new Tree constructor from root node.
+	Add support for input/output of non-binary trees.
+	Add Input.set() method.
+	BeautiAlignmentProvider getAlignments method added to facilitate scripting.
+	TreeParser correctly parses tree edge length metadata, and improved error reporting.
+
 Version 2.4.6 May 2017
     BEAUti
 	    Starting trees can now be edited (default random, choice of cluster and newick trees)

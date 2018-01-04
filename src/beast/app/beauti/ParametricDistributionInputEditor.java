@@ -1,13 +1,7 @@
 package beast.app.beauti;
 
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -105,19 +99,47 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            final int width = getWidth();
-            final int height = getHeight();
-            final int labeloffset = 50;
+            // Record current font, since drawError can take over part-way
+            // through the call to drawGraph, which alters the graphics font size.
+            Font originalFont = g.getFont();
 
             ParametricDistribution m_distr = (ParametricDistribution)m_input.get();
             if (m_distr == null) {
-                return;
+                drawError(g);
+            } else {
+                try {
+                    m_distr.initAndValidate();
+                    drawGraph(m_distr, 50, g);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    ex.printStackTrace();
+                    g.setFont(originalFont);
+                    drawError(g);
+                }
             }
-            try {
-                m_distr.initAndValidate();
-            } catch (Exception e1) {
-                // ignore
-            }
+
+        }
+
+        private void drawError(Graphics g) {
+            Font oldFont = g.getFont();
+            Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize());
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+            FontMetrics fm = g.getFontMetrics();
+
+            String errorString = "Cannot display distribution.";
+
+            int stringWidth = fm.stringWidth(errorString);
+            g.drawString("Cannot display distribution.",
+                    (getWidth() - stringWidth)/2,
+                    (getHeight() - fm.getHeight())/2);
+        }
+
+        private void drawGraph(ParametricDistribution m_distr, int labelOffset, Graphics g) {
+            final int width = getWidth();
+            final int height = getHeight();
 
             double minValue = 0.1;
             double maxValue = 1;
@@ -212,7 +234,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             int bottomMargin = maxLabelHeight + TICK_LENGTH + 1;
 
             int graphWidth = width - leftMargin - RIGHT_MARGIN;
-            int graphHeight = height - TOP_MARGIN - bottomMargin - labeloffset;
+            int graphHeight = height - TOP_MARGIN - bottomMargin - labelOffset;
 
             // DRAW GRAPH PAPER
             g.setColor(Color.WHITE);
@@ -250,36 +272,32 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
 
             int fontHeight = font.getSize() * 10 / 12;
             g.setFont(new Font(font.getName(), font.getStyle(), fontHeight));
-            try {
-                FontMetrics fontMetrics = g.getFontMetrics();
-                String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
-                Double[] quantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
-            	mayBeUnstable = false;
-                for (k = 0; k < 5; k++) {
 
-                    int y = TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * fontHeight;
+            FontMetrics fontMetrics = g.getFontMetrics();
+            String[] strs = new String[]{"2.5% Quantile", "5% Quantile", "Median", "95% Quantile", "97.5% Quantile"};
+            Double[] quantiles = new Double[]{0.025, 0.05, 0.5, 0.95, 0.975};
+            mayBeUnstable = false;
+            for (k = 0; k < 5; k++) {
 
-                	try {
-                        g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), graphWidth / 2 + leftMargin, y);
-                    } catch (MathException e) {
-                        g.drawString("not available", graphWidth / 2 + leftMargin, y);
-                    }
-                    g.drawString(strs[k], graphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - fontHeight, y);
-                }
-                if (mayBeUnstable) {
-                	int x = graphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + graphHeight + bottomMargin + fontHeight;
-                    g.drawString("* numbers", x, y + 2*fontHeight); 
-                    g.drawString("may not be", x, y + 3*fontHeight);                	
-                    g.drawString("accurate", x, y + 4*fontHeight);                	
-                }
+                int y = TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent() + k * fontHeight;
+
                 try {
-                	g.drawString("mean " + format(m_distr.getMean()), graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + fontHeight);
-                } catch (RuntimeException e) {
-                	// catch in case it is not implemented.
+                    g.drawString(format(m_distr.inverseCumulativeProbability(quantiles[k])), graphWidth / 2 + leftMargin, y);
+                } catch (MathException e) {
+                    g.drawString("not available", graphWidth / 2 + leftMargin, y);
                 }
-            } catch (Exception e) {
-                // probably something wrong with the parameters of the parametric distribution
-                g.drawString("Improper parameters", leftMargin, TOP_MARGIN + graphHeight + bottomMargin + g.getFontMetrics().getMaxAscent());
+                g.drawString(strs[k], graphWidth / 2 - fontMetrics.stringWidth(strs[k]) + leftMargin - fontHeight, y);
+            }
+            if (mayBeUnstable) {
+                int x = graphWidth * 3/ 4 + leftMargin; int y =TOP_MARGIN + graphHeight + bottomMargin + fontHeight;
+                g.drawString("* numbers", x, y + 2*fontHeight);
+                g.drawString("may not be", x, y + 3*fontHeight);
+                g.drawString("accurate", x, y + 4*fontHeight);
+            }
+            try {
+                g.drawString("mean " + format(m_distr.getMean()), graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + fontHeight);
+            } catch (RuntimeException e) {
+                // catch in case it is not implemented.
             }
         }
         

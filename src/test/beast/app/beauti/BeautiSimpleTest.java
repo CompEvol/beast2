@@ -5,6 +5,7 @@ package test.beast.app.beauti;
 import static org.fest.assertions.Assertions.assertThat;
 
 import java.awt.Component;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Arrays;
 
@@ -96,6 +97,7 @@ public class BeautiSimpleTest extends BeautiBase {
 		cell.startEditing();
 		comboBox.selectAllText();
 		comboBox.enterText("tree");
+		comboBox.pressAndReleaseKeys(KeyEvent.VK_ENTER);
 		cell.stopEditing();
 		printBeautiState(f);
 		assertStateEquals("Tree.t:tree", "birthRate.t:tree", "kappa.s:anolis", "gammaShape.s:anolis", "freqParameter.s:anolis");

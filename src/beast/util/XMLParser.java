@@ -768,6 +768,7 @@ public class XMLParser {
         // initialise
         if (needsInitialisation) {
             try {
+            	beastObject.determindClassOfInputs();
                 beastObject.validateInputs();
                 beastObjectsWaitingToInit.add(beastObject);
                 nodesWaitingToInit.add(node);

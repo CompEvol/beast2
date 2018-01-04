@@ -462,6 +462,20 @@ public class Input<T> {
         }
     }
 
+    /** Programmer friendly version of setValue() to set value of this Input
+     * This should only be called after the data type of the Input was determined 
+     * earlier (so theClass != null), e.g. because seValue(value, beastObject)
+     * or determindClass() was called before on this Input. 
+     * Any BEASTObject created by XMLParser has its inputs  
+     */
+    public void set(final Object value) {
+    	if (theClass == null) {
+    		throw new IllegalArgumentException("Progmmer error: setValue should not be called unless that datatype of the input "
+    				+ "is determined (e.g. through a call to setValue(value, beastObject))");
+    	}
+    	setValue(value, null);
+    }
+    
     /**
      * Call custom input validation.
      * For an input with name "name", the method canSetName will be invoked,

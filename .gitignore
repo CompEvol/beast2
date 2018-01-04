@@ -1,0 +1,8 @@
+# IntelliJ ignores
+/.idea
+/beast2.iml
+/META-INF
+/out
+
+# OS X ignores
+.DS_Store

@@ -24,8 +24,6 @@
 */
 package beast.evolution.substitutionmodel;
 
-import java.util.Arrays;
-
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -34,6 +32,8 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
+
+import java.util.Arrays;
 
 
 
@@ -55,7 +55,7 @@ public class Frequencies extends CalculationNode {
     /**
      * flag to indicate m_fFreqs is up to date *
      */
-    boolean needsUpdate;
+    protected boolean needsUpdate;
 
 
     @Override
@@ -85,7 +85,7 @@ public class Frequencies extends CalculationNode {
     /**
      * recalculate frequencies, unless it is fixed *
      */
-    void update() {
+    protected void update() {
         if (frequenciesInput.get() != null) {
 
             // if user specified, parse frequencies from space delimited string

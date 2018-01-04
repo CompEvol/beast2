@@ -88,19 +88,20 @@ public class TraitSet extends BEASTObject {
                 throw new IllegalArgumentException("Trait (" + taxonID + ") is not a known taxon. Spelling error perhaps?");
             }
             taxonValues[taxonNr] = normalize(strs[1]);
-            values[taxonNr] = parseDouble(taxonValues[taxonNr]);
+            try {
+                values[taxonNr] = convertValueToDouble(taxonValues[taxonNr]);
+            } catch (DateTimeParseException ex) {
+                Log.err.println("Failed to parse date '" + taxonValues[taxonNr] + "' using format '" + dateTimeFormatInput.get() + "'.");
+                System.exit(1);
+            } catch (IllegalArgumentException ex) {
+                Log.err.println("Failed to parse date '" + taxonValues[taxonNr] + "'.");
+                System.exit(1);
+            }
+
             map.put(taxonID, taxonNr);
             
             if (Double.isNaN(values[taxonNr]))
                 numeric = false;
-        }
-
-        // sanity check: did we cover all taxa?
-        for (int i = 0; i < labels.size(); i++) {
-            if (taxonValues[i] == null) {
-                Log.warning.println("WARNING: no trait specified for " + labels.get(i) +": Assumed to be 0");
-                map.put(labels.get(i), i);
-            }
         }
 
         // find extremes
@@ -109,6 +110,19 @@ public class TraitSet extends BEASTObject {
         for (double value : values) {
             minValue = Math.min(minValue, value);
             maxValue = Math.max(maxValue, value);
+        }
+
+        // sanity check: did we cover all taxa?
+        double defaultValue = 0;
+        if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
+        	defaultValue = maxValue;
+        }
+        for (int i = 0; i < labels.size(); i++) {
+            if (taxonValues[i] == null) {
+                Log.warning.println("WARNING: no trait specified for " + labels.get(i) +": Assumed to be " + defaultValue);
+                map.put(labels.get(i), i);
+                values[i] = defaultValue;
+            }
         }
 
         if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
@@ -167,54 +181,49 @@ public class TraitSet extends BEASTObject {
     /**
      * see if we can convert the string to a double value *
      */
-    private double parseDouble(String str) {
+    public double convertValueToDouble(String str) {
         // default, try to interpret the string as a number
         try {
             return Double.parseDouble(str);
         } catch (NumberFormatException e) {
             // does not look like a number
-                if (traitNameInput.get().equals(DATE_TRAIT) ||
-                        traitNameInput.get().equals(DATE_FORWARD_TRAIT) ||
-                        traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
+            if (traitNameInput.get().equals(DATE_TRAIT) ||
+                    traitNameInput.get().equals(DATE_FORWARD_TRAIT) ||
+                    traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
 
-                        try {
-                            double year;
-                            if (dateTimeFormatInput.get() == null) {
-                                if (str.matches(".*[a-zA-Z].*")) {
-                                        str = str.replace('/', '-');
-                                }
-                                // following is deprecated, but the best thing around at the moment
-                                // see also comments in TipDatesInputEditor
-                                long date = Date.parse(str);
-                                year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
-                                Log.warning.println("No date/time format provided, using default parsing: '" + str + "' parsed as '" + year + "'");
-                            } else {
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
-                                LocalDate date = LocalDate.parse(str, formatter);
-
-                                Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
-                                        "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
-
-                                year = date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
-                            }
-
-                            switch (unitsInput.get()) {
-                                case month:
-                                    return year * 12.0;
-                                case day:
-                                    return year * 365;
-                                default:
-                                    return year;
-                            }
-                        } catch (DateTimeParseException e2) {
-                            Log.err.println("Failed to parse date '" + str + "' using format '" + dateTimeFormatInput.get() + "'");
-                            System.exit(1);
-                        }
+                double year;
+                if (dateTimeFormatInput.get() == null) {
+                    if (str.matches(".*[a-zA-Z].*")) {
+                        str = str.replace('/', '-');
                     }
+                    // following is deprecated, but the best thing around at the moment
+                    // see also comments in TipDatesInputEditor
+                    long date = Date.parse(str);
+                    year = 1970.0 + date / (60.0 * 60 * 24 * 365 * 1000);
+                    Log.warning.println("No date/time format provided, using default parsing: '" + str + "' parsed as '" + year + "'");
+                } else {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
+                    LocalDate date = LocalDate.parse(str, formatter);
+
+                    Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
+                            "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
+
+                    year = date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
                 }
-        //return 0;
+
+                switch (unitsInput.get()) {
+                    case month:
+                        return year * 12.0;
+                    case day:
+                        return year * 365;
+                    default:
+                        return year;
+                }
+            }
+        }
+
         return Double.NaN;
-    } // parseStrings
+    }
 
     /**
      * remove start and end spaces
@@ -229,6 +238,13 @@ public class TraitSet extends BEASTObject {
         return str;
     }
 
+    /**
+     * Retrieve absolute date from height above most recent sample.
+     *
+     * @param height age before most recent sample.
+     * @return date, which may be either backward-time or forward-time depending
+     * on the trait.  If trait type is not defined, the height itself is returned.
+     */
     public double getDate(double height) {
         if (traitNameInput.get().equals(DATE_TRAIT) || traitNameInput.get().equals(DATE_FORWARD_TRAIT)) {
             return maxValue - height;
@@ -239,7 +255,7 @@ public class TraitSet extends BEASTObject {
         }
         return height;
     }
-    
+
     /**
      * Determines whether trait is recognised as specifying taxa dates.
      * @return true if this is a date trait.

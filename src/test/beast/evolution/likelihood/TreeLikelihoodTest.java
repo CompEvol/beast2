@@ -1,6 +1,7 @@
 package test.beast.evolution.likelihood;
 
 
+import beast.evolution.likelihood.BeagleTreeLikelihood;
 import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
@@ -762,5 +763,42 @@ public class TreeLikelihoodTest extends TestCase {
         	P += Math.exp(d);
         }
         assertEquals(P, 1.0, BEASTTestCase.PRECISION);
+    }
+
+    /**
+     * Test only effective when BEAGLE installed - otherwise it will always
+     * pass since BEAGLE code will never be run.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBeagleRNALikelihood() throws Exception {
+
+        Sequence seq1 = new Sequence("t1", "GUACGUACGUAC");
+        Sequence seq2 = new Sequence("t2", "UACGUACGUACG");
+        Sequence seq3 = new Sequence("t3", "ACGUACGUACGU");
+
+        Alignment data = new Alignment();
+        data.initByName("sequence", seq1,
+                "sequence", seq2,
+                "sequence", seq3,
+                "dataType", "nucleotide");
+
+        Tree tree = BEASTTestCase.getTree(data, "((t1:0.5,t2:0.5):0.5,t3:1.0):0.0;");
+
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName("gammaCategoryCount", 1, "substModel", new JukesCantor());
+
+        TreeLikelihood likelihoodNoBeagle = newTreeLikelihood();
+
+        likelihoodNoBeagle.initByName("data", data, "tree", tree, "siteModel", siteModel);
+        double logLnoBeagle = likelihoodNoBeagle.calculateLogP();
+
+        System.setProperty("java.only", "false");
+        TreeLikelihood likelihoodBeagle = new TreeLikelihood();
+        likelihoodBeagle.initByName("data", data, "tree", tree, "siteModel", siteModel);
+        double logLBeagle = likelihoodBeagle.calculateLogP();
+
+        assertEquals(logLBeagle, logLnoBeagle, BEASTTestCase.PRECISION);
     }
 } // class TreeLikelihoodTest

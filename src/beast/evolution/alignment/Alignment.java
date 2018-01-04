@@ -24,14 +24,6 @@
 */
 package beast.evolution.alignment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -40,6 +32,8 @@ import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.util.AddOnManager;
+
+import java.util.*;
 
 @Description("Class representing alignment data")
 public class Alignment extends Map<String> {
@@ -157,7 +151,7 @@ public class Alignment extends Map<String> {
      * characters are uncertain.
      */
     public List<double[][]> tipLikelihoods = new ArrayList<>(); // #taxa x #sites x #states
-    private boolean usingTipLikelihoods = false;
+    protected boolean usingTipLikelihoods = false;
     
     /**
      * pattern state encodings *

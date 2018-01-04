@@ -62,7 +62,6 @@ public abstract class ParametricDistribution extends CalculationNode implements 
         double logP = 0;
         for (int i = 0; i < fun.getDimension(); i++) {
             final double x = fun.getArrayValue(i);
-            //logP += Math.log(density(x));
             logP += logDensity(x, offset);
         }
         return logP;

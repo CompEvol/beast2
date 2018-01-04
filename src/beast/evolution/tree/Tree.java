@@ -1,18 +1,14 @@
 package beast.evolution.tree;
 
+import beast.core.*;
+import beast.core.util.Log;
+import beast.evolution.alignment.TaxonSet;
+import beast.util.TreeParser;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.util.Log;
-import beast.evolution.alignment.TaxonSet;
-import beast.util.TreeParser;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"
@@ -199,6 +195,15 @@ public class Tree extends StateNode implements TreeInterface {
     public Tree() {
     }
 
+    /**
+     * This constructor wraps a new root node in a <code>Tree</code> object, which does not copy the tree.
+     * To copy a <code>Tree</code>, either {@link Tree#copy() Tree#copy} or {@link Node#copy() Node#copy}
+     * can be used instead, which performs true deep copy.
+     * For example, <code>new Tree(oldTree.getRoot().copy())</code> which is also equivalent to
+     * <code>oldTree.copy()</code>.
+     *
+     * @param rootNode root <code>Node</code>
+     */
     public Tree(final Node rootNode) {
         setRoot(rootNode);
         initArrays();
@@ -340,7 +345,8 @@ public class Tree extends StateNode implements TreeInterface {
                  m_sTaxaNames = new String[getNodeCount()];
                  collectTaxaNames(getRoot());
                  List<String> taxaNames = new ArrayList<>();
-                 for (String name : m_sTaxaNames) {
+                 for (int i=0; i<m_sTaxaNames.length && i<getLeafNodeCount(); i++) {
+                     String name = m_sTaxaNames[i];
                      if (name != null) {
                          taxaNames.add(name);
                      }

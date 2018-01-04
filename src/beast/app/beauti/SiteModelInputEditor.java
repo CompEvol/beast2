@@ -1,28 +1,8 @@
 package beast.app.beauti;
 
 
-import java.awt.Color;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.app.draw.InputEditor;
-import beast.app.draw.IntegerInputEditor;
-import beast.app.draw.ParameterInputEditor;
-import beast.app.draw.SmallLabel;
-import beast.core.BEASTInterface;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.Operator;
+import beast.app.draw.*;
+import beast.core.*;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.CompoundDistribution;
@@ -31,6 +11,14 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.operators.DeltaExchangeOperator;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SiteModelInputEditor extends BEASTObjectInputEditor {
     private static final long serialVersionUID = 1L;
