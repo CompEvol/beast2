@@ -739,7 +739,7 @@ public class NexusParser {
 
 		if (str.toLowerCase().matches(".*matrix.*")) {
 			// will only get here when there
-			throw new IllegalArgumentException("Mallformed nexus file: perhaps a semi colon is missing before 'matrix'");
+			throw new IllegalArgumentException("Malformed nexus file: perhaps a semi-colon is missing before 'matrix'");
 		}
 		return str;
     }
@@ -819,7 +819,7 @@ public class NexusParser {
             		String taxonSetName = strs2[1];
             		str0 = strs[strs.length - 1].trim();
             		if (!str0.endsWith(";")) {
-            			Log.warning.println("expected 'taxset <name> = ...;' semi-colin is missing: " + str + "\n"
+            			Log.warning.println("expected 'taxset <name> = ...;' semi-colon is missing: " + str + "\n"
             					+ "Taxa from following lines may be missing.");
             		}
             		str0 = str0.replaceAll(";", "");
