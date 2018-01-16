@@ -1,6 +1,5 @@
-// Generated from NewickParser.g4 by ANTLR 4.5
+// Generated from NewickParser.g4 by ANTLR 4.7
 package beast.util.treeparser;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
