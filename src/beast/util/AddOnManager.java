@@ -1097,8 +1097,8 @@ public class AddOnManager {
             }
         } catch (Exception e) {
             // File exists, but cannot open the file for some reason
-            Log.debug.println("Skipping "+jarDirName+"/version.xml (unable to open file");
-            Log.warning.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+            Log.debug.println("Skipping "+jarDirName+"/version.xml (unable to open file) " + e.getMessage());
+            Log.warning.println("Skipping "+jarDirName+"/version.xml (unable to open file) " + e.getMessage());
         }
 	}
 
@@ -1245,16 +1245,18 @@ public class AddOnManager {
     public static void addURL(URL u) throws IOException {
         // ClassloaderUtil clu = new ClassloaderUtil();
         AddOnManager clu = new AddOnManager();
-        // URLClassLoader sysLoader = (URLClassLoader)
-        // ClassLoader.getSystemClassLoader();
-        URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
-        URL urls[] = sysLoader.getURLs();
-        for (URL url : urls) {
-            if (url.toString().toLowerCase().equals(u.toString().toLowerCase())) {
-                Log.debug.println("URL " + u + " is already in the CLASSPATH");
-                return;
-            }
-        }
+        URLClassLoader sysLoader = new URLClassLoader(new URL[] {u}, clu.getClass().getClassLoader());
+        // due to changes in class loaders in Java9, we cannot get the URLClassLoader directly from 
+        // clu.getClass().getClassLoader() any more, and therefore cannot look up which URLS have already
+        // been loaded. We go with the perhaps slower check for classes being loaded instead.
+//        URL urls[] = sysLoader.getURLs();
+//        for (URL url : urls) {
+//            if (url.toString().toLowerCase().equals(u.toString().toLowerCase())) {
+//                Log.debug.println("URL " + u + " is already in the CLASSPATH");
+//                sysLoader.close();
+//                return;
+//            }
+//        }
         Class<?> sysclass = URLClassLoader.class;
         try {
             // Parameters
@@ -1264,6 +1266,7 @@ public class AddOnManager {
             method.invoke(sysLoader, u);
             Log.debug.println("Loaded URL " + u);
         } catch (Throwable t) {
+            sysLoader.close();
             t.printStackTrace();
             throw new IOException("Error, could not add URL to system classloader");
         }
@@ -1272,6 +1275,7 @@ public class AddOnManager {
         classpath += System.getProperty("path.separator") + jar.substring(5);
         System.setProperty("java.class.path", classpath);
         all_classes = null;
+        sysLoader.close();
     }
 
 
@@ -1670,7 +1674,9 @@ public class AddOnManager {
 
     public static void main(String[] args) {
         try {
-            Arguments arguments = new Arguments(
+        	Log.setLevel(Log.Level.debug);
+        	loadExternalJars(); 
+        	Arguments arguments = new Arguments(
                     new Arguments.Option[]{
                             new Arguments.Option("list", "List available packages"),
                             new Arguments.StringOption("add", "NAME", "Install the <NAME> package"),
