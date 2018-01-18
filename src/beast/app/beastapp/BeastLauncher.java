@@ -242,8 +242,11 @@ public class BeastLauncher {
 		String[] version = javaVersion.split("\\.");
 		if (version.length > 2) {
 			try {
-				int majorVersion = Integer.parseInt(version[1]);
-				if (majorVersion <= 7) {
+				int majorVersion = Integer.parseInt(version[0]);
+				if (majorVersion == 1) {
+					majorVersion = Integer.parseInt(version[1]);
+				}
+				if (majorVersion != 8) {
 					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8,<br>" + "but the current version is " + majorVersion
 							+ ".<br><br>" + "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
 							+ "Continuing, but expect the unexpected.</html>";
