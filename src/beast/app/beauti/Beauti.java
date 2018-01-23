@@ -1402,6 +1402,18 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public static void main(String[] args) {
         main2(args);
+
+        // check for new packages in the background
+        new Thread() {
+        	public void run() {
+        		String statuString = Utils.getBeautiProperty("package.update.status");
+        		if (statuString == null) {
+        			statuString = AddOnManager.UpdateStatus.AUTO_CHECK_AND_ASK.toString(); 
+        		}
+        		AddOnManager.UpdateStatus updateStatus = AddOnManager.UpdateStatus.valueOf(statuString);
+        		AddOnManager.updatePackages(updateStatus);
+        	};
+        }.start();
     }
 
 } // class Beauti

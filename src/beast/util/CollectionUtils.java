@@ -43,7 +43,7 @@ public class CollectionUtils {
 
     /**
      * very inefficient, but Java wonderful bitset has no subset op
-     * perhaps using bit iterator would be faster, I can't br bothered.
+     * perhaps using bit iterator would be faster, I can't be bothered.
      * @param x
      * @param y
      * @return
