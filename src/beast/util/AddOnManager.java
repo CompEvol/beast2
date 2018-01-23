@@ -1680,6 +1680,8 @@ public class AddOnManager {
                             new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
                             new Arguments.StringOption("dir", "DIR", "Install/uninstall package in directory <DIR>. This overrides the useAppDir option"),
                             new Arguments.Option("help", "Show help"),
+                            new Arguments.Option("update", "Check for updates, and ask to install if available"),
+                            new Arguments.Option("updatenow", "Check for updates and install without asking"),
                     });
             try {
                 arguments.parseArguments(args);
@@ -1692,6 +1694,16 @@ public class AddOnManager {
 
             if (args.length == 0 || arguments.hasOption("help")) {
                 printUsageAndExit(arguments);
+            }
+            
+            if (arguments.hasOption("update")) {
+            	updatePackages(UpdateStatus.AUTO_CHECK_AND_ASK);
+            	return;
+            }
+
+            if (arguments.hasOption("updatenow")) {
+            	updatePackages(UpdateStatus.AUTO_UPDATE);
+            	return;
             }
 
             boolean useAppDir = arguments.hasOption("useAppDir");
