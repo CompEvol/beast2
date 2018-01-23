@@ -34,6 +34,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface.Base;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.util.XMLParser;
 
@@ -67,6 +68,7 @@ public class BeautiSubTemplate extends BEASTObject {
 //	ConnectCondition [] conditions;
     String mainID = "";
     String shortClassName;
+    public String getShortClassName() {return shortClassName;}
 
     @Override
     public void initAndValidate() {
@@ -430,14 +432,11 @@ public class BeautiSubTemplate extends BEASTObject {
 	            SiteModel.Base siteModel = (SiteModel.Base) ((GenericTreeLikelihood) treeLikelihood).siteModelInput.get();
 	            SubstitutionModel substModel = siteModel.substModelInput.get();
 	            try {
-	                siteModel.canSetSubstModel(substModel);
-	            } catch (Exception e) {
-	                Object o = doc.createInput(siteModel, siteModel.substModelInput, context);
-	                try {
-	                    siteModel.substModelInput.setValue(o, siteModel);
-	                } catch (Exception ex) {
-	                    ex.printStackTrace();
+	                if (!siteModel.canSetSubstModel(substModel)) {
+	                	setUpSubstModel(siteModel, context);
 	                }
+	            } catch (Exception e) {
+                	setUpSubstModel(siteModel, context);
 	            }
             }
 
@@ -465,7 +464,16 @@ public class BeautiSubTemplate extends BEASTObject {
         return beastObject;
     }
 
-    public String getMainID() {
+    private void setUpSubstModel(Base siteModel, PartitionContext context) {
+        Object o = doc.createInput(siteModel, siteModel.substModelInput, context);
+        try {
+            siteModel.substModelInput.setValue(o, siteModel);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+	}
+
+	public String getMainID() {
         return mainID;
     }
 
