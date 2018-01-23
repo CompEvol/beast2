@@ -418,6 +418,7 @@ public class BeautiSubTemplate extends BEASTObject {
         }
 
         if (mainID.equals("[top]")) {
+            subNetDepth--;
             return beastObjects.get(0);
         }
 
