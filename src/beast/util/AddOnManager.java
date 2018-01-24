@@ -1697,12 +1697,12 @@ public class AddOnManager {
             }
             
             if (arguments.hasOption("update")) {
-            	updatePackages(UpdateStatus.AUTO_CHECK_AND_ASK);
+            	updatePackages(UpdateStatus.AUTO_CHECK_AND_ASK, false);
             	return;
             }
 
             if (arguments.hasOption("updatenow")) {
-            	updatePackages(UpdateStatus.AUTO_UPDATE);
+            	updatePackages(UpdateStatus.AUTO_UPDATE, false);
             	return;
             }
 
@@ -1872,7 +1872,7 @@ public class AddOnManager {
      * either after asking the user, or without asking (depending on updateStatus).
      * @param updateStatus
      */
-    public static void updatePackages(UpdateStatus updateStatus) {
+    public static void updatePackages(UpdateStatus updateStatus, boolean useGUI) {
     	if (updateStatus == UpdateStatus.DO_NOT_CHECK) {
     		return;
     	}
@@ -1911,34 +1911,56 @@ public class AddOnManager {
         
         // do we need to ask before proceeding?
     	if (updateStatus != UpdateStatus.AUTO_UPDATE) {
-    		StringBuilder buf = new StringBuilder();
-    		buf.append("<table><tr><td>Package name</td><td>New version</td><td>Installed</td></tr>");
-    		for (Package _package : packagesToInstall.keySet()) {
-    			buf.append("<tr><td>" + _package.packageName + "</td>"
-    					+ "<td>" + _package.getLatestVersion()+ "</td>"
-    					+ "<td>" + _package.getInstalledVersion() + "</td></tr>");
-    		}
-    		buf.append("</table>");
-    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
-    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New pacakges are available to install:</h2>" +
-    				buf.toString() + 
-    				"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-    		        null, options, options[2]);
-    		switch (response) {
-    		case 0: // No, never check again
-                Utils.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
-    			return;
-    		case 1: // No, check later
-                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
-    			return;
-    		case 2: // Yes, ask next time
-                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
-    			break;
-    		case 3: // Always install automatically
-                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
-    			break;
-    		default: // e.g. escape-key gets us here
-    			return;
+    		if (useGUI) {
+	    		StringBuilder buf = new StringBuilder();
+	    		buf.append("<table><tr><td>Package name</td><td>New version</td><td>Installed</td></tr>");
+	    		for (Package _package : packagesToInstall.keySet()) {
+	    			buf.append("<tr><td>" + _package.packageName + "</td>"
+	    					+ "<td>" + _package.getLatestVersion()+ "</td>"
+	    					+ "<td>" + _package.getInstalledVersion() + "</td></tr>");
+	    		}
+	    		buf.append("</table>");
+	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
+	    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New pacakges are available to install:</h2>" +
+	    				buf.toString() + 
+	    				"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+	    		        null, options, options[2]);
+	    		switch (response) {
+	    		case 0: // No, never check again
+	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
+	    			return;
+	    		case 1: // No, check later
+	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	    			return;
+	    		case 2: // Yes, ask next time
+	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	    			break;
+	    		case 3: // Always install automatically
+	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
+	    			break;
+	    		default: // e.g. escape-key gets us here
+	    			return;
+	    		}
+    		} else {
+    			Log.info("New pacakges are available to install:");
+	    		Log.info("Package name\tNew version\tInstalled");
+	    		for (Package _package : packagesToInstall.keySet()) {
+	    			Log.info(_package.packageName + "\t" + _package.getLatestVersion()+ "\t" + _package.getInstalledVersion());
+	    		}
+    			Log.info("Do you want to install (y/n)?");
+                Log.info.flush();
+                final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	                        
+                String msg = "n";
+				try {
+					msg = stdin.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+                if (!msg.toLowerCase().equals("y")) {
+                	Log.info("Exiting now");
+                	return;
+                }
     		}
     	}
         
@@ -1947,13 +1969,20 @@ public class AddOnManager {
 			prepareForInstall(packagesToInstall, false, null);
 
 	        if (getToDeleteListFile().exists()) {
-	            JOptionPane.showMessageDialog(null,
+	        	if (useGUI) {
+	        		JOptionPane.showMessageDialog(null,
 	                    "<html><body><p style='width: 200px'>Upgrading packages on your machine requires BEAUti " +
 	                            "to restart. Shutting down now.</p></body></html>");
+	        	} else {
+                    Log.info("Upgrading packages on your machine requires BEAUti to restart.");
+	        	}
 	            System.exit(0);
 	        }
 	
-	        installPackages(packagesToInstall, false, null);
+	        Map<String,String> dirList = installPackages(packagesToInstall, false, null);
+	        for (String packageName : dirList.keySet()) {
+	        	Log.info("Installed " + packageName + " in " + dirList.get(packageName));
+	        }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
