@@ -74,7 +74,7 @@ public class BEASTVersion extends Version {
                 "Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
                 "Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
                 "Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
-                "Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
+                "Oliver Pybus, Tim Vaughan, Chieh-Hsi Wu, Walter Xie",
                 "",
                 "Thanks to:",
                 "Roald Forsberg, Beth Shapiro and Korbinian Strimmer"};
@@ -98,7 +98,7 @@ public class BEASTVersion extends Version {
                         "<p>BEAST developers:<br>" +
                         "Alex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, Philippe Lemey,<br>" +
                         "Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, Vladimir Minin,<br>" +
-                        "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie,<br>" +
+                        "Michael Defoin Platel, Oliver Pybus, Tim Vaughan, Chieh-Hsi Wu, Walter Xie,<br>" +
                         "Denise Kuehnert</p>" +
                         "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
     }
@@ -152,4 +152,5 @@ public class BEASTVersion extends Version {
         return str;
     }
 
+	public static BEASTVersion INSTANCE = new BEASTVersion();
 }
