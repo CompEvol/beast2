@@ -91,6 +91,8 @@
         <delete file="${build}/beast/app/util/Utils6.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
         <delete file="${build}/beast/app/util/Version.class" />
+        <delete file="${build}/beast/util/PackageVersion.class" />
+        <delete file="${build}/beast/core/util/Log.class" />
         <javac source="1.6"
                target="1.6"
                bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
@@ -105,6 +107,8 @@
             <include name="beast/**/Utils6.java" />
             <include name="beast/**/BEASTVersion.java" />
             <include name="beast/**/Version.java" />
+            <include name="beast/util/PackageVersion.java" />
+            <include name="beast/core/util/Log.java" />
         </javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties" />
@@ -143,7 +147,9 @@
                 <include name="beast/**/Utils6*.class" />
                 <include name="beast/**/BEASTVersion.class" />
                 <include name="beast/**/Version.class" />
+                <include name="beast/**/PackageVersion.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
+                <include name="beast/core/util/Log.class" />
             </fileset>
         </jar>
         <jar jarfile="${dist}/beast.src.jar">
