@@ -469,6 +469,77 @@
         <echo message="cp BEAST.v${version}.tgz ~/tmp"/>
     </target>
 
+<!--            depends="build_jar_all_BEAST_NoJUnitTest"-->
+    <target name="linuxjre"
+            description="release Linux/Unix version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
+        <delete dir="${Linux_package_dir}" />
+        <!-- Create the release directory -->
+        <mkdir dir="${Linux_package_dir}" />
+
+        <copy todir="${Linux_package_dir}/bin">
+            <fileset dir="${Linux_dir}/jrebin" />
+        </copy>
+        <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
+        <exec executable="cp">
+		<arg line="-R ../jre1.8.0_161 ${Linux_package_dir}/jre1.8.0_161"/>
+	</exec>
+
+        <!--<copy todir="${Linux_package_dir}/doc">
+            <fileset dir="${common_dir}/doc" />
+        </copy>-->
+        <copy todir="${Linux_package_dir}/examples/">
+            <fileset dir="examples/">
+                <include name="*.xml" />
+                <include name="nexus/**" />
+                <exclude name="benchmark/**" />
+            </fileset>
+        </copy>
+
+        <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
+        <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
+        <!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
+        <copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
+        <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
+        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/>
+        <copy todir="${Linux_package_dir}/lib">
+            <fileset dir="${Linux_dir}/lib" />
+        </copy>-->
+
+        <!--
+        <copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
+        -->
+
+        <copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
+
+        <copy todir="${Linux_package_dir}/templates/">
+            <fileset dir="templates/" />
+        </copy>
+        <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
+        <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
+        <copy file="${common_dir}/LICENSE.txt" todir="${Linux_package_dir}" />
+
+        <!-- Only works under Unix or NonStop Kernel (Tandem) -->
+        <!-- <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**"/>
+
+            <tar destfile="${Linux_dir}/${BEAST_name}v${version}.tgz" compression="gzip">
+                    <tarfileset dir="${Linux_package_dir}" prefix="${BEAST_name}v${version}"/>
+            </tar>-->
+        <!-- [ANT Bug 550] the tar task change the mode of the executables files, have to tar manaully -->
+        <echo message="Have to tar manaully, because [ANT Bug 550] the tar task change the mode of the executables files." />
+        <!-- tar -cvzf BEASTv1.x.x.tgz BEASTv2.x.x/ -->
+        <!-- cksum BEASTv2.x.x.tgz -->
+        <!-- tar -xvzf BEASTv2.x.x.tgz -->
+        <echo message="Linux/Unix version release is finished." />
+        
+        <echo message="cd release/Linux"/>
+        <echo message="tar fcz BEAST.v${version}.tgz beast"/>
+        <echo message="cp BEAST.v${version}.tgz ~/tmp"/>
+    </target>
+
     <!-- Define the appbundler task -->
     <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>
 
