@@ -20,7 +20,7 @@ public class BeautiLauncher extends BeastLauncher {
 		if (javaVersionCheck("BEAUti")) {
 			// loadBEASTJars();
 			Utils6.testCudaStatusOnMac();
-			String classpath = getPath();
+			String classpath = getPath(false, null);
 			run(classpath, "beast.app.beauti.Beauti", args);
 		}
         Utils6.endSplashScreen();

@@ -12,7 +12,7 @@ public class LogCombinerLauncher extends BeastLauncher {
 
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("LogCombiner")) {
-			String classpath = getPath();
+			String classpath = getPath(false, null);
 			run(classpath, "beast.app.tools.LogCombiner", args);
 		}
 	}
