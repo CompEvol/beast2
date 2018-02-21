@@ -17,8 +17,8 @@ public class TreeAnnotatorLauncher extends BeastLauncher  {
 
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("TreeAnnotator")) {
-			loadBEASTJars();
-			TreeAnnotator.main(args);
+			String classpath = getPath();
+			run(classpath, "beast.app.treeannotator.TreeAnnotator", args);
 		}
 	}
 

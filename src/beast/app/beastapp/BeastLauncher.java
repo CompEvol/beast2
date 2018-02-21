@@ -55,7 +55,7 @@ public class BeastLauncher {
 			// BeastMain.main(args);
 		}
 	}
-
+	
 	/**
 	 * Load jars. The path is relative to the parent directory of the jar
 	 * containing this class, taking the lib directory. This is meant only to
@@ -327,7 +327,7 @@ public class BeastLauncher {
 		return version;
 	}
 
-	private static String getPath() {
+	protected static String getPath() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("\"");
 		buf.append(sanitise(System.getProperty("java.library.path")));

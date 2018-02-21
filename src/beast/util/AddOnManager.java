@@ -458,6 +458,8 @@ public class AddOnManager {
             dirList.put(thisPkg.getName(), dirName);
         }
 
+        // make sure the class path is updated next time BEAST is started
+        Utils.saveBeautiProperty("packages.url", null);
         return dirList;
     }
 
@@ -964,6 +966,12 @@ public class AddOnManager {
         processInstallList(packages);
 
         checkInstalledDependencies(packages);
+
+        if (false) {
+            externalJarsLoaded = true;
+            Alignment.findDataTypes();
+    		return;
+    	}
 
         for (String jarDirName : getBeastDirectories()) {
         	loadPacakge(jarDirName);
