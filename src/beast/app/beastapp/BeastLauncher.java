@@ -10,12 +10,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -35,6 +39,10 @@ public class BeastLauncher {
 	private static String pathDelimiter;
 
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+		if (runWithBundledJRE("beast.app.beastapp.BeastMain", args)) {
+			return;
+		}
+
 		if (javaVersionCheck("BEAST")) {
 			loadBEASTJars();
 			Utils6.testCudaStatusOnMac();
@@ -243,7 +251,7 @@ public class BeastLauncher {
 		if (version.length > 2) {
 			try {
 				int majorVersion = Integer.parseInt(version[1]);
-				if (majorVersion <= 7) {
+				if (majorVersion != 8) {
 					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8,<br>" + "but the current version is " + majorVersion
 							+ ".<br><br>" + "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
 							+ "Continuing, but expect the unexpected.</html>";
@@ -308,5 +316,156 @@ public class BeastLauncher {
         }
         return version;
     }
+
+
+	public static boolean runWithBundledJRE(String main, String[] args) {
+		try {
+        
+
+            List<String> cmd = new ArrayList<String>();
+            if (System.getenv("JAVA_HOME") != null) {
+                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
+                        + "bin" + File.separatorChar + "java");
+            } else
+                cmd.add("java");
+
+            if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
+            	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
+            }
+            cmd.add("-cp");
+            String beastJar = getBeastJar();
+            if (beastJar == null) {
+            	return false;
+            }
+            cmd.add(beastJar);
+            cmd.add(main);
+
+            for (String arg : args) {
+                cmd.add(arg);
+            }
+
+            final ProcessBuilder pb = new ProcessBuilder(cmd);
+
+            Map<String, String> environment = pb.environment();
+            
+            BeastLauncher clu = new BeastLauncher();
+    		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+
+            String jreDir = launcherJar + "/../jre1.8.0_161.jre/Contents/Home";
+            if (!new File(jreDir).exists()) {
+            	return false;
+            }
+            environment.put("JAVA_HOME", jreDir);
+            System.err.println(pb.command());
+
+            //File log = new File("log");
+            pb.redirectErrorStream(true);
+            
+            // Start the process and wait for it to finish.
+            final Process process = pb.start();
+            int c;
+            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            while ((c = input.read()) != -1) {
+                System.out.print((char)c);
+            }
+            input.close();
+            final int exitStatus = process.waitFor();
+
+            if (exitStatus != 0) {
+            	System.err.println(process.getErrorStream());
+                // Log.err.println(Utils.toString());
+            } else {
+//                System.out.println(Utils.toString(process.getInputStream()));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		return true;
+    }
+
+	private static String getBeastJar() throws IOException {
+		BeastLauncher clu = new BeastLauncher();
+		String beastUserDir = getPackageUserDir();
+		pathDelimiter = isWindows() ? "\\\\" : "/";
+		beastUserDir +=  pathDelimiter + "BEAST" + pathDelimiter;
+		String beastJar = beastUserDir + "lib";
+		String beast = getBeastJar(new File(beastJar));
+		if (beast != null) {
+			return beast;
+		}
+		
+		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		// deal with special characters and spaces in path
+		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
+		System.err.println("jardir = " + launcherJar);
+		File jarDir0 = new File(launcherJar).getParentFile();
+		while (jarDir0 != null) {
+			beast = getBeastJar(jarDir0);
+			if (beast != null) {
+				return beast;
+			}
+			beast = getBeastJar(new File(jarDir0.getAbsolutePath() + pathDelimiter +"lib"));
+			if (beast != null) {
+				return beast;
+			}
+			jarDir0 = jarDir0.getParentFile();
+		}
+		return null;
+	}
+	
+private static String getBeastJar(File jarDir) throws IOException {
+	System.err.println("Checking out " + jarDir.getAbsolutePath());
+	if (jarDir.exists()) {
+		URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
+		if (new File(jarDir.getAbsoluteFile()+File.separator+"beast.jar").exists()) {
+			File versionFile = new File(jarDir.getParent() + pathDelimiter + "version.xml");
+			if (versionFile.exists()) {
+		        BufferedReader fin = new BufferedReader(new FileReader(versionFile));
+		        String str = null;
+		        while (fin.ready()) {
+		            str += fin.readLine();
+		        }
+		        fin.close();
+		        
+		        
+		        int start = str.indexOf("version=");
+		        int end = str.indexOf("'", start + 9);
+		        String version = str.substring(start + 9, end);
+		        double localVersion = parseVersion(version);
+		        double desiredVersion = parseVersion(getVersion());
+		        if (localVersion < desiredVersion) {
+		        	return null;
+		        }
+			}
+			return url.getPath();
+		}
+	}
+	return null;
+
+}
+	
+	private static String sanitise(String property) {
+		// make absolute paths from relative paths
+		String pathSeparator = System.getProperty("path.separator");
+		String[] paths = property.split(pathSeparator);
+		StringBuilder b = new StringBuilder();
+		for (String path : paths) {
+			File f = new File(path);
+			b.append(f.getAbsolutePath());
+			b.append(pathSeparator);
+		}
+		// chop off last pathSeparator
+		property = b.substring(0, b.length() - 1);
+
+		// sanitise for windows
+		if (Utils6.isWindows()) {
+			String cwd = System.getProperty("user.dir");
+			cwd = cwd.replace("\\", "/");
+			property = property.replaceAll(";\\.", ";" + cwd + ".");
+			property = property.replace("\\", "/");
+		}
+		return property;
+	}
 
 }

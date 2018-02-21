@@ -20,6 +20,9 @@ public class AppStoreLauncher extends BeastLauncher {
 	 * @throws NoSuchMethodException 
 	 * **/
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+		if (runWithBundledJRE("beast.app.tools.AppStore", args)) {
+			return;
+		}
 		if (javaVersionCheck("AppStore")) {
 			loadBEASTJars();
 			AppStore.main(args);
