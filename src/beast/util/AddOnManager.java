@@ -586,6 +586,9 @@ public class AddOnManager {
             }
             outfile.close();
         }
+        
+        // make sure the class path is updated next time BEAST is started
+        Utils.saveBeautiProperty("packages.url", null);
         return dirName;
     }
 
@@ -992,6 +995,15 @@ public class AddOnManager {
     } // getBeastDirectories
 
     
+	public static void initialise() {
+	    processDeleteList();
+	
+	    addInstalledPackages(packages);
+	
+	    processInstallList(packages);
+	
+	//    checkInstalledDependencies(packages);
+	}
 
 	/**
      * load external jars in beast directories *
@@ -1253,6 +1265,10 @@ public class AddOnManager {
                         "Either uninstall " + requiredBy.getName() + " or install the correct version of " + dep.dependencyName + ".");
             }
         }
+    }
+
+    public static void checkInstalledDependencies() {
+    	checkInstalledDependencies(packages);
     }
 
     /**
@@ -1897,6 +1913,11 @@ public class AddOnManager {
      * along the way.
      */
     private static void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
+    	if (classToPackageMap.size() == 0) {
+            for (String jarDirName : getBeastDirectories()) {
+            	initPackageMap(jarDirName);
+            }
+    	}
     	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
     	if (packageAndVersion != null) {
     		packagesAndVersions.add(packageAndVersion);
@@ -1906,7 +1927,64 @@ public class AddOnManager {
     	}
 	}
 
-    /** test whether a package with given name and version is available.
+    private static void initPackageMap(String jarDirName) {
+        try {
+            File versionFile = new File(jarDirName + "/version.xml");
+            String packageNameAndVersion = null;
+            if (versionFile.exists()) {
+                try {
+                    // print name and version of package
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    Document doc = factory.newDocumentBuilder().parse(versionFile);
+                    Element addon = doc.getDocumentElement();
+                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                    Log.warning.println("Loading package " + packageNameAndVersion);
+                    Utils.logToSplashScreen("Loading package " + packageNameAndVersion);
+                } catch (Exception e) {
+                    // too bad, won't print out any info
+
+                    // File is called version.xml, but is not a Beast2 version file
+                    // Log.debug.print("Skipping "+jarDirName+" (not a Beast2 package)");
+                }
+            }
+            File jarDir = new File(jarDirName + "/lib");
+            if (!jarDir.exists()) {
+                jarDir = new File(jarDirName + "\\lib");
+            }
+            if (jarDir.exists() && jarDir.isDirectory()) {
+                for (String fileName : jarDir.list()) {
+                    if (fileName.endsWith(".jar")) {
+                        Log.debug.print("Probing: " + fileName + " ");
+                        // check that we are not reload existing classes
+                        try {
+                            JarInputStream jarFile = new JarInputStream
+                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
+                            JarEntry jarEntry;
+                            while ((jarEntry = jarFile.getNextJarEntry()) != null) {
+                                if ((jarEntry.getName().endsWith(".class"))) {
+                                    String className = jarEntry.getName().replaceAll("/", "\\.");
+                                    className = className.substring(0, className.lastIndexOf('.'));
+                                    if (packageNameAndVersion != null) {
+                                        classToPackageMap.put(className, packageNameAndVersion);
+                                    }
+                                }
+                            }
+                            jarFile.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // File exists, but cannot open the file for some reason
+            Log.debug.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+            Log.warning.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+        }
+		
+	}
+
+	/** test whether a package with given name and version is available.
      * @param pkgname
      * @param pkgversion ignored for now
      * @return

@@ -339,6 +339,9 @@ public class BeastLauncher {
 	}
 
 	protected static String getPath(boolean useStrictVersions, String beastFile) {
+        AddOnManager.initialise();
+
+
         if (useStrictVersions) {
         	// grab "required" attribute from beast spec
             if (beastFile.endsWith(".json")) {
@@ -377,6 +380,8 @@ public class BeastLauncher {
             	}
             }
         } 
+
+        AddOnManager.checkInstalledDependencies();
 
         // just load all packages
         StringBuilder buf = new StringBuilder();
@@ -774,7 +779,6 @@ public class BeastLauncher {
             final ProcessBuilder pb = new ProcessBuilder(cmd);
 
             Map<String, String> environment = pb.environment();
-            environment.put("name", "Alfredo Osorio");
             System.err.println(pb.command());
 
             //File log = new File("log");
