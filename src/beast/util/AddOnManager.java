@@ -91,7 +91,7 @@ public class AddOnManager {
 //    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
     public final static String ARCHIVE_DIR = "archive";
     // flag to indicate archive directory and version numbers in directories are required
-    static boolean useArchive = false;
+    private static boolean useArchive = false;
     
     public static void useArchive(boolean _useArchive) {
     	useArchive = _useArchive;
@@ -494,7 +494,7 @@ public class AddOnManager {
         return dirList;
     }
 
-    private static String getPackageDir(Package thisPkg, PackageVersion thisPkgVersion, boolean useAppDir, String customDir) {
+    public static String getPackageDir(Package thisPkg, PackageVersion thisPkgVersion, boolean useAppDir, String customDir) {
         String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + 
         		(useArchive ? "/" + ARCHIVE_DIR : "") + 
         		"/" + thisPkg.getName() +
@@ -1012,7 +1012,7 @@ public class AddOnManager {
     	}
 
         for (String jarDirName : getBeastDirectories()) {
-        	loadPacakge(jarDirName);
+        	loadPackage(jarDirName);
         }
         externalJarsLoaded = true;
         Alignment.findDataTypes();
@@ -1039,7 +1039,7 @@ public class AddOnManager {
         	    	useArchive = true;
         			String dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
         			if (new File(dirName).exists()) {
-        				loadPacakge(dirName);
+        				loadPackage(dirName);
         			} else {
         				// check the latest installed version
         				Package pkg2 = packages.get(pkgname);
@@ -1049,7 +1049,7 @@ public class AddOnManager {
 	            	    	useArchive = false;
 	            			dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
 	            			if (new File(dirName).exists()) {
-	            				loadPacakge(dirName);
+	            				loadPackage(dirName);
 	            			} else {
 	            				unavailablePacakges += s +", ";
 	            			}
@@ -1071,7 +1071,7 @@ public class AddOnManager {
         Alignment.findDataTypes();
     } // loadExternalJars
 
-    private static void loadPacakge(String jarDirName) {
+    private static void loadPackage(String jarDirName) {
         try {
             File versionFile = new File(jarDirName + "/version.xml");
             String packageNameAndVersion = null;

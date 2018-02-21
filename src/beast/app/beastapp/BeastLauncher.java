@@ -18,8 +18,10 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -32,6 +34,9 @@ import org.w3c.dom.Element;
 
 import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
+import beast.core.util.Log;
+import beast.util.AddOnManager;
+import beast.util.Package;
 import beast.util.PackageVersion;
 
 /**
@@ -50,7 +55,13 @@ public class BeastLauncher {
 		if (javaVersionCheck("BEAST")) {
 			// loadBEASTJars();
 			Utils6.testCudaStatusOnMac();
-			String classpath = getPath();
+			boolean useStrictVersions = false;
+			for (String arg : args) {
+				if (arg.equals("-strictversions")) {
+					useStrictVersions = true;
+				}
+			}
+			String classpath = getPath(useStrictVersions, args.length > 0 ? args[args.length - 1]: null);
 			run(classpath, "beast.app.beastapp.BeastMain", args);
 			// BeastMain.main(args);
 		}
@@ -327,8 +338,48 @@ public class BeastLauncher {
 		return version;
 	}
 
-	protected static String getPath() {
-		StringBuilder buf = new StringBuilder();
+	protected static String getPath(boolean useStrictVersions, String beastFile) {
+        if (useStrictVersions) {
+        	// grab "required" attribute from beast spec
+            if (beastFile.endsWith(".json")) {
+            	throw new IllegalArgumentException("The -strictversions flag is not implemented for JSON files yet (only XML files are supported).");
+            } else {
+            	try {
+	                BufferedReader fin = new BufferedReader(new FileReader(beastFile));
+	                StringBuilder buf = new StringBuilder();
+	                String str = null;
+	                int lineCount = 0;
+	                while (fin.ready() && lineCount < 100) {
+	                    str = fin.readLine();
+	                    buf.append(str);
+	                    buf.append(' ');
+	                }
+	                fin.close();
+	                str = buf.toString();
+	                int start = str.indexOf("required=");
+	                if (start < 0) {
+	                	throw new IllegalArgumentException("Could not find a 'required' attribute in the XML. Add the required attribute, or run without the -strictversions flag");
+	                }
+	                char c = str.charAt(start + 9);
+	                start += 10;
+	                int end = str.indexOf(c, start);
+	                String packages = str.substring(start, end);
+
+	                buf = new StringBuilder();
+	        		buf.append("\"");
+	        		buf.append(sanitise(System.getProperty("java.library.path")));
+	        		String packagePath = determinePackagePath("BEAST " + BEASTVersion.INSTANCE.getVersion() + ":" + packages);
+	        		buf.append(packagePath);
+	        		buf.append("\"");
+	        		return buf.toString();
+            	} catch (IOException e) {
+            		e.printStackTrace();
+            	}
+            }
+        } 
+
+        // just load all packages
+        StringBuilder buf = new StringBuilder();
 		buf.append("\"");
 		buf.append(sanitise(System.getProperty("java.library.path")));
 		String packagePath = Utils6.getBeautiProperty("package.path");
@@ -340,6 +391,63 @@ public class BeastLauncher {
 		buf.append("\"");
 		return buf.toString();
 	}
+
+	
+	private static String determinePackagePath(String packagesString) {
+		StringBuilder buf = new StringBuilder();
+		if (getBEASTInstallDir() != null) {
+			buf.append(getBEASTInstallDir());
+			buf.append(":");
+		}
+	    if (packagesString != null && packagesString.trim().length() > 0) {
+	    	Map<String, Package> packages = new HashMap<String, Package>();
+	    	AddOnManager.addInstalledPackages(packages);
+	    	
+	    	String unavailablePacakges = "";
+	    	String [] packageAndVersions = packagesString.split(":");
+			Set<String> classes = new HashSet<String>();
+	    	for (String s : packageAndVersions) {
+	    		s = s.trim();
+	    		int i = s.lastIndexOf(" ");
+	    		if (i > 0) {
+	    			String pkgname = s.substring(0, i);
+	    			String pkgversion = s.substring(i+1).trim().replaceAll("v", "");
+	    			Package pkg = new Package(pkgname);
+	    			PackageVersion version = new PackageVersion(pkgversion);
+	    			AddOnManager.useArchive(true);
+	    			String dirName = AddOnManager.getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	    			if (new File(dirName).exists()) {
+	    				buf.append(addJarsToPath(dirName, classes));
+	    			} else {
+	    				// check the latest installed version
+	    				Package pkg2 = packages.get(pkgname);
+	    				if (pkg2 == null || !pkg2.isInstalled() || !pkg2.getInstalledVersion().equals(version)) {
+	        				unavailablePacakges += s +", ";
+	    				} else {
+	    					AddOnManager.useArchive(false);
+	            			dirName = AddOnManager.getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	            			if (new File(dirName).exists()) {
+	            				buf.append(addJarsToPath(dirName, classes));
+	            			} else {
+	            				unavailablePacakges += s +", ";
+	            			}
+	    				}
+	    			}
+	    		}
+	    	}
+	    	if (unavailablePacakges.length() > 1) {
+	    		unavailablePacakges = unavailablePacakges.substring(0, unavailablePacakges.length() - 2);
+	    		if (unavailablePacakges.contains(",")) {
+	    			Log.warning("The following packages are required, but not available: " + unavailablePacakges);
+	    		} else {
+	    			Log.warning("The following package is required, but is not available: " + unavailablePacakges);
+	    		}
+	    		Log.warning("See http://beast2.org/managing-packages/ for details on how to install packages.");
+	    		throw new IllegalArgumentException("The following package(s) are required, but not available: " + unavailablePacakges);
+	    	}
+	    }
+	    return buf.toString();
+    }
 
 	private static String determinePackagePath() {
 		StringBuilder buf = new StringBuilder();
@@ -368,49 +476,9 @@ public class BeastLauncher {
 						// Beast2 package)");
 					}
 				}
-				File jarDir = new File(jarDirName + "/lib");
-				if (!jarDir.exists()) {
-					jarDir = new File(jarDirName + "\\lib");
-				}
-				if (jarDir.exists() && jarDir.isDirectory()) {
-					for (String fileName : jarDir.list()) {
-						if (fileName.endsWith(".jar")) {
-							// Log.debug.print("Probing: " + fileName + " ");
-							// check that we are not reload existing classes
-							boolean alreadyLoaded = false;
-							Set<String> jarClasses = new HashSet<String>();
-							try {
-								JarInputStream jarFile = new JarInputStream(
-										new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
-								JarEntry jarEntry;
+				addJarsToPath(jarDirName, classes);
+				
 
-								while (!alreadyLoaded) {
-									jarEntry = jarFile.getNextJarEntry();
-									if (jarEntry == null) {
-										break;
-									}
-									if ((jarEntry.getName().endsWith(".class"))) {
-										String className = jarEntry.getName().replaceAll("/", "\\.");
-										className = className.substring(0, className.lastIndexOf('.'));
-										if (classes.contains(className)) {
-											alreadyLoaded = true;
-										} else {
-											jarClasses.add(className);
-										}
-									}
-								}
-								jarFile.close();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							alreadyLoaded = false;
-							if (!alreadyLoaded) {
-								buf.append(":" + jarDir.getAbsolutePath() + "/" + fileName);
-								classes.addAll(jarClasses);
-							}
-						}
-					}
-				}
 			} catch (Exception e) {
 				// File exists, but cannot open the file for some reason
 				// Log.debug.println("Skipping "+jarDirName+"/version.xml
@@ -419,6 +487,54 @@ public class BeastLauncher {
 				// (unable to open file");
 			}
 
+		}
+		return buf.toString();
+	}
+
+	private static String addJarsToPath(String packageDirName, Set<String> classes) {
+		StringBuilder buf = new StringBuilder();
+		File jarDir = new File(packageDirName + "/lib");
+		if (!jarDir.exists()) {
+			jarDir = new File(packageDirName + "\\lib");
+		}
+		if (jarDir.exists() && jarDir.isDirectory()) {
+			for (String fileName : jarDir.list()) {
+				if (fileName.endsWith(".jar")) {
+					// Log.debug.print("Probing: " + fileName + " ");
+					// check that we are not reload existing classes
+					boolean alreadyLoaded = false;
+					Set<String> jarClasses = new HashSet<String>();
+					try {
+						JarInputStream jarFile = new JarInputStream(
+								new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
+						JarEntry jarEntry;
+
+						while (!alreadyLoaded) {
+							jarEntry = jarFile.getNextJarEntry();
+							if (jarEntry == null) {
+								break;
+							}
+							if ((jarEntry.getName().endsWith(".class"))) {
+								String className = jarEntry.getName().replaceAll("/", "\\.");
+								className = className.substring(0, className.lastIndexOf('.'));
+								if (classes.contains(className)) {
+									alreadyLoaded = true;
+								} else {
+									jarClasses.add(className);
+								}
+							}
+						}
+						jarFile.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					alreadyLoaded = false;
+					if (!alreadyLoaded) {
+						buf.append(":" + jarDir.getAbsolutePath() + "/" + fileName);
+						classes.addAll(jarClasses);
+					}
+				}
+			}
 		}
 		return buf.toString();
 	}
@@ -657,6 +773,8 @@ public class BeastLauncher {
 
             final ProcessBuilder pb = new ProcessBuilder(cmd);
 
+            Map<String, String> environment = pb.environment();
+            environment.put("name", "Alfredo Osorio");
             System.err.println(pb.command());
 
             //File log = new File("log");
