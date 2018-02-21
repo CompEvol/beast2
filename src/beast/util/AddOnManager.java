@@ -159,7 +159,7 @@ public class AddOnManager {
         // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
         System.setProperty("jsse.enableSNIExtension", "false");
 
-        List<URL> URLs = new ArrayList<>();
+        List<URL> URLs = new ArrayList<URL>();
         URLs.add(new URL(PACKAGES_XML));
 
 	    //# url
@@ -238,7 +238,12 @@ public class AddOnManager {
                     pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
 
                 Set<PackageDependency> installedVersionDependencies =
-                        new TreeSet<>((o1, o2) -> o1.dependencyName.compareTo(o2.dependencyName));
+                        new TreeSet<PackageDependency>(new Comparator<PackageDependency>() {
+							@Override
+							public int compare(PackageDependency o1, PackageDependency o2) {
+								return o1.dependencyName.compareTo(o2.dependencyName);
+							}
+						});
 
                 // get dependencies of add-n
                 NodeList nodes = doc.getElementsByTagName("depends");
@@ -257,7 +262,11 @@ public class AddOnManager {
 
                 pkg.setInstalled(installedVersion, installedVersionDependencies);
 
-            } catch (ParserConfigurationException | SAXException | IOException e) {
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -275,7 +284,7 @@ public class AddOnManager {
 
         if (!beastPkg.isInstalled()) {
             PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
-            Set<PackageDependency> beastPkgDeps = new TreeSet<>();
+            Set<PackageDependency> beastPkgDeps = new TreeSet<PackageDependency>();
             beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
         }
 
@@ -297,11 +306,13 @@ public class AddOnManager {
             throw new PackageListRetrievalException("Error parsing one or more repository URLs.", e);
         }
 
-        List<URL> brokenPackageRepositories = new ArrayList<>();
+        List<URL> brokenPackageRepositories = new ArrayList<URL>();
         Exception firstException = null;
 
         for (URL url : urls) {
-            try (InputStream is = url.openStream()) {
+        	InputStream is = null;
+            try {            		
+            	is = url.openStream();
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(new InputSource(is));
@@ -330,7 +341,7 @@ public class AddOnManager {
                                 !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
                             pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
 
-                        Set<PackageDependency> packageDependencies = new HashSet<>();
+                        Set<PackageDependency> packageDependencies = new HashSet<PackageDependency>();
                         NodeList depNodes = element.getElementsByTagName("depends");
                         for (int j = 0; j < depNodes.getLength(); j++) {
                             Element dependson = (Element) depNodes.item(j);
@@ -350,11 +361,28 @@ public class AddOnManager {
                         pkg.addAvailableVersion(packageVersion, packageURL, packageDependencies);
                     }
                 }
-            } catch (IOException | ParserConfigurationException | SAXException e) {
+                is.close();
+            } catch (IOException e) {
                 if (brokenPackageRepositories.isEmpty())
                     firstException = e;
 
                 brokenPackageRepositories.add(url);
+            } catch (ParserConfigurationException e) {
+                if (brokenPackageRepositories.isEmpty())
+                    firstException = e;
+
+                brokenPackageRepositories.add(url);
+            } catch (SAXException e) {
+                if (brokenPackageRepositories.isEmpty())
+                    firstException = e;
+
+                brokenPackageRepositories.add(url);
+            } finally {
+            	try {
+            		if (is != null) is.close();
+            	} catch (IOException e) {
+            		e.printStackTrace();
+            	}
             }
         }
 
@@ -382,7 +410,7 @@ public class AddOnManager {
     		return;
     	}
     	
-        Map<Package, PackageVersion> ptiCopy = new HashMap<>(packagesToInstall);
+        Map<Package, PackageVersion> ptiCopy = new HashMap<Package, PackageVersion>(packagesToInstall);
         for (Map.Entry<Package, PackageVersion> entry : ptiCopy.entrySet()) {
             Package thisPkg = entry.getKey();
             PackageVersion thisPkgVersion = entry.getValue();
@@ -401,10 +429,13 @@ public class AddOnManager {
         	// RRB: what are the following two lines for?
             //File toDeleteList = getToDeleteListFile();
             //FileWriter outfile = new FileWriter(toDeleteList, true);
-            try (PrintStream ps = new PrintStream(getToInstallListFile())) {
+        	PrintStream ps = null;
+            try { 
+            	ps  = new PrintStream(getToInstallListFile());
                 for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
                     ps.println(entry.getKey() + ":" + entry.getValue());
                 }
+                ps.close();
             } catch (IOException ex) {
                 message("Error writing to-install file: " + ex.getMessage() +
                         " Installation may not resume successfully after restart.");
@@ -430,7 +461,7 @@ public class AddOnManager {
     public static Map<String, String> installPackages(Map<Package, PackageVersion> packagesToInstall, boolean useAppDir, String customDir) throws IOException {
     	closeClassLoader();
     	
-        Map<String, String> dirList = new HashMap<>();
+        Map<String, String> dirList = new HashMap<String, String>();
 
         for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
             Package thisPkg = entry.getKey();
@@ -486,7 +517,7 @@ public class AddOnManager {
      */
     public static List<String> getInstalledDependencyNames(Package pkg, Map<String, Package> packageMap) {
 
-        List<String> dependencies = new ArrayList<>();
+        List<String> dependencies = new ArrayList<String>();
 
         for (Package thisPkg : packageMap.values()) {
             if (thisPkg.equals(pkg))
@@ -535,7 +566,7 @@ public class AddOnManager {
         	dir = new File(dirName);
         	useArchive = !useArchive;
         }
-        List<File> deleteFailed = new ArrayList<>();
+        List<File> deleteFailed = new ArrayList<File>();
         deleteRecursively(dir, deleteFailed);
         
         if (useArchive) {
@@ -774,8 +805,10 @@ public class AddOnManager {
                 return;
             }
 
-            Map<Package, PackageVersion>  packagesToInstall = new HashMap<>();
-            try (BufferedReader fin = new BufferedReader(new FileReader(toInstallListFile))) {
+            Map<Package, PackageVersion>  packagesToInstall = new HashMap<Package, PackageVersion>();
+            BufferedReader fin = null;
+            try {
+            	fin = new BufferedReader(new FileReader(toInstallListFile));
                 String line;
                 while ((line = fin.readLine()) != null) {
                     String[] nameVerPair = line.split(":");
@@ -784,6 +817,7 @@ public class AddOnManager {
                     PackageVersion ver = new PackageVersion(nameVerPair[1]);
                     packagesToInstall.put(pkg, ver);
                 }
+                fin.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -803,7 +837,7 @@ public class AddOnManager {
      */
     public static List<String> getBeastDirectories() {
     	
-        List<String> dirs = new ArrayList<>();
+        List<String> dirs = new ArrayList<String>();
         // check if there is the BEAST environment variable is set
         if (System.getProperty("BEAST_ADDON_PATH") != null) {
             String BEAST = System.getProperty("BEAST_ADDON_PATH");
@@ -850,7 +884,7 @@ public class AddOnManager {
         // subdirectories that look like they may contain an package
         // this is detected by checking the subdirectory contains a lib or
         // templates directory
-        List<String> subDirs = new ArrayList<>();
+        List<String> subDirs = new ArrayList<String>();
         for (String dirName : dirs) {
             File dir = new File(dirName);
             if (dir.isDirectory()) {
@@ -878,7 +912,7 @@ public class AddOnManager {
      * Only add the latest version from the archive.
      */
     private static List<String> getLatestBeastArchiveDirectories(List<String> visitedDirs) {
-        List<String> dirs = new ArrayList<>();
+        List<String> dirs = new ArrayList<String>();
         String FILESEPARATOR = "/"; //(Utils.isWindows() ? "\\" : "/");
 
     	String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
@@ -886,7 +920,7 @@ public class AddOnManager {
     	if (archiveDir.exists()) {
     		
     		// determine which packages will already be loaded
-        	Set<String> alreadyLoaded = new HashSet<>();
+        	Set<String> alreadyLoaded = new HashSet<String>();
         	for (String d : visitedDirs) {
         		File dir2 = new File(d);
         		if (dir2.isDirectory()) {
@@ -929,10 +963,14 @@ public class AddOnManager {
         		if (f2.isDirectory()) {
         			// this may be a package directory -- pick the latest directory
         			String [] versionDirs = f2.list();
-        			Arrays.sort(versionDirs, (v1, v2) -> {
-        				PackageVersion pv1 = new PackageVersion(v1);
-        				PackageVersion pv2 = new PackageVersion(v2);
-        				return (pv1.compareTo(pv2));
+        			Arrays.sort(versionDirs,
+        					new Comparator<String>() {
+								@Override
+								public int compare(String v1, String v2) {
+			        				PackageVersion pv1 = new PackageVersion(v1);
+			        				PackageVersion pv2 = new PackageVersion(v2);
+			        				return (pv1.compareTo(pv2));
+								}
         			});
         			int k = versionDirs.length - 1;
         			while (k >= 0) {
@@ -1122,7 +1160,7 @@ public class AddOnManager {
     public static void populatePackagesToInstall(Map<String, Package> packageMap,
                                                  Map<Package, PackageVersion> packagesToInstall) throws DependencyResolutionException {
 
-        Map<Package, PackageVersion> copy = new HashMap<>(packagesToInstall);
+        Map<Package, PackageVersion> copy = new HashMap<Package, PackageVersion>(packagesToInstall);
 
         for (Map.Entry<Package, PackageVersion> entry : copy.entrySet()) {
             populatePackagesToInstall(packageMap, packagesToInstall, entry.getKey(), entry.getValue());
@@ -1186,7 +1224,7 @@ public class AddOnManager {
      * @param packageMap
      */
     private static void checkInstalledDependencies(Map<String, Package> packageMap) {
-        Map<PackageDependency,Package> dependencies = new HashMap<>();
+        Map<PackageDependency,Package> dependencies = new HashMap<PackageDependency,Package>();
 
         // Collect installed package dependencies
         for (Package pkg : packageMap.values()) {
@@ -1293,7 +1331,7 @@ public class AddOnManager {
             }
         }
 
-        all_classes = new ArrayList<>();
+        all_classes = new ArrayList<String>();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
 
@@ -1443,7 +1481,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
         try {
             cls = Class.forName(classname);
@@ -1467,7 +1505,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
         try {
             cls = Class.forName(classname);
@@ -1493,23 +1531,26 @@ public class AddOnManager {
         int i;
         HashSet<String> names;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
-        names = new HashSet<>();
+        names = new HashSet<String>();
         for (i = 0; i < pkgnames.length; i++) {
             names.addAll(find(cls, pkgnames[i]));
         }
 
         // sort result
         result.addAll(names);
-        Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-        		return -1;
-        	}
-        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-        		return 1;
-        	}
-        	return s1.compareTo(s2);
+        Collections.sort(result, new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
+	        		return -1;
+	        	}
+	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareTo(s2);
+			}
         }); //, new StringCompare());
 
         return result;
@@ -1528,7 +1569,7 @@ public class AddOnManager {
             loadAllClasses();
         }
 
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String className = all_classes.get(i);
             className = className.replaceAll("/", ".");
@@ -1557,14 +1598,17 @@ public class AddOnManager {
         }
 
         // sort result
-        Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-        		return -1;
-        	}
-        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-        		return 1;
-        	}
-        	return s1.compareTo(s2);
+        Collections.sort(result, new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
+	        		return -1;
+	        	}
+	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareTo(s2);
+			}
         }); //, new StringCompare());
         // remove duplicates
         for (int i = result.size() - 1; i > 0; i--) {
@@ -1602,7 +1646,7 @@ public class AddOnManager {
         int maxDepsWidth = depsHeader.length();
 
         // Assemble list of packages (excluding beast2), keeping track of maximum field widths
-        List<Package> packageList = new ArrayList<>();
+        List<Package> packageList = new ArrayList<Package>();
         for (Package pkg : packageMap.values()) {
 //            if (pkg.getName().equals(BEAST_PACKAGE))
 //                continue;
@@ -1727,7 +1771,13 @@ public class AddOnManager {
                 Log.debug.println("Access URL : " + url);
             }
             Log.debug.print("Getting list of packages ...");
-            Map<String, Package> packageMap = new TreeMap<>(String::compareToIgnoreCase);
+            Map<String, Package> packageMap = new TreeMap<String, Package>(new Comparator<String>() {
+            	// String::compareToIgnoreCase
+    			@Override
+    			public int compare(String s1, String s2) {
+    	        	return s1.toLowerCase().compareTo(s2.toLowerCase());
+    			}
+            });
             try {
                 AddOnManager.addInstalledPackages(packageMap);
                 AddOnManager.addAvailablePackages(packageMap);
@@ -1751,7 +1801,7 @@ public class AddOnManager {
                         processed = true;
                         if (!aPackage.isInstalled() || arguments.hasOption("version")) {
                             Log.debug.println("Determine packages to install");
-                            Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
+                            Map<Package, PackageVersion> packagesToInstall = new HashMap<Package, PackageVersion>();
                             if (arguments.hasOption("version")) {
                             	String versionString = arguments.getStringOption("version");
                             	PackageVersion version = new PackageVersion(versionString);
@@ -1826,19 +1876,19 @@ public class AddOnManager {
      * It maps a full class name onto a package name + " v" + package version
      * e.g. "bModelTest v0.3.2"
      */
-    private static Map<String, String> classToPackageMap = new HashMap<>();
+    private static Map<String, String> classToPackageMap = new HashMap<String, String>();
     
     /**  maps package name to a Package object, which contains info on whether 
      * and which version is installed. This is initialised when loadExternalJars()
      * is called, which happens at the start of BEAST, BEAUti and many utilities.
      */
-    private static TreeMap<String, Package> packages = new TreeMap<>();
+    private static TreeMap<String, Package> packages = new TreeMap<String, Package>();
 
     /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
      * for all packages used by o and its predecessors in the model graph.
      */
     public static Set<String> getPackagesAndVersions(BEASTInterface o) {
-    	Set<String> packagesAndVersions = new LinkedHashSet<>();
+    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
     	getPackagesAndVersions(o, packagesAndVersions);
     	return packagesAndVersions;
     }
@@ -1886,17 +1936,21 @@ public class AddOnManager {
     	}
     	
     	// find available and installed packages
-        TreeMap<String, Package> packageMap = new TreeMap<>((s1,s2)->{
-        	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
-        		if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
-        			return 0;
-        		}
-        		return -1;
-        	}
-        	if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
-        		return 1;
-        	}
-        	return s1.compareToIgnoreCase(s2);
+        TreeMap<String, Package> packageMap = new TreeMap<String, Package>(
+        		new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+	        		if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+	        			return 0;
+	        		}
+	        		return -1;
+	        	}
+	        	if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareToIgnoreCase(s2);
+			}
         });
         try {
 			addAvailablePackages(packageMap);
@@ -1907,11 +1961,11 @@ public class AddOnManager {
         addInstalledPackages(packageMap);
 
         // check whether any installed package has an update
-        Map<Package, PackageVersion> packagesToInstall = new LinkedHashMap<>();
+        Map<Package, PackageVersion> packagesToInstall = new LinkedHashMap<Package, PackageVersion>();
         for (String packageName : packageMap.keySet()) {
         	Package _package = packageMap.get(packageName);
         	if (_package.isInstalled()) {
-        		if (_package.getLatestVersion().compareTo(_package.getInstalledVersion()) > 0) {
+        		if (_package.getLatestVersion() != null && _package.getLatestVersion().compareTo(_package.getInstalledVersion()) > 0) {
         			packagesToInstall.put(_package, _package.getLatestVersion());
         		}
         	}
