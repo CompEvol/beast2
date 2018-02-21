@@ -42,7 +42,8 @@ public class BeastLauncher {
 		if (runWithBundledJRE("beast.app.beastapp.BeastMain", args)) {
 			return;
 		}
-
+		System.err.println("No bundled JRE found");
+		
 		if (javaVersionCheck("BEAST")) {
 			loadBEASTJars();
 			Utils6.testCudaStatusOnMac();
@@ -323,11 +324,11 @@ public class BeastLauncher {
         
 
             List<String> cmd = new ArrayList<String>();
-            if (System.getenv("JAVA_HOME") != null) {
-                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
-                        + "bin" + File.separatorChar + "java");
-            } else
-                cmd.add("java");
+//            if (System.getenv("JAVA_HOME") != null) {
+//                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
+//                        + "bin" + File.separatorChar + "java");
+//            } else
+            cmd.add("java");
 
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
@@ -351,10 +352,23 @@ public class BeastLauncher {
             BeastLauncher clu = new BeastLauncher();
     		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 
-            String jreDir = launcherJar + "/../jre1.8.0_161.jre/Contents/Home";
-            if (!new File(jreDir).exists()) {
-            	return false;
-            }
+    		String installDir = new File(new File(launcherJar).getParent()).getParent();
+    		installDir = installDir.replaceAll("%20", " ");
+    		
+    		String jreDir =  "";
+    		while (installDir != null && installDir.length() > 2) {
+    			jreDir =  installDir + "/jre1.8.0_161.jre/Contents/Home";
+            
+    			if (new File(jreDir).exists()) {
+    				break;
+    			} else {
+    				installDir = new File(installDir).getParent().replaceAll("%20", " ");
+    			}
+    		}
+			if (!new File(jreDir).exists()) {
+				System.err.println("File " + jreDir + "  does not exists. Giving up");
+				return false;
+			}
             environment.put("JAVA_HOME", jreDir);
             System.err.println(pb.command());
 
