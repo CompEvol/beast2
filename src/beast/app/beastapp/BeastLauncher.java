@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import com.sun.javafx.util.Utils;
+
 import beast.app.util.Utils6;
 
 
@@ -321,6 +323,9 @@ public class BeastLauncher {
 
 	public static boolean runWithBundledJRE(String main, String[] args) {
 		try {
+			if (!isMac()) {
+				return false;
+			}
         
 
             List<String> cmd = new ArrayList<String>();
