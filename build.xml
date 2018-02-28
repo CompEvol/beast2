@@ -91,11 +91,12 @@
         <delete file="${build}/beast/app/util/Utils6.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
         <delete file="${build}/beast/app/util/Version.class" />
-        <delete file="${build}/beast/util/Package.class" />
-        <delete file="${build}/beast/util/PackageVersion.class" />
-        <delete file="${build}/beast/util/PackageDependency.class" />
-        <delete file="${build}/beast/util/AddOnManager.class" />
         <delete file="${build}/beast/core/util/Log.class" />
+        <delete>
+	      <fileset dir="${build}/beast/app/util/" includes="Arguments*.class"/>
+	      <fileset dir="${build}/beast/util/" includes="AddOnManager*.class"/>
+	      <fileset dir="${build}/beast/util/" includes="Package*.class"/>
+    	</delete>
         <javac source="1.6"
                target="1.6"
                bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
@@ -111,6 +112,7 @@
             <include name="beast/**/BEASTVersion.java" />
             <include name="beast/**/Version.java" />
             <include name="beast/util/Package*.java" />
+            <include name="beast/app/util/Arguments.java" />
             <include name="beast/core/util/Log.java" />
 	        <include name="beast/util/AddOnManager.java" />
         </javac>
@@ -151,8 +153,9 @@
                 <include name="beast/**/Utils6*.class" />
                 <include name="beast/**/BEASTVersion.class" />
                 <include name="beast/**/Version.class" />
+		    	<include name="beast/app/util/Arguments*.class" />
                 <include name="beast/util/Package*.class" />
-		        <include name="beast/util/AddOnManager.class" />
+		        <include name="beast/util/AddOnManager*.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
                 <include name="beast/core/util/Log.class" />
             </fileset>
@@ -254,10 +257,10 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.4.7" />
-    <property name="version_number" value="2.4.7" />
+    <property name="version" value="2.4.8" />
+    <property name="version_number" value="2.4.8" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2017" />
+    <property name="copyright" value="Beast 2 development team 2011-2018" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="beast_name" value="beast" />

@@ -27,6 +27,7 @@ package beast.util;
 
 
 
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,10 +98,33 @@ public class XMLProducer extends XMLParser {
         return toXML(beastObject, new ArrayList<>());
     }
 
+    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
+     * for all packages used by o and its predecessors in the model graph.
+     */
+    public Set<String> getPackagesAndVersions(BEASTInterface o) {
+    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
+    	getPackagesAndVersions(o, packagesAndVersions);
+    	return packagesAndVersions;
+    }
+    
+    /** traverse model graph starting at o, and collect packageAndVersion strings
+     * along the way.
+     */
+    private void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
+    	Map<String, String > classToPackageMap = AddOnManager.getClassToPackageMap();
+    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
+    	if (packageAndVersion != null) {
+    		packagesAndVersions.add(packageAndVersion);
+    	}
+    	for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
+    		getPackagesAndVersions(o2, packagesAndVersions);
+    	}
+	}
+
     public String toXML(BEASTInterface beastObject, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
-        	Set<String> requiredPacakges = AddOnManager.getPackagesAndVersions(beastObject);
+        	Set<String> requiredPacakges = getPackagesAndVersions(beastObject);
         	String required = requiredPacakges.toString();
         	required = required.substring(1, required.length() - 1);
         	required = required.replaceAll(", ", ":");

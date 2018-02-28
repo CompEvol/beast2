@@ -32,6 +32,7 @@ package beast.util;
 
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
@@ -58,14 +59,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import beast.app.BEASTVersion2;
-import beast.app.beastapp.BeastMain;
+import beast.app.BEASTVersion;
 import beast.app.util.Arguments;
-import beast.app.util.Utils;
-import beast.core.BEASTInterface;
-import beast.core.Description;
+import beast.app.util.Utils6;
 import beast.core.util.Log;
-import beast.evolution.alignment.Alignment;
+
+//import beast.app.util.Utils;
 
 /**
  * This class is used to manage beast 2 add-ons, and can
@@ -76,9 +75,9 @@ import beast.evolution.alignment.Alignment;
  * - discover classes in add ons that implement a certain interface or a derived from a certain class
  */
 // TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
-@Description("Manage all BEAUti packages and list their dependencies")
+//@Description("Manage all BEAUti packages and list their dependencies")
 public class AddOnManager {
-    public static final BEASTVersion2 beastVersion = new BEASTVersion2();
+    public static final BEASTVersion beastVersion = BEASTVersion.INSTANCE;
 
     public enum UpdateStatus {AUTO_CHECK_AND_ASK, AUTO_UPDATE, DO_NOT_CHECK};
 
@@ -164,7 +163,7 @@ public class AddOnManager {
 
 	    //# url
 	    //packages.url=http://...
-    	String urls = Utils.getBeautiProperty("packages.url");
+    	String urls = Utils6.getBeautiProperty("packages.url");
     	if (urls != null) {
 	        for (String userURLString : urls.split(",")) {
 	            URLs.add(new URL(userURLString));
@@ -193,9 +192,9 @@ public class AddOnManager {
                 sb.append(urls.get(i));
             }
             
-            Utils.saveBeautiProperty("packages.url", sb.toString());
+            Utils6.saveBeautiProperty("packages.url", sb.toString());
         } else {
-            Utils.saveBeautiProperty("packages.url", null);
+            Utils6.saveBeautiProperty("packages.url", null);
         }
     }
 
@@ -490,7 +489,7 @@ public class AddOnManager {
         }
 
         // make sure the class path is updated next time BEAST is started
-        Utils.saveBeautiProperty("packages.url", null);
+        Utils6.saveBeautiProperty("packages.url", null);
         return dirList;
     }
 
@@ -588,7 +587,7 @@ public class AddOnManager {
         }
         
         // make sure the class path is updated next time BEAST is started
-        Utils.saveBeautiProperty("packages.url", null);
+        Utils6.saveBeautiProperty("packages.url", null);
         return dirName;
     }
 
@@ -608,7 +607,7 @@ public class AddOnManager {
      */
     private static void closeClassLoader() {
     	try {
-    		if (Utils.isWindows()) {
+    		if (Utils6.isWindows()) {
     			URLClassLoader sysLoader = (URLClassLoader) AddOnManager.class.getClassLoader();
     			sysLoader.close();
     		}
@@ -695,10 +694,10 @@ public class AddOnManager {
         if (System.getProperty("beast.user.package.dir") != null)
             return System.getProperty("beast.user.package.dir");
         
-        if (Utils.isWindows()) {
+        if (Utils6.isWindows()) {
             return System.getProperty("user.home") + "\\BEAST\\" + beastVersion.getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils6.isMac()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         // Linux and unices
@@ -713,10 +712,10 @@ public class AddOnManager {
         if (System.getProperty("beast.system.package.dir") != null)
             return System.getProperty("beast.system.package.dir");
         
-        if (Utils.isWindows()) {
+        if (Utils6.isWindows()) {
             return "\\Program Files\\BEAST\\" + beastVersion.getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils6.isMac()) {
             return "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         return "/usr/local/share/beast/" + beastVersion.getMajorVersion();
@@ -735,7 +734,14 @@ public class AddOnManager {
         if (System.getProperty("beast.install.dir") != null)
             return System.getProperty("beast.install.dir");
 
-        URL u = BeastMain.class.getProtectionDomain().getCodeSource().getLocation();
+        
+        URL u;
+		try {
+			u = Class.forName("beast.app.beastapp.BeastMain").getProtectionDomain().getCodeSource().getLocation();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 		String s = u.getPath();
         File beastJar = new File(s);
         Log.trace.println("BeastMain found in " + beastJar.getPath());
@@ -916,7 +922,7 @@ public class AddOnManager {
      */
     private static List<String> getLatestBeastArchiveDirectories(List<String> visitedDirs) {
         List<String> dirs = new ArrayList<String>();
-        String FILESEPARATOR = "/"; //(Utils.isWindows() ? "\\" : "/");
+        String FILESEPARATOR = "/"; //(Utils6.isWindows() ? "\\" : "/");
 
     	String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
     	File archiveDir = new File(dir);
@@ -1019,7 +1025,7 @@ public class AddOnManager {
 
         if (false) {
             externalJarsLoaded = true;
-            Alignment.findDataTypes();
+            findDataTypes();
     		return;
     	}
 
@@ -1027,9 +1033,19 @@ public class AddOnManager {
         	loadPackage(jarDirName);
         }
         externalJarsLoaded = true;
-        Alignment.findDataTypes();
+        findDataTypes();
     } // loadExternalJars
     
+	private static void findDataTypes() {
+		try {
+			Method findDataTypes = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
+			findDataTypes.invoke(null);
+		} catch (Exception e) {
+			// too bad, cannot load data types
+			e.printStackTrace();
+		}
+	}
+
 	public static void loadExternalJars(String packagesString) throws IOException {
         processDeleteList();
 
@@ -1080,7 +1096,7 @@ public class AddOnManager {
         	}
         }
         externalJarsLoaded = true;
-        Alignment.findDataTypes();
+        findDataTypes();
     } // loadExternalJars
 
     private static void loadPackage(String jarDirName) {
@@ -1095,7 +1111,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
-                    Utils.logToSplashScreen("Loading package " + packageNameAndVersion);
+                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                     // too bad, won't print out any info
 
@@ -1899,33 +1915,15 @@ public class AddOnManager {
      * is called, which happens at the start of BEAST, BEAUti and many utilities.
      */
     private static TreeMap<String, Package> packages = new TreeMap<String, Package>();
-
-    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
-     * for all packages used by o and its predecessors in the model graph.
-     */
-    public static Set<String> getPackagesAndVersions(BEASTInterface o) {
-    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
-    	getPackagesAndVersions(o, packagesAndVersions);
-    	return packagesAndVersions;
-    }
-    
-    /** traverse model graph starting at o, and collect packageAndVersion strings
-     * along the way.
-     */
-    private static void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
+   
+    public static Map<String, String> getClassToPackageMap() {
     	if (classToPackageMap.size() == 0) {
             for (String jarDirName : getBeastDirectories()) {
             	initPackageMap(jarDirName);
             }
     	}
-    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
-    	if (packageAndVersion != null) {
-    		packagesAndVersions.add(packageAndVersion);
-    	}
-    	for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
-    		getPackagesAndVersions(o2, packagesAndVersions);
-    	}
-	}
+    	return classToPackageMap;
+    }
 
     private static void initPackageMap(String jarDirName) {
         try {
@@ -1939,7 +1937,7 @@ public class AddOnManager {
                     Element addon = doc.getDocumentElement();
                     packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
-                    Utils.logToSplashScreen("Loading package " + packageNameAndVersion);
+                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                     // too bad, won't print out any info
 
@@ -2067,16 +2065,16 @@ public class AddOnManager {
 	    		        null, options, options[2]);
 	    		switch (response) {
 	    		case 0: // No, never check again
-	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
 	    			return;
 	    		case 1: // No, check later
-	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
 	    			return;
 	    		case 2: // Yes, ask next time
-	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
 	    			break;
 	    		case 3: // Always install automatically
-	                Utils.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
 	    			break;
 	    		default: // e.g. escape-key gets us here
 	    			return;
