@@ -10,14 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,11 +65,9 @@ public class BeastLauncher {
 	}
 	
 	/**
-	 * Load jars. The path is relative to the parent directory of the jar
-	 * containing this class, taking the lib directory. This is meant only to
-	 * load beast.jar and perhaps some other libraries, not all packages.
+	 * Install BEAST package, if a none is installed, or a newer version can be found 
 	 **/
-	static protected void loadBEASTJars() throws IOException, NoSuchMethodException, SecurityException,
+	static private void installBEASTPackage() throws IOException, NoSuchMethodException, SecurityException,
 			ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		BeastLauncher clu = new BeastLauncher();
 
@@ -81,7 +76,7 @@ public class BeastLauncher {
 		pathDelimiter = isWindows() ? "\\\\" : "/";
 		beastUserDir += pathDelimiter + "BEAST" + pathDelimiter;
 		String beastJar = beastUserDir + "lib";
-		boolean foundJavaJarFile = checkForBEAST(new File(beastJar), clu);
+		boolean foundJavaJarFile = checkForBEAST(new File(beastJar));
 
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
@@ -89,9 +84,9 @@ public class BeastLauncher {
 		System.err.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
 		while ((!foundJavaJarFile) && (jarDir0 != null)) {
-			foundJavaJarFile = checkForBEAST(jarDir0, clu);
+			foundJavaJarFile = checkForBEAST(jarDir0);
 			foundJavaJarFile = foundJavaJarFile
-					|| checkForBEAST(new File(jarDir0.getAbsolutePath() + pathDelimiter + "lib"), clu);
+					|| checkForBEAST(new File(jarDir0.getAbsolutePath() + pathDelimiter + "lib"));
 
 			if (foundJavaJarFile) {
 				createBeastPackage(jarDir0);
@@ -108,8 +103,8 @@ public class BeastLauncher {
 		}
 
 		// initialise beast.jar
-		Method method = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
-		method.invoke(null);
+//		Method method = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
+//		method.invoke(null);
 
 	}
 
@@ -201,10 +196,11 @@ public class BeastLauncher {
 		}
 	}
 
-	private static boolean checkForBEAST(File jarDir, Object clu) throws IOException {
+	private static boolean checkForBEAST(File jarDir) throws IOException {
 		System.err.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
 		if (jarDir.exists()) {
+			System.err.println(jarDir.getAbsolutePath() + "exists");
 			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
 			if (new File(jarDir.getAbsoluteFile() + File.separator + "beast.jar").exists()) {
 				File versionFile = new File(jarDir.getParent() + pathDelimiter + "version.xml");
@@ -226,20 +222,21 @@ public class BeastLauncher {
 					}
 				}
 
-				URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
-				Class<?> sysclass = URLClassLoader.class;
-				try {
-					// Parameters
-					Class<?>[] parameters = new Class[] { URL.class };
-					Method method = sysclass.getDeclaredMethod("addURL", parameters);
-					method.setAccessible(true);
-					method.invoke(sysLoader, new Object[] { url });
-					System.err.println("Loaded URL " + url);
-					foundOne = true;
-				} catch (Throwable t) {
-					t.printStackTrace();
-					throw new IOException("Error, could not add URL to system classloader");
-				}
+//				URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
+//				Class<?> sysclass = URLClassLoader.class;
+//				try {
+//					// Parameters
+//					Class<?>[] parameters = new Class[] { URL.class };
+//					Method method = sysclass.getDeclaredMethod("addURL", parameters);
+//					method.setAccessible(true);
+//					method.invoke(sysLoader, new Object[] { url });
+//					System.err.println("Loaded URL " + url);
+//					foundOne = true;
+//				} catch (Throwable t) {
+//					t.printStackTrace();
+//					throw new IOException("Error, could not add URL to system classloader");
+//				}
+				foundOne = true;
 				String classpath = System.getProperty("java.class.path");
 				String jar = url + "";
 				classpath += System.getProperty("path.separator") + jar.substring(5);
@@ -338,8 +335,9 @@ public class BeastLauncher {
 		return version;
 	}
 
-	protected static String getPath(boolean useStrictVersions, String beastFile) {
-        AddOnManager.initialise();
+	protected static String getPath(boolean useStrictVersions, String beastFile) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+		installBEASTPackage();
+		AddOnManager.initialise();
 
 
         if (useStrictVersions) {
@@ -398,11 +396,11 @@ public class BeastLauncher {
 	}
 
 	
-	private static String determinePackagePath(String packagesString) {
+	private static String determinePackagePath(String packagesString) throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
-		if (getBEASTInstallDir() != null) {
-			buf.append(getBEASTInstallDir());
+		if (AddOnManager.getBEASTInstallDir() != null) {
 			buf.append(":");
+			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
 		}
 	    if (packagesString != null && packagesString.trim().length() > 0) {
 	    	Map<String, Package> packages = new HashMap<String, Package>();
@@ -454,10 +452,14 @@ public class BeastLauncher {
 	    return buf.toString();
     }
 
-	private static String determinePackagePath() {
+	private static String determinePackagePath() throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
+		if (AddOnManager.getBEASTInstallDir() != null) {
+			buf.append(":");
+			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
+		}
 		Set<String> classes = new HashSet<String>();
-		for (String jarDirName : getBeastDirectories()) {
+		for (String jarDirName : AddOnManager.getBeastDirectories()) {
 			try {
 				File versionFile = new File(jarDirName + "/version.xml");
 				String packageNameAndVersion = null;
@@ -481,7 +483,7 @@ public class BeastLauncher {
 						// Beast2 package)");
 					}
 				}
-				addJarsToPath(jarDirName, classes);
+				buf.append(addJarsToPath(jarDirName, classes));
 				
 
 			} catch (Exception e) {
@@ -544,192 +546,6 @@ public class BeastLauncher {
 		return buf.toString();
 	}
 
-	/**
-	 * return list of directories that may contain packages *
-	 */
-	public static List<String> getBeastDirectories() {
-
-		List<String> dirs = new ArrayList<String>();
-		// check if there is the BEAST environment variable is set
-		if (System.getProperty("BEAST_ADDON_PATH") != null) {
-			String BEAST = System.getProperty("BEAST_ADDON_PATH");
-			for (String dirName : BEAST.split(":")) {
-				dirs.add(dirName);
-			}
-		}
-		if (System.getenv("BEAST_ADDON_PATH") != null) {
-			String BEAST = System.getenv("BEAST_ADDON_PATH");
-			for (String dirName : BEAST.split(":")) {
-				dirs.add(dirName);
-			}
-		}
-
-		// add user package directory
-		dirs.add(getPackageUserDir());
-
-		// add application package directory
-		dirs.add(Utils6.getPackageSystemDir());
-
-		// add BEAST installation directory
-		if (getBEASTInstallDir() != null)
-			dirs.add(getBEASTInstallDir());
-
-		// pick up directories in class path, useful when running in an IDE
-		String strClassPath = System.getProperty("java.class.path");
-		String[] paths = strClassPath.split(":");
-		for (String path : paths) {
-			if (!path.endsWith(".jar")) {
-				path = path.replaceAll("\\\\", "/");
-				if (path.contains("/")) {
-					path = path.substring(0, path.lastIndexOf("/"));
-					// deal with the way Mac's appbundler sets up paths
-					path = path.replaceAll("/[^/]*/Contents/Java", "");
-					// exclude Intellij build path out/production
-					if (!dirs.contains(path) && !path.contains("production")) {
-						dirs.add(path);
-					}
-				}
-			}
-		}
-
-		// subdirectories that look like they may contain an package
-		// this is detected by checking the subdirectory contains a lib or
-		// templates directory
-		List<String> subDirs = new ArrayList<String>();
-		for (String dirName : dirs) {
-			File dir = new File(dirName);
-			if (dir.isDirectory()) {
-				File[] files = dir.listFiles();
-				if (files == null)
-					continue;
-
-				for (File file : files) {
-					if (file.isDirectory()) {
-						File versionFile = new File(file, "version.xml");
-						if (versionFile.exists())
-							subDirs.add(file.getAbsolutePath());
-					}
-				}
-			}
-		}
-
-		dirs.addAll(subDirs);
-		dirs.addAll(getLatestBeastArchiveDirectories(dirs));
-		return dirs;
-	}
-
-	/**
-	 * Returns directory where BEAST installation resides, based on the location
-	 * of the jar containing the BeastMain class file. This assumes that the
-	 * parent directory of the beast.jar is the base install directory.
-	 *
-	 * @return string representation of BEAST install directory or null if this
-	 *         directory cannot be identified.
-	 */
-	public static String getBEASTInstallDir() {
-
-		// Allow users to explicitly set install directory - handy for
-		// programmers
-		if (System.getProperty("beast.install.dir") != null)
-			return System.getProperty("beast.install.dir");
-
-		URL u = BeastMain.class.getProtectionDomain().getCodeSource().getLocation();
-		String s = u.getPath();
-		File beastJar = new File(s);
-		// Log.trace.println("BeastMain found in " + beastJar.getPath());
-		if (!beastJar.getName().toLowerCase().endsWith(".jar")) {
-			return null;
-		}
-
-		if (beastJar.getParentFile() != null) {
-			return beastJar.getParentFile().getParent();
-		} else {
-			return null;
-		}
-	}
-
-	/*
-	 * Get directories from archive, if not already loaded when traversing
-	 * visitedDirs. Only add the latest version from the archive.
-	 */
-	private static List<String> getLatestBeastArchiveDirectories(List<String> visitedDirs) {
-		List<String> dirs = new ArrayList<String>();
-		String FILESEPARATOR = "/"; // (Utils.isWindows() ? "\\" : "/");
-
-		String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
-		File archiveDir = new File(dir);
-		if (archiveDir.exists()) {
-
-			// determine which packages will already be loaded
-			Set<String> alreadyLoaded = new HashSet<String>();
-			for (String d : visitedDirs) {
-				File dir2 = new File(d);
-				if (dir2.isDirectory()) {
-					File versionFile = new File(dir2 + "/version.xml");
-					if (versionFile.exists()) {
-						try {
-							// find name of package
-							DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-							Document doc = factory.newDocumentBuilder().parse(versionFile);
-							Element addon = doc.getDocumentElement();
-							alreadyLoaded.add(addon.getAttribute("name"));
-						} catch (Exception e) {
-							// too bad, won't print out any info
-						}
-					}
-
-					alreadyLoaded.add(dir2.getName());
-					for (String f : dir2.list()) {
-						File dir3 = new File(f);
-						if (dir3.isDirectory()) {
-							versionFile = new File(dir3 + "/version.xml");
-							if (versionFile.exists()) {
-								try {
-									// find name of package
-									DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-									Document doc = factory.newDocumentBuilder().parse(versionFile);
-									Element addon = doc.getDocumentElement();
-									alreadyLoaded.add(addon.getAttribute("name"));
-								} catch (Exception e) {
-									// too bad, won't print out any info
-								}
-							}
-						}
-					}
-				}
-			}
-
-			for (String f : archiveDir.list()) {
-				File f2 = new File(dir + FILESEPARATOR + f);
-				if (f2.isDirectory()) {
-					// this may be a package directory -- pick the latest
-					// directory
-					String[] versionDirs = f2.list();
-					Arrays.sort(versionDirs, new Comparator<String>() {
-						public int compare(String v1, String v2) {
-						PackageVersion pv1 = new PackageVersion(v1);
-						PackageVersion pv2 = new PackageVersion(v2);
-						return (pv1.compareTo(pv2));
-						}
-					});
-					int k = versionDirs.length - 1;
-					while (k >= 0) {
-						String versionDir = versionDirs[k];
-						File vDir = new File(f2.getPath() + FILESEPARATOR + versionDir);
-						if (vDir.exists() && new File(vDir.getPath() + FILESEPARATOR + "version.xml").exists()) {
-							// check it is not already loaded
-							if (!alreadyLoaded.contains(f)) {
-								dirs.add(vDir.getPath());
-							}
-							break;
-						}
-						k--;
-					}
-				}
-			}
-		}
-		return dirs;
-	} // getBeastDirectories
 
 	private static String sanitise(String property) {
 		// make absolute paths from relative paths
@@ -786,21 +602,23 @@ public class BeastLauncher {
             
             // Start the process and wait for it to finish.
             final Process process = pb.start();
-            int c;
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            while ((c = input.read()) != -1) {
-                System.out.print((char)c);
+            boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
+            if (waitToExit) {
+	            int c;
+	            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	            while ((c = input.read()) != -1) {
+	                System.out.print((char)c);
+	            }
+	            input.close();
+	            final int exitStatus = process.waitFor();
+	
+	            if (exitStatus != 0) {
+	            	System.err.println(process.getErrorStream());
+	                // Log.err.println(Utils.toString());
+	            } else {
+	//                System.out.println(Utils.toString(process.getInputStream()));
+	            }
             }
-            input.close();
-            final int exitStatus = process.waitFor();
-
-            if (exitStatus != 0) {
-            	System.err.println(process.getErrorStream());
-                // Log.err.println(Utils.toString());
-            } else {
-//                System.out.println(Utils.toString(process.getInputStream()));
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -61,6 +61,7 @@ import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
 import beast.app.tools.AppStore;
 import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
@@ -1161,6 +1162,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
    
 
     public static Beauti main2(String[] args) {
+    	Utils6.startSplashScreen();
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {
@@ -1393,6 +1395,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // AWTEvent.ACTION_EVENT_MASK|AWTEvent.ITEM_EVENT_MASK|AWTEvent.MOUSE_EVENT_MASK);
             // // beauti.addPropertyChangeListener(plistener);
 
+        	Utils6.endSplashScreen();
             return beauti;
         } catch (Exception e) {
             e.printStackTrace();
