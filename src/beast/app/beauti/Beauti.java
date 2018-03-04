@@ -610,7 +610,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		public void actionPerformed(ActionEvent ae) {
             BEASTVersion2 version = new BEASTVersion2();
             JOptionPane.showMessageDialog(null, version.getCredits(),
-                    "About Beauti " + version.getVersionString(), JOptionPane.PLAIN_MESSAGE,
+                    "About Beauti " + version.getVersionString() + 
+                    " Java version " + System.getProperty("java.version"), JOptionPane.PLAIN_MESSAGE,
                     Utils.getIcon(BEAUTI_ICON));
         }
     } // class ActionAbout
