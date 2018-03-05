@@ -35,7 +35,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -115,6 +117,7 @@ public class BeastMCMC {
         int i = 0;
         boolean resume = false;
         boolean useStrictVersions = false;
+        Map<String, String> parserDefinitions = new HashMap<>();
 
         File beastFile = null;
 
@@ -154,6 +157,18 @@ public class BeastMCMC {
 //						i += 2;
                     } else if (args[i].equals("-prefix")) {
                         System.setProperty("file.name.prefix", args[i + 1].trim());
+                        i += 2;
+                    } else if (args[i].equals("-D")) {
+            			String [] strs = args[i + 1].split(",");
+            			for (String str : strs) {
+            				String [] strs2 = str.split("=");
+            				if (strs2.length != 2) {
+            					throw new IllegalArgumentException("Argument \"" + str + "\" is not well-formed: expecting name=value pairs");
+            				}
+            				String name = strs2[0];
+            				String value = strs2[1];
+            				parserDefinitions.put(name, value);
+            			}
                         i += 2;
                     } else if (args[i].equals("-strictversions")) {
                     	useStrictVersions = true;
@@ -285,13 +300,15 @@ public class BeastMCMC {
         } else {
             AddOnManager.loadExternalJars();
         }
+        
+
         // parse xml
         Randomizer.setSeed(m_nSeed);
         if (beastFile.getPath().toLowerCase().endsWith(".json")) {
-            m_runnable = new JSONParser().parseFile(beastFile);
+            m_runnable = new JSONParser(parserDefinitions).parseFile(beastFile);
         } else {        	
         	try {
-				m_runnable = new XMLParser().parseFile(beastFile);
+				m_runnable = new XMLParser(parserDefinitions).parseFile(beastFile);
 			} catch (SAXException | ParserConfigurationException e) {
 				throw new IllegalArgumentException(e);
 			}

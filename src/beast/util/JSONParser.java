@@ -123,9 +123,15 @@ public class JSONParser {
 	 */
 	RequiredInputProvider requiredInputProvider = null;
 	PartitionContext partitionContext = null;
+	java.util.Map<String,String> parserDefinitions;
 
 	public JSONParser() {
 		objectsWaitingToInit = new ArrayList<>();
+	}
+
+	public JSONParser(java.util.Map<String,String> parserDefinitions) {
+		this();
+		this.parserDefinitions = parserDefinitions;
 	}
 
 	public Runnable parseFile(File file) throws IOException, JSONException, JSONParserException {
@@ -155,6 +161,12 @@ public class JSONParser {
 
         // Substitute occurrences of "$(seed)" with RNG seed
         replaceVariable(doc, "seed", String.valueOf(Randomizer.getSeed()));
+        
+        if (parserDefinitions != null) {
+        	for (String name : parserDefinitions.keySet()) {
+                replaceVariable(doc, name, parserDefinitions.get(name));
+        	}
+        }
 
 		
 		IDMap = new HashMap<>();
