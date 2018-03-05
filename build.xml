@@ -84,7 +84,7 @@
 
         <!-- compile the launcher apps against Java 6-->
         <delete file="${build}/beast/app/beauti/BeautiLauncher.class" />
-        <delete file="${build}/beast/app/tools/AppStoreLauncher.class" />
+        <delete file="${build}/beast/app/tools/AppLauncherLauncher.class" />
         <delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
         <delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
         <delete file="${build}/beast/app/util/Utils6.class" />
@@ -150,6 +150,8 @@
         <jar jarfile="${dist}/launcher.jar">
             <fileset dir="${build}">
                 <include name="beast/**/*Launcher*.class" />
+                <exclude name="beast/app/tools/AppLauncher.class"/>
+                <exclude name="beast/app/tools/AppLauncher$*.class"/>
                 <include name="beast/**/Utils6*.class" />
                 <include name="beast/**/BEASTVersion.class" />
                 <include name="beast/**/Version.class" />
@@ -268,7 +270,7 @@
     <property name="TreeAnnotator_name" value="TreeAnnotator" />
     <property name="LogCombiner_name" value="LogCombiner" />
     <property name="LogAnalyser_name" value="LogAnalyser" />
-    <property name="AppStore_name" value="AppStore" />
+    <property name="AppLauncher_name" value="AppLauncher" />
 
     <property name="common_dir" value="${release_dir}/common" />
     <property name="Mac_dir" value="${release_dir}/Mac" />
@@ -392,9 +394,9 @@
                   productVersion="2.0.0.0"
                   txtProductVersion="2.0.0.0" />
 
-        <launch4j configFile="${Windows_dir}/AppStore_launch4j.xml"
+        <launch4j configFile="${Windows_dir}/AppLauncher_launch4j.xml"
                   jar="${dist}/launcher.jar"
-                  outfile="${Windows_package_dir}/AppStore.exe"
+                  outfile="${Windows_package_dir}/AppLauncher.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
@@ -528,9 +530,9 @@
                   productVersion="2.0.0.0"
                   txtProductVersion="2.0.0.0" />
 
-        <launch4j configFile="${Windows_dir}/AppStore_launch4j_jre.xml"
+        <launch4j configFile="${Windows_dir}/AppLauncher_launch4j_jre.xml"
                   jar="${dist}/launcher.jar"
-                  outfile="${Windows_package_dir}/AppStore.exe"
+                  outfile="${Windows_package_dir}/AppLauncher.exe"
                   fileVersion="${version_number}.0"
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
@@ -872,16 +874,16 @@
             <arg value="${Mac_package_dir}/DensiTree.app"/>
         </exec>
 
-        <echo message="Creating AppStore.app ..." />
+        <echo message="Creating AppLauncher.app ..." />
 
         <bundleapp outputdirectory="${Mac_package_dir}"
-                   name="${AppStore_name}"
-                   displayname="${AppStore_name}"
-                   identifier="beast.app.tools.AppStore"
+                   name="${AppLauncher_name}"
+                   displayname="${AppLauncher_name}"
+                   identifier="beast.app.tools.AppLauncher"
                    icon="${common_dir}/icons/utility.icns"
                    shortversion="${version}"
-                   copyright="${AppStore_name}, ${copyright}"
-                   mainclassname="beast.app.tools.AppStoreLauncher">
+                   copyright="${AppLauncher_name}, ${copyright}"
+                   mainclassname="beast.app.tools.AppLauncherLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
@@ -895,7 +897,7 @@
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
+            <arg value="${Mac_package_dir}/${AppLauncher_name}.app"/>
         </exec>
 
         <copy todir="${Mac_package_dir}/templates/">
@@ -1097,16 +1099,16 @@
             <arg value="${Mac_package_dir}/DensiTree.app"/>
         </exec>
 
-        <echo message="Creating AppStore.app ..." />
+        <echo message="Creating AppLauncher.app ..." />
 
         <bundleapp outputdirectory="${Mac_package_dir}"
-                   name="${AppStore_name}"
-                   displayname="${AppStore_name}"
-                   identifier="beast.app.tools.AppStore"
+                   name="${AppLauncher_name}"
+                   displayname="${AppLauncher_name}"
+                   identifier="beast.app.tools.AppLauncher"
                    icon="${common_dir}/icons/utility.icns"
                    shortversion="${version}"
-                   copyright="${AppStore_name}, ${copyright}"
-                   mainclassname="beast.app.tools.AppStoreLauncher">
+                   copyright="${AppLauncher_name}, ${copyright}"
+                   mainclassname="beast.app.tools.AppLauncherLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
             <option value="-Xmx1024M"/>
@@ -1120,7 +1122,7 @@
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${AppStore_name}.app"/>
+            <arg value="${Mac_package_dir}/${AppLauncher_name}.app"/>
         </exec>
 
         <copy todir="${Mac_package_dir}/templates/">

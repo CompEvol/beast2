@@ -59,7 +59,7 @@ import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
-import beast.app.tools.AppStore;
+import beast.app.tools.AppLauncher;
 import beast.app.util.Utils;
 import beast.app.util.Utils6;
 import beast.core.BEASTInterface;
@@ -436,7 +436,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-        	AppStore.main(new String[]{});
+        	AppLauncher.main(new String[]{});
         } // actionPerformed
     }
 

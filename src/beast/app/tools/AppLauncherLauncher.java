@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import beast.app.beastapp.BeastLauncher;
 
-public class AppStoreLauncher extends BeastLauncher {
+public class AppLauncherLauncher extends BeastLauncher {
 	/**
 	 * Loads beast.jar and launches AppStore 
 	 * 
@@ -20,9 +20,9 @@ public class AppStoreLauncher extends BeastLauncher {
 	 * @throws NoSuchMethodException 
 	 * **/
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
-		if (javaVersionCheck("AppStore")) {
+		if (javaVersionCheck("AppLauncher")) {
 			String classpath = getPath(false, null);
-			run(classpath, "beast.app.tools.AppStore", args);
+			run(classpath, "beast.app.tools.AppLauncher", args);
 		}
 	}
 

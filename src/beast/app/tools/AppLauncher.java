@@ -51,7 +51,7 @@ import beast.util.AddOnManager;
  * @author  Remco Bouckaert
  * @author  Walter Xie
  */
-public class AppStore {
+public class AppLauncher {
     public static final String DEFAULT_ICON = "beast/app/tools/images/utility.png";
 
     private final String ALL = "-all-";
@@ -61,7 +61,7 @@ public class AppStore {
     JButton launchButton = new JButton("Launch");
     JDialog mainDialog;
 
-    public AppStore() {
+    public AppLauncher() {
     }
 
     public JDialog launchGUI() {
@@ -400,7 +400,7 @@ public class AppStore {
 	}
 
     private void printUsage(PrintStream ps) {
-        ps.println("\nAppStore: Run installed BEAST 2 package apps.\n" +
+        ps.println("\nAppLauncher: Run installed BEAST 2 package apps.\n" +
                         "\n" +
                         "Usage:\n" +
                         "\tappstore\n" +
@@ -433,7 +433,7 @@ public class AppStore {
     }
 
     public static void main(String[] args) {
-        AppStore appStore = new AppStore();
+        AppLauncher appStore = new AppLauncher();
 
         if (args.length == 0) {
         	Utils.loadUIManager();
