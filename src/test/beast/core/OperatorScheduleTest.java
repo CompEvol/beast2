@@ -211,7 +211,7 @@ public class OperatorScheduleTest extends TestCase {
 		subSchedule.initByName("operator", operator3, "weight", 20.0, "weightIsPercentage", true, "operatorPattern", "^.*\\.Species$");
 		
 		OperatorSchedule subSchedule2 = new OperatorSchedule();
-		subSchedule2.initByName("operator", operator3, "weight", 30.0, "weightIsPercentage", true, "operatorPattern", "^.*\\.Species2$");
+		subSchedule2.initByName("operator", operator3, "weight", 30.0, "weightIsPercentage", true, "operatorPattern", "^.*\\.Species$");
 		
 		schedule.subschedulesInput.setValue(subSchedule, schedule);
 		schedule.subschedulesInput.setValue(subSchedule2, schedule);
