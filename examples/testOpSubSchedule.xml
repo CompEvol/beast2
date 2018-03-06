@@ -63,7 +63,7 @@
     </tree>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="5000000" preBurnin="50000">
+    <run spec="MCMC" id="mcmc" chainLength="1000000" preBurnin="50000">
 
         <init idref='coalescentSimulator'/>
         <distribution spec='CompoundDistribution' id='posterior'>
@@ -72,6 +72,13 @@
             </distribution>
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
+
+        <operatorschedule id="operatorSchedule" spec="OperatorSchedule">
+            <!-- assign 50% of total weight to operators that apply to the tree operations -->
+            <subschedule id="operatorTrees" spec="OperatorSchedule" weight="50" weightIsPercentage="true" operatorPattern="^.*tree.*">
+                <subschedule id="operatorTreeScale" spec="OperatorSchedule" weight="50" weightIsPercentage="true" operatorPattern="^.*treeScale.*"/>
+            </subschedule>
+        </operatorschedule>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
