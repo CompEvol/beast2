@@ -1,26 +1,13 @@
 package beast.core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Formatter;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import beast.core.util.Log;
+import beast.util.Randomizer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import beast.core.util.Log;
-import beast.util.Randomizer;
+import java.io.*;
+import java.util.*;
 
 @Description("Specify operator selection and optimisation schedule")
 public class OperatorSchedule extends BEASTObject {
@@ -153,6 +140,7 @@ public class OperatorSchedule extends BEASTObject {
     		return;
     	}
 		String operatorPattern = operatorPatternInput.get();
+    	boolean noMatch = true;
 		for (Operator o : ops) {
 			if (o.getID() != null && o.getID().matches(operatorPattern)) {
 		    	for (Operator o2 : operators) {
@@ -162,9 +150,13 @@ public class OperatorSchedule extends BEASTObject {
 		    		}
 		    	}
 				operators.add(o);
+                noMatch = false;
 			}
 		}
     	reweighted = false;
+
+		if (noMatch)
+		   throw new IllegalArgumentException("Cannot find operator to match subschedule pattern: " + operatorPattern + " !\n");
     }
     
     /**
@@ -423,7 +415,7 @@ public class OperatorSchedule extends BEASTObject {
     	for (OperatorSchedule os : subschedulesInput.get()) {
     		allOperators.addAll(os.operators);
     	}
-    	for (OperatorSchedule os : subschedulesInput.get()) {    	
+    	for (OperatorSchedule os : subschedulesInput.get()) {
     		os.addOperators(allOperators);
     		subOperators.addAll(os.operators);
     	}
