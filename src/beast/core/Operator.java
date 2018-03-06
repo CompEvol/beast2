@@ -226,7 +226,8 @@ public abstract class Operator extends BEASTObject {
 
     @Override
 	public String toString() {
-        return OperatorSchedule.prettyPrintOperator(this, 70, 10, 4, 0.0, detailedRejection);
+        return OperatorSchedule.prettyPrintOperator(this, 70, 10, 5,
+                operatorSchedule != null ? operatorSchedule.getNormalizedWeight(this) : 0.0, detailedRejection);
     }
 
     /**

@@ -73,12 +73,10 @@
             <distribution id='likelihood' idref="treeLikelihood"/>
         </distribution>
 
-        <operatorschedule id="operatorSchedule" spec="OperatorSchedule">
-            <!-- assign 50% of total weight to operators that apply to the tree operations -->
-            <subschedule id="operatorTrees" spec="OperatorSchedule" weight="50" weightIsPercentage="true" operatorPattern="^.*tree.*">
-                <subschedule id="operatorTreeScale" spec="OperatorSchedule" weight="50" weightIsPercentage="true" operatorPattern="^.*treeScale.*"/>
-            </subschedule>
-        </operatorschedule>
+         <operatorschedule id="operatorSchedule" spec="OperatorSchedule">
+            <!-- assign 50% of total weight to operators that apply to the tree operations  -->
+            <subschedule id="operatorTrees" spec="OperatorSchedule" weight="50" weightIsPercentage="true" operatorPattern="^.*tree.*"/>
+         </operatorschedule>
 
         <operator id='kappaScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" parameter="@hky.kappa"/>
         <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1" tree="@tree"/>
