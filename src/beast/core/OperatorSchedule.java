@@ -368,6 +368,8 @@ public class OperatorSchedule extends BEASTObject {
 	            }
 	        }
 	    }
+	    // resuming from state file needs to init normalizedWeights[]
+        reweightOperators();
         showOperatorRates(System.err);
     }
 
