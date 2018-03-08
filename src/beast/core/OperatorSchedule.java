@@ -525,7 +525,7 @@ public class OperatorSchedule extends BEASTObject {
      */
     public double getNormalizedWeight(Operator operator) {
         int i = operators.indexOf(operator);
-        if (i != -1) {
+        if (i != -1 && normalizedWeights != null) {
             return normalizedWeights[i];
         } else return 0.0;
     }
