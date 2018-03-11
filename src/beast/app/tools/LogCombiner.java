@@ -100,7 +100,7 @@ public class LogCombiner extends LogAnalyser {
                         i++;
                     }
                     if (i == old) {
-                        throw new IllegalArgumentException("Unrecognised argument");
+                        throw new IllegalArgumentException("Unrecognised argument:" + args[i]);
                     }
                 }
             }
@@ -173,6 +173,7 @@ public class LogCombiner extends LogAnalyser {
         int items = m_sLabels.length;
         m_ranges = new List[items];
         int burnIn = data * burnInPercentage / 100;
+        int total = data - burnIn;
         m_fTraces = new Double[items][data - burnIn];
         fin.close();
         fin = new BufferedReader(new FileReader(fileName));
@@ -180,6 +181,7 @@ public class LogCombiner extends LogAnalyser {
         logln(", burnin " + burnInPercentage + "%, skipping " + burnIn + " log lines\n\n" + BAR);
         // grab data from the log, ignoring burn in samples
         long prevLogState = -1;
+        int reported = 0;
         while (fin.ready()) {
             str = fin.readLine();
             if (str.indexOf('#') < 0 && str.matches("[0-9].*")) {
@@ -224,10 +226,13 @@ public class LogCombiner extends LogAnalyser {
 	                	m_out.println();
                 	}
                 }
+                if (data % lines == 0 && reported < 81) {
+    				while (10000 * reported < 810000 * (data + 1)/ total) {
+    	                log("*");
+    	                reported++;
+            	    }
+                }
         	}
-            if (data % lines == 0) {
-                log("*");
-            }
         }
         logln("");
         fin.close();
@@ -289,9 +294,10 @@ public class LogCombiner extends LogAnalyser {
         	m_out.println(m_sPreAmble);
         	preAmpleIsPrinted = true;
         }
-        int lines = data / 80;
+        int lines = Math.max(1, data / 80);
         // reserve memory
         int burnIn = data * burnInPercentage / 100;
+        int total = data - burnIn;
         logln(" skipping " + burnIn + " trees\n\n" + BAR);
         if (m_sTrees == null) {
             m_sTrees = new ArrayList<>();
@@ -302,6 +308,7 @@ public class LogCombiner extends LogAnalyser {
 
         // grab data from the log, ignoring burn in samples
         long prevLogState = -1;
+        int reported = 0;
         while (fin.ready()) {
             str = fin.readLine();
             if (str.matches("^tree STATE_.*")) {
@@ -331,8 +338,11 @@ public class LogCombiner extends LogAnalyser {
                 	}
                 }
             }
-            if (data % lines == 0) {
-                log("*");
+            if (data % lines == 0 && reported < 81) {
+				while (10000 * reported < 810000 * (data + 1)/ total) {
+	                log("*");
+	                reported++;
+        	    }
             }
         }
         logln("");
@@ -357,6 +367,9 @@ public class LogCombiner extends LogAnalyser {
 
         int lines = 0;
         if (m_bIsTreeLog) {
+        	int total = m_sTrees.size();
+        	int reported = 0;
+        	int logFreq = Math.max(1, total / 80);
             for (int i = 0; i < m_sTrees.size(); i++) {
                 if ((m_nSampleInterval * i) % m_nResample == 0) {
                     String tree = m_sTrees.get(i);
@@ -364,8 +377,11 @@ public class LogCombiner extends LogAnalyser {
                     m_out.println("tree STATE_" + (m_nSampleInterval * i) + (Character.isSpaceChar(tree.charAt(0)) ? "" : " ") + tree);
                     lines++;
                 }
-                if (i % (data / 80) == 0) {
-                    log("*");
+                if (i % logFreq == 0 && reported < 81) {
+    				while (10000 * reported < 810000 * (i + 1)/ total) {
+    	                log("*");
+    	                reported++;
+            	    }
                 }
             }
             m_out.println("End;");
@@ -375,6 +391,9 @@ public class LogCombiner extends LogAnalyser {
                 m_out.print(m_sLabels[i] + "\t");
             }
             m_out.println();
+        	int total = m_fCombinedTraces[0].length;
+        	int reported = 0;
+        	int logFreq = Math.max(1, total / 80);
             for (int i = 0; i < m_fCombinedTraces[0].length; i++) {
                 if (((int) (double) m_fCombinedTraces[0][i]) % m_nResample == 0) {
                     for (int j = 0; j < m_types.length; j++) {
@@ -394,13 +413,17 @@ public class LogCombiner extends LogAnalyser {
                     m_out.print("\n");
                     lines++;
                 }
-                if ((data / 80 > 0) && i % (data / 80) == 0) {
-                    log("*");
+                if (i % logFreq == 0 && reported < 81) {
+    				while (10000 * reported < 810000 * (i + 1)/ total) {
+    	                log("*");
+    	                reported++;
+            	    }
                 }
             }
         }
         logln("\n" + lines + " lines in combined log");
     }
+
 
     protected String format(String tree) {
         if (m_bUseDecimalFormat) {

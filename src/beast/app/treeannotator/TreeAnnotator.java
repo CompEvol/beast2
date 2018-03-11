@@ -509,12 +509,12 @@ public class TreeAnnotator {
             }
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
 
-            progressStream.println("Total trees have " + totalTrees + ", where " + totalTreesUsed + " are used.");
+            progressStream.println("Total number of trees " + totalTrees + ", where " + totalTreesUsed + " are used.");
 
             progressStream.println("Total unique clades: " + cladeSystem.getCladeMap().keySet().size());
             progressStream.println();
         }  else {
-            // even when a user specificed target tree is provided we still need to count the totalTreesUsed for subsequent steps.
+            // even when a user specified target tree is provided we still need to count the totalTreesUsed for subsequent steps.
             treeSet.reset();
             while (treeSet.hasNext()) {
                 Tree tree = treeSet.next();
