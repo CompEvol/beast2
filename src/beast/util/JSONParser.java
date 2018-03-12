@@ -1214,6 +1214,16 @@ public class JSONParser {
 	private void setInput(JSONObject node, BEASTInterface beastObject, String name, Object value) throws JSONParserException {
 		try {
 			final Input<?> input = beastObject.getInput(name);
+			
+			// hack to deal with Long inputs that get 
+			// values assigned small enough to fit an Integer
+			if (input.getType() == null) {
+				input.determineClass(beastObject);
+			}
+			if (input.getType().equals(Long.class) && value instanceof Integer) {
+				value = new Long((Integer) value);
+			}
+			
 			// test whether input was not set before, this is done by testing
 			// whether input has default value.
 			// for non-list inputs, this should be true if the value was not
