@@ -584,8 +584,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
                                     }
                                 } catch (Exception e) {
-                                    if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
+                                    if (e.getMessage() != null) {
+                                    	if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
+                                    }
                                         Log.warning.println(e.getMessage());
+                                    } else {
+                                        e.printStackTrace();
                                     }
                                 }
                             }
@@ -2177,7 +2181,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public PartitionContext getContextFor(BEASTInterface beastObject) {
         String id = beastObject.getID();
-        String partition = id.substring(id.indexOf('.') + 1);
+        String partition = id.indexOf('.') >= 0 ? id.substring(id.indexOf('.') + 1) : "";
 
         int partitionID = ALIGNMENT_PARTITION;
         if (partition.indexOf(':') >= 0) {

@@ -247,7 +247,11 @@ public class BeautiSubTemplate extends BEASTObject {
 	    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 	    transformer.transform(domSource, result);
 	    String xml = writer.toString();
-	    xml = xml.substring(xml.indexOf("<beast xmlns:beauti=\"http://beast2.org\">") + 40, xml.lastIndexOf("</beast>"));
+	    if (xml.lastIndexOf("</beast>") >= 0) {
+	    	xml = xml.substring(xml.indexOf("<beast xmlns:beauti=\"http://beast2.org\">") + 40, xml.lastIndexOf("</beast>"));
+	    } else {
+	    	xml = "";
+	    }
 	    return xml;
 	}
 
@@ -275,7 +279,9 @@ public class BeautiSubTemplate extends BEASTObject {
         // find template that created this beastObject
         String id = beastObject.getID();
         //String partition = BeautiDoc.parsePartition(id);
-        id = id.substring(0, id.indexOf("."));
+        if (id.indexOf(".") > 0) {
+        	id = id.substring(0, id.indexOf("."));
+        }
         BeautiSubTemplate template = null;
         for (BeautiSubTemplate template2 : doc.beautiConfig.subTemplatesInput.get()) {
             if (template2.matchesName(id)) {

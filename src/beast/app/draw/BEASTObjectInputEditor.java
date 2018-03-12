@@ -214,7 +214,8 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                 BeautiSubTemplate selected = (BeautiSubTemplate) m_selectBEASTObjectBox.getSelectedItem();
                 BEASTInterface beastObject = (BEASTInterface) m_input.get();
                 String id = beastObject.getID();
-                String partition = id.substring(id.indexOf('.') + 1);
+                String partition = id.indexOf('.') >= 0 ? 
+                		id.substring(id.indexOf('.') + 1) : "";
                 if (partition.indexOf(':') >= 0) {
                 	partition = id.substring(id.indexOf(':') + 1);
                 }
@@ -282,7 +283,9 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //                        m_selectPluginBox.addItem(id);
 //                        m_selectPluginBox.setSelectedItem(id);
                         id = beastObject.getID();
-                        id = id.substring(0, id.indexOf('.'));
+                        if (id.indexOf('.') != -1) {
+                        	id = id.substring(0,  id.indexOf('.'));
+                        }
                          for (int i = 0; i < m_selectBEASTObjectBox.getItemCount(); i++) {
                             BeautiSubTemplate template = (BeautiSubTemplate) m_selectBEASTObjectBox.getItemAt(i);
                             if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(id) ||
