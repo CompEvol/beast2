@@ -63,7 +63,7 @@ public class ESS extends BEASTObject implements Loggable {
 //  basic numerical integration technique.
 
     @Override
-    public void log(final int sample, PrintStream out) {
+    public void log(final long sample, PrintStream out) {
         final Double newValue = functionInput.get().getArrayValue();
         trace.add(newValue);
         sum += newValue;

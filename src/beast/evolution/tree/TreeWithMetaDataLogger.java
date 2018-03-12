@@ -61,7 +61,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void log(int sample, PrintStream out) {
+    public void log(long sample, PrintStream out) {
         // make sure we get the current version of the inputs
         Tree tree = (Tree) treeInput.get().getCurrent();
         List<Function> metadata = parameterInput.get();

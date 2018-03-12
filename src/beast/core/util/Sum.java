@@ -103,7 +103,7 @@ public class Sum extends CalculationNode implements Function, Loggable {
     }
 
     @Override
-    public void log(int sampleNr, PrintStream out) {
+    public void log(long sampleNr, PrintStream out) {
         double sum = 0;
         for (Function v : functionInput.get()) {
 	        for (int i = 0; i < v.getDimension(); i++) {

@@ -720,7 +720,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public void log(int sample, PrintStream out) {
+	public void log(long sample, PrintStream out) {
         Tree tree = (Tree) getCurrent();
         out.print("tree STATE_" + sample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree

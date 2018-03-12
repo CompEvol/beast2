@@ -27,7 +27,7 @@ public interface Loggable {
      * @param sample chain sample number
      * @param out     log stream
      */
-    void log(int sample, PrintStream out);
+    void log(long sample, PrintStream out);
 
     /**
      * close log. An end of log message can be left (as in End; for Nexus trees)

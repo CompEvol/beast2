@@ -85,7 +85,7 @@ public class IntegerParameter extends Parameter.Base<java.lang.Integer> {
      * Loggable implementation follows *
      */
     @Override
-    public void log(int sampleNr, PrintStream out) {
+    public void log(long sampleNr, PrintStream out) {
         IntegerParameter var = (IntegerParameter) getCurrent();
         int valueCount = var.getDimension();
         for (int i = 0; i < valueCount; i++) {

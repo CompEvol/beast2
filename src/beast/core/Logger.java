@@ -112,7 +112,7 @@ public class Logger extends BEASTObject {
      * keep track of time taken between logs to estimate speed *
      */
     long startLogTime = -5;
-    int startSample;
+    long startSample;
 
     @Override
     public void initAndValidate() {
@@ -495,7 +495,7 @@ public class Logger extends BEASTObject {
      * *
      * * @param sample
      */
-    public void log(int sampleNr) {
+    public void log(long sampleNr) {
         if ((sampleNr < 0) || (sampleNr % every > 0)) {
             return;
         }

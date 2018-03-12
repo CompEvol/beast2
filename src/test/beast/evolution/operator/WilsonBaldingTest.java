@@ -246,7 +246,7 @@ public class WilsonBaldingTest {
 		public void init() { }
 
 		@Override
-		public void log(int nSample) {
+		public void log(long nSample) {
 
 			if ((nSample % m_nEvery > 0) || nSample<burnin)
 				return;

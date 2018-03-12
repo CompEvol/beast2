@@ -80,7 +80,7 @@ public class RealParameter extends Parameter.Base<Double> {
      * Loggable implementation *
      */
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         final RealParameter var = (RealParameter) getCurrent();
         final int values = var.getDimension();
         for (int value = 0; value < values; value++) {

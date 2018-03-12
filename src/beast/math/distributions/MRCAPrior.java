@@ -380,7 +380,7 @@ public class MRCAPrior extends Distribution {
     }
 
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         if (onlyUseTips) {
             if (dist != null) {
                 out.print(getCurrentLogP() + "\t");
