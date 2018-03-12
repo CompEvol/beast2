@@ -1,18 +1,18 @@
 package beast.util;
 
+import beast.core.Description;
+
 import java.net.URL;
 import java.util.*;
 
-import beast.core.Description;
-
 /**
- * BEAUti Package managed by AddOnManager
- * all property is for installed package only
- * the released/latest package info is online
+ * BEAUti Package managed by AddOnManager.
  *
- * modified by Walter Xie
+ * Add a new rule in issue 754:
+ * Package manager should make project links compulsory.
  */
-@Description("BEAUti package managed by package manager, also named as add-on previously")
+@Description("BEAUti package managed by package manager, also named as add-on previously. " +
+        "Project URL is compulsory.")
 public class Package {
     protected String packageName, description;
     protected PackageVersion installedVersion;
@@ -49,6 +49,22 @@ public class Package {
 
     public void setProjectURL(URL url) {
         this.projectURL = url;
+    }
+
+
+    /**
+     * @return true if projectURL is valid
+     */
+    public boolean isValidFormat() {
+        //https://www.geeksforgeeks.org/check-if-url-is-valid-or-not-in-java/
+        try {
+            getProjectURL().toURI();
+            return true;
+        }
+        // If there was an Exception while creating URL object
+        catch (Exception e) {
+            return false;
+        }
     }
 
     /**

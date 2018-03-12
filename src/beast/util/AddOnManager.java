@@ -31,6 +31,21 @@
 package beast.util;
 
 
+import beast.app.BEASTVersion;
+import beast.app.util.Arguments;
+import beast.app.util.Utils6;
+import beast.core.util.Log;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,23 +60,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import beast.app.BEASTVersion;
-import beast.app.util.Arguments;
-import beast.app.util.Utils6;
-import beast.core.util.Log;
 
 //import beast.app.util.Utils;
 
@@ -329,7 +327,7 @@ public class AddOnManager {
                             pkg = packageMap.get(packageName);
                         } else {
                             pkg = new Package(packageName);
-                            packageMap.put(packageName, pkg);
+//                            packageMap.put(packageName, pkg); // issue 754
                         }
                         pkg.setDescription(element.getAttribute("description"));
 
@@ -357,6 +355,15 @@ public class AddOnManager {
                         URL packageURL = new URL(element.getAttribute("url"));
 
                         pkg.addAvailableVersion(packageVersion, packageURL, packageDependencies);
+
+                        // issue 754 Package manager should make project links compulsory
+                        if (pkg.isValidFormat()) {
+                            packageMap.put(packageName, pkg);
+                        } else{
+                            String urlStr = pkg.getProjectURL()==null ? "null" : pkg.getProjectURL().toString();
+                            System.err.println("Warning: filter " + packageName + " from package manager " +
+                                    " because of invalid project URL " + urlStr + " !");
+                        }
                     }
                 }
                 is.close();
