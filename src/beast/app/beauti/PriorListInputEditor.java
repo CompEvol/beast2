@@ -36,7 +36,7 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 import beast.math.distributions.Prior;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 
 
@@ -225,7 +225,7 @@ public class PriorListInputEditor extends ListInputEditor {
     	priorProviders.add(new MRCAPriorProvider());
     	
         // build up list of data types
-        List<String> importerClasses = AddOnManager.find(PriorProvider.class, new String[]{"beast.app"});
+        List<String> importerClasses = PackageManager.find(PriorProvider.class, new String[]{"beast.app"});
         for (String _class: importerClasses) {
         	try {
         		if (!_class.startsWith(this.getClass().getName())) {

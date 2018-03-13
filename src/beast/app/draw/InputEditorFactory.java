@@ -22,7 +22,7 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.util.Log;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 
 
@@ -51,7 +51,7 @@ public class InputEditorFactory {
 //        registerInputEditors(knownEditors);
         String[] PACKAGE_DIRS = {"beast.app",};
         for (String packageName : PACKAGE_DIRS) {
-            List<String> inputEditors = AddOnManager.find("beast.app.draw.InputEditor", packageName);
+            List<String> inputEditors = PackageManager.find("beast.app.draw.InputEditor", packageName);
             registerInputEditors(inputEditors.toArray(new String[0]));
         }
     }
@@ -313,7 +313,7 @@ public class InputEditorFactory {
         }
         /* add all beastObject-classes of type assignable to the input */
         if (doc.isExpertMode()) {
-            List<String> classes = AddOnManager.find(input.getType(), "beast");
+            List<String> classes = PackageManager.find(input.getType(), "beast");
             for (String className : classes) {
                 try {
                     Object o = Class.forName(className).newInstance();

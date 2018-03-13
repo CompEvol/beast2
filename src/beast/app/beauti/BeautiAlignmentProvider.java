@@ -38,7 +38,7 @@ import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.math.distributions.MRCAPrior;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.NexusParser;
 import beast.util.XMLParser;
 
@@ -60,7 +60,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
        	importers.add(new FastaImporter());
 
         // build up list of data types
-        List<String> importerClasses = AddOnManager.find(AlignmentImporter.class, IMPLEMENTATION_DIR);
+        List<String> importerClasses = PackageManager.find(AlignmentImporter.class, IMPLEMENTATION_DIR);
         for (String _class: importerClasses) {
         	try {
         		if (!_class.startsWith(this.getClass().getName())) {

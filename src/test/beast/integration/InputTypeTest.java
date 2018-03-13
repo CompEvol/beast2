@@ -14,7 +14,7 @@ import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Input;
 import beast.core.Param;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import junit.framework.TestCase;
 
 public class InputTypeTest extends TestCase {
@@ -30,8 +30,8 @@ public class InputTypeTest extends TestCase {
 	 */
 	@Test
 	public void testInputTypeCanBeSet() throws Exception {
-		List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTObject.class,
-				AddOnManager.IMPLEMENTATION_DIR);
+		List<String> beastObjectNames = PackageManager.find(beast.core.BEASTObject.class,
+				PackageManager.IMPLEMENTATION_DIR);
 		List<String> failingInputs = new ArrayList<String>();
 		for (String beastObjectName : beastObjectNames) {
 			try {
@@ -62,11 +62,11 @@ public class InputTypeTest extends TestCase {
 
 	@Test
 	public void testAnnotatedInputHasGetters() throws Exception {
-		testAnnotatedInputHasGetters(AddOnManager.IMPLEMENTATION_DIR);
+		testAnnotatedInputHasGetters(PackageManager.IMPLEMENTATION_DIR);
 	}
 	
 	public void testAnnotatedInputHasGetters(String [] packages) throws Exception {
-		List<String> beastObjectNames = AddOnManager.find(Object.class, packages);
+		List<String> beastObjectNames = PackageManager.find(Object.class, packages);
 		System.err.println("Testing " + beastObjectNames.size() + " classes");
 		List<String> failingInputs = new ArrayList<String>();
 		for (String beastObject : beastObjectNames) {

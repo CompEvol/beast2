@@ -111,7 +111,7 @@ public class XMLProducer extends XMLParser {
      * along the way.
      */
     private void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
-    	Map<String, String > classToPackageMap = AddOnManager.getClassToPackageMap();
+    	Map<String, String > classToPackageMap = PackageManager.getClassToPackageMap();
     	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
     	if (packageAndVersion != null) {
     		packagesAndVersions.add(packageAndVersion);

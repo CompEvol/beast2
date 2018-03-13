@@ -1,5 +1,5 @@
 /*
- * File AddOnManager.java
+ * File PackageManager.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
  *
@@ -73,7 +73,7 @@ import java.util.zip.ZipFile;
  */
 // TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
 //@Description("Manage all BEAUti packages and list their dependencies")
-public class AddOnManager {
+public class PackageManager {
     public static final BEASTVersion beastVersion = BEASTVersion.INSTANCE;
 
     public enum UpdateStatus {AUTO_CHECK_AND_ASK, AUTO_UPDATE, DO_NOT_CHECK};
@@ -212,9 +212,9 @@ public class AddOnManager {
                 Document doc = factory.newDocumentBuilder().parse(versionXML);
                 doc.normalize();
                 // get name and version of package
-                Element addon = doc.getDocumentElement();
-                String packageName = addon.getAttribute("name");
-                String packageVersionString = addon.getAttribute("version");
+                Element packageElement = doc.getDocumentElement();
+                String packageName = packageElement.getAttribute("name");
+                String packageVersionString = packageElement.getAttribute("version");
 
                 Package pkg;
                 if (packageMap.containsKey(packageName)) {
@@ -224,14 +224,14 @@ public class AddOnManager {
                     packageMap.put(packageName, pkg);
                 }
 
-                if (addon.hasAttribute("projectURL"))
-                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+                if (packageElement.hasAttribute("projectURL"))
+                    pkg.setProjectURL(new URL(packageElement.getAttribute("projectURL")));
 
                 PackageVersion installedVersion = new PackageVersion(packageVersionString);
 
-                if (addon.hasAttribute("projectURL") &&
+                if (packageElement.hasAttribute("projectURL") &&
                         !(pkg.getLatestVersion() != null && installedVersion.compareTo(pkg.getLatestVersion())<0))
-                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+                    pkg.setProjectURL(new URL(packageElement.getAttribute("projectURL")));
 
                 Set<PackageDependency> installedVersionDependencies =
                         new TreeSet<PackageDependency>(new Comparator<PackageDependency>() {
@@ -604,7 +604,7 @@ public class AddOnManager {
      * http://docs.oracle.com/javase/7/docs/api/java/net/URLClassLoader.html#close%28%29
      * 
      * This allows smooth upgrading of BEAST versions using the package manager. Without 
-     * this, there is no way to upgrade BEAST since the AddOnManager is part of the 
+     * this, there is no way to upgrade BEAST since the PackageManager is part of the 
      * BEAST.jar file that is loaded and needs to be replaced.
      * 
      * Side effect is that after installing a package, opening a new BEAUti instance
@@ -614,7 +614,7 @@ public class AddOnManager {
     private static void closeClassLoader() {
     	try {
     		if (Utils6.isWindows()) {
-    			URLClassLoader sysLoader = (URLClassLoader) AddOnManager.class.getClassLoader();
+    			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
     			sysLoader.close();
     		}
 		} catch (IOException e) {
@@ -854,14 +854,8 @@ public class AddOnManager {
     	
         List<String> dirs = new ArrayList<String>();
         // check if there is the BEAST environment variable is set
-        if (System.getProperty("BEAST_ADDON_PATH") != null) {
-            String BEAST = System.getProperty("BEAST_ADDON_PATH");
-            for (String dirName : BEAST.split(":")) {
-                dirs.add(dirName);
-            }
-        }
-        if (System.getenv("BEAST_ADDON_PATH") != null) {
-            String BEAST = System.getenv("BEAST_ADDON_PATH");
+        if (PackageManager.getBeastPacakgePathProperty() != null) {
+            String BEAST = PackageManager.getBeastPacakgePathProperty();
             for (String dirName : BEAST.split(":")) {
                 dirs.add(dirName);
             }
@@ -945,8 +939,8 @@ public class AddOnManager {
                             // find name of package
                             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                             Document doc = factory.newDocumentBuilder().parse(versionFile);
-                            Element addon = doc.getDocumentElement();
-                            alreadyLoaded.add(addon.getAttribute("name"));
+                            Element packageElement = doc.getDocumentElement();
+                            alreadyLoaded.add(packageElement.getAttribute("name"));
                         } catch (Exception e) {
                             // too bad, won't print out any info
                         }
@@ -962,8 +956,8 @@ public class AddOnManager {
     	                            // find name of package
     	                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     	                            Document doc = factory.newDocumentBuilder().parse(versionFile);
-    	                            Element addon = doc.getDocumentElement();
-    	                            alreadyLoaded.add(addon.getAttribute("name"));
+    	                            Element packageElement = doc.getDocumentElement();
+    	                            alreadyLoaded.add(packageElement.getAttribute("name"));
     	                        } catch (Exception e) {
     	                            // too bad, won't print out any info
     	                        }
@@ -1075,7 +1069,7 @@ public class AddOnManager {
         			Package pkg = new Package(pkgname);
         			PackageVersion version = new PackageVersion(pkgversion);
         	    	useArchive = true;
-        			String dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+        			String dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
         			if (new File(dirName).exists()) {
         				loadPackage(dirName);
         			} else {
@@ -1085,7 +1079,7 @@ public class AddOnManager {
             				unavailablePacakges += s +", ";
         				} else {
 	            	    	useArchive = false;
-	            			dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	            			dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
 	            			if (new File(dirName).exists()) {
 	            				loadPackage(dirName);
 	            			} else {
@@ -1118,8 +1112,8 @@ public class AddOnManager {
                     // print name and version of package
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(versionFile);
-                    Element addon = doc.getDocumentElement();
-                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                    Element packageElement = doc.getDocumentElement();
+                    packageNameAndVersion = packageElement.getAttribute("name") + " v" + packageElement.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
                     Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
@@ -1333,7 +1327,7 @@ public class AddOnManager {
      */
     public static void addURL(URL u) throws IOException {
         // ClassloaderUtil clu = new ClassloaderUtil();
-        AddOnManager clu = new AddOnManager();
+        PackageManager clu = new PackageManager();
         // URLClassLoader sysLoader = (URLClassLoader)
         // ClassLoader.getSystemClassLoader();
         URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
@@ -1429,18 +1423,23 @@ public class AddOnManager {
     }
 
     private static void addDirContent(File dir, int len) {
+    	try {
     	// No point in checking directories that cannot be read.
     	// Need check here since these potentially can cause exceptions
-    	if (dir.canRead()) {
-	        for (File file : dir.listFiles()) {
-	            if (file.isDirectory()) {
-	                addDirContent(file, len);
-	            } else {
-	                if (file.getName().endsWith(".class")) {
-	                    all_classes.add(file.getAbsolutePath().substring(len));
-	                }
-	            }
-	        }
+	    	if (dir.canRead()) {
+		        for (File file : dir.listFiles()) {
+		            if (file.isDirectory()) {
+		                addDirContent(file, len);
+		            } else {
+		                if (file.getName().endsWith(".class")) {
+		                    all_classes.add(file.getAbsolutePath().substring(len));
+		                }
+		            }
+		        }
+	    	}
+    	} catch (Exception e) {
+    		// ignore
+    		// windows appears to throw exceptions on unaccessible directories
     	}
     }
 
@@ -1757,12 +1756,12 @@ public class AddOnManager {
 
 
     private static void printUsageAndExit(Arguments arguments) {
-        arguments.printUsage("addonmanager", "");
+        arguments.printUsage("packagemanager", "");
         Log.info.println("\nExamples:");
-        Log.info.println("addonmanager -list");
-        Log.info.println("addonmanager -add SNAPP");
-        Log.info.println("addonmanager -useAppDir -add SNAPP");
-        Log.info.println("addonmanager -del SNAPP");
+        Log.info.println("packagemanager -list");
+        Log.info.println("packagemanager -add SNAPP");
+        Log.info.println("packagemanager -useAppDir -add SNAPP");
+        Log.info.println("packagemanager -del SNAPP");
         System.exit(0);
     }
 
@@ -1806,8 +1805,8 @@ public class AddOnManager {
             boolean useAppDir = arguments.hasOption("useAppDir");
             String customDir = arguments.getStringOption("dir");
             if (customDir != null) {
-                String path = System.getProperty("BEAST_ADDON_PATH");
-                System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
+                String path = PackageManager.getBeastPacakgePathProperty();
+                System.setProperty("BEAST_PACKAGE_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
             List<URL> urlList = getRepositoryURLs();
@@ -1824,8 +1823,8 @@ public class AddOnManager {
     			}
             });
             try {
-                AddOnManager.addInstalledPackages(packageMap);
-                AddOnManager.addAvailablePackages(packageMap);
+                PackageManager.addInstalledPackages(packageMap);
+                PackageManager.addAvailablePackages(packageMap);
             } catch (PackageListRetrievalException e) {
             	Log.warning.println(e.getMessage());
                 if (e.getCause() instanceof IOException)
@@ -1851,7 +1850,7 @@ public class AddOnManager {
                             	String versionString = arguments.getStringOption("version");
                             	PackageVersion version = new PackageVersion(versionString);
                             	packagesToInstall.put(aPackage, version);
-                            	AddOnManager.useArchive = true;
+                            	PackageManager.useArchive = true;
                             } else {
                             	packagesToInstall.put(aPackage, aPackage.getLatestVersion());
                             }
@@ -1883,7 +1882,7 @@ public class AddOnManager {
                     if (aPackage.packageName.equals(name)) {
                         processed = true;
                         if (arguments.hasOption("version")) {
-                        	AddOnManager.useArchive = true;
+                        	PackageManager.useArchive = true;
                         	String versionString = arguments.getStringOption("version");
                         	PackageVersion version = new PackageVersion(versionString);
                             String dir = uninstallPackage(aPackage, version, useAppDir, customDir);
@@ -1947,8 +1946,8 @@ public class AddOnManager {
                     // print name and version of package
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(versionFile);
-                    Element addon = doc.getDocumentElement();
-                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                    Element packageElement = doc.getDocumentElement();
+                    packageNameAndVersion = packageElement.getAttribute("name") + " v" + packageElement.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
                     Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
@@ -2029,13 +2028,13 @@ public class AddOnManager {
         		new Comparator<String>() {
 			@Override
 			public int compare(String s1, String s2) {
-	        	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
-	        		if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+	        	if (s1.equals(PackageManager.BEAST_PACKAGE_NAME)) {
+	        		if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
 	        			return 0;
 	        		}
 	        		return -1;
 	        	}
-	        	if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+	        	if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
 	        		return 1;
 	        	}
 	        	return s1.compareToIgnoreCase(s2);
@@ -2145,4 +2144,16 @@ public class AddOnManager {
 		}
     }
 
+    public static String getBeastPacakgePathProperty() {
+    	if (System.getProperty("BEAST_PACKAGE_PATH") != null) {
+    		return System.getProperty("BEAST_PACKAGE_PATH");
+    	}
+    	if (System.getenv("BEAST_PACKAGE_PATH") != null) {
+    		return System.getenv("BEAST_PACKAGE_PATH");
+    	}
+    	if (System.getenv("BEAST_ADDON_PATH") != null) {
+    		return System.getenv("BEAST_ADDON_PATH");
+    	}    	
+    	return System.getenv("BEAST_ADDON_PATH");
+    }
  }

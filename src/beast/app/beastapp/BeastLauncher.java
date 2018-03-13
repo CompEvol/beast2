@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -33,7 +32,7 @@ import org.w3c.dom.Element;
 import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
 import beast.core.util.Log;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.Package;
 import beast.util.PackageVersion;
 
@@ -144,7 +143,7 @@ public class BeastLauncher {
 			File target = new File(dir + pathDelimiter + "beast.jar");
 			copyFileUsingStream(beastJar, target);
 
-			String version = "<addon name='BEAST' version='" + BEASTVersion.INSTANCE.getVersion() + "'>\n" + "</addon>";
+			String version = "<package name='BEAST' version='" + BEASTVersion.INSTANCE.getVersion() + "'>\n" + "</package>";
 			FileWriter outfile = new FileWriter(userDir + pathDelimiter + "BEAST" + pathDelimiter + "version.xml");
 			outfile.write(version);
 			outfile.close();
@@ -338,7 +337,7 @@ public class BeastLauncher {
 
 	protected static String getPath(boolean useStrictVersions, String beastFile) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		installBEASTPackage();
-		AddOnManager.initialise();
+		PackageManager.initialise();
 
 
         if (useStrictVersions) {
@@ -380,7 +379,7 @@ public class BeastLauncher {
             }
         } 
 
-        AddOnManager.checkInstalledDependencies();
+        PackageManager.checkInstalledDependencies();
 
         // just load all packages
         StringBuilder buf = new StringBuilder();
@@ -400,13 +399,13 @@ public class BeastLauncher {
 	
 	private static String determinePackagePath(String packagesString) throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
-		if (AddOnManager.getBEASTInstallDir() != null) {
+		if (PackageManager.getBEASTInstallDir() != null) {
 			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
+			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
 		}
 	    if (packagesString != null && packagesString.trim().length() > 0) {
 	    	Map<String, Package> packages = new HashMap<String, Package>();
-	    	AddOnManager.addInstalledPackages(packages);
+	    	PackageManager.addInstalledPackages(packages);
 	    	
 	    	String unavailablePackages = "";
 	    	String [] packageAndVersions = packagesString.split(":");
@@ -419,8 +418,8 @@ public class BeastLauncher {
 	    			String pkgversion = s.substring(i+1).trim().replaceAll("v", "");
 	    			Package pkg = new Package(pkgname);
 	    			PackageVersion version = new PackageVersion(pkgversion);
-	    			AddOnManager.useArchive(true);
-	    			String dirName = AddOnManager.getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	    			PackageManager.useArchive(true);
+	    			String dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
 	    			if (new File(dirName).exists()) {
 	    				buf.append(addJarsToPath(dirName, classes));
 	    			} else {
@@ -429,8 +428,8 @@ public class BeastLauncher {
 	    				if (pkg2 == null || !pkg2.isInstalled() || !pkg2.getInstalledVersion().equals(version)) {
 	        				unavailablePackages += s +", ";
 	    				} else {
-	    					AddOnManager.useArchive(false);
-	            			dirName = AddOnManager.getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	    					PackageManager.useArchive(false);
+	            			dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
 	            			if (new File(dirName).exists()) {
 	            				buf.append(addJarsToPath(dirName, classes));
 	            			} else {
@@ -456,12 +455,12 @@ public class BeastLauncher {
 
 	private static String determinePackagePath() throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
-		if (AddOnManager.getBEASTInstallDir() != null) {
+		if (PackageManager.getBEASTInstallDir() != null) {
 			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
+			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
 		}
 		Set<String> classes = new HashSet<String>();
-		for (String jarDirName : AddOnManager.getBeastDirectories()) {
+		for (String jarDirName : PackageManager.getBeastDirectories()) {
 			try {
 				File versionFile = new File(jarDirName + "/version.xml");
 				String packageNameAndVersion = null;
@@ -470,8 +469,8 @@ public class BeastLauncher {
 						// print name and version of package
 						DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 						Document doc = factory.newDocumentBuilder().parse(versionFile);
-						Element addon = doc.getDocumentElement();
-						packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+						Element packageElement = doc.getDocumentElement();
+						packageNameAndVersion = packageElement.getAttribute("name") + " v" + packageElement.getAttribute("version");
 						// Log.warning.println("Loading package " +
 						// packageNameAndVersion);
 						// Utils.logToSplashScreen("Loading package " +

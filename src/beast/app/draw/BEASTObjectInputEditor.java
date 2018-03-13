@@ -16,7 +16,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.core.BEASTInterface;
 import beast.core.Input;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 public class BEASTObjectInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
@@ -472,7 +472,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //    }
 
     String[] getAvailablePlugins() {
-        List<String> beastObjectNames = AddOnManager.find(m_input.getType(), "beast");
+        List<String> beastObjectNames = PackageManager.find(m_input.getType(), "beast");
         return beastObjectNames.toArray(new String[0]);
     } // getAvailablePlugins
 

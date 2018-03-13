@@ -66,7 +66,7 @@ import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.math.distributions.MRCAPrior;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
 
 
@@ -171,7 +171,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_new = new ActionNew();
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
-    Action a_addOn = new ActionAddOn();
+    Action a_managePackages = new ActionManagePacakges();
     Action a_appLauncher = new ActionAppLauncher();
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
@@ -403,10 +403,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     } // ActionTemplate
 
-    class ActionAddOn extends MyAction {
+    class ActionManagePacakges extends MyAction {
         private static final long serialVersionUID = 1;
 
-        public ActionAddOn() {
+        public ActionManagePacakges() {
             super("Manage Packages", "Manage Packages", "package", -1);
         } // c'tor
 
@@ -820,7 +820,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
         templateMenu.addSeparator();
         templateMenu.add(a_template);
-        fileMenu.add(a_addOn);
+        fileMenu.add(a_managePackages);
         fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
@@ -1001,7 +1001,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 	private List<AbstractAction> getTemplateActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        List<String> beastDirectories = PackageManager.getBeastDirectories();
         for (String dirName : beastDirectories) {
             File dir = new File(dirName + "/templates");
             getTemplateActionForDir(dir, actions);
@@ -1042,7 +1042,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     private List<AbstractAction> getWorkDirActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        List<String> beastDirectories = PackageManager.getBeastDirectories();
         Set<String> doneDirs = new HashSet<>();
         for (String dir : beastDirectories) {
         	if (!doneDirs.contains(dir)) {
@@ -1220,7 +1220,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             	}
             }
 
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
             //if (!Utils.isMac()) {
             	Utils.loadUIManager();
             //}
@@ -1412,10 +1412,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	public void run() {
         		String statuString = Utils.getBeautiProperty("package.update.status");
         		if (statuString == null) {
-        			statuString = AddOnManager.UpdateStatus.AUTO_CHECK_AND_ASK.toString(); 
+        			statuString = PackageManager.UpdateStatus.AUTO_CHECK_AND_ASK.toString(); 
         		}
-        		AddOnManager.UpdateStatus updateStatus = AddOnManager.UpdateStatus.valueOf(statuString);
-        		AddOnManager.updatePackages(updateStatus, true);
+        		PackageManager.UpdateStatus updateStatus = PackageManager.UpdateStatus.valueOf(statuString);
+        		PackageManager.updatePackages(updateStatus, true);
         	};
         }.start();
     }

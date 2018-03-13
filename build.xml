@@ -93,7 +93,6 @@
 	      <fileset dir="${build}/beast/core/util/" includes="Log*.class" />
     	  <fileset dir="${build}/beast/app/beastapp/" includes="BeastLauncher*.class" />
 	      <fileset dir="${build}/beast/app/util/" includes="Arguments*.class"/>
-	      <fileset dir="${build}/beast/util/" includes="AddOnManager*.class"/>
 	      <fileset dir="${build}/beast/util/" includes="Package*.class"/>
     	</delete>
         <delete file="${build}/beast/app/util/Version.class" />
@@ -114,7 +113,6 @@
             <include name="beast/util/Package*.java" />
             <include name="beast/app/util/Arguments.java" />
             <include name="beast/core/util/Log.java" />
-	        <include name="beast/util/AddOnManager.java" />
         </javac>
         <copy todir="${build}">
             <fileset dir="${src}" includes="**/*.properties" />
@@ -157,7 +155,6 @@
                 <include name="beast/**/Version.class" />
 		    	<include name="beast/app/util/Arguments*.class" />
                 <include name="beast/util/Package*.class" />
-		        <include name="beast/util/AddOnManager*.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
                 <include name="beast/core/util/Log*.class" />
             </fileset>
@@ -179,7 +176,7 @@
         <copy file="${dist}/beast.jar" todir="${release_dir}/package/lib/"/>
         <copy file="../beast2/version.xml" todir="${release_dir}/package/"/>
 
-        <jar jarfile="${release_dir}/package/BEAST.addon.v${version}.zip">
+        <jar jarfile="${release_dir}/package/BEAST.package.v${version}.zip">
             <fileset dir="${release_dir}/package">
                 <include name="version.xml" />
                 <include name="lib/beast.jar" />

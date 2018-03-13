@@ -511,7 +511,7 @@ public class XMLParser {
         		if (i > 0) {
         			String pkgname = s.substring(0, i);
         			String pkgversion = s.substring(i+1);
-        			if (!AddOnManager.isInstalled(pkgname, pkgversion)) {
+        			if (!PackageManager.isInstalled(pkgname, pkgversion)) {
         				unavailablePacakges += s +", ";
         			}
         		}
@@ -772,7 +772,7 @@ public class XMLParser {
 				throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
 			}
 		} catch (ClassNotFoundException e1) {
-			// should never happen since clazzName is in the list of classes collected by the AddOnManager
+			// should never happen since clazzName is in the list of classes collected by the PackageManager
 			e1.printStackTrace();
 			throw new RuntimeException(e1);
 		}

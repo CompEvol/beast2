@@ -41,7 +41,7 @@ import org.w3c.dom.NodeList;
 
 import beast.app.util.Utils;
 import beast.core.util.Log;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 
 /**
@@ -248,7 +248,7 @@ public class AppLauncher {
 
     List<PackageApp> getPackageApps() {
         List<PackageApp> packageApps = new ArrayList<>();
-        List<String> dirs = AddOnManager.getBeastDirectories();
+        List<String> dirs = PackageManager.getBeastDirectories();
         for (String jarDirName : dirs) {
             File versionFile = new File(jarDirName + "/version.xml");
             if (versionFile.exists() && versionFile.isFile()) {
@@ -257,19 +257,22 @@ public class AppLauncher {
                 try {
                     doc = factory.newDocumentBuilder().parse(versionFile);
                     doc.normalize();
-                    // get addonapp info from version.xml
-                    Element addon = doc.getDocumentElement();
-                    NodeList nodes = doc.getElementsByTagName("addonapp");
+                    // get package-app info from version.xml
+                    Element packageElement = doc.getDocumentElement();
+                    NodeList nodes = doc.getElementsByTagName("packageapp");
+                    if (nodes.getLength() == 0) {
+                    	nodes = doc.getElementsByTagName("addonapp");
+                    }
                     for (int j = 0; j < nodes.getLength(); j++) {
-                        Element addOnAppElement = (Element) nodes.item(j);
+                        Element pacakgeAppElement = (Element) nodes.item(j);
                         PackageApp packageApp = new PackageApp();
-                        packageApp.packageName = addon.getAttribute("name");
+                        packageApp.packageName = packageElement.getAttribute("name");
                         packageApp.jarDir = jarDirName;
-                        packageApp.className = addOnAppElement.getAttribute("class");
-                        packageApp.description = addOnAppElement.getAttribute("description");
-                        packageApp.argumentsString = addOnAppElement.getAttribute("args");
+                        packageApp.className = pacakgeAppElement.getAttribute("class");
+                        packageApp.description = pacakgeAppElement.getAttribute("description");
+                        packageApp.argumentsString = pacakgeAppElement.getAttribute("args");
 
-                        String iconLocation = addOnAppElement.getAttribute("icon");
+                        String iconLocation = pacakgeAppElement.getAttribute("icon");
                         packageApp.icon = Utils.getIcon(iconLocation);
                         if (packageApp.icon == null || iconLocation.trim().isEmpty())
                             packageApp.icon = Utils.getIcon(DEFAULT_ICON);
@@ -331,7 +334,7 @@ public class AppLauncher {
 
     public void runAppFromCMD(PackageApp packageApp, String[] additionalArgs) {
         try {
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
 
             List<String> cmd = new ArrayList<>();
             if (System.getenv("JAVA_HOME") != null) {

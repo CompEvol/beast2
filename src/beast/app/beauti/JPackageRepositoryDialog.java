@@ -31,7 +31,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -49,11 +49,11 @@ public class JPackageRepositoryDialog extends JDialog {
         // Get current list of URLs:
         List<URL> urls;
         try {
-            urls = AddOnManager.getRepositoryURLs();
+            urls = PackageManager.getRepositoryURLs();
         } catch (MalformedURLException exception) {
             urls = new ArrayList<>();
             try {
-                urls.add(new URL(AddOnManager.PACKAGES_XML));
+                urls.add(new URL(PackageManager.PACKAGES_XML));
             } catch (MalformedURLException e) {
                 // Hard-coded URL is broken. Should never happen!
                 e.printStackTrace();
@@ -127,7 +127,7 @@ public class JPackageRepositoryDialog extends JDialog {
         // DONE
         JButton OKButton = new JButton("Done");
         OKButton.addActionListener(e -> {
-            AddOnManager.saveRepositoryURLs(repoTableModel.urls);
+            PackageManager.saveRepositoryURLs(repoTableModel.urls);
             setVisible(false);
         });
         box.add(OKButton);

@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * BEAUti Package managed by AddOnManager.
+ * BEAUti Package managed by PackageManager.
  *
  * Add a new rule in issue 754:
  * Package manager should make project links compulsory.
@@ -197,7 +197,7 @@ public class Package {
         String depString = "";
         for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
             String s = packageDependency.dependencyName;
-            if (!s.equalsIgnoreCase(AddOnManager.BEAST_PACKAGE_NAME)) {
+            if (!s.equalsIgnoreCase(PackageManager.BEAST_PACKAGE_NAME)) {
                 depString +=  s + ", ";
             }
         }

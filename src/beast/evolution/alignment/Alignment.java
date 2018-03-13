@@ -31,7 +31,7 @@ import beast.core.parameter.Map;
 import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 import java.util.*;
 
@@ -64,7 +64,7 @@ public class Alignment extends Map<String> {
 
     static public void findDataTypes() {
         // build up list of data types
-        List<String> m_sDataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+        List<String> m_sDataTypes = PackageManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
         for (String dataTypeName : m_sDataTypes) {
             try {
                 DataType dataType = (DataType) Class.forName(dataTypeName).newInstance();
@@ -230,7 +230,7 @@ public class Alignment extends Map<String> {
                         "Choose one of " + Arrays.toString(types.toArray(new String[0])));
             }
             // seems to spend forever in there??
-            List<String> dataTypes = AddOnManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+            List<String> dataTypes = PackageManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
             for (String dataTypeName : dataTypes) {
                 DataType dataType;
 				try {

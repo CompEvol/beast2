@@ -72,7 +72,7 @@ import beast.app.util.Version;
 import beast.core.Logger;
 import beast.core.Runnable;
 import beast.core.util.Log;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.JSONParser;
 import beast.util.JSONParserException;
 import beast.util.Randomizer;
@@ -295,10 +295,10 @@ public class BeastMCMC {
                 start += 10;
                 int end = str.indexOf(c, start);
                 String packages = str.substring(start, end);
-                AddOnManager.loadExternalJars(packages);
+                PackageManager.loadExternalJars(packages);
             }
         } else {
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
         }
         
 

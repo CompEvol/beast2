@@ -854,7 +854,7 @@ public class JSONParser {
 				// }
 			}
 		} catch (ClassNotFoundException e1) {
-			// should never happen since clazzName is in the list of classes collected by the AddOnManager
+			// should never happen since clazzName is in the list of classes collected by the PackageManager
 			e1.printStackTrace();
 			throw new RuntimeException(e1);
 		}

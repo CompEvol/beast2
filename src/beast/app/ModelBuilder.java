@@ -35,7 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.Randomizer;
 
 
@@ -55,7 +55,7 @@ public class ModelBuilder extends JPanel {
     public static void main(String args[]) {
         Randomizer.setSeed(127);
         try {
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
         } catch (Exception e) {
             e.printStackTrace();// ignore
         }

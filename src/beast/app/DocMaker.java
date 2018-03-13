@@ -49,7 +49,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.util.Log;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 
 
@@ -102,7 +102,7 @@ public class DocMaker {
 
     public DocMaker() {
         // find plug ins to document
-        m_beastObjectNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        m_beastObjectNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         /** determine hierarchical relation between plug-ins **/
         m_isa = new HashMap<>();
         m_ancestors = new HashMap<>();
@@ -570,7 +570,7 @@ public class DocMaker {
     public static void main(String[] args) {
         try {
             System.err.println("Producing documentation...");
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
             DocMaker b = new DocMaker(args);
             b.generateDocs();
             System.err.println("Done!!!");

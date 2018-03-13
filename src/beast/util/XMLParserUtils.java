@@ -39,7 +39,7 @@ import beast.core.util.Log;
  */
 public class XMLParserUtils {
 	
-	final static public List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
+	final static public List<String> beastObjectNames = PackageManager.find(beast.core.BEASTInterface.class, PackageManager.IMPLEMENTATION_DIR);
 
 
     /**
