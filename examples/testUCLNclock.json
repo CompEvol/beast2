@@ -1,4 +1,4 @@
-{version: "2.4",
+{version: "2.5",
 namespace: "beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood",
 
 beast: [
