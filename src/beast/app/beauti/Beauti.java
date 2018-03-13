@@ -788,7 +788,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
-        if (!Utils.isMac()) {
+        if (!Utils.isMac() || Utils6.getMajorJavaVersion() != 8) {
             helpMenu.add(a_about);
         }
 
@@ -1234,7 +1234,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             final Beauti beauti = new Beauti(doc);
             
-            if (Utils.isMac()) {
+            if (Utils.isMac() && Utils6.getMajorJavaVersion() == 8) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
                 try {

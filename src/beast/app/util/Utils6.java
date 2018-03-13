@@ -303,4 +303,18 @@ public class Utils6 {
     		
     	}
     }
+    
+    public static int getMajorJavaVersion() {
+		String javaVersion = System.getProperty("java.version");
+		// javaVersion should be something like "1.7.0_25"
+		String[] version = javaVersion.split("\\.");
+		if (version.length > 2) {
+			int majorVersion = Integer.parseInt(version[0]);
+			if (majorVersion == 1) {
+				majorVersion = Integer.parseInt(version[1]);
+			}
+			return majorVersion;
+		}
+		return -1;
+    }
 }

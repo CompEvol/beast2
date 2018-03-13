@@ -2053,6 +2053,11 @@ public class AddOnManager {
         	}
         }
         
+        if (packagesToInstall.size() == 0) {
+        	// nothing to install
+        	return;
+        }
+         
         // do we need to ask before proceeding?
     	if (updateStatus != UpdateStatus.AUTO_UPDATE) {
     		if (useGUI) {
