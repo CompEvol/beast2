@@ -1029,7 +1029,11 @@ public class AddOnManager {
 
         checkInstalledDependencies(packages);
 
-        if (false) {
+        // jars will only be loaded the classical (pre v2.5.0)
+        // way with java 8 when the -Dbeast.load.jars=true
+        // directive is given. This can be useful for developers
+        // but generally slows down application starting.
+        if (System.getProperty("beast.load.jars") == null || Utils6.getMajorJavaVersion() != 8) {
             externalJarsLoaded = true;
             findDataTypes();
     		return;
@@ -1048,7 +1052,7 @@ public class AddOnManager {
 			findDataTypes.invoke(null);
 		} catch (Exception e) {
 			// too bad, cannot load data types
-			e.printStackTrace();
+			Log.err.print(e.getMessage());
 		}
 	}
 
@@ -1425,16 +1429,19 @@ public class AddOnManager {
     }
 
     private static void addDirContent(File dir, int len) {
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                addDirContent(file, len);
-            } else {
-                if (file.getName().endsWith(".class")) {
-                    all_classes.add(file.getAbsolutePath().substring(len));
-                }
-            }
-        }
-
+    	// No point in checking directories that cannot be read.
+    	// Need check here since these potentially can cause exceptions
+    	if (dir.canRead()) {
+	        for (File file : dir.listFiles()) {
+	            if (file.isDirectory()) {
+	                addDirContent(file, len);
+	            } else {
+	                if (file.getName().endsWith(".class")) {
+	                    all_classes.add(file.getAbsolutePath().substring(len));
+	                }
+	            }
+	        }
+    	}
     }
 
 
