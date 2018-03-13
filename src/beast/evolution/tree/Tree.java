@@ -636,8 +636,7 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Override
     public int scale(final double scale) {
-        root.scale(scale);
-        return getInternalNodeCount()- getDirectAncestorNodeCount();
+        return root.scale(scale);
     }
 
 

@@ -753,22 +753,31 @@ public class Node extends BEASTObject {
      * scale height of this node and all its descendants
      *
      * @param scale scale factor
+     * @return degrees of freedom scaled (used for HR calculations)
      */
-    public void scale(final double scale) {
+    public int scale(final double scale) {
         startEditing();
+
+        int dof = 0;
+
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf() && !isFake()) {
             height *= scale;
+
+            if (isRoot() || parent.getHeight() != getHeight())
+                dof += 1;
         }
         if (!isLeaf()) {
-            getLeft().scale(scale);
+            dof += getLeft().scale(scale);
             if (getRight() != null) {
-                getRight().scale(scale);
+                dof += getRight().scale(scale);
             }
             if (height < getLeft().height || height < getRight().height) {
                 throw new IllegalArgumentException("Scale gives negative branch length");
             }
         }
+
+        return dof;
     }
 
 //    /**
