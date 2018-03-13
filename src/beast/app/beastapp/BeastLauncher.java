@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -390,6 +391,7 @@ public class BeastLauncher {
 			packagePath = determinePackagePath();
 			Utils6.saveBeautiProperty("package.path", packagePath);
 		}
+		buf.append(File.pathSeparator);
 		buf.append(packagePath);
 		buf.append("\"");
 		return buf.toString();
@@ -399,14 +401,14 @@ public class BeastLauncher {
 	private static String determinePackagePath(String packagesString) throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
 		if (AddOnManager.getBEASTInstallDir() != null) {
-			buf.append(":");
+			buf.append(File.pathSeparator);
 			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
 		}
 	    if (packagesString != null && packagesString.trim().length() > 0) {
 	    	Map<String, Package> packages = new HashMap<String, Package>();
 	    	AddOnManager.addInstalledPackages(packages);
 	    	
-	    	String unavailablePacakges = "";
+	    	String unavailablePackages = "";
 	    	String [] packageAndVersions = packagesString.split(":");
 			Set<String> classes = new HashSet<String>();
 	    	for (String s : packageAndVersions) {
@@ -425,28 +427,28 @@ public class BeastLauncher {
 	    				// check the latest installed version
 	    				Package pkg2 = packages.get(pkgname);
 	    				if (pkg2 == null || !pkg2.isInstalled() || !pkg2.getInstalledVersion().equals(version)) {
-	        				unavailablePacakges += s +", ";
+	        				unavailablePackages += s +", ";
 	    				} else {
 	    					AddOnManager.useArchive(false);
 	            			dirName = AddOnManager.getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
 	            			if (new File(dirName).exists()) {
 	            				buf.append(addJarsToPath(dirName, classes));
 	            			} else {
-	            				unavailablePacakges += s +", ";
+	            				unavailablePackages += s +", ";
 	            			}
 	    				}
 	    			}
 	    		}
 	    	}
-	    	if (unavailablePacakges.length() > 1) {
-	    		unavailablePacakges = unavailablePacakges.substring(0, unavailablePacakges.length() - 2);
-	    		if (unavailablePacakges.contains(",")) {
-	    			Log.warning("The following packages are required, but not available: " + unavailablePacakges);
+	    	if (unavailablePackages.length() > 1) {
+	    		unavailablePackages = unavailablePackages.substring(0, unavailablePackages.length() - 2);
+	    		if (unavailablePackages.contains(",")) {
+	    			Log.warning("The following packages are required, but not available: " + unavailablePackages);
 	    		} else {
-	    			Log.warning("The following package is required, but is not available: " + unavailablePacakges);
+	    			Log.warning("The following package is required, but is not available: " + unavailablePackages);
 	    		}
 	    		Log.warning("See http://beast2.org/managing-packages/ for details on how to install packages.");
-	    		throw new IllegalArgumentException("The following package(s) are required, but not available: " + unavailablePacakges);
+	    		throw new IllegalArgumentException("The following package(s) are required, but not available: " + unavailablePackages);
 	    	}
 	    }
 	    return buf.toString();
@@ -455,7 +457,7 @@ public class BeastLauncher {
 	private static String determinePackagePath() throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
 		if (AddOnManager.getBEASTInstallDir() != null) {
-			buf.append(":");
+			buf.append(File.pathSeparator);
 			buf.append(URLDecoder.decode(AddOnManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
 		}
 		Set<String> classes = new HashSet<String>();
@@ -537,7 +539,7 @@ public class BeastLauncher {
 					}
 					alreadyLoaded = false;
 					if (!alreadyLoaded) {
-						buf.append(":" + jarDir.getAbsolutePath() + "/" + fileName);
+						buf.append(File.pathSeparator + jarDir.getAbsolutePath() + "/" + fileName);
 						classes.addAll(jarClasses);
 					}
 				}
@@ -614,20 +616,21 @@ public class BeastLauncher {
             // Start the process and wait for it to finish.
             final Process process = pb.start();
             boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
+            
             if (waitToExit) {
+//PrintStream debug = new PrintStream(new File("debug.log"));            	
 	            int c;
 	            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	            while ((c = input.read()) != -1) {
 	                System.out.print((char)c);
+//	                debug.print((char) c);
 	            }
+//debug.close();	            
 	            input.close();
-	            final int exitStatus = process.waitFor();
 	
+	            final int exitStatus = process.waitFor();
 	            if (exitStatus != 0) {
 	            	System.err.println(process.getErrorStream());
-	                // Log.err.println(Utils.toString());
-	            } else {
-	//                System.out.println(Utils.toString(process.getInputStream()));
 	            }
             }
         } catch (Exception e) {
