@@ -20,7 +20,7 @@ public class TwoStateCovarion extends Base {
         stateCount = 4;
         mapCodeToStateSet = x;
         codeLength = 1;
-        codeMap = "01abcd" + GAP_CHAR + MISSING_CHAR;
+        codeMap = "01ABCD" + GAP_CHAR + MISSING_CHAR;
     }
 
     @Override
