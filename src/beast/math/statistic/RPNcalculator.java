@@ -151,7 +151,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
             out.print(this.getID() + "\t");
         else
             for (int i = 0; i < dim; i++)
-                out.print(this.getID() + "_" + i + "\t");
+                out.print(this.getID() + "_" + (i + 1) + "\t");
     }
 
     @Override
