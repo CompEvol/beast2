@@ -19,23 +19,15 @@ public class IntegerData extends Base {
     }
     
     @Override
-    public boolean isAmbiguousState(int state) {
-    	return state < 0;
-    }
-    
-    @Override
-    public char getChar(int state) {
-    	if (state < 0) {
-    		return '?';
-    	}
-        return (char)('0'+state);
+    public boolean isAmbiguousCode(int code) {
+    	return code < 0;
     }
 
     @Override
-    public String getCode(int state) {
-    	if (state < 0) {
+    public String getCharacter(int code) {
+    	if (code < 0) {
     		return "?";
     	}
-    	return state + "";
+    	return code + "";
     }
 }

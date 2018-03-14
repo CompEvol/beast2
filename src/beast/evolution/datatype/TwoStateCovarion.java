@@ -27,9 +27,4 @@ public class TwoStateCovarion extends Base {
     public String getTypeDescription() {
         return "twoStateCovarion";
     }
-
-    @Override
-    public char getChar(int state) {
-        return codeMap.charAt(state);
-    }
 }
