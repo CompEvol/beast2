@@ -222,18 +222,39 @@ public class Node extends BEASTObject {
      * This returns all child nodes including this node.
      *
      * @return all child nodes including this node
+     * @deprecated issue 703: name is confusing, replaced by
+     * {@link #getAllChildNodesAndSelf() getAllChildNodesAndSelf}
      */
     public List<Node> getAllChildNodes() {
+        return getAllChildNodesAndSelf();
+    }
+
+    // recursive
+    /**
+     * @deprecated issue 703: name is confusing, replaced by
+     * {@link #getAllChildNodesAndSelf(List<Node>) getAllChildNodesAndSelf}
+     */
+    public void getAllChildNodes(final List<Node> childNodes) {
+        getAllChildNodesAndSelf(childNodes);
+    }
+
+    /**
+     * get all child node under this node, if this node is leaf then list.size() = 0.
+     * This returns all child nodes including this node.
+     *
+     * @return all child nodes including this node
+     */
+    public List<Node> getAllChildNodesAndSelf() {
         final List<Node> childNodes = new ArrayList<>();
-        if (!this.isLeaf()) getAllChildNodes(childNodes);
+        if (!this.isLeaf()) getAllChildNodesAndSelf(childNodes);
         return childNodes;
     }
 
     // recursive
-    public void getAllChildNodes(final List<Node> childNodes) {
+    public void getAllChildNodesAndSelf(final List<Node> childNodes) {
         childNodes.add(this);
         for (Node child : children)
-            child.getAllChildNodes(childNodes);
+            child.getAllChildNodesAndSelf(childNodes);
     }
 
     /**
