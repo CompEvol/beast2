@@ -1,43 +1,20 @@
 package beast.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import beast.core.BEASTInterface;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.FilteredAlignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
+import beast.evolution.alignment.*;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
 import beast.evolution.datatype.UserDataType;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
-import beast.math.distributions.Exponential;
-import beast.math.distributions.Gamma;
-import beast.math.distributions.LogNormalDistributionModel;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.Normal;
-import beast.math.distributions.ParametricDistribution;
-import beast.math.distributions.Uniform;
+import beast.math.distributions.*;
+
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -155,19 +132,80 @@ public class NexusParser {
         }
     } // parseFile
 
+    /**
+     * Class representing a single command in a nexus file.
+     *
+     * Command may be terminated by either a ";" or an EOF. All whitespace
+     * is converted to single spaces.
+     * TODO Respect quoted whitespace here.
+     * (Previous implementation didn't respect this either.)
+     *
+     * Currently only used by parseTreesBlock.
+     */
+    class NexusCommand {
+        String command;
+        String arguments;
+
+        boolean isCommand(String commandName) {
+            return command.equals(commandName.toLowerCase());
+        }
+
+        NexusCommand(String commandString) {
+            commandString = commandString.trim().replaceAll("\\s+", " ");
+
+            command = commandString.split(" ")[0].toLowerCase();
+
+            try {
+                arguments = commandString.substring(command.length() + 1);
+            } catch (IndexOutOfBoundsException ex) {
+                arguments = "";
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "Command: " + command + ", Args: " + arguments;
+        }
+    }
+
+    /**
+     * Get next nexus command, if available.
+     *
+     * @param fin nexus file reader
+     * @return nexus command, or null if none available.
+     * @throws IOException if error reading from file
+     */
+    NexusCommand readNextCommand(BufferedReader fin) throws IOException {
+        StringBuilder commandBuilder = new StringBuilder();
+
+        while(true) {
+            int nextVal = fin.read();
+            if (nextVal<0)
+                break;
+
+            char nextChar = (char)nextVal;
+            if (nextChar == ';')
+                break;
+
+            commandBuilder.append(nextChar);
+        }
+
+        if (commandBuilder.toString().isEmpty())
+            return null;
+        else
+            return new NexusCommand(commandBuilder.toString());
+    }
+
     protected void parseTreesBlock(final BufferedReader fin) throws IOException {
         trees = new ArrayList<>();
-        // read to first non-empty line within trees block
-        String str = readLine(fin).trim();
-        while (str.equals("")) {
-            str = readLine(fin).trim();
-        }
+        // read to first command within trees block
+        NexusCommand nextCommand = readNextCommand(fin);
 
         int origin = -1;
 
         // if first non-empty line is "translate" then parse translate block
-        if (str.toLowerCase().contains("translate")) {
-            translationMap = parseTranslateBlock(fin);
+        if (nextCommand.isCommand("translate")) {
+            translationMap = parseTranslateCommand(nextCommand.arguments);
             origin = getIndexedTranslationMapOrigin(translationMap);
             if (origin != -1) {
                 taxa = getIndexedTranslationMap(translationMap, origin);
@@ -175,21 +213,22 @@ public class NexusParser {
         }
 
         // read trees
-        while (str != null) {
-            if (str.toLowerCase().startsWith("tree ")) {
-                final int i = str.indexOf('(');
+        while (nextCommand != null) {
+            if (nextCommand.isCommand("tree")) {
+                String treeString = nextCommand.arguments;
+                final int i = treeString.indexOf('(');
                 if (i > 0) {
-                    str = str.substring(i);
+                    treeString = treeString.substring(i);
                 }
                 TreeParser treeParser;
 
                 if (origin != -1) {
-                    treeParser = new TreeParser(taxa, str, origin, false);
+                    treeParser = new TreeParser(taxa, treeString, origin, false);
                 } else {
                     try {
-                        treeParser = new TreeParser(taxa, str, 0, false);
+                        treeParser = new TreeParser(taxa, treeString, 0, false);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        treeParser = new TreeParser(taxa, str, 1, false);
+                        treeParser = new TreeParser(taxa, treeString, 1, false);
                     }
                 }
 //                catch (NullPointerException e) {
@@ -212,8 +251,7 @@ public class NexusParser {
 //				tree.sort();
 //				tree.labelInternalNodes(nrOfLabels);
             }
-            str = fin.readLine();
-            if (str != null) str = str.trim();
+            nextCommand = readNextCommand(fin);
         }
     }
 
@@ -250,24 +288,18 @@ public class NexusParser {
     }
 
     /**
-     * @param reader a reader
+     * @param translateArgs string containing arguments of the translate command
      * @return a map of taxa translations, keys are generally integer node number starting from 1
      *         whereas values are generally descriptive strings.
      * @throws IOException
      */
-    protected Map<String, String> parseTranslateBlock(final BufferedReader reader) throws IOException {
+    protected Map<String, String> parseTranslateCommand(String translateArgs) throws IOException {
 
         final Map<String, String> translationMap = new HashMap<>();
 
-        String line = readLine(reader);
-        final StringBuilder translateBlock = new StringBuilder();
-        while (line != null && !line.trim().toLowerCase().equals(";")) {
-            translateBlock.append(line.trim());
-            line = readLine(reader);
-        }
-        final String[] taxaTranslations = translateBlock.toString().split(",");
+        final String[] taxaTranslations = translateArgs.toString().split(",");
         for (final String taxaTranslation : taxaTranslations) {
-            final String[] translation = taxaTranslation.split("[\t ]+");
+            final String[] translation = taxaTranslation.trim().split("[\t ]+");
             if (translation.length == 2) {
                 translationMap.put(translation[0], translation[1]);
 //                Log.info.println(translation[0] + " -> " + translation[1]);
