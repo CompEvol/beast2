@@ -31,6 +31,7 @@
 package beast.util;
 
 
+
 import beast.app.BEASTVersion;
 import beast.app.util.Arguments;
 import beast.app.util.Utils6;
@@ -1015,12 +1016,16 @@ public class PackageManager {
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws IOException {
+    	Utils6.logToSplashScreen("PackageManager::loadExternalJars");
         processDeleteList();
 
+    	Utils6.logToSplashScreen("PackageManager::addInstalledPackages");
         addInstalledPackages(packages);
 
+    	Utils6.logToSplashScreen("PackageManager::processInstallList");
         processInstallList(packages);
 
+    	Utils6.logToSplashScreen("PackageManager::checkInstalledDependencies");
         checkInstalledDependencies(packages);
 
         // jars will only be loaded the classical (pre v2.5.0)
@@ -1029,7 +1034,9 @@ public class PackageManager {
         // but generally slows down application starting.
         if (System.getProperty("beast.load.jars") == null || Utils6.getMajorJavaVersion() != 8) {
             externalJarsLoaded = true;
+        	Utils6.logToSplashScreen("PackageManager::findDataTypes");
             findDataTypes();
+        	Utils6.logToSplashScreen("PackageManager::Done");
     		return;
     	}
 
@@ -1037,7 +1044,9 @@ public class PackageManager {
         	loadPackage(jarDirName);
         }
         externalJarsLoaded = true;
+    	Utils6.logToSplashScreen("PackageManager::findDataTypes");
         findDataTypes();
+    	Utils6.logToSplashScreen("PackageManager::Done");
     } // loadExternalJars
     
 	private static void findDataTypes() {
@@ -1616,7 +1625,9 @@ public class PackageManager {
         List<String> result = new ArrayList<String>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String className = all_classes.get(i);
-            className = className.replaceAll("/", ".");
+            if (className.indexOf('/') >= 0) {
+            	className = className.replaceAll("/", ".");
+            }
             //Log.debug.println(className + " " + pkgname);
 
             // must match package

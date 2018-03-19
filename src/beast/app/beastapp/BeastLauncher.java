@@ -384,7 +384,7 @@ public class BeastLauncher {
         // just load all packages
         StringBuilder buf = new StringBuilder();
 		buf.append("\"");
-		buf.append(sanitise(System.getProperty("java.library.path")));
+//		buf.append(sanitise(System.getProperty("java.library.path")));
 		String packagePath = Utils6.getBeautiProperty("package.path");
 		if (packagePath == null || packagePath.length() == 0) {
 			packagePath = determinePackagePath();

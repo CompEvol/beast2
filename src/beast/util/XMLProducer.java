@@ -181,21 +181,23 @@ public class XMLProducer extends XMLParser {
             xml = sortTags(xml);
             
 
-            //insert newlines in alignments
-            int k = xml.indexOf("<data ");
-            StringBuffer buf2 = new StringBuffer(xml); 
-            while (k > 0) {
-            	while (xml.charAt(k) != '>') {
-            		if (xml.charAt(k) == ' ' && !xml.startsWith("idref", k+1)) {
-            			buf2.setCharAt(k, '\n');
-            		}
-            		k++;
-            	}
-            	k = xml.indexOf("<data ", k + 1);
-            }
-            
-
-            return buf2.toString();
+            // the following fails on Windows with Java 9, so commented out
+            //insert newlines in alignments 
+//            int k = xml.indexOf("<data ");
+//            StringBuffer buf2 = new StringBuffer(xml); 
+//            while (k > 0) {
+//            	while (xml.charAt(k) != '>') {
+//            		if (xml.charAt(k) == ' ' && !xml.startsWith("idref", k+1)) {
+//            			buf2.setCharAt(k, '\n');
+//            		}
+//            		k++;
+//            	}
+//            	k = xml.indexOf("<data ", k + 1);
+//            }
+//            
+//
+//            return buf2.toString();
+            return xml;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
