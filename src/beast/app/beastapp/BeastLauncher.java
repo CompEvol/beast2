@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -157,10 +158,6 @@ public class BeastLauncher {
 			copyFilesInDir(new File(jarDir0 + pathDelimiter + "examples" + pathDelimiter + "nexus"), exampleDir);
 			copyFilesInDir(new File(jarDir0 + pathDelimiter + "templates"), templateDir);
 
-			// TODO: include templates?
-			// if so, how to prevent clashes with templates in package and in
-			// installation dir?
-			// TODO: what about examples?
 		} catch (Exception e) {
 			// do net let exceptions hold up launch of beast & friends
 			e.printStackTrace();
@@ -614,8 +611,34 @@ public class BeastLauncher {
             
             // Start the process and wait for it to finish.
             final Process process = pb.start();
-            boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
+            Thread inputThread = new Thread() {
+            	public void run() {
+                    OutputStream out = process.getOutputStream();
+                    byte [] buf = new byte[2048];
+            		while (true) {
+            			try {
+		                    int ni = System.in.available();
+		                    if (ni > 0) {
+		                      int c = System.in.read(buf, 0, Math.min(ni, buf.length));
+		                      System.err.print((char) c);
+		                      out.write(buf, 0, c);
+		                      out.flush();
+		                    }	 
+            			} catch (IOException e) {
+            				e.printStackTrace();
+            			}
+                		try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+             		}
+            	}
+            };
+            inputThread.start();
             
+            boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
+//waitToExit = true;            
             if (waitToExit) {
 //PrintStream debug = new PrintStream(new File("debug.log"));            	
 	            int c;
@@ -631,6 +654,7 @@ public class BeastLauncher {
 	            if (exitStatus != 0) {
 	            	System.err.println(process.getErrorStream());
 	            }
+	            inputThread.stop();
             }
         } catch (Exception e) {
             e.printStackTrace();
