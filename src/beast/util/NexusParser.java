@@ -931,76 +931,97 @@ public class NexusParser {
             		// next get the calibration
             		str0 = strs[strs.length - 1].trim();
             		String [] strs3 = str0.split("[\\(,\\)]");
-            		RealParameter [] param = new RealParameter[strs3.length];
-            		for (int i = 1; i < strs3.length; i++) {
-            			try {
-            				param[i] = new RealParameter(strs3[i]);
-            				param[i].setID("param." + i);
-            			} catch (Exception  e) {
-							// ignore parsing errors
-						}
-            		}
-            		ParametricDistribution distr  = null;
-            		switch (strs3[0]) {
-            		case "normal":
-            			distr = new Normal();
-            			distr.initByName("mean", param[1], "sigma", param[2]);
-            			distr.setID("Normal.0");
-            			break;
-            		case "uniform":
-            			distr = new Uniform();
-            			distr.initByName("lower", strs3[1], "upper", strs3[2]);
-            			distr.setID("Uniform.0");
-            			break;
-            		case "fixed":
-            			// uniform with lower == upper
-            			distr = new Normal();
-            			distr.initByName("mean", param[1], "sigma", "+Infinity");
-            			distr.setID("Normal.0");
-            			break;
-            		case "offsetlognormal":
-            			distr = new LogNormalDistributionModel();
-            			distr.initByName("offset", strs3[1], "M", param[2], "S", param[3], "meanInRealSpace", true);
-            			distr.setID("LogNormalDistributionModel.0");
-            			break;
-            		case "lognormal":
-            			distr = new LogNormalDistributionModel();
-            			distr.initByName("M", param[1], "S", param[2], "meanInRealSpace", true);
-            			distr.setID("LogNormalDistributionModel.0");
-            			break;
-            		case "offsetexponential":
-            			distr = new Exponential();
-            			distr.initByName("offset", strs3[1], "mean", param[2]);
-            			distr.setID("Exponential.0");
-            			break;
-            		case "gamma":
-            			distr = new Gamma();
-            			distr.initByName("alpha", param[1], "beta", param[2]);
-            			distr.setID("Gamma.0");
-            			break;
-            		case "offsetgamma":
-            			distr = new Gamma();
-            			distr.initByName("offset", strs3[1], "alpha", param[2], "beta", param[3]);
-            			distr.setID("Gamma.0");
-            			break;
-            		default:
-            			throw new RuntimeException("Unknwon distribution "+ strs3[0] +"in calibration: " + str);
-            		}
-            		MRCAPrior prior = new MRCAPrior();
-            		prior.isMonophyleticInput.setValue(true, prior);
-            		prior.distInput.setValue(distr, prior);
-            		prior.taxonsetInput.setValue(taxonset, prior);
-            		prior.setID(taxonset.getID() + ".prior");
-            		// should set Tree before initialising, but we do not know the tree yet...
-            		if (calibrations == null) {
-            			calibrations = new ArrayList<>();
-            		}
-            		calibrations.add(prior);
+
+            		try {
+                        MRCAPrior prior = getMRCAPrior(taxonset, strs3);
+
+                        // should set Tree before initialising, but we do not know the tree yet...
+                        if (calibrations == null) {
+                            calibrations = new ArrayList<>();
+                        }
+                        calibrations.add(prior);
+                    } catch (RuntimeException ex) {
+                        throw new RuntimeException(ex.getMessage() + "in calibration: " + str);
+                    }
             	}
             }
 
 
         } while (!str.toLowerCase().contains("end;"));
+    }
+
+    //TODO mv to somewhere easy to access ?
+    /**
+     * get a MRCAPrior object for given taxon set,
+     * from a string array which determines the distribution
+     * @param taxonset
+     * @param strs3 [0] is distribution name,
+     *              [1]-[3] for values to determine the distribution
+     * @return a MRCAPrior object
+     * @throws RuntimeException
+     */
+    public MRCAPrior getMRCAPrior(TaxonSet taxonset, String[] strs3) throws RuntimeException {
+        RealParameter[] param = new RealParameter[strs3.length];
+        for (int i = 1; i < strs3.length; i++) {
+            try {
+                param[i] = new RealParameter(strs3[i]);
+                param[i].setID("param." + i);
+            } catch (Exception  e) {
+                // ignore parsing errors
+            }
+        }
+        ParametricDistribution distr  = null;
+        switch (strs3[0]) {
+        case "normal":
+            distr = new Normal();
+            distr.initByName("mean", param[1], "sigma", param[2]);
+            distr.setID("Normal.0");
+            break;
+        case "uniform":
+            distr = new Uniform();
+            distr.initByName("lower", strs3[1], "upper", strs3[2]);
+            distr.setID("Uniform.0");
+            break;
+        case "fixed":
+            // uniform with lower == upper
+            distr = new Normal();
+            distr.initByName("mean", param[1], "sigma", "+Infinity");
+            distr.setID("Normal.0");
+            break;
+        case "offsetlognormal":
+            distr = new LogNormalDistributionModel();
+            distr.initByName("offset", strs3[1], "M", param[2], "S", param[3], "meanInRealSpace", true);
+            distr.setID("LogNormalDistributionModel.0");
+            break;
+        case "lognormal":
+            distr = new LogNormalDistributionModel();
+            distr.initByName("M", param[1], "S", param[2], "meanInRealSpace", true);
+            distr.setID("LogNormalDistributionModel.0");
+            break;
+        case "offsetexponential":
+            distr = new Exponential();
+            distr.initByName("offset", strs3[1], "mean", param[2]);
+            distr.setID("Exponential.0");
+            break;
+        case "gamma":
+            distr = new Gamma();
+            distr.initByName("alpha", param[1], "beta", param[2]);
+            distr.setID("Gamma.0");
+            break;
+        case "offsetgamma":
+            distr = new Gamma();
+            distr.initByName("offset", strs3[1], "alpha", param[2], "beta", param[3]);
+            distr.setID("Gamma.0");
+            break;
+        default:
+            throw new RuntimeException("Unknwon distribution "+ strs3[0]);
+        }
+        MRCAPrior prior = new MRCAPrior();
+        prior.isMonophyleticInput.setValue(true, prior);
+        prior.distInput.setValue(distr, prior);
+        prior.taxonsetInput.setValue(taxonset, prior);
+        prior.setID(taxonset.getID() + ".prior");
+        return prior;
     }
 
     
