@@ -27,8 +27,19 @@ public interface Loggable {
      * @param sample chain sample number
      * @param out     log stream
      */
-    void log(long sample, PrintStream out);
-
+    default void log(long sample, PrintStream out) {
+    	if (sample < Integer.MAX_VALUE) {
+    		log((int) sample, out);
+    	}
+    }
+    
+    /** For backward compatibility only: the int-version of log().
+     * 
+     * Please use log(long sample, PrintStream out) instead of log(int, PrintStream)
+     */
+    @Deprecated 
+    default void log(int sample, PrintStream out) {}
+    
     /**
      * close log. An end of log message can be left (as in End; for Nexus trees)
      *
