@@ -172,6 +172,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
     Action a_managePackages = new ActionManagePacakges();
+    Action a_clearClassPath = new ActionClearClassPath();
     Action a_appLauncher = new ActionAppLauncher();
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
@@ -426,7 +427,24 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } // actionPerformed
     }
+    
+    class ActionClearClassPath extends MyAction {
+        private static final long serialVersionUID = 1;
 
+        public ActionClearClassPath() {
+            super("Clear Class Path", "Clear class path, so it will be refreshed next time BEAUti starts. Only useful when installing packages by hand.", "ccp", -1);
+        } // c'tor
+
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+        	Utils6.saveBeautiProperty("package.path", null);
+        	JOptionPane.showMessageDialog(null, "The class path was cleared.\n"
+        			+ "Next time you start BEAUti, the class path will be re-established.\n"
+        			+ "This is only useful when you install packages by han.d\n"
+        			+ "Otherwise, this is harmless, but onlys potentially slows restarting BEAUti.");
+        } // actionPerformed
+    }
+    
     class ActionAppLauncher extends MyAction {
         private static final long serialVersionUID = 1;
 
@@ -821,6 +839,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         templateMenu.addSeparator();
         templateMenu.add(a_template);
         fileMenu.add(a_managePackages);
+        fileMenu.add(a_clearClassPath);
         fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
