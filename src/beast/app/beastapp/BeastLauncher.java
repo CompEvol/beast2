@@ -262,12 +262,9 @@ public class BeastLauncher {
 		String[] version = javaVersion.split("\\.");
 		if (version.length > 2) {
 			try {
-				int majorVersion = Integer.parseInt(version[0]);
-				if (majorVersion == 1) {
-					majorVersion = Integer.parseInt(version[1]);
-				}
-				if (majorVersion != 8) {
-					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8,<br>"
+				int majorVersion = Utils6.getMajorJavaVersion();
+				if (majorVersion != 8 && majorVersion != 9) {
+					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8 or 9,<br>"
 							+ "but the current version is " + majorVersion + ".<br><br>"
 							+ "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
 							+ "Continuing, but expect the unexpected.</html>";
@@ -452,10 +449,6 @@ public class BeastLauncher {
 
 	private static String determinePackagePath() throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
-		if (PackageManager.getBEASTInstallDir() != null) {
-			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
-		}
 		Set<String> classes = new HashSet<String>();
 		for (String jarDirName : PackageManager.getBeastDirectories()) {
 			try {
@@ -493,10 +486,14 @@ public class BeastLauncher {
 			}
 
 		}
+		if (PackageManager.getBEASTInstallDir() != null) {
+			buf.append(File.pathSeparator);
+			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.jar", "UTF-8"));
+		}
 		return buf.toString();
 	}
 
-	private static String addJarsToPath(String packageDirName, Set<String> classes) {
+	private static String addJarsToPath(String packageDirName, Set<String> classes) throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
 		File jarDir = new File(packageDirName + "/lib");
 		if (!jarDir.exists()) {
@@ -535,7 +532,8 @@ public class BeastLauncher {
 					}
 					alreadyLoaded = false;
 					if (!alreadyLoaded) {
-						buf.append(File.pathSeparator + jarDir.getAbsolutePath() + "/" + fileName);
+						buf.append(File.pathSeparator);
+						buf.append(URLDecoder.decode(jarDir.getAbsolutePath() + "/" + fileName, "UTF-8"));
 						classes.addAll(jarClasses);
 					}
 				}
@@ -594,7 +592,7 @@ public class BeastLauncher {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
             }
             cmd.add("-cp");
-            cmd.add(classPath);
+            cmd.add(classPath.substring(1, classPath.length() - 1));
             cmd.add(main);
 
             for (String arg : args) {
@@ -611,33 +609,35 @@ public class BeastLauncher {
             
             // Start the process and wait for it to finish.
             final Process process = pb.start();
-            Thread inputThread = new Thread() {
-            	public void run() {
-                    OutputStream out = process.getOutputStream();
-                    byte [] buf = new byte[2048];
-            		while (true) {
-            			try {
-		                    int ni = System.in.available();
-		                    if (ni > 0) {
-		                      int c = System.in.read(buf, 0, Math.min(ni, buf.length));
-		                      System.err.print((char) c);
-		                      out.write(buf, 0, c);
-		                      out.flush();
-		                    }	 
-            			} catch (IOException e) {
-            				e.printStackTrace();
-            			}
-                		try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-             		}
-            	}
-            };
-            inputThread.start();
-            
+            Thread inputThread = null;
             boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
+            if (main.equals("beast.app.beastapp.BeastMain") && waitToExit) {
+            	inputThread = new Thread() {
+	            	public void run() {
+	                    OutputStream out = process.getOutputStream();
+	                    byte [] buf = new byte[2048];
+	            		while (true) {
+	            			try {
+			                    int ni = System.in.available();
+			                    if (ni > 0) {
+			                      int c = System.in.read(buf, 0, Math.min(ni, buf.length));
+			                      System.err.print((char) c);
+			                      out.write(buf, 0, c);
+			                      out.flush();
+			                    }	 
+	            			} catch (IOException e) {
+	            				e.printStackTrace();
+	            			}
+	                		try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+	             		}
+	            	}
+	            };
+	            inputThread.start();
+            }
 //waitToExit = true;            
             if (waitToExit) {
 //PrintStream debug = new PrintStream(new File("debug.log"));            	
@@ -654,7 +654,9 @@ public class BeastLauncher {
 	            if (exitStatus != 0) {
 	            	System.err.println(process.getErrorStream());
 	            }
-	            inputThread.stop();
+	            if (main.equals("beast.app.beastapp.BeastMain")) {
+	            	inputThread.stop();
+	            }
             }
         } catch (Exception e) {
             e.printStackTrace();

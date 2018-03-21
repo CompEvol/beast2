@@ -1,6 +1,6 @@
 package beast.app.beauti;
 
-import beast.app.util.Arguments;
+
 import beast.app.util.Utils;
 import beast.core.Description;
 import beast.util.PackageManager;
@@ -18,7 +18,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;

@@ -496,7 +496,7 @@ public class PackageManager {
         }
 
         // make sure the class path is updated next time BEAST is started
-        Utils6.saveBeautiProperty("packages.url", null);
+        Utils6.saveBeautiProperty("package.path", null);
         return dirList;
     }
 
@@ -594,7 +594,7 @@ public class PackageManager {
         }
         
         // make sure the class path is updated next time BEAST is started
-        Utils6.saveBeautiProperty("packages.url", null);
+        Utils6.saveBeautiProperty("package.path", null);
         return dirName;
     }
 
@@ -912,7 +912,8 @@ public class PackageManager {
             }
         }
 
-        dirs.addAll(subDirs);
+        subDirs.addAll(dirs);
+        dirs = subDirs;
         dirs.addAll(getLatestBeastArchiveDirectories(dirs));
         return dirs;
     }
