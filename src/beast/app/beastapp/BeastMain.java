@@ -571,7 +571,7 @@ public class BeastMain {
         }
 
         if (inputFile != null && inputFile.getParent() != null && working) {
-            System.setProperty("file.name.prefix", inputFile.getParentFile().getAbsolutePath());
+            System.setProperty("file.name.prefix", inputFile.getParentFile().getAbsolutePath() + File.separator);
         }
 
         if (window) {
