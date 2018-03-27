@@ -109,7 +109,9 @@ public class Coalescent extends TreeDistribution {
             final double finishTime = startTime + duration;
 
             final double intervalArea = popSizeFunction.getIntegral(startTime, finishTime);
-            if (intervalArea == 0 && duration != 0) {
+            if (intervalArea == 0 && duration > 1e-10) {
+            	/* the above test used to be duration != 0, but that leads to numerical issues on resume
+            	 * (https://github.com/CompEvol/beast2/issues/329) */
                 return Double.NEGATIVE_INFINITY;
             }
             final int lineageCount = intervals.getLineageCount(i);
