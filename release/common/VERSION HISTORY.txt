@@ -1,10 +1,37 @@
-                    BEAST v2.4.8 2018
+                    BEAST v2.5.0 2018
                  Beast 2 development team 2011-2018
 Version History
-Last updated: January 2018
+Last updated: April 2018
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.5.0
+        BEAST & friends are now compatible with Java 8, 9 and 10.
+        All appllications start a bit faster now package discovery is cached.
+        Versions available with Java bundled
+        
+BEAST   
+        A command line option is added to parameterise XML files.
+        Maximum MCMC length was 2147483647 is now 9223372036854775807.
+        Fix for resume of coalescent, which sometimes failed.
+        RPNCalculator logs starting from 1 consistent with multi dimensional parameters
+
+BEAUti
+        Facility to automatic update packages when BEAUti is started
+        Tip dates panel supports wider range of formats
+        Added clear classpath menu 
+        More robust NEXUS parsing
+        Allow top level templates, to easily switch between say MCMC and nested sampling
+        Bug fix for unlimited prior distributions to be changed
+        More robust substitution model initialisation
+        
+Utilities: 
+        Renamed appstore => applauncher to preven confusion with OS X app store.
+        Renamed addonmanager => packagemanager 
+        Packagemanager has an -update option to check for updates and -updatenow to install without asking
+        Better progress reporting on logcombiner, treeannotator, loganalyser
+
+
 Version 2.4.8 January 2018
 BEAST   Ensure BeagleTreeLikelihood gives correct likelihood with RNA data.
 

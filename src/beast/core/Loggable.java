@@ -30,6 +30,8 @@ public interface Loggable {
     default void log(long sample, PrintStream out) {
     	if (sample < Integer.MAX_VALUE) {
     		log((int) sample, out);
+    	} else {
+    		throw new IllegalArgumentException("Loggable::log(long,Prinstream) was not implemented: cannot log samples larger than " + Integer.MAX_VALUE);
     	}
     }
     

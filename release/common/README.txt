@@ -1,7 +1,7 @@
-                    BEAST v2.4.8 2018
+                    BEAST v2.5.0 2018
                  Beast 2 development team 2011-2018
 
-Last updated: January 2018
+Last updated: April 2018
 
 Contents:
 1) INTRODUCTION
@@ -123,7 +123,8 @@ BEAST arguments:
     -help Print this information and stop
     -version Print version and stop
     -strictversions Use only package versions as specified in the 'required' attribute
-
+    -D attribute-value pairs to be replaced in the XML, e.g., -D "arg1=10,arg2=20"
+    
 For example:
 
      java -jar lib/beast.jar -seed 123456 -overwrite input.xml
