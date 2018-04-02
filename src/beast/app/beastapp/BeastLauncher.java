@@ -82,7 +82,7 @@ public class BeastLauncher {
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		// deal with special characters and spaces in path
 		launcherJar = URLDecoder.decode(launcherJar, "UTF-8");
-		System.err.println("jardir = " + launcherJar);
+		//System.err.println("jardir = " + launcherJar);
 		File jarDir0 = new File(launcherJar).getParentFile();
 		while ((!foundJavaJarFile) && (jarDir0 != null)) {
 			foundJavaJarFile = checkForBEAST(jarDir0);
@@ -194,10 +194,10 @@ public class BeastLauncher {
 	}
 
 	private static boolean checkForBEAST(File jarDir) throws IOException {
-		System.err.println("Checking out " + jarDir.getAbsolutePath());
+		//System.err.println("Checking out " + jarDir.getAbsolutePath());
 		boolean foundOne = false;
 		if (jarDir.exists()) {
-			System.err.println(jarDir.getAbsolutePath() + "exists");
+			// System.err.println(jarDir.getAbsolutePath() + "exists");
 			URL url = new URL("file://" + (isWindows() ? "/" : "") + jarDir.getAbsolutePath() + "/beast.jar");
 			if (new File(jarDir.getAbsoluteFile() + File.separator + "beast.jar").exists()) {
 				File versionFile = new File(jarDir.getParent() + pathDelimiter + "version.xml");
@@ -257,36 +257,27 @@ public class BeastLauncher {
 
 	/** make sure we run Java version 8 or better **/
 	static protected boolean javaVersionCheck(String app) {
-		String javaVersion = System.getProperty("java.version");
-		// javaVersion should be something like "1.7.0_25"
-		String[] version = javaVersion.split("\\.");
-		if (version.length > 2) {
-			try {
-				int majorVersion = Utils6.getMajorJavaVersion();
-				if (majorVersion != 8 && majorVersion != 9) {
-					String JAVA_VERSION_MSG = "<html>" + app + " requires Java version 8 or 9,<br>"
-							+ "but the current version is " + majorVersion + ".<br><br>"
-							+ "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
-							+ "Continuing, but expect the unexpected.</html>";
-					if (!java.awt.GraphicsEnvironment.isHeadless()) {
-						JOptionPane.showMessageDialog(null, JAVA_VERSION_MSG);
-					} else {
-						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<br>", "\n");
-						JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<[^<]*>", "");
-						System.err.println(JAVA_VERSION_MSG);
-					}
-					return true;
+		try {
+			int majorVersion = Utils6.getMajorJavaVersion();
+			if (majorVersion <= 8) {
+				String JAVA_VERSION_MSG = "<html>" + app + " requires Java version at least 8<br>"
+						+ "but the current version is " + majorVersion + ".<br><br>"
+						+ "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
+						+ "Continuing, but expect the unexpected.</html>";
+				if (!java.awt.GraphicsEnvironment.isHeadless()) {
+					JOptionPane.showMessageDialog(null, JAVA_VERSION_MSG);
+				} else {
+					JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<br>", "\n");
+					JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<[^<]*>", "");
+					System.err.println(JAVA_VERSION_MSG);
 				}
-			} catch (NumberFormatException e) {
-				// We only get here if the JVM does not return the expected
-				// string format when asked for java.version.
-				// hope for the best
+				return true;
 			}
-			return true;
+		} catch (NumberFormatException e) {
+			// We only get here if the JVM does not return the expected
+			// string format when asked for java.version.
+			// hope for the best
 		}
-		// We only get here if the JVM does not return the expected
-		// string format when asked for java.version.
-		// hope for the best
 		return true;
 	}
 
@@ -609,6 +600,7 @@ public class BeastLauncher {
             
             // Start the process and wait for it to finish.
             final Process process = pb.start();
+
             Thread inputThread = null;
             boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
             if (main.equals("beast.app.beastapp.BeastMain") && waitToExit) {
@@ -638,16 +630,13 @@ public class BeastLauncher {
 	            };
 	            inputThread.start();
             }
-//waitToExit = true;            
+
             if (waitToExit) {
-//PrintStream debug = new PrintStream(new File("debug.log"));            	
 	            int c;
 	            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 	            while ((c = input.read()) != -1) {
 	                System.out.print((char)c);
-//	                debug.print((char) c);
 	            }
-//debug.close();	            
 	            input.close();
 	
 	            final int exitStatus = process.waitFor();

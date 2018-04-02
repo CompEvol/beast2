@@ -1183,6 +1183,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public static Beauti main2(String[] args) {
     	Utils6.startSplashScreen();
+    	Utils6.logToSplashScreen("Initialising BEAUti");
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {

@@ -746,7 +746,7 @@ public class PackageManager {
 		try {
 			u = Class.forName("beast.app.beastapp.BeastMain").getProtectionDomain().getCodeSource().getLocation();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			return null;
 		}
 		String s = u.getPath();
@@ -1017,7 +1017,7 @@ public class PackageManager {
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws IOException {
-    	Utils6.logToSplashScreen("PackageManager::loadExternalJars");
+    	Utils6.logToSplashScreen("PackageManager::processDeleteList");
         processDeleteList();
 
     	Utils6.logToSplashScreen("PackageManager::addInstalledPackages");
@@ -1033,7 +1033,7 @@ public class PackageManager {
         // way with java 8 when the -Dbeast.load.jars=true
         // directive is given. This can be useful for developers
         // but generally slows down application starting.
-        if (System.getProperty("beast.load.jars") == null || Utils6.getMajorJavaVersion() != 8) {
+        if (Boolean.getBoolean("beast.load.jars") == false || Utils6.getMajorJavaVersion() != 8) {
             externalJarsLoaded = true;
         	Utils6.logToSplashScreen("PackageManager::findDataTypes");
             findDataTypes();

@@ -315,6 +315,12 @@ public class Utils6 {
 			}
 			return majorVersion;
 		}
+		try {
+			int majorVersion = Integer.parseInt(javaVersion);
+			return majorVersion;
+		} catch (NumberFormatException e) {
+			// ignore
+		}
 		return -1;
     }
 }
