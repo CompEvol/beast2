@@ -96,12 +96,12 @@ public class Logger extends BEASTObject {
     /**
      * offset for the sample number, which is non-zero when a chain is resumed *
      */
-    static int sampleOffset = -1;
+    static long sampleOffset = -1;
 
     /**
      * number of samples between logs *
      */
-    int every = 1;
+    long every = 1;
 
     /**
      * stream to log to
@@ -418,7 +418,7 @@ public class Logger extends BEASTObject {
                             }
                             fin.close();
                             assert str != null;
-                            final int sampleOffset = Integer.parseInt(str.split("\\s")[0]);
+                            final long sampleOffset = Long.parseLong(str.split("\\s")[0]);
                             if (Logger.sampleOffset > 0 && sampleOffset != Logger.sampleOffset) {
                                 throw new RuntimeException("Error 400: Cannot resume: log files do not end in same sample number");
                             }
@@ -465,7 +465,7 @@ public class Logger extends BEASTObject {
                                  throw new RuntimeException("Error 402: empty tree log file " + fileName + "? (check if there is a back up file " + fileName + ".bu)");
                             }
                             final String str = strLast.split("\\s+")[1];
-                            final int sampleOffset = Integer.parseInt(str.substring(6));
+                            final long sampleOffset = Long.parseLong(str.substring(6));
                             if (Logger.sampleOffset > 0 && sampleOffset != Logger.sampleOffset) {
                                 //final boolean ok1 = treeFileBackup.renameTo(new File(fileName));        assert ok1;
                                 Files.move(treeFileBackup.toPath(), new File(fileName).toPath(), StandardCopyOption.ATOMIC_MOVE);
@@ -623,7 +623,7 @@ public class Logger extends BEASTObject {
         return m_out;
     }
 
-    public static int getSampleOffset() {
+    public static long getSampleOffset() {
         return sampleOffset < 0 ? 0 : sampleOffset;
     }
 
