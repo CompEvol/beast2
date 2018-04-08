@@ -259,7 +259,7 @@ public class BeastLauncher {
 	static protected boolean javaVersionCheck(String app) {
 		try {
 			int majorVersion = Utils6.getMajorJavaVersion();
-			if (majorVersion <= 8) {
+			if (majorVersion < 8) {
 				String JAVA_VERSION_MSG = "<html>" + app + " requires Java version at least 8<br>"
 						+ "but the current version is " + majorVersion + ".<br><br>"
 						+ "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "

@@ -84,7 +84,7 @@ public class PackageManager {
     public final static String TO_INSTALL_LIST_FILE = "toInstallList";
     public final static String BEAST_PACKAGE_NAME = "BEAST";
 
-    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
+    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages2.5.xml";
 //    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
     public final static String ARCHIVE_DIR = "archive";
     // flag to indicate archive directory and version numbers in directories are required
