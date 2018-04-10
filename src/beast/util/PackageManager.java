@@ -613,14 +613,14 @@ public class PackageManager {
      * 
      */
     private static void closeClassLoader() {
-    	try {
+    	//try {
     		if (Utils6.isWindows()) {
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
-    			sysLoader.close();
+    			// sysLoader.close(); <= only since Java 1.7
     		}
-		} catch (IOException e) {
-			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
-		}
+		//} catch (IOException e) {
+		//	Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		//}
 		
 	}
 
@@ -1908,7 +1908,7 @@ public class PackageManager {
 	                                Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
 	                            } else {
 	                                Log.info.println("Un-installation aborted: " + name + " is used by these other packages: " +
-	                                        String.join(", ", deps) + ".");
+	                                        join(", ", deps) + ".");
 	                                Log.info.println("Remove these packages first.");
 	                                System.exit(1);
 	                            }
@@ -1928,7 +1928,17 @@ public class PackageManager {
         }
     }
 
-    /** keep track of which class comes from a particular package.
+    private static String join(String string, List<String> deps) {
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < deps.size(); i++) {
+			buf.append(deps.get(i));
+			buf.append(',');
+		}
+		buf.deleteCharAt(buf.length() - 1);
+		return buf.toString();
+	}
+
+	/** keep track of which class comes from a particular package.
      * It maps a full class name onto a package name + " v" + package version
      * e.g. "bModelTest v0.3.2"
      */
