@@ -929,7 +929,7 @@
         <mkdir dir="${Mac_package_dir}" />
 
         <copy todir="${Mac_package_dir}/bin">
-            <fileset dir="${Linux_dir}/bin" />
+            <fileset dir="${Linux_dir}/jrebin" />
         </copy>
         <chmod dir="${Mac_package_dir}/bin" perm="755" includes="**/**" />
 
@@ -941,7 +941,10 @@
             </fileset>
         </copy>
         <exec executable="cp">
-		    <arg line="-R ../jre1.8.0_161.jre ${Mac_package_dir}/jre1.8.0_161.jre"/>
+		    <arg line="-R ../jre1.8.0_161.jre/Contents/Home ${Mac_package_dir}/jre1.8.0_161"/>
+		</exec>
+        <exec executable="gcc">
+		    <arg line="release/Mac/launch.c -o JavaAppLauncher"/>
 		</exec>
 		<!--copy todir="${Mac_package_dir}/doc">
             <fileset dir="${common_dir}/doc" />
@@ -983,6 +986,9 @@
             <argument value="-working"/>
             <argument value="-options"/>
         </bundleapp>
+        <delete file="${Mac_package_dir}/BEAST.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/BEAST.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/BEAST.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="--deep"/>
@@ -1011,6 +1017,9 @@
             <option value="-Duser.language=en"/>            
             <argument value="-capture"/>
         </bundleapp>
+        <delete file="${Mac_package_dir}/BEAUti.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/BEAUti.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/BEAUti.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="--deep"/>
@@ -1037,6 +1046,9 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
         </bundleapp>
+        <delete file="${Mac_package_dir}/LogCombiner.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/LogCombiner.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/LogCombiner.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="--deep"/>
@@ -1063,6 +1075,9 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
         </bundleapp>
+        <delete file="${Mac_package_dir}/TreeAnnotator.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/TreeAnnotator.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/TreeAnnotator.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="--deep"/>
@@ -1088,6 +1103,9 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
         </bundleapp>
+        <delete file="${Mac_package_dir}/DensiTree.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/DensiTree.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/DensiTree.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="-s"/>
@@ -1113,6 +1131,9 @@
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
         </bundleapp>
+        <delete file="${Mac_package_dir}/AppLauncher.app/Contents/MacOS/JavaAppLauncher"/>
+        <copy file="JavaAppLauncher" todir="${Mac_package_dir}/AppLauncher.app/Contents/MacOS/"/>
+        <chmod dir="${Mac_package_dir}/AppLauncher.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
 
         <exec executable="codesign">
             <arg value="--deep"/>

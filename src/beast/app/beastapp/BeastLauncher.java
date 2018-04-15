@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -564,8 +563,9 @@ public class BeastLauncher {
             if (Utils6.isMac()) {
             	// check whether a bundled jre is present
             	BeastLauncher clu = new BeastLauncher();
-            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-            	String jreDir = launcherJar + "/../jre1.8.0_161.jre/Contents/Home";
+            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();            	
+            	String jreDir = URLDecoder.decode(new File(launcherJar).getParent(), "UTF-8") + "/../jre1.8.0_161/";
+            	            	
             	if (new File(jreDir).exists()) {
 	                cmd.add(jreDir + "bin/java");
             	}
