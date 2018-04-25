@@ -1,27 +1,21 @@
 package beast.app.tools;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
+import beast.app.BEASTVersion2;
+import beast.app.util.Utils;
+import beast.core.util.Log;
+import beast.util.LogAnalyser;
+import jam.console.ConsoleApplication;
+
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import javax.swing.JFrame;
-import javax.swing.table.TableCellEditor;
-
-import beast.app.BEASTVersion2;
-import beast.app.util.Utils;
-import beast.core.util.Log;
-import beast.util.LogAnalyser;
-import jam.console.ConsoleApplication;
 
 
 /**
@@ -270,7 +264,7 @@ public class LogCombiner extends LogAnalyser {
         	m_out.println("End;");
         }
         m_out.close();
-        log("Wrote " + (state/m_nSampleInterval + 1) + " lines to " + m_sFileOut);
+        log("Wrote " + (state/m_nSampleInterval + 1) + " lines to " + m_sFileOut + "\n");
     }
 
     protected long readTreeLogFile(String fileName, int burnInPercentage, long state) throws IOException {
