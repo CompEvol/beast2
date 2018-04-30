@@ -76,6 +76,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     JComboBox<String> relativeToComboBox;
     List<String> taxa;
     Object[][] tableData;
+    Boolean[] recordValid;
     JTable table;
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
     JScrollPane scrollPane;
@@ -146,6 +147,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         taxa = traitSet.taxaInput.get().asStringList();
         String[] columnData = new String[]{"Name", "Date (raw value)", "Height"};
         tableData = new Object[taxa.size()][3];
+        recordValid = new Boolean[taxa.size()];
         convertTraitToTableData();
         // set up table.
         // special features: background shading of rows
@@ -158,8 +160,12 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
                 Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
                 //even index, selected or not selected
+                comp.setForeground(Color.black);
                 if (isCellSelected(Index_row, Index_col)) {
                     comp.setBackground(Color.lightGray);
+                } else if (!recordValid[Index_row]) {
+                    comp.setForeground(Color.WHITE);
+                    comp.setBackground(Color.RED);
                 } else if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
                     comp.setBackground(new Color(237, 243, 255));
                 } else {
@@ -264,36 +270,56 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
             }
         }
 
-        try {
+        boolean numericParseError = false;
+        boolean dateParseError = false;
+        double [] convertedValues = new double[taxa.size()];
+
+        for (int i=0; i<tableData.length; i++) {
+            recordValid[i] = true;
+
+            try {
+                convertedValues[i] = traitSet.convertValueToDouble((String) tableData[i][1]);
+            } catch (DateTimeParseException ex) {
+                dateParseError = true;
+                recordValid[i] = false;
+            } catch (IllegalArgumentException ex) {
+                numericParseError = true;
+                recordValid[i] = false;
+            }
+        }
+
+        if (dateParseError) {
+            JOptionPane.showMessageDialog(this,
+                    "<html>Error interpreting one or more trait values as a formatted date or numeric value.<br><br>" +
+                            "Problem taxa will be highlighted in table.</html>",
+                    "Date parsing error",
+                    JOptionPane.ERROR_MESSAGE);
+            clearTable(true);
+        } else if (numericParseError) {
+            JOptionPane.showMessageDialog(this,
+                    "Error interpreting one or more trait values as a numeric value.<br><br>" +
+                            "Problem taxa will be highlighted in table.</html>",
+                    "Date parsing error",
+                    JOptionPane.ERROR_MESSAGE);
+            clearTable(true);
+        } else {
             if (traitSet.traitNameInput.get().equals(TraitSet.DATE_BACKWARD_TRAIT)) {
                 Double minDate = Double.MAX_VALUE;
                 for (int i = 0; i < tableData.length; i++) {
-                    minDate = Math.min(minDate, traitSet.convertValueToDouble((String) tableData[i][1]));
+                    minDate = Math.min(minDate, convertedValues[i]);
                 }
                 for (int i = 0; i < tableData.length; i++) {
-                    tableData[i][2] = traitSet.convertValueToDouble((String) tableData[i][1]) - minDate;
+                    tableData[i][2] = convertedValues[i] - minDate;
                 }
             } else {
                 Double maxDate = 0.0;
                 for (int i = 0; i < tableData.length; i++) {
-                    maxDate = Math.max(maxDate, traitSet.convertValueToDouble((String) tableData[i][1]));
+                    maxDate = Math.max(maxDate, convertedValues[i]);
                 }
                 for (int i = 0; i < tableData.length; i++) {
-                    tableData[i][2] = maxDate - traitSet.convertValueToDouble((String) tableData[i][1]);
+                    tableData[i][2] = maxDate - convertedValues[i];
                 }
             }
-        } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Error interpreting one or more trait values as a formatted date or numeric value.",
-                    "Date parsing error",
-                    JOptionPane.ERROR_MESSAGE);
-            clearTable(true);
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Error interpreting one or more trait values as a numeric value.",
-                    "Date parsing error",
-                    JOptionPane.ERROR_MESSAGE);
-            clearTable(true);
         }
 
         if (table != null) {
