@@ -76,7 +76,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
     JComboBox<String> relativeToComboBox;
     List<String> taxa;
     Object[][] tableData;
-    Boolean[] recordValid;
+    boolean[] recordValid;
     JTable table;
     String m_sPattern = ".*(\\d\\d\\d\\d).*";
     JScrollPane scrollPane;
@@ -147,7 +147,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         taxa = traitSet.taxaInput.get().asStringList();
         String[] columnData = new String[]{"Name", "Date (raw value)", "Height"};
         tableData = new Object[taxa.size()][3];
-        recordValid = new Boolean[taxa.size()];
+        recordValid = new boolean[taxa.size()];
         convertTraitToTableData();
         // set up table.
         // special features: background shading of rows
