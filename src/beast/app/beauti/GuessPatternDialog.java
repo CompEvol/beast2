@@ -211,7 +211,7 @@ public class GuessPatternDialog extends JDialog {
         JButton btnHelp = new JButton("?");
         btnHelp.setToolTipText("Show format of trait file");
         btnHelp.addActionListener(e -> WrappedOptionPane.showWrappedMessageDialog(
-                guessPanel, TRAIT_FILE_HELP_MESSAGE, null));
+                guessPanel, TRAIT_FILE_HELP_MESSAGE));
         GridBagConstraints gbc_btnHelp = new GridBagConstraints();
         gbc_btnHelp.insets = new Insets(0, 0, 5, 5);
         gbc_btnHelp.gridx = 4;
@@ -221,9 +221,7 @@ public class GuessPatternDialog extends JDialog {
 
         chckbxAddFixedValue = new JCheckBox("Add fixed value");
         chckbxAddFixedValue.setName("Add fixed value");
-        chckbxAddFixedValue.addActionListener(e -> {
-                updateFields();
-            });
+        chckbxAddFixedValue.addActionListener(e -> updateFields());
 
         separator_5 = new JSeparator();
         separator_5.setPreferredSize(new Dimension(5,1));
