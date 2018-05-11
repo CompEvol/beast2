@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 
 public class TipDatesInputEditor extends BEASTObjectInputEditor {
 
@@ -488,28 +489,41 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
         guessButton.addActionListener(e -> {
                 GuessPatternDialog dlg = new GuessPatternDialog(null, m_sPattern);
                 dlg.allowAddingValues();
-                String trait = "";
+                StringBuilder traitBuilder = new StringBuilder();
                 switch (dlg.showDialog("Guess dates")) {
                     case canceled:
                         return;
+
                     case trait:
-                        trait = dlg.getTrait();
+                        Map<String,String> traitMap = dlg.getTraitMap();
+                        for (String taxon : taxa) {
+                            if (!traitMap.containsKey(taxon))
+                                continue;
+
+                            if (traitBuilder.length()>0) {
+                                traitBuilder.append(",");
+                            }
+
+                            traitBuilder.append(taxon).append("=")
+                                    .append(traitMap.get(taxon));
+                        }
                         break;
+
                     case pattern:
                         for (String taxon : taxa) {
                             String match = dlg.match(taxon);
                             if (match == null) {
                                 return;
                             }
-                            if (trait.length() > 0) {
-                                trait += ",";
+                            if (traitBuilder.length() > 0) {
+                                traitBuilder.append(",");
                             }
-                            trait += taxon + "=" + match;
+                            traitBuilder.append(taxon).append("=").append(match);
                         }
                         break;
                 }
                 try {
-                    traitSet.traitsInput.setValue(trait, traitSet);
+                    traitSet.traitsInput.setValue(traitBuilder.toString(), traitSet);
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }

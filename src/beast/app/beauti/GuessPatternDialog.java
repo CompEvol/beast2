@@ -4,6 +4,8 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -53,10 +55,10 @@ public class GuessPatternDialog extends JDialog {
         canceled, pattern, trait
     };
 
-    public String trait = null;
+    public Map<String,String> traitMap;
 
-    public String getTrait() {
-        return trait;
+    public Map<String,String> getTraitMap() {
+        return traitMap;
     }
 
     Component m_parent;
@@ -540,28 +542,19 @@ public class GuessPatternDialog extends JDialog {
             pattern = textRegExp.getText();
         }
         if (readFromFile.getModel() == group.getSelection()) {
+            traitMap = new HashMap<>();
             try {
                 BufferedReader fin = new BufferedReader(new FileReader(txtFile.getText()));
-                StringBuffer buf = new StringBuffer();
-                // do not eat up header -- it might contain a useful entry, 
-                // but if not, it will not hurt
-                // fin.readLine();
-                // process data
                 while (fin.ready()) {
-                    String str = fin.readLine();
-                    str = str.replaceFirst("\t", "=") + ",";
+                    String[] strArray = fin.readLine().trim().split("\t");
                     // only add entries that are non-empty
-                    if (str.indexOf("=") > 0 && !str.matches("^\\s+=.*$")) {
-                        buf.append(str);
+                    if (strArray.length == 2) {
+                        traitMap.put(strArray[0], strArray[1]);
                     }
                 }
                 fin.close();
-                trait = buf.toString().trim();
-                while (trait.endsWith(",")) {
-                    trait = trait.substring(0, trait.length() - 1).trim();
-                }
-                
-               if (trait.trim().length() == 0) {
+
+               if (traitMap.isEmpty()) {
             	   JOptionPane.showMessageDialog(m_parent, "Could not find trait information in the file. " +
             			   "Perhaps this is not a tab-delimited but space file?");
                }

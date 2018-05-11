@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.DocumentEvent;
@@ -294,8 +293,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
                 e.printStackTrace();
             }
         case trait:
-        	String trait = dlg.getTrait();
-        	parseTrait(trait);
+        	parseTrait(dlg.getTraitMap());
             break;
         }
         m_lineageset.clear();
@@ -397,15 +395,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
 		return set;
 	}
 
-	void parseTrait(String trait) {
-    	Map<String,String> traitmap = new HashMap<>();
-    	for (String line : trait.split(",")) {
-    		String [] strs = line.split("=");
-    		if (strs.length == 2) {
-    			traitmap.put(strs[0].trim(), strs[1].trim());
-    		}
-    	}
-    	
+	void parseTrait(Map<String,String> traitMap) {
         m_taxonset.clear();
 
         Set<Taxon> taxa = new HashSet<>();
@@ -427,7 +417,7 @@ public class TaxonSetInputEditor extends InputEditor.Base {
         List<String> unknowns = new ArrayList<>();
         for (Taxon taxon : taxa) {
             if (!(taxon instanceof TaxonSet)) {
-                String match = traitmap.get(taxon.getID());
+                String match = traitMap.get(taxon.getID());
                 if (match == null) {
                 	match = "UNKNOWN";
                 	unknowns.add(taxon.getID());
