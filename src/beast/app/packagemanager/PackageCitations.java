@@ -1,5 +1,6 @@
 package beast.app.packagemanager;
 
+import beast.app.util.Arguments;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Citation;
@@ -23,6 +24,12 @@ import java.util.jar.JarFile;
 
 /**
  * Print the citation annotated in a class inherited from BEASTObject.
+ * Note: The current @Citation is automatically inherited.
+ * If the class has no @Citation but its parent class has,
+ * then it will use the same citation as its parent class.
+ *
+ * Usage: PackageCitations <-instAll>
+ *     -instAll use PackageManager to update/install all packages
  * @author Walter Xie
  */
 public class PackageCitations {
@@ -224,9 +231,9 @@ public class PackageCitations {
         //TODO
     }
 
-    // update/install all packages
+    // use PackageManager to update/install all packages
     private static void installOrUpdateAllPackages(Map<String, Package> packageMap) throws IOException {
-        Log.info.println("Start update/install all packages ...");
+        Log.info.println("\nStart update/install all packages ...\n");
         for (Package aPackage : packageMap.values()) {
             Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
             // always latest version
@@ -296,12 +303,24 @@ public class PackageCitations {
 
     // only work for BEASTObject
     public static void main(String[] args) throws IOException {
+        Arguments arguments = new Arguments(
+                new Arguments.Option[]{
+                        new Arguments.Option("instAll",
+                                "Be careful, it will update/install all available packages."),
+                });
+
+        try {
+            arguments.parseArguments(args);
+        } catch (Arguments.ArgumentException e) {
+            e.printStackTrace();
+        }
+
         //****** find all installed and available packages ******//
         Map<String, Package> packageMap = getInstalledAvailablePackages();
         if (packageMap == null) return;
 
         //****** update/install all packages ******//
-        if (false)
+        if (arguments.hasOption("instAll"))
             installOrUpdateAllPackages(packageMap);
 
         //****** list all citations ******//
@@ -322,7 +341,7 @@ public class PackageCitations {
         }
 
         Log.info.println("====== Summary ======\n");
-        Log.info.println("Count " + packageMap.size() + " BEAST packages.");
+        Log.info.println("Find " + packageMap.size() + " BEAST packages, processed " + processedPkgMap.size() + ".");
         Log.info.println("Find total " + cc + " cited BEAST classes. \n");
     }
 
