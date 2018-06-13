@@ -61,6 +61,31 @@ public class GuessPatternDialog extends JDialog {
         return traitMap;
     }
 
+    /**
+     * Constructs and returns a string containing a comma-delimited list of
+     * taxonName=traitValue pairs, as used by the TraitSet initializer.
+     *
+     * This method is deprecated: use getTraitMap instead.
+     *
+     * @return constructed string
+     */
+    @Deprecated
+    public String getTrait() {
+       StringBuilder sb = new StringBuilder();
+
+       boolean isFirst = true;
+       for (String taxonName : traitMap.keySet()) {
+           if (isFirst)
+               isFirst = false;
+           else
+               sb.append(",");
+
+           sb.append(taxonName).append("=").append(traitMap.get(taxonName));
+       }
+
+       return sb.toString();
+    }
+
     Component m_parent;
     JPanel guessPanel;
     ButtonGroup group;
