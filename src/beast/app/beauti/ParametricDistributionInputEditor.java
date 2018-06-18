@@ -295,7 +295,8 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
                 g.drawString("accurate", x, y + 4*fontHeight);
             }
             try {
-                g.drawString("mean " + format(m_distr.getMean()), graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + fontHeight);
+                g.drawString("mean " + format(m_distr.getMean()),
+                        graphWidth * 3/ 4 + leftMargin, TOP_MARGIN + graphHeight + bottomMargin + fontHeight);
             } catch (RuntimeException e) {
                 // catch in case it is not implemented.
             }

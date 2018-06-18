@@ -91,7 +91,7 @@ public class LaplaceDistribution extends ParametricDistribution {
     } // class LaplaceImpl
     
     @Override
-    public double getMean() {
+    protected double getMeanWithoutOffset() {
     	return mu;
     }
 

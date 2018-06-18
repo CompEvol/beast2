@@ -96,7 +96,7 @@ public class InverseGamma extends ParametricDistribution {
 
 
     @Override
-    public double getMean() {
+    public double getMeanWithoutOffset() {
     	return betaInput.get().getValue() / (alphaInput.get().getValue() - 1.0);
     }
     

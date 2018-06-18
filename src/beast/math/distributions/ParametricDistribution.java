@@ -187,13 +187,17 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     /**
      * @return  offset of distribution.
      */
-    private double getOffset() {
+    public double getOffset() {
         return offsetInput.get();
     }
 
+    protected double getMeanWithoutOffset() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
     /** returns mean of distribution, if implemented **/
-    public double getMean() {
-    	throw new RuntimeException("Not implemented yet");
+    public final double getMean() {
+        return getMeanWithoutOffset() + getOffset();
     }
     
     /**
