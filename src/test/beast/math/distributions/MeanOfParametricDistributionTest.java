@@ -91,7 +91,7 @@ public class MeanOfParametricDistributionTest extends TestCase {
             exp = new LogNormalDistributionModel();
     		exp.initByName("M", "1", "S", "1", "meanInRealSpace", false, "offset", "3");
     		mean = exp.getMean();
-            assertEquals(mean, 4.4816890703380645, 1e-10);
+            assertEquals(mean, 7.4816890703380645, 1e-10);
         } catch (RuntimeException e) {
         	// we are fine here
         }
