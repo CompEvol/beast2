@@ -1,28 +1,28 @@
 package beast.evolution.tree.coalescent;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
+import beast.core.*;
 import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
 import beast.math.Binomial;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 
 
 /**
  * @author Alexei Drummond
  */
-@Description("A likelihood function for the generalized skyline plot coalescent.")
+@Description("Bayesian skyline: A likelihood function for the generalized skyline plot coalescent.")
+@Citation(value="Drummond, A. J., Rambaut, A., Shapiro, B. E. T. H., & Pybus, O. G. (2005).\n" +
+        "Bayesian coalescent inference of past population dynamics from molecular sequences.\n" +
+        "Molecular biology and evolution, 22(5), 1185-1192.",
+        year = 2005, firstAuthorSurname = "Drummond", DOI="10.1093/molbev/msi103")
 public class BayesianSkyline extends TreeDistribution {
 //public class BayesianSkyline extends PopulationFunction.Abstract {
 
