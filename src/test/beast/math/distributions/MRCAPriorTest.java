@@ -75,14 +75,14 @@ public class MRCAPriorTest extends TestCase {
         PrintStream ps = new PrintStream(baos);
         prior.init(ps);
         String log = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        assertEquals(log, "mrcatime(test)\t");
+        assertEquals("mrca.age(test)\t", log);
 
         baos = new ByteArrayOutputStream();
         ps = new PrintStream(baos);
         prior.initByName("tree", tree, "taxonset", set, "monophyletic", true, "useOriginate", true);
         prior.init(ps);
         log = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        assertEquals(log, "mrcatime(test.originate)\t");
+        assertEquals( "mrca.age(test.originate)\t", log);
     }
 
     @Test
