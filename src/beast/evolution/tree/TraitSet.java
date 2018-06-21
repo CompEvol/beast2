@@ -1,20 +1,16 @@
 package beast.evolution.tree;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.util.Log;
 import beast.evolution.alignment.TaxonSet;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 
 @Description("A trait set represent a collection of properties of taxons, for the use of initializing a tree. " +
@@ -58,11 +54,11 @@ public class TraitSet extends BEASTObject {
     /**
      * double representation of taxa value *
      */
-    double[] values;
-    double minValue;
-    double maxValue;
-    
-    Map<String, Integer> map;
+    protected double[] values;
+    protected double minValue;
+    protected double maxValue;
+
+    protected Map<String, Integer> map;
 
     /**
      * Whether or not values are ALL numeric.
@@ -235,7 +231,7 @@ public class TraitSet extends BEASTObject {
     /**
      * remove start and end spaces
      */
-    String normalize(String str) {
+    protected String normalize(String str) {
         if (str.charAt(0) == ' ') {
             str = str.substring(1);
         }
