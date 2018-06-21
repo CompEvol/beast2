@@ -375,7 +375,9 @@ public class MRCAPrior extends Distribution {
             if (dist != null) {
                 out.print("logP(mrca(" + taxonsetInput.get().getID() + "))\t");
             }
-            out.print("mrcatime(" + taxonsetInput.get().getID() + (useOriginate ? ".originate" : "") +")\t");
+            // this is sometimes a date and sometimes an age -- we need to be more explicit in the name.
+            // This is also a problem in BEAUti when specifying an MRCAPrior
+            out.print("mrca." + tree.getDateType() + "(" + taxonsetInput.get().getID() + (useOriginate ? ".originate" : "") +")\t");
         }
     }
 

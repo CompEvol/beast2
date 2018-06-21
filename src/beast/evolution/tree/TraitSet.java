@@ -26,6 +26,13 @@ import beast.evolution.alignment.TaxonSet;
         "other traits can be supported as well.")
 public class TraitSet extends BEASTObject {
 
+    /**
+     * @return a string describing the type of date that this trait represents. could be null.
+     */
+    public String getDateType() {
+        return traitNameInput.get();
+    }
+
     public enum Units {
         year, month, day
     }

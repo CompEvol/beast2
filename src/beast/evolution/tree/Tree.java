@@ -935,6 +935,17 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     /**
+     * @return a string describing what type of times/ages are being used in MRCA priors for this tree.
+     *
+     */
+    public String getDateType() {
+        if (hasDateTrait()) {
+            return timeTraitSet.getDateType();
+        } else
+            return "age";
+    }
+
+    /**
      * This method allows the retrieval of the taxon label of a node without using the node number.
      *
      * @param node
