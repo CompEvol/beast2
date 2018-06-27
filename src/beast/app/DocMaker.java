@@ -439,16 +439,17 @@ public class DocMaker {
         buf.append("<h2>Inputs:</h2>\n");
         buf.append("<p>");
         List<Input<?>> inputs = beastObject.listInputs();
-        for (Input<?> input : inputs) {
-        	buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
-        }
-        buf.delete(buf.length() - 3, buf.length()-1);
-        buf.append("</p>\n");
-        
         // list its inputs
         if (inputs.size() == 0) {
             buf.append("&lt;none&gt;");
+        } else {
+            for (Input<?> input : inputs) {
+                buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
+            }
+            buf.delete(buf.length() - 3, buf.length()-1);
         }
+        buf.append("</p>\n");
+
         for (Input<?> input : inputs) {
         	buf.append("<p>&nbsp</p>");
             buf.append("<table id='" + input.getName() + "' border='1px' width='90%'>\n");
