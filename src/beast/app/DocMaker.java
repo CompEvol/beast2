@@ -26,30 +26,16 @@ package beast.app;
 
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import beast.core.*;
+import beast.core.util.Log;
+import beast.util.PackageManager;
+
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import beast.core.BEASTObject;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.util.Log;
-import beast.util.PackageManager;
+import java.util.*;
 
 
 
@@ -111,7 +97,10 @@ public class DocMaker {
         for (String beastObjectName : m_beastObjectNames) {
             m_ancestors.put(beastObjectName, new ArrayList<>());
         }
-        for (String beastObjectName : m_beastObjectNames) {
+//        for (String beastObjectName : m_beastObjectNames) {
+        Iterator<String> iter = m_beastObjectNames.iterator();
+        while (iter.hasNext()) {
+            String beastObjectName = iter.next();
             try {
                 Class<?> _class = Class.forName(beastObjectName);
                 BEASTObject beastObject = (BEASTObject) _class.newInstance();
@@ -127,10 +116,17 @@ public class DocMaker {
                     m_sLoggables.add(beastObjectName);
                 }
             } catch (Exception e) {
-                Log.err.println(beastObjectName + " not documented :" + e.getMessage());
+                Log.err.println(beastObjectName + " is not documented (or abstract class) :" + e.getMessage());
+                rmFailedPageOfBeastObject(beastObjectName, iter);
             }
         }
     } // c'tor
+
+    // if the page creation is failed, the BeastObject should not have html
+    private void rmFailedPageOfBeastObject(String beastObjectName, Iterator<String> iter) {
+        iter.remove();
+        Log.err.println("Remove " + beastObjectName + " from the list of BEAST objects");
+    }
 
 
     /**
