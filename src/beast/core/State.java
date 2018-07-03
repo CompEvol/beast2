@@ -268,7 +268,7 @@ public class State extends BEASTObject {
      */
     public void restore() {
         for (int i = 0; i < nrOfChangedStateNodes; i++) {
-            stateNode[changeStateNodes[i]].restore();
+            stateNode[changeStateNodes[i]].restoreStateNode();
         }
     }
 
