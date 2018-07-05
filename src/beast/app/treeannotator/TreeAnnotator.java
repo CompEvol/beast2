@@ -473,6 +473,7 @@ public class TreeAnnotator {
         if (targetOption != Target.USER_TARGET_TREE) {
             try {
             	treeSet.reset();
+                cladeSystem.setProcessSA(false);
             	while (treeSet.hasNext()) {
             		Tree tree = treeSet.next();
                     tree.getLeafNodeCount();
@@ -484,6 +485,7 @@ public class TreeAnnotator {
                             throw new RuntimeException("The common ancestor height is not \n available for trees with sampled " +
                                     "ancestors. Please choose \n another height summary option");
                         }
+                        cladeSystem.setProcessSA(true);
                     }
 	            	cladeSystem.add(tree, false);
 	                totalTreesUsed++;
@@ -509,12 +511,12 @@ public class TreeAnnotator {
             }
             cladeSystem.calculateCladeCredibilities(totalTreesUsed);
 
-            progressStream.println("Total trees have " + totalTrees + ", where " + totalTreesUsed + " are used.");
+            progressStream.println("Total number of trees " + totalTrees + ", where " + totalTreesUsed + " are used.");
 
             progressStream.println("Total unique clades: " + cladeSystem.getCladeMap().keySet().size());
             progressStream.println();
         }  else {
-            // even when a user specificed target tree is provided we still need to count the totalTreesUsed for subsequent steps.
+            // even when a user specified target tree is provided we still need to count the totalTreesUsed for subsequent steps.
             treeSet.reset();
             while (treeSet.hasNext()) {
                 Tree tree = treeSet.next();
@@ -582,7 +584,9 @@ public class TreeAnnotator {
 
         // this call increments the clade counts and it shouldn't
         // this is remedied with removeClades call after while loop below
-        cladeSystem = new CladeSystem(targetTree);
+        cladeSystem = new CladeSystem();
+        cladeSystem.setProcessSA(processSA);
+        cladeSystem.add(targetTree, true);
         int totalTreesUsedNew = 0;
         try {
             int counter = 0;
@@ -774,7 +778,7 @@ public class TreeAnnotator {
             for (int i=1; i<bits2.length(); i=i+2) {
                 bits2.set(i, false);
             }
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = cladeSystem.getTaxonIndex(node.getDirectAncestorChild());
                 bits2.set(2 * index + 1);
             }
@@ -890,7 +894,7 @@ public class TreeAnnotator {
                             if (node.isDirectAncestor()) {
                                 node.getParent().setHeight(mean);
                             }
-                            if (node.isFake()) {
+                            if (node.isFake() && processSA) {
                                 node.getDirectAncestorChild().setHeight(mean);
                             }
                             node.setHeight(mean);
@@ -899,7 +903,7 @@ public class TreeAnnotator {
                             if (node.isDirectAncestor()) {
                                 node.getParent().setHeight(median);
                             }
-                            if (node.isFake()) {
+                            if (node.isFake() && processSA) {
                                 node.getDirectAncestorChild().setHeight(median);
                             }
                             node.setHeight(median);

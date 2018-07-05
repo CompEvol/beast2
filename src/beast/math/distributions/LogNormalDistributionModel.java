@@ -124,12 +124,12 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     } // class LogNormalImpl
 
     @Override
-    public double getMean() {
+    protected double getMeanWithoutOffset() {
     	if (hasMeanInRealSpace) {
     		if (MParameterInput.get() != null) {
-    			return offsetInput.get() + MParameterInput.get().getValue();
+    			return MParameterInput.get().getValue();
     		} else {
-    			return offsetInput.get();
+    			return 0.0;
     		}
     	} else {
     		double s = SParameterInput.get().getValue();
@@ -138,4 +138,5 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     		//throw new RuntimeException("Not implemented yet");
     	}
     }
+
 }

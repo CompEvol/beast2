@@ -12,11 +12,11 @@ public class IntegerDataTest extends TestCase {
 	@Test
 	public void testIntegerData() {
 		IntegerData datatype = new IntegerData();
-		assertEquals("?", datatype.getCode(-1));
-		assertEquals("0", datatype.getCode(0));
-		assertEquals("1", datatype.getCode(1));
-		assertEquals("10", datatype.getCode(10));
-		assertEquals("123", datatype.getCode(123));
+		assertEquals("?", datatype.getCharacter(-1));
+		assertEquals("0", datatype.getCharacter(0));
+		assertEquals("1", datatype.getCharacter(1));
+		assertEquals("10", datatype.getCharacter(10));
+		assertEquals("123", datatype.getCharacter(123));
 		Randomizer.setSeed(127);
 		for (int i = 0; i < 100; i++) {
 			int state = Randomizer.nextInt(100000000);
@@ -26,7 +26,7 @@ public class IntegerDataTest extends TestCase {
 	    		str = (char)('0' + state%10) + str;
 	    		state /= 10;
 	    	}
-			assertEquals(str, datatype.getCode(x));
+			assertEquals(str, datatype.getCharacter(x));
 		}
 	}
 }

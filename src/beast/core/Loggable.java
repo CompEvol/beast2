@@ -27,8 +27,25 @@ public interface Loggable {
      * @param sample chain sample number
      * @param out     log stream
      */
-    void log(int sample, PrintStream out);
-
+    default void log(long sample, PrintStream out) {
+    	if (sample < Integer.MAX_VALUE) {
+    		log((int) sample, out);
+    	} else {
+    		throw new IllegalArgumentException("Loggable::log(long,Prinstream) was not implemented: cannot log samples larger than " + Integer.MAX_VALUE);
+    	}
+    }
+    
+    /** For backward compatibility only: the int-version of log().
+     * 
+     * Please use log(long sample, PrintStream out) instead of log(int, PrintStream)
+     */
+    @Deprecated 
+    default void log(int sample, PrintStream out) {
+    	// if either int or long version is not implemented
+    	// this ensure one of them get called
+		log((long) sample, out);    	
+    }
+    
     /**
      * close log. An end of log message can be left (as in End; for Nexus trees)
      *

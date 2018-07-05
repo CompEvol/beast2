@@ -64,7 +64,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * calculation engine *
      */
     protected LikelihoodCore likelihoodCore;
-    BeagleTreeLikelihood beagle;
+    protected BeagleTreeLikelihood beagle;
 
     /**
      * BEASTObject associated with inputs. Since none of the inputs are StateNodes, it
@@ -105,14 +105,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * memory allocation for probability tables obtained from the SiteModel *
      */
-    double[] probabilities;
+    protected double[] probabilities;
 
-    int matrixSize;
+    protected int matrixSize;
 
     /**
      * flag to indicate ascertainment correction should be applied *
      */
-    boolean useAscertainedSitePatterns = false;
+    protected boolean useAscertainedSitePatterns = false;
 
     /**
      * dealing with proportion of site being invariant *

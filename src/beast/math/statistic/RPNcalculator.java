@@ -151,11 +151,11 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
             out.print(this.getID() + "\t");
         else
             for (int i = 0; i < dim; i++)
-                out.print(this.getID() + "_" + i + "\t");
+                out.print(this.getID() + "_" + (i + 1) + "\t");
     }
 
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         for (int i = 0; i < dim; i++)
             out.print(getStatisticValue(i) + "\t");
     }

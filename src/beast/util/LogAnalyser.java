@@ -135,6 +135,7 @@ public class LogAnalyser {
         int items = m_sLabels.length;
         m_ranges = new List[items];
         int burnIn = data * burnInPercentage / 100;
+        int total = data - burnIn;
         m_fTraces = new Double[items][data - burnIn];
         fin.close();
         fin = new BufferedReader(new FileReader(fileName));
@@ -143,6 +144,7 @@ public class LogAnalyser {
         // grab data from the log, ignoring burn in samples
         m_types = new type[items];
         Arrays.fill(m_types, type.INTEGER);
+        int reported = 0; 
         while (fin.ready()) {
             str = fin.readLine();
             int i = 0;
@@ -168,8 +170,11 @@ public class LogAnalyser {
                     }
             //}
             //}
-            if (data % lines == 0) {
-                log("*");
+            if (data > 0 && data % lines == 0 && reported < 81) {
+				while (10000 * reported < 810000 * (data + 1)/ total) {
+	                log("*");
+	                reported++;
+        	    }
             }
         }
         logln("");

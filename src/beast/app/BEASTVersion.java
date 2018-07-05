@@ -19,9 +19,9 @@ public class BEASTVersion extends Version {
     /**
      * Version string: assumed to be in format x.x.x
      */
-    private static final String VERSION = "2.4.7";
+    private static final String VERSION = "2.5.0";
 
-    private static final String DATE_STRING = "2002-2017";
+    private static final String DATE_STRING = "2002-2018";
 
     private static final boolean IS_PRERELEASE = true;
 
@@ -74,7 +74,7 @@ public class BEASTVersion extends Version {
                 "Alex Alekseyenko, Trevor Bedford, Erik Bloomquist, Joseph Heled, ",
                 "Sebastian Hoehna, Denise Kuehnert, Philippe Lemey, Wai Lok Sibon Li, ",
                 "Gerton Lunter, Sidney Markowitz, Vladimir Minin, Michael Defoin Platel, ",
-                "Oliver Pybus, Chieh-Hsi Wu, Walter Xie",
+                "Oliver Pybus, Tim Vaughan, Chieh-Hsi Wu, Walter Xie",
                 "",
                 "Thanks to:",
                 "Roald Forsberg, Beth Shapiro and Korbinian Strimmer"};
@@ -98,7 +98,7 @@ public class BEASTVersion extends Version {
                         "<p>BEAST developers:<br>" +
                         "Alex Alekseyenko, Erik Bloomquist, Joseph Heled, Sebastian Hoehna, Philippe Lemey,<br>" +
                         "Wai Lok Sibon Li, Gerton Lunter, Sidney Markowitz, Vladimir Minin,<br>" +
-                        "Michael Defoin Platel, Oliver Pybus, Chieh-Hsi Wu, Walter Xie,<br>" +
+                        "Michael Defoin Platel, Oliver Pybus, Tim Vaughan, Chieh-Hsi Wu, Walter Xie,<br>" +
                         "Denise Kuehnert</p>" +
                         "<p>Thanks to Roald Forsberg, Beth Shapiro and Korbinian Strimmer</p>";
     }
@@ -152,4 +152,5 @@ public class BEASTVersion extends Version {
         return str;
     }
 
+	public static BEASTVersion INSTANCE = new BEASTVersion();
 }

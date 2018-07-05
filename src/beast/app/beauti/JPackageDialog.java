@@ -1,9 +1,9 @@
 package beast.app.beauti;
 
-import beast.app.util.Arguments;
+
 import beast.app.util.Utils;
 import beast.core.Description;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.Package;
 import beast.util.PackageVersion;
 
@@ -18,14 +18,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static beast.util.AddOnManager.*;
+import static beast.util.PackageManager.*;
 
 /**
  * dialog for managing Package.
@@ -45,13 +44,13 @@ public class JPackageDialog extends JPanel {
     boolean useLatestVersion = true;
 
     TreeMap<String, Package> packageMap = new TreeMap<>((s1,s2)->{
-    	if (s1.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
-    		if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+    	if (s1.equals(PackageManager.BEAST_PACKAGE_NAME)) {
+    		if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
     			return 0;
     		}
     		return -1;
     	}
-    	if (s2.equals(AddOnManager.BEAST_PACKAGE_NAME)) {
+    	if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
     		return 1;
     	}
     	return s1.compareToIgnoreCase(s2);
@@ -88,7 +87,7 @@ public class JPackageDialog extends JPanel {
 	    			if (isRunning) {
 	    				t.interrupt();
 	    				JOptionPane.showMessageDialog(frame, "<html>Download of file " +
-	    						AddOnManager.PACKAGES_XML + " timed out.<br>" +
+	    						PackageManager.PACKAGES_XML + " timed out.<br>" +
 	    								"Perhaps this is due to lack of internet access</br>" +
 	    								"or some security settings not allowing internet access.</html>"
 	    						);
@@ -201,7 +200,7 @@ public class JPackageDialog extends JPanel {
                 if (!pkg.getName().equals("beast2"))
                     packageList.add(pkg);
 
-        } catch (AddOnManager.PackageListRetrievalException e) {
+        } catch (PackageManager.PackageListRetrievalException e) {
         	StringBuilder msgBuilder = new StringBuilder("<html>" + e.getMessage() + "<br>");
             if (e.getCause() instanceof IOException)
                 msgBuilder.append(NO_CONNECTION_MESSAGE.replaceAll("\\.", ".<br>"));
@@ -258,7 +257,7 @@ public class JPackageDialog extends JPanel {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
             Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
-            AddOnManager.useArchive(!useLatestVersion);
+            PackageManager.useArchive(!useLatestVersion);
             for (int selRow : selectedRows) {
                 Package selPackage = getSelectedPackage(selRow);
                 if (selPackage != null) {

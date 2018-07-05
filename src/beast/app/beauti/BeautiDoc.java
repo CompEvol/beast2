@@ -483,7 +483,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     public String processTemplate(String fileName) throws IOException {
         final String MERGE_ELEMENT = "mergepoint";
         // first gather the set of potential directories with templates
-        Set<String> dirs = new HashSet<>();// AddOnManager.getBeastDirectories();
+        Set<String> dirs = new HashSet<>();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
         String fileSep = System.getProperty("file.separator");
@@ -536,7 +536,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // find XML to merge
         // ensure processed templates are unique in name.
         // This prevents loading templates twice, once from the development area
-        // and once from .beast2-addon area
+        // and once from .beast2-package area
         Set<String> loadedTemplates = new HashSet<>();
         for (String dirName : dirs) {
             Log.info.println("Investigating " + dirName);
@@ -584,8 +584,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
                                     }
                                 } catch (Exception e) {
-                                    if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
+                                    if (e.getMessage() != null) {
+                                    	if (!e.getMessage().contains("beast.app.beauti.InputConstraint")) {
+                                    }
                                         Log.warning.println(e.getMessage());
+                                    } else {
+                                        e.printStackTrace();
                                     }
                                 }
                             }
@@ -2177,7 +2181,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
     public PartitionContext getContextFor(BEASTInterface beastObject) {
         String id = beastObject.getID();
-        String partition = id.substring(id.indexOf('.') + 1);
+        String partition = id.indexOf('.') >= 0 ? id.substring(id.indexOf('.') + 1) : "";
 
         int partitionID = ALIGNMENT_PARTITION;
         if (partition.indexOf(':') >= 0) {

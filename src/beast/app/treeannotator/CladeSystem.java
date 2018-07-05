@@ -15,6 +15,7 @@ import beast.evolution.tree.Tree;
  */
 //TODO merge with CladeSet?
 public class CladeSystem {
+	private boolean processSA = true;
 
     protected Map<BitSet, Clade> cladeMap = new HashMap<>();
 
@@ -59,7 +60,7 @@ public class CladeSystem {
             for (int i=1; i<bits.length(); i=i+2) {
                 bits.set(i, false);
             }
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = getTaxonIndex(node.getDirectAncestorChild());
                 bits.set(2 * index + 1);
             }
@@ -106,7 +107,7 @@ public class CladeSystem {
             for (int i=1; i<bits.length(); i=i+2) {
                 bits.set(i, false);
             }
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = getTaxonIndex(node.getDirectAncestorChild());
                 bits.set(2 * index + 1);
             }
@@ -201,7 +202,7 @@ public class CladeSystem {
                 bits2.set(i, false);
             }
 
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = getTaxonIndex(node.getDirectAncestorChild());
                 bits2.set(2 * index + 1);
             }
@@ -238,7 +239,7 @@ public class CladeSystem {
                 bits2.set(i, false);
             }
 
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = getTaxonIndex(node.getDirectAncestorChild());
                 bits2.set(2 * index + 1);
             }
@@ -286,7 +287,7 @@ public class CladeSystem {
             for (int i=1; i<bits.length(); i=i+2) {
                 bits.set(i, false);
             }
-            if (node.isFake()) {
+            if (node.isFake() && processSA) {
                 int index = getTaxonIndex(node.getDirectAncestorChild());
                 bits.set(2 * index + 1);
             }
@@ -378,7 +379,7 @@ public class CladeSystem {
 
         @Override
         public String toString() {
-            return "clade " + bits.toString();
+            return "clade " + bits.toString() + " #" + count;
         }
 
         int count;
@@ -387,5 +388,8 @@ public class CladeSystem {
         List<Object[]> attributeValues = null;
     }
 
+	public void setProcessSA(boolean processSA) {
+		this.processSA = processSA;
+	}
 
 }

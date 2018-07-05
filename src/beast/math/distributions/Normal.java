@@ -58,11 +58,11 @@ public class Normal extends ParametricDistribution {
     }
 
     @Override
-    public double getMean() {
+    public double getMeanWithoutOffset() {
         if (meanInput.get() == null) {
-        	return offsetInput.get();
+        	return 0.0;
         } else {
-        	return offsetInput.get() + meanInput.get().getValue();
+        	return meanInput.get().getValue();
         }
     }
 } // class Normal

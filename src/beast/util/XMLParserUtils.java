@@ -6,7 +6,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -21,8 +23,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -39,7 +39,7 @@ import beast.core.util.Log;
  */
 public class XMLParserUtils {
 	
-	final static public List<String> beastObjectNames = AddOnManager.find(beast.core.BEASTInterface.class, AddOnManager.IMPLEMENTATION_DIR);
+	final static public List<String> beastObjectNames = PackageManager.find(beast.core.BEASTInterface.class, PackageManager.IMPLEMENTATION_DIR);
 
 
     /**
@@ -47,6 +47,8 @@ public class XMLParserUtils {
      * the plate variable with the appropriate value.
      */
     public static void processPlates(Document doc, String plateElementName) {
+    	Map<String, Node> idMap = new LinkedHashMap<>();
+    	
         // process plate elements
         final NodeList nodes = doc.getElementsByTagName(plateElementName);
         // instead of processing all plates, process them one by one,
@@ -59,7 +61,7 @@ public class XMLParserUtils {
             
             if (node.getAttributes().getNamedItem("fragment") != null) {
             	final String fragmentID = node.getAttributes().getNamedItem("fragment").getNodeValue();
-            	Node fragment = getElementById(doc, fragmentID);
+            	Node fragment = getElementById(doc, fragmentID, idMap);
             	if (fragment == null) {
             		throw new RuntimeException("plate refers to fragment with id='" + fragmentID + "' that cannot be found");
             	}
@@ -106,25 +108,27 @@ public class XMLParserUtils {
         }
     } // processPlates
     
-    static  Node getElementById(Document doc, String id) {
-    	if (doc.getElementById(id) == null) {
-    		registerIDs(doc, doc.getDocumentElement());
+
+    static  Node getElementById(Document doc, String id, Map<String, Node> idMap) {
+    	if (!idMap.containsKey(id)) {
+    		registerIDs(doc, doc.getDocumentElement(), idMap);
     	}
-    	return doc.getElementById(id);
+    	return idMap.get(id);
     }
 
-    static void registerIDs(Document doc, Node node) {
+    private static void registerIDs(Document doc, Node node, Map<String, Node> idMap) {
     	if (node.getNodeType() == Node.ELEMENT_NODE) {
             if (node.getAttributes().getNamedItem("id") != null) {
             	final String id = node.getAttributes().getNamedItem("id").getNodeValue();
-            	((CoreDocumentImpl) doc).putIdentifier(id, (Element) node);
+            	idMap.put(id, (Element) node);
             }
     	}
     	NodeList children = node.getChildNodes();
     	for (int i = 0; i < children.getLength(); i++) {
-    		registerIDs(doc, children.item(i));
+    		registerIDs(doc, children.item(i), idMap);
     	}
-    }
+ 		
+	}
 
     /** export DOM document to a file -- handy for debugging **/
     public static void saveDocAsXML(Document doc, String filename) {

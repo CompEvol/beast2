@@ -123,6 +123,19 @@ public class TreeParserTest {
     }
 
     @Test
+    public void testMultipleMetadata() throws Exception {
+
+        String newick = "((A:1.0,B[&key=2.0,rate=3,type='OK']:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";
+
+        boolean isLabeled = true;
+
+        TreeParser treeParser = new TreeParser(newick, false, false, isLabeled, 1);
+        Assert.assertTrue(treeParser.getNode(1).getMetaData("key").equals(2.0));
+        Assert.assertTrue(treeParser.getNode(1).getMetaData("rate").equals(3.0));
+        Assert.assertTrue(treeParser.getNode(1).getMetaData("type").equals("OK"));
+    }
+
+    @Test
     public void testVectorMetadata() throws Exception {
 
         String newick = "((A:1.0,B[&key={1,2,3}]:1.0):1.0,(C:1.0,D:1.0):1.0):0.0;";

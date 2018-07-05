@@ -1,26 +1,13 @@
 package beast.core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Formatter;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import beast.core.util.Log;
+import beast.util.Randomizer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import beast.core.util.Log;
-import beast.util.Randomizer;
+import java.io.*;
+import java.util.*;
 
 @Description("Specify operator selection and optimisation schedule")
 public class OperatorSchedule extends BEASTObject {
@@ -67,6 +54,11 @@ public class OperatorSchedule extends BEASTObject {
      * cumulative weights, with unity as max value *
      */
     double[] cumulativeProbs;
+
+    /**
+     * The normalized weights of all operators. sums to 1.0 +/- numerical error
+     */
+    double[] normalizedWeights;
 
     /**
      * name of the file to store operator related info *
@@ -153,6 +145,7 @@ public class OperatorSchedule extends BEASTObject {
     		return;
     	}
 		String operatorPattern = operatorPatternInput.get();
+    	boolean noMatch = true;
 		for (Operator o : ops) {
 			if (o.getID() != null && o.getID().matches(operatorPattern)) {
 		    	for (Operator o2 : operators) {
@@ -162,9 +155,13 @@ public class OperatorSchedule extends BEASTObject {
 		    		}
 		    	}
 				operators.add(o);
+                noMatch = false;
 			}
 		}
     	reweighted = false;
+
+		if (noMatch)
+		   throw new IllegalArgumentException("Cannot find operator to match subschedule pattern: " + operatorPattern + " !\n");
     }
     
     /**
@@ -217,8 +214,10 @@ public class OperatorSchedule extends BEASTObject {
         formatter.format(headerFormat, PR_M);
         formatter.format(headerFormat, PR_ACCEPT);
         out.println();
+        int i = 0;
         for (final Operator operator : operators) {
-            out.println(prettyPrintOperator(operator, longestName, colWidth, 4, totalWeight, detailedRejection));
+            out.println(prettyPrintOperator(operator, longestName, colWidth, 5, normalizedWeights[i], detailedRejection));
+            i += 1;
         }
         out.println();
 
@@ -243,7 +242,8 @@ public class OperatorSchedule extends BEASTObject {
             int nameColWidth,
             int colWidth,
             int dp,
-            double totalWeight,
+            // weight of this operator (p(m))
+            double normalizedWeight,
             boolean detailedRejection) {
 
         double tuning = op.getCoercableParameterValue();
@@ -268,9 +268,7 @@ public class OperatorSchedule extends BEASTObject {
             formatter.format(doubleFormat, (double) op.m_nNrRejectedInvalid / (double) op.m_nNrRejected);
             formatter.format(doubleFormat, (double) op.m_nNrRejectedOperator / (double) op.m_nNrRejected);
         }
-        if (totalWeight > 0.0) {
-            formatter.format(doubleFormat, op.getWeight() / totalWeight);
-        }
+        formatter.format(doubleFormat, normalizedWeight);
         formatter.format(doubleFormat, accRate);
 
         sb.append(" " + op.getPerformanceSuggestion());
@@ -370,6 +368,8 @@ public class OperatorSchedule extends BEASTObject {
 	            }
 	        }
 	    }
+	    // resuming from state file needs to init normalizedWeights[]
+        reweightOperators();
         showOperatorRates(System.err);
     }
 
@@ -423,7 +423,7 @@ public class OperatorSchedule extends BEASTObject {
     	for (OperatorSchedule os : subschedulesInput.get()) {
     		allOperators.addAll(os.operators);
     	}
-    	for (OperatorSchedule os : subschedulesInput.get()) {    	
+    	for (OperatorSchedule os : subschedulesInput.get()) {
     		os.addOperators(allOperators);
     		subOperators.addAll(os.operators);
     	}
@@ -446,14 +446,14 @@ public class OperatorSchedule extends BEASTObject {
     	// operatorCount can double count operators that appear in multiple operator schedules
     	int operatorCount = operators.size();
 
-    	double [] weights = new double[operatorCount];
+        normalizedWeights = new double[operatorCount];
     	int i = 0;
     	for (Operator o : localOperators) {
-    		weights[i++] = o.getWeight();
+            normalizedWeights[i++] = o.getWeight();
     	}
     	for (OperatorSchedule os : subschedulesInput.get()) {
     		for (Operator o : os.operators) {
-        		weights[i++] = o.getWeight();    			
+                normalizedWeights[i++] = o.getWeight();
     		}
     	}
     	
@@ -479,7 +479,7 @@ public class OperatorSchedule extends BEASTObject {
     	double localFactor = (1/totalWeight);    	
     	i = 0;
     	for (Operator o : localOperators) {
-    		weights[i++] *= localFactor;
+            normalizedWeights[i++] *= localFactor;
     	}
 
     	// reweight operators of sub OperatorSchedules
@@ -495,16 +495,16 @@ public class OperatorSchedule extends BEASTObject {
     			factor = (os.weightInput.get() / 100) * 1.0/localWeight;
     		}
 	    	for (Operator o : os.operators) {
-	    		weights[i++] *= factor;
+                normalizedWeights[i++] *= factor;
 	    	}
     	}
 
     	
     	// calc cumulative probabilities
-        cumulativeProbs = new double[weights.length];
-        cumulativeProbs[0] = weights[0];
+        cumulativeProbs = new double[normalizedWeights.length];
+        cumulativeProbs[0] = normalizedWeights[0];
         for (i = 1; i < operators.size(); i++) {
-            cumulativeProbs[i] = weights[i] + cumulativeProbs[i - 1];
+            cumulativeProbs[i] = normalizedWeights[i] + cumulativeProbs[i - 1];
         }
 
         // log results
@@ -518,6 +518,19 @@ public class OperatorSchedule extends BEASTObject {
     public double [] getCummulativeProbs() {
     	return cumulativeProbs.clone();
     }
-    
-   
+
+    /**
+     * @param operator
+     * @return the probability of selecting this operator
+     */
+    public double getNormalizedWeight(Operator operator) {
+        int i = operators.indexOf(operator);
+        if (i != -1 && normalizedWeights != null) {
+            return normalizedWeights[i];
+        } else return 0.0;
+    }
+
+
+
+
 } // class OperatorSchedule

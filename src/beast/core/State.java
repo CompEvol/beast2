@@ -256,7 +256,7 @@ public class State extends BEASTObject {
      * @param sample chain state number
      * @return  true if stored  to disk
      */
-    public void store(final int sample) {
+    public void store(final long sample) {
         //Arrays.fill(changeStateNodes, -1);
         nrOfChangedStateNodes = 0;
     }
@@ -268,7 +268,7 @@ public class State extends BEASTObject {
      */
     public void restore() {
         for (int i = 0; i < nrOfChangedStateNodes; i++) {
-            stateNode[changeStateNodes[i]].restore();
+            stateNode[changeStateNodes[i]].restoreStateNode();
         }
     }
 
@@ -331,7 +331,7 @@ public class State extends BEASTObject {
      *
      * @param sample TODO
      */
-    public void storeToFile(final int sample) {
+    public void storeToFile(final long sample) {
         try {
             PrintStream out = new PrintStream(stateFileName + ".new");
             out.print(toXML(sample));
@@ -353,7 +353,7 @@ public class State extends BEASTObject {
      *
      * @param sample TODO*
      */
-    public String toXML(final int sample) {
+    public String toXML(final long sample) {
         final StringBuilder buf = new StringBuilder();
         buf.append("<itsabeastystatewerein version='2.0' sample='").append(sample).append("'>\n");
         for (final StateNode node : stateNode) {

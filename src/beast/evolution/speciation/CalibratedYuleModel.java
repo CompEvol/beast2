@@ -881,7 +881,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     }
 
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
         if (calcCalibrations) {
             final TreeInterface tree = treeInput.get();

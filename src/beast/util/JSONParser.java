@@ -123,9 +123,15 @@ public class JSONParser {
 	 */
 	RequiredInputProvider requiredInputProvider = null;
 	PartitionContext partitionContext = null;
+	java.util.Map<String,String> parserDefinitions;
 
 	public JSONParser() {
 		objectsWaitingToInit = new ArrayList<>();
+	}
+
+	public JSONParser(java.util.Map<String,String> parserDefinitions) {
+		this();
+		this.parserDefinitions = parserDefinitions;
 	}
 
 	public Runnable parseFile(File file) throws IOException, JSONException, JSONParserException {
@@ -155,6 +161,12 @@ public class JSONParser {
 
         // Substitute occurrences of "$(seed)" with RNG seed
         replaceVariable(doc, "seed", String.valueOf(Randomizer.getSeed()));
+        
+        if (parserDefinitions != null) {
+        	for (String name : parserDefinitions.keySet()) {
+                replaceVariable(doc, name, parserDefinitions.get(name));
+        	}
+        }
 
 		
 		IDMap = new HashMap<>();
@@ -842,7 +854,7 @@ public class JSONParser {
 				// }
 			}
 		} catch (ClassNotFoundException e1) {
-			// should never happen since clazzName is in the list of classes collected by the AddOnManager
+			// should never happen since clazzName is in the list of classes collected by the PackageManager
 			e1.printStackTrace();
 			throw new RuntimeException(e1);
 		}
@@ -1202,6 +1214,16 @@ public class JSONParser {
 	private void setInput(JSONObject node, BEASTInterface beastObject, String name, Object value) throws JSONParserException {
 		try {
 			final Input<?> input = beastObject.getInput(name);
+			
+			// hack to deal with Long inputs that get 
+			// values assigned small enough to fit an Integer
+			if (input.getType() == null) {
+				input.determineClass(beastObject);
+			}
+			if (input.getType().equals(Long.class) && value instanceof Integer) {
+				value = new Long((Integer) value);
+			}
+			
 			// test whether input was not set before, this is done by testing
 			// whether input has default value.
 			// for non-list inputs, this should be true if the value was not

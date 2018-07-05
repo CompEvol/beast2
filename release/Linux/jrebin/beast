@@ -1,0 +1,59 @@
+#!/bin/sh
+export JAVA_HOME=$(dirname "$0")/../jre1.8.0_161
+
+if [ -z "$BEAST" ]; then
+	## resolve links - $0 may be a link to application
+	PRG="$0"
+
+	# need this for relative symlinks
+	while [ -h "$PRG" ] ; do
+	    ls=`ls -ld "$PRG"`
+	    link=`expr "$ls" : '.*-> \(.*\)$'`
+	    if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	    else
+		PRG="`dirname "$PRG"`/$link"
+	    fi
+	done
+
+	# make it fully qualified
+	saveddir=`pwd`
+	BEAST0=`dirname "$PRG"`/..
+	BEAST=`cd "$BEAST0" && pwd`
+	cd "$saveddir"
+fi
+
+BEAST_LIB="$BEAST/lib"
+
+if [ -z "$JAVA_HOME" ]; then
+  JAVA=java
+else
+  JAVA=$JAVA_HOME/bin/java
+fi
+
+
+# use BEAGLE_LIB if the BEAGLE library is not in a standard location
+if [ -n "$BEAGLE_LIB" ]; then
+	if [ -n "$BEAST_EXTRA_LIBS" ]; then
+		BEAST_EXTRA_LIBS=$BEAST_EXTRA_LIBS:$BEAGLE_LIB
+	else
+		BEAST_EXTRA_LIBS=$BEAGLE_LIB
+	fi
+fi
+
+# Explicitly add /usr/local/lib to library search path to ensure 
+# beast continues to find beagle when installed here.  (This is
+# necessary due to known problems with certain JREs.)
+if [ -z "$LD_LIBRARY_PATH" ]; then
+    export LD_LIBRARY_PATH=/usr/local/lib
+else
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib
+fi
+
+# use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
+# this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
+if [ -n "$BEAST_EXTRA_LIBS" ]; then 
+  $JAVA -Dlauncher.wait.for.exit=true -Xms64m -Xmx4g -Djava.library.path=$BEAST_EXTRA_LIBS -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*
+else	
+  $JAVA -Dlauncher.wait.for.exit=true -Xms64m -Xmx4g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.app.beastapp.BeastLauncher $*
+fi

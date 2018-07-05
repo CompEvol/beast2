@@ -98,8 +98,8 @@ public class UserDataType extends Base {
     }
 
     @Override
-    public String getCode(int state) {
-        return String.valueOf(codeMap.split(",")[state]);
+	public String getCharacter(int code) {
+		return String.valueOf(codeMap.split(",")[code]);
     }
 
     @Override

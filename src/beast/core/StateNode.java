@@ -238,6 +238,20 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
     @Override
 	abstract protected void store();
 
+    /**
+     * This is the method actually called by State to restore the StateNode.
+     * It ensures the hasStartedEditing flag is reset to false, then calls
+     * restore() method that is provided by StateNode implementations.
+     */
+    public final void restoreStateNode() {
+        hasStartedEditing = false;
+        restore();
+    }
+
+    /**
+     * This method (implemented by all StateNode classes) is called by
+     * restoreStateNode() to restore the state when a proposal is rejected.
+     */
     @Override
 	abstract public void restore();
 

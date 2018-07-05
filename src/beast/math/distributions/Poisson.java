@@ -60,7 +60,7 @@ public class Poisson extends ParametricDistribution {
     }
     
     @Override
-    public double getMean() {
+    public double getMeanWithoutOffset() {
     	return lambdaInput.get().getValue();
     }
     

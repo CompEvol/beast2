@@ -1,5 +1,5 @@
 /*
- * File AddOnManager.java
+ * File PackageManager.java
  *
  * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
  *
@@ -31,6 +31,22 @@
 package beast.util;
 
 
+
+import beast.app.BEASTVersion;
+import beast.app.util.Arguments;
+import beast.app.util.Utils6;
+import beast.core.util.Log;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -46,27 +62,7 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import beast.app.BEASTVersion2;
-import beast.app.beastapp.BeastMain;
-import beast.app.util.Arguments;
-import beast.app.util.Utils;
-import beast.app.util.Utils6;
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.util.Log;
-import beast.evolution.alignment.Alignment;
+//import beast.app.util.Utils;
 
 /**
  * This class is used to manage beast 2 add-ons, and can
@@ -77,20 +73,22 @@ import beast.evolution.alignment.Alignment;
  * - discover classes in add ons that implement a certain interface or a derived from a certain class
  */
 // TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
-@Description("Manage all BEAUti packages and list their dependencies")
-public class AddOnManager {
-    public static final BEASTVersion2 beastVersion = new BEASTVersion2();
+//@Description("Manage all BEAUti packages and list their dependencies")
+public class PackageManager {
+    public static final BEASTVersion beastVersion = BEASTVersion.INSTANCE;
+
+    public enum UpdateStatus {AUTO_CHECK_AND_ASK, AUTO_UPDATE, DO_NOT_CHECK};
 
     public final static String[] IMPLEMENTATION_DIR = {"beast", "snap"};
     public final static String TO_DELETE_LIST_FILE = "toDeleteList";
     public final static String TO_INSTALL_LIST_FILE = "toInstallList";
     public final static String BEAST_PACKAGE_NAME = "BEAST";
 
-    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages.xml";
+    public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages2.5.xml";
 //    public final static String PACKAGES_XML = "file:///Users/remco/workspace/beast2/packages.xml";
     public final static String ARCHIVE_DIR = "archive";
     // flag to indicate archive directory and version numbers in directories are required
-    static boolean useArchive = false;
+    private static boolean useArchive = false;
     
     public static void useArchive(boolean _useArchive) {
     	useArchive = _useArchive;
@@ -158,12 +156,12 @@ public class AddOnManager {
         // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
         System.setProperty("jsse.enableSNIExtension", "false");
 
-        List<URL> URLs = new ArrayList<>();
+        List<URL> URLs = new ArrayList<URL>();
         URLs.add(new URL(PACKAGES_XML));
 
 	    //# url
 	    //packages.url=http://...
-    	String urls = Utils.getBeautiProperty("packages.url");
+    	String urls = Utils6.getBeautiProperty("packages.url");
     	if (urls != null) {
 	        for (String userURLString : urls.split(",")) {
 	            URLs.add(new URL(userURLString));
@@ -192,9 +190,9 @@ public class AddOnManager {
                 sb.append(urls.get(i));
             }
             
-            Utils.saveBeautiProperty("packages.url", sb.toString());
+            Utils6.saveBeautiProperty("packages.url", sb.toString());
         } else {
-            Utils.saveBeautiProperty("packages.url", null);
+            Utils6.saveBeautiProperty("packages.url", null);
         }
     }
 
@@ -215,9 +213,9 @@ public class AddOnManager {
                 Document doc = factory.newDocumentBuilder().parse(versionXML);
                 doc.normalize();
                 // get name and version of package
-                Element addon = doc.getDocumentElement();
-                String packageName = addon.getAttribute("name");
-                String packageVersionString = addon.getAttribute("version");
+                Element packageElement = doc.getDocumentElement();
+                String packageName = packageElement.getAttribute("name");
+                String packageVersionString = packageElement.getAttribute("version");
 
                 Package pkg;
                 if (packageMap.containsKey(packageName)) {
@@ -227,17 +225,22 @@ public class AddOnManager {
                     packageMap.put(packageName, pkg);
                 }
 
-                if (addon.hasAttribute("projectURL"))
-                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+                if (packageElement.hasAttribute("projectURL"))
+                    pkg.setProjectURL(new URL(packageElement.getAttribute("projectURL")));
 
                 PackageVersion installedVersion = new PackageVersion(packageVersionString);
 
-                if (addon.hasAttribute("projectURL") &&
+                if (packageElement.hasAttribute("projectURL") &&
                         !(pkg.getLatestVersion() != null && installedVersion.compareTo(pkg.getLatestVersion())<0))
-                    pkg.setProjectURL(new URL(addon.getAttribute("projectURL")));
+                    pkg.setProjectURL(new URL(packageElement.getAttribute("projectURL")));
 
                 Set<PackageDependency> installedVersionDependencies =
-                        new TreeSet<>((o1, o2) -> o1.dependencyName.compareTo(o2.dependencyName));
+                        new TreeSet<PackageDependency>(new Comparator<PackageDependency>() {
+							@Override
+							public int compare(PackageDependency o1, PackageDependency o2) {
+								return o1.dependencyName.compareTo(o2.dependencyName);
+							}
+						});
 
                 // get dependencies of add-n
                 NodeList nodes = doc.getElementsByTagName("depends");
@@ -256,7 +259,11 @@ public class AddOnManager {
 
                 pkg.setInstalled(installedVersion, installedVersionDependencies);
 
-            } catch (ParserConfigurationException | SAXException | IOException e) {
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -274,7 +281,7 @@ public class AddOnManager {
 
         if (!beastPkg.isInstalled()) {
             PackageVersion beastPkgVersion = new PackageVersion(beastVersion.getVersion());
-            Set<PackageDependency> beastPkgDeps = new TreeSet<>();
+            Set<PackageDependency> beastPkgDeps = new TreeSet<PackageDependency>();
             beastPkg.setInstalled(beastPkgVersion, beastPkgDeps);
         }
 
@@ -296,11 +303,13 @@ public class AddOnManager {
             throw new PackageListRetrievalException("Error parsing one or more repository URLs.", e);
         }
 
-        List<URL> brokenPackageRepositories = new ArrayList<>();
+        List<URL> brokenPackageRepositories = new ArrayList<URL>();
         Exception firstException = null;
 
         for (URL url : urls) {
-            try (InputStream is = url.openStream()) {
+        	InputStream is = null;
+            try {            		
+            	is = url.openStream();
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(new InputSource(is));
@@ -319,7 +328,7 @@ public class AddOnManager {
                             pkg = packageMap.get(packageName);
                         } else {
                             pkg = new Package(packageName);
-                            packageMap.put(packageName, pkg);
+//                            packageMap.put(packageName, pkg); // issue 754
                         }
                         pkg.setDescription(element.getAttribute("description"));
 
@@ -329,7 +338,7 @@ public class AddOnManager {
                                 !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
                             pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
 
-                        Set<PackageDependency> packageDependencies = new HashSet<>();
+                        Set<PackageDependency> packageDependencies = new HashSet<PackageDependency>();
                         NodeList depNodes = element.getElementsByTagName("depends");
                         for (int j = 0; j < depNodes.getLength(); j++) {
                             Element dependson = (Element) depNodes.item(j);
@@ -347,13 +356,39 @@ public class AddOnManager {
                         URL packageURL = new URL(element.getAttribute("url"));
 
                         pkg.addAvailableVersion(packageVersion, packageURL, packageDependencies);
+
+                        // issue 754 Package manager should make project links compulsory
+                        if (pkg.isValidFormat()) {
+                            packageMap.put(packageName, pkg);
+                        } else{
+                            String urlStr = pkg.getProjectURL()==null ? "null" : pkg.getProjectURL().toString();
+                            System.err.println("Warning: filter " + packageName + " from package manager " +
+                                    " because of invalid project URL " + urlStr + " !");
+                        }
                     }
                 }
-            } catch (IOException | ParserConfigurationException | SAXException e) {
+                is.close();
+            } catch (IOException e) {
                 if (brokenPackageRepositories.isEmpty())
                     firstException = e;
 
                 brokenPackageRepositories.add(url);
+            } catch (ParserConfigurationException e) {
+                if (brokenPackageRepositories.isEmpty())
+                    firstException = e;
+
+                brokenPackageRepositories.add(url);
+            } catch (SAXException e) {
+                if (brokenPackageRepositories.isEmpty())
+                    firstException = e;
+
+                brokenPackageRepositories.add(url);
+            } finally {
+            	try {
+            		if (is != null) is.close();
+            	} catch (IOException e) {
+            		e.printStackTrace();
+            	}
             }
         }
 
@@ -381,7 +416,7 @@ public class AddOnManager {
     		return;
     	}
     	
-        Map<Package, PackageVersion> ptiCopy = new HashMap<>(packagesToInstall);
+        Map<Package, PackageVersion> ptiCopy = new HashMap<Package, PackageVersion>(packagesToInstall);
         for (Map.Entry<Package, PackageVersion> entry : ptiCopy.entrySet()) {
             Package thisPkg = entry.getKey();
             PackageVersion thisPkgVersion = entry.getValue();
@@ -400,10 +435,13 @@ public class AddOnManager {
         	// RRB: what are the following two lines for?
             //File toDeleteList = getToDeleteListFile();
             //FileWriter outfile = new FileWriter(toDeleteList, true);
-            try (PrintStream ps = new PrintStream(getToInstallListFile())) {
+        	PrintStream ps = null;
+            try { 
+            	ps  = new PrintStream(getToInstallListFile());
                 for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
                     ps.println(entry.getKey() + ":" + entry.getValue());
                 }
+                ps.close();
             } catch (IOException ex) {
                 message("Error writing to-install file: " + ex.getMessage() +
                         " Installation may not resume successfully after restart.");
@@ -429,7 +467,7 @@ public class AddOnManager {
     public static Map<String, String> installPackages(Map<Package, PackageVersion> packagesToInstall, boolean useAppDir, String customDir) throws IOException {
     	closeClassLoader();
     	
-        Map<String, String> dirList = new HashMap<>();
+        Map<String, String> dirList = new HashMap<String, String>();
 
         for (Map.Entry<Package, PackageVersion> entry : packagesToInstall.entrySet()) {
             Package thisPkg = entry.getKey();
@@ -457,10 +495,12 @@ public class AddOnManager {
             dirList.put(thisPkg.getName(), dirName);
         }
 
+        // make sure the class path is updated next time BEAST is started
+        Utils6.saveBeautiProperty("package.path", null);
         return dirList;
     }
 
-    private static String getPackageDir(Package thisPkg, PackageVersion thisPkgVersion, boolean useAppDir, String customDir) {
+    public static String getPackageDir(Package thisPkg, PackageVersion thisPkgVersion, boolean useAppDir, String customDir) {
         String dirName = (useAppDir ? getPackageSystemDir() : getPackageUserDir()) + 
         		(useArchive ? "/" + ARCHIVE_DIR : "") + 
         		"/" + thisPkg.getName() +
@@ -483,7 +523,7 @@ public class AddOnManager {
      */
     public static List<String> getInstalledDependencyNames(Package pkg, Map<String, Package> packageMap) {
 
-        List<String> dependencies = new ArrayList<>();
+        List<String> dependencies = new ArrayList<String>();
 
         for (Package thisPkg : packageMap.values()) {
             if (thisPkg.equals(pkg))
@@ -532,7 +572,7 @@ public class AddOnManager {
         	dir = new File(dirName);
         	useArchive = !useArchive;
         }
-        List<File> deleteFailed = new ArrayList<>();
+        List<File> deleteFailed = new ArrayList<File>();
         deleteRecursively(dir, deleteFailed);
         
         if (useArchive) {
@@ -552,6 +592,9 @@ public class AddOnManager {
             }
             outfile.close();
         }
+        
+        // make sure the class path is updated next time BEAST is started
+        Utils6.saveBeautiProperty("package.path", null);
         return dirName;
     }
 
@@ -562,7 +605,7 @@ public class AddOnManager {
      * http://docs.oracle.com/javase/7/docs/api/java/net/URLClassLoader.html#close%28%29
      * 
      * This allows smooth upgrading of BEAST versions using the package manager. Without 
-     * this, there is no way to upgrade BEAST since the AddOnManager is part of the 
+     * this, there is no way to upgrade BEAST since the PackageManager is part of the 
      * BEAST.jar file that is loaded and needs to be replaced.
      * 
      * Side effect is that after installing a package, opening a new BEAUti instance
@@ -570,14 +613,14 @@ public class AddOnManager {
      * 
      */
     private static void closeClassLoader() {
-    	try {
-    		if (Utils.isWindows()) {
-    			URLClassLoader sysLoader = (URLClassLoader) AddOnManager.class.getClassLoader();
-    			sysLoader.close();
+    	//try {
+    		if (Utils6.isWindows()) {
+    			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
+    			// sysLoader.close(); <= only since Java 1.7
     		}
-		} catch (IOException e) {
-			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
-		}
+		//} catch (IOException e) {
+		//	Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		//}
 		
 	}
 
@@ -658,10 +701,10 @@ public class AddOnManager {
         if (System.getProperty("beast.user.package.dir") != null)
             return System.getProperty("beast.user.package.dir");
         
-        if (Utils.isWindows()) {
+        if (Utils6.isWindows()) {
             return System.getProperty("user.home") + "\\BEAST\\" + beastVersion.getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils6.isMac()) {
             return System.getProperty("user.home") + "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         // Linux and unices
@@ -676,10 +719,10 @@ public class AddOnManager {
         if (System.getProperty("beast.system.package.dir") != null)
             return System.getProperty("beast.system.package.dir");
         
-        if (Utils.isWindows()) {
+        if (Utils6.isWindows()) {
             return "\\Program Files\\BEAST\\" + beastVersion.getMajorVersion();
         }
-        if (Utils.isMac()) {
+        if (Utils6.isMac()) {
             return "/Library/Application Support/BEAST/" + beastVersion.getMajorVersion();
         }
         return "/usr/local/share/beast/" + beastVersion.getMajorVersion();
@@ -698,7 +741,14 @@ public class AddOnManager {
         if (System.getProperty("beast.install.dir") != null)
             return System.getProperty("beast.install.dir");
 
-        URL u = BeastMain.class.getProtectionDomain().getCodeSource().getLocation();
+        
+        URL u;
+		try {
+			u = Class.forName("beast.app.beastapp.BeastMain").getProtectionDomain().getCodeSource().getLocation();
+		} catch (ClassNotFoundException e) {
+			// e.printStackTrace();
+			return null;
+		}
 		String s = u.getPath();
         File beastJar = new File(s);
         Log.trace.println("BeastMain found in " + beastJar.getPath());
@@ -771,8 +821,10 @@ public class AddOnManager {
                 return;
             }
 
-            Map<Package, PackageVersion>  packagesToInstall = new HashMap<>();
-            try (BufferedReader fin = new BufferedReader(new FileReader(toInstallListFile))) {
+            Map<Package, PackageVersion>  packagesToInstall = new HashMap<Package, PackageVersion>();
+            BufferedReader fin = null;
+            try {
+            	fin = new BufferedReader(new FileReader(toInstallListFile));
                 String line;
                 while ((line = fin.readLine()) != null) {
                     String[] nameVerPair = line.split(":");
@@ -781,6 +833,7 @@ public class AddOnManager {
                     PackageVersion ver = new PackageVersion(nameVerPair[1]);
                     packagesToInstall.put(pkg, ver);
                 }
+                fin.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -800,16 +853,10 @@ public class AddOnManager {
      */
     public static List<String> getBeastDirectories() {
     	
-        List<String> dirs = new ArrayList<>();
+        List<String> dirs = new ArrayList<String>();
         // check if there is the BEAST environment variable is set
-        if (System.getProperty("BEAST_ADDON_PATH") != null) {
-            String BEAST = System.getProperty("BEAST_ADDON_PATH");
-            for (String dirName : BEAST.split(":")) {
-                dirs.add(dirName);
-            }
-        }
-        if (System.getenv("BEAST_ADDON_PATH") != null) {
-            String BEAST = System.getenv("BEAST_ADDON_PATH");
+        if (PackageManager.getBeastPacakgePathProperty() != null) {
+            String BEAST = PackageManager.getBeastPacakgePathProperty();
             for (String dirName : BEAST.split(":")) {
                 dirs.add(dirName);
             }
@@ -847,7 +894,7 @@ public class AddOnManager {
         // subdirectories that look like they may contain an package
         // this is detected by checking the subdirectory contains a lib or
         // templates directory
-        List<String> subDirs = new ArrayList<>();
+        List<String> subDirs = new ArrayList<String>();
         for (String dirName : dirs) {
             File dir = new File(dirName);
             if (dir.isDirectory()) {
@@ -865,7 +912,8 @@ public class AddOnManager {
             }
         }
 
-        dirs.addAll(subDirs);
+        subDirs.addAll(dirs);
+        dirs = subDirs;
         dirs.addAll(getLatestBeastArchiveDirectories(dirs));
         return dirs;
     }
@@ -875,15 +923,15 @@ public class AddOnManager {
      * Only add the latest version from the archive.
      */
     private static List<String> getLatestBeastArchiveDirectories(List<String> visitedDirs) {
-        List<String> dirs = new ArrayList<>();
-        String FILESEPARATOR = "/"; //(Utils.isWindows() ? "\\" : "/");
+        List<String> dirs = new ArrayList<String>();
+        String FILESEPARATOR = "/"; //(Utils6.isWindows() ? "\\" : "/");
 
     	String dir = getPackageUserDir() + FILESEPARATOR + ARCHIVE_DIR;
     	File archiveDir = new File(dir);
     	if (archiveDir.exists()) {
     		
     		// determine which packages will already be loaded
-        	Set<String> alreadyLoaded = new HashSet<>();
+        	Set<String> alreadyLoaded = new HashSet<String>();
         	for (String d : visitedDirs) {
         		File dir2 = new File(d);
         		if (dir2.isDirectory()) {
@@ -893,8 +941,8 @@ public class AddOnManager {
                             // find name of package
                             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                             Document doc = factory.newDocumentBuilder().parse(versionFile);
-                            Element addon = doc.getDocumentElement();
-                            alreadyLoaded.add(addon.getAttribute("name"));
+                            Element packageElement = doc.getDocumentElement();
+                            alreadyLoaded.add(packageElement.getAttribute("name"));
                         } catch (Exception e) {
                             // too bad, won't print out any info
                         }
@@ -910,8 +958,8 @@ public class AddOnManager {
     	                            // find name of package
     	                            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     	                            Document doc = factory.newDocumentBuilder().parse(versionFile);
-    	                            Element addon = doc.getDocumentElement();
-    	                            alreadyLoaded.add(addon.getAttribute("name"));
+    	                            Element packageElement = doc.getDocumentElement();
+    	                            alreadyLoaded.add(packageElement.getAttribute("name"));
     	                        } catch (Exception e) {
     	                            // too bad, won't print out any info
     	                        }
@@ -926,10 +974,14 @@ public class AddOnManager {
         		if (f2.isDirectory()) {
         			// this may be a package directory -- pick the latest directory
         			String [] versionDirs = f2.list();
-        			Arrays.sort(versionDirs, (v1, v2) -> {
-        				PackageVersion pv1 = new PackageVersion(v1);
-        				PackageVersion pv2 = new PackageVersion(v2);
-        				return (pv1.compareTo(pv2));
+        			Arrays.sort(versionDirs,
+        					new Comparator<String>() {
+								@Override
+								public int compare(String v1, String v2) {
+			        				PackageVersion pv1 = new PackageVersion(v1);
+			        				PackageVersion pv2 = new PackageVersion(v2);
+			        				return (pv1.compareTo(pv2));
+								}
         			});
         			int k = versionDirs.length - 1;
         			while (k >= 0) {
@@ -951,26 +1003,63 @@ public class AddOnManager {
     } // getBeastDirectories
 
     
+	public static void initialise() {
+	    processDeleteList();
+	
+	    addInstalledPackages(packages);
+	
+	    processInstallList(packages);
+	
+	//    checkInstalledDependencies(packages);
+	}
 
 	/**
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws IOException {
+    	Utils6.logToSplashScreen("PackageManager::processDeleteList");
         processDeleteList();
 
+    	Utils6.logToSplashScreen("PackageManager::addInstalledPackages");
         addInstalledPackages(packages);
 
+    	Utils6.logToSplashScreen("PackageManager::processInstallList");
         processInstallList(packages);
 
+    	Utils6.logToSplashScreen("PackageManager::checkInstalledDependencies");
         checkInstalledDependencies(packages);
 
+        // jars will only be loaded the classical (pre v2.5.0)
+        // way with java 8 when the -Dbeast.load.jars=true
+        // directive is given. This can be useful for developers
+        // but generally slows down application starting.
+        if (Boolean.getBoolean("beast.load.jars") == false || Utils6.getMajorJavaVersion() != 8) {
+            externalJarsLoaded = true;
+        	Utils6.logToSplashScreen("PackageManager::findDataTypes");
+            findDataTypes();
+        	Utils6.logToSplashScreen("PackageManager::Done");
+    		return;
+    	}
+
         for (String jarDirName : getBeastDirectories()) {
-        	loadPacakge(jarDirName);
+        	loadPackage(jarDirName);
         }
         externalJarsLoaded = true;
-        Alignment.findDataTypes();
+    	Utils6.logToSplashScreen("PackageManager::findDataTypes");
+        findDataTypes();
+    	Utils6.logToSplashScreen("PackageManager::Done");
     } // loadExternalJars
     
+	private static void findDataTypes() {
+		try {
+			Method findDataTypes = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
+			findDataTypes.invoke(null);
+		} catch (Exception e) {
+			// too bad, cannot load data types
+			Log.err.print(e.getMessage());
+		}
+	}
+
 	public static void loadExternalJars(String packagesString) throws IOException {
         processDeleteList();
 
@@ -990,9 +1079,9 @@ public class AddOnManager {
         			Package pkg = new Package(pkgname);
         			PackageVersion version = new PackageVersion(pkgversion);
         	    	useArchive = true;
-        			String dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+        			String dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
         			if (new File(dirName).exists()) {
-        				loadPacakge(dirName);
+        				loadPackage(dirName);
         			} else {
         				// check the latest installed version
         				Package pkg2 = packages.get(pkgname);
@@ -1000,9 +1089,9 @@ public class AddOnManager {
             				unavailablePacakges += s +", ";
         				} else {
 	            	    	useArchive = false;
-	            			dirName = getPackageDir(pkg, version, false, System.getProperty("BEAST_ADDON_PATH"));
+	            			dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
 	            			if (new File(dirName).exists()) {
-	            				loadPacakge(dirName);
+	            				loadPackage(dirName);
 	            			} else {
 	            				unavailablePacakges += s +", ";
 	            			}
@@ -1021,10 +1110,10 @@ public class AddOnManager {
         	}
         }
         externalJarsLoaded = true;
-        Alignment.findDataTypes();
+        findDataTypes();
     } // loadExternalJars
 
-    private static void loadPacakge(String jarDirName) {
+    private static void loadPackage(String jarDirName) {
         try {
             File versionFile = new File(jarDirName + "/version.xml");
             String packageNameAndVersion = null;
@@ -1033,10 +1122,10 @@ public class AddOnManager {
                     // print name and version of package
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     Document doc = factory.newDocumentBuilder().parse(versionFile);
-                    Element addon = doc.getDocumentElement();
-                    packageNameAndVersion = addon.getAttribute("name") + " v" + addon.getAttribute("version");
+                    Element packageElement = doc.getDocumentElement();
+                    packageNameAndVersion = packageElement.getAttribute("name") + " v" + packageElement.getAttribute("version");
                     Log.warning.println("Loading package " + packageNameAndVersion);
-                    Utils.logToSplashScreen("Loading package " + packageNameAndVersion);
+                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
                 } catch (Exception e) {
                     // too bad, won't print out any info
 
@@ -1113,7 +1202,7 @@ public class AddOnManager {
     public static void populatePackagesToInstall(Map<String, Package> packageMap,
                                                  Map<Package, PackageVersion> packagesToInstall) throws DependencyResolutionException {
 
-        Map<Package, PackageVersion> copy = new HashMap<>(packagesToInstall);
+        Map<Package, PackageVersion> copy = new HashMap<Package, PackageVersion>(packagesToInstall);
 
         for (Map.Entry<Package, PackageVersion> entry : copy.entrySet()) {
             populatePackagesToInstall(packageMap, packagesToInstall, entry.getKey(), entry.getValue());
@@ -1177,7 +1266,7 @@ public class AddOnManager {
      * @param packageMap
      */
     private static void checkInstalledDependencies(Map<String, Package> packageMap) {
-        Map<PackageDependency,Package> dependencies = new HashMap<>();
+        Map<PackageDependency,Package> dependencies = new HashMap<PackageDependency,Package>();
 
         // Collect installed package dependencies
         for (Package pkg : packageMap.values()) {
@@ -1206,6 +1295,10 @@ public class AddOnManager {
                         "Either uninstall " + requiredBy.getName() + " or install the correct version of " + dep.dependencyName + ".");
             }
         }
+    }
+
+    public static void checkInstalledDependencies() {
+    	checkInstalledDependencies(packages);
     }
 
     /**
@@ -1244,7 +1337,7 @@ public class AddOnManager {
      */
     public static void addURL(URL u) throws IOException {
         // ClassloaderUtil clu = new ClassloaderUtil();
-        AddOnManager clu = new AddOnManager();
+        PackageManager clu = new PackageManager();
         // URLClassLoader sysLoader = (URLClassLoader)
         // ClassLoader.getSystemClassLoader();
         URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
@@ -1284,7 +1377,7 @@ public class AddOnManager {
             }
         }
 
-        all_classes = new ArrayList<>();
+        all_classes = new ArrayList<String>();
         String pathSep = System.getProperty("path.separator");
         String classpath = System.getProperty("java.class.path");
 
@@ -1340,16 +1433,24 @@ public class AddOnManager {
     }
 
     private static void addDirContent(File dir, int len) {
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                addDirContent(file, len);
-            } else {
-                if (file.getName().endsWith(".class")) {
-                    all_classes.add(file.getAbsolutePath().substring(len));
-                }
-            }
-        }
-
+    	try {
+    	// No point in checking directories that cannot be read.
+    	// Need check here since these potentially can cause exceptions
+	    	if (dir.canRead()) {
+		        for (File file : dir.listFiles()) {
+		            if (file.isDirectory()) {
+		                addDirContent(file, len);
+		            } else {
+		                if (file.getName().endsWith(".class")) {
+		                    all_classes.add(file.getAbsolutePath().substring(len));
+		                }
+		            }
+		        }
+	    	}
+    	} catch (Exception e) {
+    		// ignore
+    		// windows appears to throw exceptions on unaccessible directories
+    	}
     }
 
 
@@ -1434,7 +1535,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
         try {
             cls = Class.forName(classname);
@@ -1458,7 +1559,7 @@ public class AddOnManager {
         List<String> result;
         Class<?> cls;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
         try {
             cls = Class.forName(classname);
@@ -1484,23 +1585,26 @@ public class AddOnManager {
         int i;
         HashSet<String> names;
 
-        result = new ArrayList<>();
+        result = new ArrayList<String>();
 
-        names = new HashSet<>();
+        names = new HashSet<String>();
         for (i = 0; i < pkgnames.length; i++) {
             names.addAll(find(cls, pkgnames[i]));
         }
 
         // sort result
         result.addAll(names);
-        Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-        		return -1;
-        	}
-        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-        		return 1;
-        	}
-        	return s1.compareTo(s2);
+        Collections.sort(result, new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
+	        		return -1;
+	        	}
+	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareTo(s2);
+			}
         }); //, new StringCompare());
 
         return result;
@@ -1519,10 +1623,12 @@ public class AddOnManager {
             loadAllClasses();
         }
 
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String className = all_classes.get(i);
-            className = className.replaceAll("/", ".");
+            if (className.indexOf('/') >= 0) {
+            	className = className.replaceAll("/", ".");
+            }
             //Log.debug.println(className + " " + pkgname);
 
             // must match package
@@ -1548,14 +1654,17 @@ public class AddOnManager {
         }
 
         // sort result
-        Collections.sort(result, (s1, s2) -> {
-        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-        		return -1;
-        	}
-        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-        		return 1;
-        	}
-        	return s1.compareTo(s2);
+        Collections.sort(result, new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
+	        		return -1;
+	        	}
+	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareTo(s2);
+			}
         }); //, new StringCompare());
         // remove duplicates
         for (int i = result.size() - 1; i > 0; i--) {
@@ -1593,7 +1702,7 @@ public class AddOnManager {
         int maxDepsWidth = depsHeader.length();
 
         // Assemble list of packages (excluding beast2), keeping track of maximum field widths
-        List<Package> packageList = new ArrayList<>();
+        List<Package> packageList = new ArrayList<Package>();
         for (Package pkg : packageMap.values()) {
 //            if (pkg.getName().equals(BEAST_PACKAGE))
 //                continue;
@@ -1659,12 +1768,12 @@ public class AddOnManager {
 
 
     private static void printUsageAndExit(Arguments arguments) {
-        arguments.printUsage("addonmanager", "");
+        arguments.printUsage("packagemanager", "");
         Log.info.println("\nExamples:");
-        Log.info.println("addonmanager -list");
-        Log.info.println("addonmanager -add SNAPP");
-        Log.info.println("addonmanager -useAppDir -add SNAPP");
-        Log.info.println("addonmanager -del SNAPP");
+        Log.info.println("packagemanager -list");
+        Log.info.println("packagemanager -add SNAPP");
+        Log.info.println("packagemanager -useAppDir -add SNAPP");
+        Log.info.println("packagemanager -del SNAPP");
         System.exit(0);
     }
 
@@ -1679,6 +1788,8 @@ public class AddOnManager {
                             new Arguments.Option("useAppDir", "Use application (system wide) installation directory. Note this requires writing rights to the application directory. If not specified, the user's BEAST directory will be used."),
                             new Arguments.StringOption("dir", "DIR", "Install/uninstall package in directory <DIR>. This overrides the useAppDir option"),
                             new Arguments.Option("help", "Show help"),
+                            new Arguments.Option("update", "Check for updates, and ask to install if available"),
+                            new Arguments.Option("updatenow", "Check for updates and install without asking"),
                     });
             try {
                 arguments.parseArguments(args);
@@ -1692,12 +1803,22 @@ public class AddOnManager {
             if (args.length == 0 || arguments.hasOption("help")) {
                 printUsageAndExit(arguments);
             }
+            
+            if (arguments.hasOption("update")) {
+            	updatePackages(UpdateStatus.AUTO_CHECK_AND_ASK, false);
+            	return;
+            }
+
+            if (arguments.hasOption("updatenow")) {
+            	updatePackages(UpdateStatus.AUTO_UPDATE, false);
+            	return;
+            }
 
             boolean useAppDir = arguments.hasOption("useAppDir");
             String customDir = arguments.getStringOption("dir");
             if (customDir != null) {
-                String path = System.getProperty("BEAST_ADDON_PATH");
-                System.setProperty("BEAST_ADDON_PATH", (path != null ? path + ":" : "") +customDir);
+                String path = PackageManager.getBeastPacakgePathProperty();
+                System.setProperty("BEAST_PACKAGE_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
             List<URL> urlList = getRepositoryURLs();
@@ -1706,10 +1827,16 @@ public class AddOnManager {
                 Log.debug.println("Access URL : " + url);
             }
             Log.debug.print("Getting list of packages ...");
-            Map<String, Package> packageMap = new TreeMap<>(String::compareToIgnoreCase);
+            Map<String, Package> packageMap = new TreeMap<String, Package>(new Comparator<String>() {
+            	// String::compareToIgnoreCase
+    			@Override
+    			public int compare(String s1, String s2) {
+    	        	return s1.toLowerCase().compareTo(s2.toLowerCase());
+    			}
+            });
             try {
-                AddOnManager.addInstalledPackages(packageMap);
-                AddOnManager.addAvailablePackages(packageMap);
+                PackageManager.addInstalledPackages(packageMap);
+                PackageManager.addAvailablePackages(packageMap);
             } catch (PackageListRetrievalException e) {
             	Log.warning.println(e.getMessage());
                 if (e.getCause() instanceof IOException)
@@ -1730,12 +1857,12 @@ public class AddOnManager {
                         processed = true;
                         if (!aPackage.isInstalled() || arguments.hasOption("version")) {
                             Log.debug.println("Determine packages to install");
-                            Map<Package, PackageVersion> packagesToInstall = new HashMap<>();
+                            Map<Package, PackageVersion> packagesToInstall = new HashMap<Package, PackageVersion>();
                             if (arguments.hasOption("version")) {
                             	String versionString = arguments.getStringOption("version");
                             	PackageVersion version = new PackageVersion(versionString);
                             	packagesToInstall.put(aPackage, version);
-                            	AddOnManager.useArchive = true;
+                            	PackageManager.useArchive = true;
                             } else {
                             	packagesToInstall.put(aPackage, aPackage.getLatestVersion());
                             }
@@ -1767,7 +1894,7 @@ public class AddOnManager {
                     if (aPackage.packageName.equals(name)) {
                         processed = true;
                         if (arguments.hasOption("version")) {
-                        	AddOnManager.useArchive = true;
+                        	PackageManager.useArchive = true;
                         	String versionString = arguments.getStringOption("version");
                         	PackageVersion version = new PackageVersion(versionString);
                             String dir = uninstallPackage(aPackage, version, useAppDir, customDir);
@@ -1781,7 +1908,7 @@ public class AddOnManager {
 	                                Log.info.println("Package " + name + " is uninstalled from " + dir + ".");
 	                            } else {
 	                                Log.info.println("Un-installation aborted: " + name + " is used by these other packages: " +
-	                                        String.join(", ", deps) + ".");
+	                                        join(", ", deps) + ".");
 	                                Log.info.println("Remove these packages first.");
 	                                System.exit(1);
 	                            }
@@ -1801,41 +1928,95 @@ public class AddOnManager {
         }
     }
 
-    /** keep track of which class comes from a particular package.
+    private static String join(String string, List<String> deps) {
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < deps.size(); i++) {
+			buf.append(deps.get(i));
+			buf.append(',');
+		}
+		buf.deleteCharAt(buf.length() - 1);
+		return buf.toString();
+	}
+
+	/** keep track of which class comes from a particular package.
      * It maps a full class name onto a package name + " v" + package version
      * e.g. "bModelTest v0.3.2"
      */
-    private static Map<String, String> classToPackageMap = new HashMap<>();
+    private static Map<String, String> classToPackageMap = new HashMap<String, String>();
     
     /**  maps package name to a Package object, which contains info on whether 
      * and which version is installed. This is initialised when loadExternalJars()
      * is called, which happens at the start of BEAST, BEAUti and many utilities.
      */
-    private static TreeMap<String, Package> packages = new TreeMap<>();
-
-    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
-     * for all packages used by o and its predecessors in the model graph.
-     */
-    public static Set<String> getPackagesAndVersions(BEASTInterface o) {
-    	Set<String> packagesAndVersions = new LinkedHashSet<>();
-    	getPackagesAndVersions(o, packagesAndVersions);
-    	return packagesAndVersions;
+    private static TreeMap<String, Package> packages = new TreeMap<String, Package>();
+   
+    public static Map<String, String> getClassToPackageMap() {
+    	if (classToPackageMap.size() == 0) {
+            for (String jarDirName : getBeastDirectories()) {
+            	initPackageMap(jarDirName);
+            }
+    	}
+    	return classToPackageMap;
     }
-    
-    /** traverse model graph starting at o, and collect packageAndVersion strings
-     * along the way.
-     */
-    private static void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
-    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
-    	if (packageAndVersion != null) {
-    		packagesAndVersions.add(packageAndVersion);
-    	}
-    	for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
-    		getPackagesAndVersions(o2, packagesAndVersions);
-    	}
+
+    private static void initPackageMap(String jarDirName) {
+        try {
+            File versionFile = new File(jarDirName + "/version.xml");
+            String packageNameAndVersion = null;
+            if (versionFile.exists()) {
+                try {
+                    // print name and version of package
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    Document doc = factory.newDocumentBuilder().parse(versionFile);
+                    Element packageElement = doc.getDocumentElement();
+                    packageNameAndVersion = packageElement.getAttribute("name") + " v" + packageElement.getAttribute("version");
+                    Log.warning.println("Loading package " + packageNameAndVersion);
+                    Utils6.logToSplashScreen("Loading package " + packageNameAndVersion);
+                } catch (Exception e) {
+                    // too bad, won't print out any info
+
+                    // File is called version.xml, but is not a Beast2 version file
+                    // Log.debug.print("Skipping "+jarDirName+" (not a Beast2 package)");
+                }
+            }
+            File jarDir = new File(jarDirName + "/lib");
+            if (!jarDir.exists()) {
+                jarDir = new File(jarDirName + "\\lib");
+            }
+            if (jarDir.exists() && jarDir.isDirectory()) {
+                for (String fileName : jarDir.list()) {
+                    if (fileName.endsWith(".jar")) {
+                        Log.debug.print("Probing: " + fileName + " ");
+                        // check that we are not reload existing classes
+                        try {
+                            JarInputStream jarFile = new JarInputStream
+                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
+                            JarEntry jarEntry;
+                            while ((jarEntry = jarFile.getNextJarEntry()) != null) {
+                                if ((jarEntry.getName().endsWith(".class"))) {
+                                    String className = jarEntry.getName().replaceAll("/", "\\.");
+                                    className = className.substring(0, className.lastIndexOf('.'));
+                                    if (packageNameAndVersion != null) {
+                                        classToPackageMap.put(className, packageNameAndVersion);
+                                    }
+                                }
+                            }
+                            jarFile.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // File exists, but cannot open the file for some reason
+            Log.debug.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+            Log.warning.println("Skipping "+jarDirName+"/version.xml (unable to open file");
+        }
+		
 	}
 
-    /** test whether a package with given name and version is available.
+	/** test whether a package with given name and version is available.
      * @param pkgname
      * @param pkgversion ignored for now
      * @return
@@ -1854,4 +2035,147 @@ public class AddOnManager {
 //			return false;
 //		}
 	}
+    
+    /** check whether there are new packages to install, and if so install them
+     * either after asking the user, or without asking (depending on updateStatus).
+     * @param updateStatus
+     */
+    public static void updatePackages(UpdateStatus updateStatus, boolean useGUI) {
+    	if (updateStatus == UpdateStatus.DO_NOT_CHECK) {
+    		return;
+    	}
+    	
+    	// find available and installed packages
+        TreeMap<String, Package> packageMap = new TreeMap<String, Package>(
+        		new Comparator<String>() {
+			@Override
+			public int compare(String s1, String s2) {
+	        	if (s1.equals(PackageManager.BEAST_PACKAGE_NAME)) {
+	        		if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
+	        			return 0;
+	        		}
+	        		return -1;
+	        	}
+	        	if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
+	        		return 1;
+	        	}
+	        	return s1.compareToIgnoreCase(s2);
+			}
+        });
+        try {
+			addAvailablePackages(packageMap);
+		} catch (PackageListRetrievalException e) {
+			// cannot access list right now, so try again next time
+			return;
+		}
+        addInstalledPackages(packageMap);
+
+        // check whether any installed package has an update
+        Map<Package, PackageVersion> packagesToInstall = new LinkedHashMap<Package, PackageVersion>();
+        for (String packageName : packageMap.keySet()) {
+        	Package _package = packageMap.get(packageName);
+        	if (_package.isInstalled()) {
+        		if (_package.getLatestVersion() != null && _package.getLatestVersion().compareTo(_package.getInstalledVersion()) > 0) {
+        			packagesToInstall.put(_package, _package.getLatestVersion());
+        		}
+        	}
+        }
+        
+        if (packagesToInstall.size() == 0) {
+        	// nothing to install
+        	return;
+        }
+         
+        // do we need to ask before proceeding?
+    	if (updateStatus != UpdateStatus.AUTO_UPDATE) {
+    		if (useGUI) {
+	    		StringBuilder buf = new StringBuilder();
+	    		buf.append("<table><tr><td>Package name</td><td>New version</td><td>Installed</td></tr>");
+	    		for (Package _package : packagesToInstall.keySet()) {
+	    			buf.append("<tr><td>" + _package.packageName + "</td>"
+	    					+ "<td>" + _package.getLatestVersion()+ "</td>"
+	    					+ "<td>" + _package.getInstalledVersion() + "</td></tr>");
+	    		}
+	    		buf.append("</table>");
+	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
+	    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New pacakges are available to install:</h2>" +
+	    				buf.toString() + 
+	    				"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+	    		        null, options, options[2]);
+	    		switch (response) {
+	    		case 0: // No, never check again
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
+	    			return;
+	    		case 1: // No, check later
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	    			return;
+	    		case 2: // Yes, ask next time
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+	    			break;
+	    		case 3: // Always install automatically
+	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
+	    			break;
+	    		default: // e.g. escape-key gets us here
+	    			return;
+	    		}
+    		} else {
+    			Log.info("New pacakges are available to install:");
+	    		Log.info("Package name\tNew version\tInstalled");
+	    		for (Package _package : packagesToInstall.keySet()) {
+	    			Log.info(_package.packageName + "\t" + _package.getLatestVersion()+ "\t" + _package.getInstalledVersion());
+	    		}
+    			Log.info("Do you want to install (y/n)?");
+                Log.info.flush();
+                final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	                        
+                String msg = "n";
+				try {
+					msg = stdin.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+                if (!msg.toLowerCase().equals("y")) {
+                	Log.info("Exiting now");
+                	return;
+                }
+    		}
+    	}
+        
+        // install packages that can be updated
+        try {
+			prepareForInstall(packagesToInstall, false, null);
+
+	        if (getToDeleteListFile().exists()) {
+	        	if (useGUI) {
+	        		JOptionPane.showMessageDialog(null,
+	                    "<html><body><p style='width: 200px'>Upgrading packages on your machine requires BEAUti " +
+	                            "to restart. Shutting down now.</p></body></html>");
+	        	} else {
+                    Log.info("Upgrading packages on your machine requires BEAUti to restart.");
+	        	}
+	            System.exit(0);
+	        }
+	
+	        Map<String,String> dirList = installPackages(packagesToInstall, false, null);
+	        for (String packageName : dirList.keySet()) {
+	        	Log.info("Installed " + packageName + " in " + dirList.get(packageName));
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+    public static String getBeastPacakgePathProperty() {
+    	if (System.getProperty("BEAST_PACKAGE_PATH") != null) {
+    		return System.getProperty("BEAST_PACKAGE_PATH");
+    	}
+    	if (System.getenv("BEAST_PACKAGE_PATH") != null) {
+    		return System.getenv("BEAST_PACKAGE_PATH");
+    	}
+    	if (System.getenv("BEAST_ADDON_PATH") != null) {
+    		return System.getenv("BEAST_ADDON_PATH");
+    	}    	
+    	return System.getenv("BEAST_ADDON_PATH");
+    }
  }

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import beast.core.BEASTObject;
 import beast.core.Input;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.XMLParser;
 import junit.framework.TestCase;
 
@@ -22,7 +22,7 @@ public class XMLElementNameTest extends TestCase {
      */
     @Test
     public void test_NameUniqueness() {
-        List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         List<String> improperInputs = new ArrayList<String>();
         for (String beastObjectName : pluginNames) {
             try {
@@ -66,7 +66,7 @@ public class XMLElementNameTest extends TestCase {
         element2ClassMap.put("parameter", "beast.core.parameter.Parameter");
 
         // check each beastObject
-        List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         List<String> improperInputs = new ArrayList<String>();
         for (String beastObjectName : pluginNames) {
             try {

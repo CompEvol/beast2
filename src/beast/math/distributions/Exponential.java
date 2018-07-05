@@ -48,8 +48,8 @@ public class Exponential extends ParametricDistribution {
     }
     
     @Override
-    public double getMean() {
-    	return offsetInput.get() + m_dist.getMean();
+    protected double getMeanWithoutOffset() {
+    	return m_dist.getMean();
     }
 
 } // class Exponential

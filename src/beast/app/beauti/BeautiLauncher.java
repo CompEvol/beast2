@@ -16,12 +16,13 @@ import beast.app.util.Utils6;
 public class BeautiLauncher extends BeastLauncher {
 
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
-		Utils6.startSplashScreen();
+		// Utils6.startSplashScreen();
 		if (javaVersionCheck("BEAUti")) {
-			loadBEASTJars();
+			// loadBEASTJars();
 			Utils6.testCudaStatusOnMac();
-			Beauti.main(args);
+			String classpath = getPath(false, null);
+			run(classpath, "beast.app.beauti.Beauti", args);
 		}
-        Utils6.endSplashScreen();
+        // Utils6.endSplashScreen();
 	}
 }

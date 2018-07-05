@@ -468,7 +468,7 @@ public abstract class GeneralParameterList<T> extends StateNode {
     }
 
     @Override
-    public void log(int sample, PrintStream out) {
+    public void log(long sample, PrintStream out) {
         out.print(pList.size() + "\t");
     }
 

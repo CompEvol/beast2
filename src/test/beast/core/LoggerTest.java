@@ -24,16 +24,6 @@ public class LoggerTest {
         logger = new Logger();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
-    @Test
-    public void initAndValidate() throws Exception {
-
-    }
-
     @Test
     public void isLoggingToStdout() throws Exception {
         logger = new Logger();
@@ -95,35 +85,6 @@ public class LoggerTest {
         // close all file, except stdout
         logger.close();
         assertTrue("m_out is still System.out after close", logger.getM_out() == System.out);
-    }
-
-
-    @Test
-    public void init() throws Exception {
-
-    }
-
-
-    @Test
-    public void log() throws Exception {
-//        logger = new Logger();
-//        logger.initByName("fileName", "", "log", new RealParameter(new Double[]{0.3, 0.7}));
-
-//        logger.log(-1);
-//        assertEquals("", , );
-//        logger.log(1);// need init m_out in openLogFile
-
-
-    }
-
-    @Test
-    public void close() throws Exception {
-
-    }
-
-    @Test
-    public void getSampleOffset() throws Exception {
-
     }
 
 }

@@ -40,7 +40,7 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
     }
 
     @Override
-    public void log(int sample, PrintStream out) {
+    public void log(long sample, PrintStream out) {
         final Tree tree = treeInput.get();
         if (logHeigthInput.get() && logHeightInput.get()) {
         	out.print(tree.getRoot().getHeight() + "\t");

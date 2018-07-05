@@ -25,17 +25,13 @@
 package beast.core;
 
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
+
+import java.io.File;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -432,6 +428,10 @@ public class Input<T> {
                 if (value instanceof BEASTInterface) {
                     ((BEASTInterface) value).getOutputs().add(beastObject);
                 }
+            } else if (value instanceof List<?> && ((List<?>) value).size() == 0) {
+                // https://github.com/CompEvol/beast2/issues/773
+                throw new RuntimeException("Input 105: invalid input value for \"" + getName() + "\" in \"" +
+                        beastObject + "\", the empty list and causes IndexOutOfBoundsException");
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
                 @SuppressWarnings("rawtypes")

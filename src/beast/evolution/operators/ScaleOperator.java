@@ -143,7 +143,7 @@ public class ScaleOperator extends Operator {
 
             // not a tree scaler, so scale a parameter
             final boolean scaleAll = scaleAllInput.get();
-            final int degreesOfFreedom = degreesOfFreedomInput.get();
+            final int specifiedDoF = degreesOfFreedomInput.get();
             final boolean scaleAllIndependently = scaleAllIndependentlyInput.get();
 
             final RealParameter param = parameterInput.get(this);
@@ -194,18 +194,11 @@ public class ScaleOperator extends Operator {
                 // update all dimensions
                 // hasting ratio is dim-2 times of 1dim case. would be nice to have a reference here
                 // for the proof. It is supposed to be somewhere in an Alexei/Nicholes article.
-                final int df = (degreesOfFreedom > 0) ? degreesOfFreedom - 2 : dim - 2;
-                hastingsRatio = df * Math.log(scale);
 
                 // all Values assumed independent!
-                for (int i = 0; i < dim; i++) {
-                    final double newValue = param.getValue(i) * scale;
-
-                    if (outsideBounds(newValue, param)) {
-                        return Double.NEGATIVE_INFINITY;
-                    }
-                    param.setValue(i, newValue);
-                }
+                final int computedDoF = param.scale(scale);
+                final int usedDoF = (specifiedDoF > 0) ? specifiedDoF : computedDoF ;
+                hastingsRatio = (usedDoF - 2) * Math.log(scale);
             } else {
                 hastingsRatio = -Math.log(scale);
 

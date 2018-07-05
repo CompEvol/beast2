@@ -1,18 +1,18 @@
 package beast.util;
 
+import beast.core.Description;
+
 import java.net.URL;
 import java.util.*;
 
-import beast.core.Description;
-
 /**
- * BEAUti Package managed by AddOnManager
- * all property is for installed package only
- * the released/latest package info is online
+ * BEAUti Package managed by PackageManager.
  *
- * modified by Walter Xie
+ * Add a new rule in issue 754:
+ * Package manager should make project links compulsory.
  */
-@Description("BEAUti package managed by package manager, also named as add-on previously")
+@Description("BEAUti package managed by package manager, also named as add-on previously. " +
+        "Project URL is compulsory.")
 public class Package {
     protected String packageName, description;
     protected PackageVersion installedVersion;
@@ -26,8 +26,9 @@ public class Package {
         this.packageName = name;
         this.description = "";
 
-        availableVersionURLs = new TreeMap<>();
-        availableVersionDeps = new TreeMap<>();
+        // this class needs to be java6 compatible, so no <> notation
+        availableVersionURLs = new TreeMap<PackageVersion, URL>();
+        availableVersionDeps = new TreeMap<PackageVersion, Set<PackageDependency>>();
     }
 
     public String getName() {
@@ -48,6 +49,22 @@ public class Package {
 
     public void setProjectURL(URL url) {
         this.projectURL = url;
+    }
+
+
+    /**
+     * @return true if projectURL is valid
+     */
+    public boolean isValidFormat() {
+        //https://www.geeksforgeeks.org/check-if-url-is-valid-or-not-in-java/
+        try {
+            getProjectURL().toURI();
+            return true;
+        }
+        // If there was an Exception while creating URL object
+        catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -139,7 +156,8 @@ public class Package {
      * @return list of available package versions, sorted in order of decreasing version.
      */
     public List<PackageVersion> getAvailableVersions() {
-        List<PackageVersion> versionList = new ArrayList<>(availableVersionURLs.keySet());
+        // this class needs to be java6 compatible, so no <> notation
+        List<PackageVersion> versionList = new ArrayList<PackageVersion>(availableVersionURLs.keySet());
         Collections.sort(versionList);
         Collections.reverse(versionList);
         return versionList;
@@ -179,7 +197,7 @@ public class Package {
         String depString = "";
         for (PackageDependency packageDependency : availableVersionDeps.lastEntry().getValue()) {
             String s = packageDependency.dependencyName;
-            if (!s.equalsIgnoreCase(AddOnManager.BEAST_PACKAGE_NAME)) {
+            if (!s.equalsIgnoreCase(PackageManager.BEAST_PACKAGE_NAME)) {
                 depString +=  s + ", ";
             }
         }

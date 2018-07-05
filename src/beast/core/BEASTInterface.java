@@ -24,6 +24,8 @@
 package beast.core;
 
 
+import beast.core.util.Log;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -403,8 +405,14 @@ public interface BEASTInterface {
      * @throws IllegalArgumentException when validation fails
      */
     default public void validateInputs() {
-        for (final Input<?> input : listInputs()) {
-            input.validate();
+        try {
+            for (final Input<?> input : listInputs()) {
+                input.validate();
+            }
+        } catch (IllegalArgumentException ex) {
+            Log.err.println("Validation error when initializing object " +
+                    this.getClass().getName() + " (id " + getID() + "):");
+            throw ex;
         }
     }
 

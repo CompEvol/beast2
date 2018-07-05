@@ -9,7 +9,7 @@ import org.junit.Test;
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import junit.framework.TestCase;
 
 
@@ -27,7 +27,7 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testDescriptions() {
-        final List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         final List<String> undocumentedPlugins = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {
@@ -58,7 +58,7 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testInputTipText() {
-        final List<String> pluginNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        final List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         final List<String> undocumentedInputs = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {

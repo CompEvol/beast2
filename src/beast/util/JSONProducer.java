@@ -416,7 +416,9 @@ public class JSONProducer {
     	str = str.replaceAll("\"", "\\\\\"");
     	str = str.replaceAll("\n", "\\\\n");
     	if (input != null && !input.getType().equals(Double.class) &&
+    			!input.getType().equals(Float.class)&&
     			!input.getType().equals(Integer.class)&&
+    			!input.getType().equals(Long.class)&&
     			!input.getType().equals(Boolean.class)) {
     		str = "\"" + str + "\"";
     	}

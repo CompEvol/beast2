@@ -222,18 +222,39 @@ public class Node extends BEASTObject {
      * This returns all child nodes including this node.
      *
      * @return all child nodes including this node
+     * @deprecated issue 703: name is confusing, replaced by
+     * {@link #getAllChildNodesAndSelf() getAllChildNodesAndSelf}
      */
     public List<Node> getAllChildNodes() {
+        return getAllChildNodesAndSelf();
+    }
+
+    // recursive
+    /**
+     * @deprecated issue 703: name is confusing, replaced by
+     * {@link #getAllChildNodesAndSelf(List<Node>) getAllChildNodesAndSelf}
+     */
+    public void getAllChildNodes(final List<Node> childNodes) {
+        getAllChildNodesAndSelf(childNodes);
+    }
+
+    /**
+     * get all child node under this node, if this node is leaf then list.size() = 0.
+     * This returns all child nodes including this node.
+     *
+     * @return all child nodes including this node
+     */
+    public List<Node> getAllChildNodesAndSelf() {
         final List<Node> childNodes = new ArrayList<>();
-        if (!this.isLeaf()) getAllChildNodes(childNodes);
+        if (!this.isLeaf()) getAllChildNodesAndSelf(childNodes);
         return childNodes;
     }
 
     // recursive
-    public void getAllChildNodes(final List<Node> childNodes) {
+    public void getAllChildNodesAndSelf(final List<Node> childNodes) {
         childNodes.add(this);
         for (Node child : children)
-            child.getAllChildNodes(childNodes);
+            child.getAllChildNodesAndSelf(childNodes);
     }
 
     /**
@@ -753,22 +774,31 @@ public class Node extends BEASTObject {
      * scale height of this node and all its descendants
      *
      * @param scale scale factor
+     * @return degrees of freedom scaled (used for HR calculations)
      */
-    public void scale(final double scale) {
+    public int scale(final double scale) {
         startEditing();
+
+        int dof = 0;
+
         isDirty |= Tree.IS_DIRTY;
         if (!isLeaf() && !isFake()) {
             height *= scale;
+
+            if (isRoot() || parent.getHeight() != getHeight())
+                dof += 1;
         }
         if (!isLeaf()) {
-            getLeft().scale(scale);
+            dof += getLeft().scale(scale);
             if (getRight() != null) {
-                getRight().scale(scale);
+                dof += getRight().scale(scale);
             }
             if (height < getLeft().height || height < getRight().height) {
                 throw new IllegalArgumentException("Scale gives negative branch length");
             }
         }
+
+        return dof;
     }
 
 //    /**

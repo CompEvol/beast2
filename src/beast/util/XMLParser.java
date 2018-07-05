@@ -251,11 +251,18 @@ public class XMLParser {
      */
     RequiredInputProvider requiredInputProvider = null;
     PartitionContext partitionContext = null;
+	java.util.Map<String,String> parserDefinitions;
 
     public XMLParser() {
         beastObjectsWaitingToInit = new ArrayList<>();
         nodesWaitingToInit = new ArrayList<>();
     }
+
+	public XMLParser(java.util.Map<String,String> parserDefinitions) {
+		this();
+		this.parserDefinitions = parserDefinitions;
+	}
+
 
     public Runnable parseFile(final File file) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
         // parse the XML file into a DOM document
@@ -277,6 +284,15 @@ public class XMLParser {
         // Substitute occurrences of "$(seed)" with RNG seed
         replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
                 String.valueOf(Randomizer.getSeed()));
+        
+        
+        if (parserDefinitions != null) {
+        	for (String name : parserDefinitions.keySet()) {
+                replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), name, 
+                		parserDefinitions.get(name));
+        	}
+        }
+
         
         IDMap = new HashMap<>();
         likelihoodMap = new HashMap<>();
@@ -495,7 +511,7 @@ public class XMLParser {
         		if (i > 0) {
         			String pkgname = s.substring(0, i);
         			String pkgversion = s.substring(i+1);
-        			if (!AddOnManager.isInstalled(pkgname, pkgversion)) {
+        			if (!PackageManager.isInstalled(pkgname, pkgversion)) {
         				unavailablePacakges += s +", ";
         			}
         		}
@@ -756,7 +772,7 @@ public class XMLParser {
 				throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
 			}
 		} catch (ClassNotFoundException e1) {
-			// should never happen since clazzName is in the list of classes collected by the AddOnManager
+			// should never happen since clazzName is in the list of classes collected by the PackageManager
 			e1.printStackTrace();
 			throw new RuntimeException(e1);
 		}

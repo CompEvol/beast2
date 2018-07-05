@@ -636,8 +636,7 @@ public class Tree extends StateNode implements TreeInterface {
 
     @Override
     public int scale(final double scale) {
-        root.scale(scale);
-        return getInternalNodeCount()- getDirectAncestorNodeCount();
+        return root.scale(scale);
     }
 
 
@@ -720,7 +719,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     @Override
-	public void log(int sample, PrintStream out) {
+	public void log(long sample, PrintStream out) {
         Tree tree = (Tree) getCurrent();
         out.print("tree STATE_" + sample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree
@@ -933,6 +932,17 @@ public class Tree extends StateNode implements TreeInterface {
             return timeTraitSet.getDate(height);
         } else
             return height;
+    }
+
+    /**
+     * @return a string describing what type of times/ages are being used in MRCA priors for this tree.
+     *
+     */
+    public String getDateType() {
+        if (hasDateTrait()) {
+            return timeTraitSet.getDateType();
+        } else
+            return "age";
     }
 
     /**

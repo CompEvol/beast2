@@ -59,13 +59,14 @@ import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.HelpBrowser;
 import beast.app.draw.ModelBuilder;
 import beast.app.draw.MyAction;
-import beast.app.tools.AppStore;
+import beast.app.tools.AppLauncher;
 import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.math.distributions.MRCAPrior;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
 
 
@@ -170,7 +171,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_new = new ActionNew();
     public Action a_load = new ActionLoad();
     Action a_template = new ActionTemplate();
-    Action a_addOn = new ActionAddOn();
+    Action a_managePackages = new ActionManagePacakges();
+    Action a_clearClassPath = new ActionClearClassPath();
     Action a_appLauncher = new ActionAppLauncher();
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
@@ -402,10 +404,10 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     } // ActionTemplate
 
-    class ActionAddOn extends MyAction {
+    class ActionManagePacakges extends MyAction {
         private static final long serialVersionUID = 1;
 
-        public ActionAddOn() {
+        public ActionManagePacakges() {
             super("Manage Packages", "Manage Packages", "package", -1);
         } // c'tor
 
@@ -425,7 +427,24 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } // actionPerformed
     }
+    
+    class ActionClearClassPath extends MyAction {
+        private static final long serialVersionUID = 1;
 
+        public ActionClearClassPath() {
+            super("Clear Class Path", "Clear class path, so it will be refreshed next time BEAUti starts. Only useful when installing packages by hand.", "ccp", -1);
+        } // c'tor
+
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+        	Utils6.saveBeautiProperty("package.path", null);
+        	JOptionPane.showMessageDialog(null, "The class path was cleared.\n"
+        			+ "Next time you start BEAUti, the class path will be re-established.\n"
+        			+ "This is only useful when you install packages by han.d\n"
+        			+ "Otherwise, this is harmless, but onlys potentially slows restarting BEAUti.");
+        } // actionPerformed
+    }
+    
     class ActionAppLauncher extends MyAction {
         private static final long serialVersionUID = 1;
 
@@ -435,7 +454,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-        	AppStore.main(new String[]{});
+        	AppLauncher.main(new String[]{});
         } // actionPerformed
     }
 
@@ -609,7 +628,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 		public void actionPerformed(ActionEvent ae) {
             BEASTVersion2 version = new BEASTVersion2();
             JOptionPane.showMessageDialog(null, version.getCredits(),
-                    "About Beauti " + version.getVersionString(), JOptionPane.PLAIN_MESSAGE,
+                    "About Beauti " + version.getVersionString() + 
+                    " Java version " + System.getProperty("java.version"), JOptionPane.PLAIN_MESSAGE,
                     Utils.getIcon(BEAUTI_ICON));
         }
     } // class ActionAbout
@@ -786,7 +806,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
-        if (!Utils.isMac()) {
+        if (!Utils.isMac() || Utils6.getMajorJavaVersion() != 8) {
             helpMenu.add(a_about);
         }
 
@@ -818,7 +838,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         }
         templateMenu.addSeparator();
         templateMenu.add(a_template);
-        fileMenu.add(a_addOn);
+        fileMenu.add(a_managePackages);
+        fileMenu.add(a_clearClassPath);
         fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
@@ -999,7 +1020,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
 	private List<AbstractAction> getTemplateActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        List<String> beastDirectories = PackageManager.getBeastDirectories();
         for (String dirName : beastDirectories) {
             File dir = new File(dirName + "/templates");
             getTemplateActionForDir(dir, actions);
@@ -1040,7 +1061,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     private List<AbstractAction> getWorkDirActions() {
         List<AbstractAction> actions = new ArrayList<>();
-        List<String> beastDirectories = AddOnManager.getBeastDirectories();
+        List<String> beastDirectories = PackageManager.getBeastDirectories();
         Set<String> doneDirs = new HashSet<>();
         for (String dir : beastDirectories) {
         	if (!doneDirs.contains(dir)) {
@@ -1161,6 +1182,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
    
 
     public static Beauti main2(String[] args) {
+    	Utils6.startSplashScreen();
+    	Utils6.logToSplashScreen("Initialising BEAUti");
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {
@@ -1217,7 +1240,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             	}
             }
 
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
             //if (!Utils.isMac()) {
             	Utils.loadUIManager();
             //}
@@ -1231,7 +1254,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             final Beauti beauti = new Beauti(doc);
             
-            if (Utils.isMac()) {
+            if (Utils.isMac() && Utils6.getMajorJavaVersion() == 8) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
                 try {
@@ -1393,6 +1416,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // AWTEvent.ACTION_EVENT_MASK|AWTEvent.ITEM_EVENT_MASK|AWTEvent.MOUSE_EVENT_MASK);
             // // beauti.addPropertyChangeListener(plistener);
 
+        	Utils6.endSplashScreen();
             return beauti;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1402,6 +1426,18 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
     public static void main(String[] args) {
         main2(args);
+
+        // check for new packages in the background
+        new Thread() {
+        	public void run() {
+        		String statuString = Utils.getBeautiProperty("package.update.status");
+        		if (statuString == null) {
+        			statuString = PackageManager.UpdateStatus.AUTO_CHECK_AND_ASK.toString(); 
+        		}
+        		PackageManager.UpdateStatus updateStatus = PackageManager.UpdateStatus.valueOf(statuString);
+        		PackageManager.updatePackages(updateStatus, true);
+        	};
+        }.start();
     }
 
 } // class Beauti

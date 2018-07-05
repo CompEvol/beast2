@@ -194,7 +194,7 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
     }
 
     @Override
-    public void log(final int sample, final PrintStream out) {
+    public void log(final long sample, final PrintStream out) {
         out.print(getCurrentLogP() + "\t");
     }
 

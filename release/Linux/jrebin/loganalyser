@@ -1,4 +1,5 @@
 #!/bin/sh
+export JAVA_HOME=$(dirname "$0")/../jre1.8.0_161
 
 if [ -z "$BEAST" ]; then
 	## resolve links - $0 may be a link to application
@@ -29,5 +30,5 @@ if [ -z "$JAVA_HOME" ]; then
 else
   JAVA=$JAVA_HOME/bin/java
 fi
-$JAVA -Xms256m -Xmx1024m -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/beast.jar" beast.util.AddOnManager $*
+$JAVA -Xms256m -Xmx4g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/beast.jar" beast.util.LogAnalyser $*
 

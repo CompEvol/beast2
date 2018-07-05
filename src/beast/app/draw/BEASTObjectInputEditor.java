@@ -16,7 +16,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.BeautiSubTemplate;
 import beast.core.BEASTInterface;
 import beast.core.Input;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 
 public class BEASTObjectInputEditor extends InputEditor.Base {
     private static final long serialVersionUID = 1L;
@@ -214,7 +214,8 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
                 BeautiSubTemplate selected = (BeautiSubTemplate) m_selectBEASTObjectBox.getSelectedItem();
                 BEASTInterface beastObject = (BEASTInterface) m_input.get();
                 String id = beastObject.getID();
-                String partition = id.substring(id.indexOf('.') + 1);
+                String partition = id.indexOf('.') >= 0 ? 
+                		id.substring(id.indexOf('.') + 1) : "";
                 if (partition.indexOf(':') >= 0) {
                 	partition = id.substring(id.indexOf(':') + 1);
                 }
@@ -282,7 +283,9 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //                        m_selectPluginBox.addItem(id);
 //                        m_selectPluginBox.setSelectedItem(id);
                         id = beastObject.getID();
-                        id = id.substring(0, id.indexOf('.'));
+                        if (id.indexOf('.') != -1) {
+                        	id = id.substring(0,  id.indexOf('.'));
+                        }
                          for (int i = 0; i < m_selectBEASTObjectBox.getItemCount(); i++) {
                             BeautiSubTemplate template = (BeautiSubTemplate) m_selectBEASTObjectBox.getItemAt(i);
                             if (template.getMainID().replaceAll(".\\$\\(n\\)", "").equals(id) ||
@@ -469,7 +472,7 @@ public class BEASTObjectInputEditor extends InputEditor.Base {
 //    }
 
     String[] getAvailablePlugins() {
-        List<String> beastObjectNames = AddOnManager.find(m_input.getType(), "beast");
+        List<String> beastObjectNames = PackageManager.find(m_input.getType(), "beast");
         return beastObjectNames.toArray(new String[0]);
     } // getAvailablePlugins
 

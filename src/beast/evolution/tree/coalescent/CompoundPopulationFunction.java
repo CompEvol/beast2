@@ -590,7 +590,7 @@ public class CompoundPopulationFunction extends PopulationFunction.Abstract impl
     }
 
     @Override
-    public void log(int sample, PrintStream out) {
+    public void log(long sample, PrintStream out) {
         // interval sizes
         out.print("0:" + popSizeParameter.getArrayValue(0) + "\t");
         for (int i = 0; i < alltimes.length - (type == Type.STEPWISE ? 1 : 0); i++) {

@@ -19,6 +19,10 @@ public interface PriorProvider {
 	 */
 	public List<Distribution> createDistribution(BeautiDoc doc);
 	
+	default public List<Distribution> createDistribution(BeautiDoc doc, List<Object> args) {
+		return createDistribution(doc);
+	}
+	
 	/** return description to be used in drop-down box for selecting among PriorProviders **/
 	public String getDescription();
 	

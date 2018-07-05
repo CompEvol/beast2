@@ -80,7 +80,7 @@ import javax.swing.filechooser.FileFilter;
 import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Sequence;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 
@@ -2153,7 +2153,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     public static void main(String args[]) {
         Randomizer.setSeed(127);
         try {
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
         } catch (Exception e) {
             e.printStackTrace();
         }

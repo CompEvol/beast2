@@ -32,9 +32,9 @@ RUN chmod 600 /root/.vnc/passwd
 
 # Install BEAGLE
 RUN apt-get update && apt-get install -y build-essential autoconf automake libtool pkg-config
-RUN cd /root && git clone --depth=1 https://github.com/beagle-dev/beagle-lib.git
+# use latest release v3.0.1, issue #786
+RUN cd /root && git clone --branch v3.0.1 --depth=1 https://github.com/beagle-dev/beagle-lib.git
 RUN cd /root/beagle-lib && ./autogen.sh && ./configure --prefix=/usr/local && make install
-ENV LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
 RUN ldconfig
 
 # Ant build fails if the repo dir isn't named beast2

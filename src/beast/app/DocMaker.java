@@ -26,30 +26,16 @@ package beast.app;
 
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import beast.core.*;
+import beast.core.util.Log;
+import beast.util.PackageManager;
+
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import beast.core.BEASTObject;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.util.Log;
-import beast.util.AddOnManager;
+import java.util.*;
 
 
 
@@ -102,7 +88,7 @@ public class DocMaker {
 
     public DocMaker() {
         // find plug ins to document
-        m_beastObjectNames = AddOnManager.find(beast.core.BEASTObject.class, AddOnManager.IMPLEMENTATION_DIR);
+        m_beastObjectNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         /** determine hierarchical relation between plug-ins **/
         m_isa = new HashMap<>();
         m_ancestors = new HashMap<>();
@@ -111,7 +97,10 @@ public class DocMaker {
         for (String beastObjectName : m_beastObjectNames) {
             m_ancestors.put(beastObjectName, new ArrayList<>());
         }
-        for (String beastObjectName : m_beastObjectNames) {
+//        for (String beastObjectName : m_beastObjectNames) {
+        Iterator<String> iter = m_beastObjectNames.iterator();
+        while (iter.hasNext()) {
+            String beastObjectName = iter.next();
             try {
                 Class<?> _class = Class.forName(beastObjectName);
                 BEASTObject beastObject = (BEASTObject) _class.newInstance();
@@ -127,10 +116,17 @@ public class DocMaker {
                     m_sLoggables.add(beastObjectName);
                 }
             } catch (Exception e) {
-                Log.err.println(beastObjectName + " not documented :" + e.getMessage());
+                Log.err.println(beastObjectName + " is not documented (or abstract class) :" + e.getMessage());
+                rmFailedPageOfBeastObject(beastObjectName, iter);
             }
         }
     } // c'tor
+
+    // if the page creation is failed, the BeastObject should not have html
+    private void rmFailedPageOfBeastObject(String beastObjectName, Iterator<String> iter) {
+        iter.remove();
+        Log.err.println("Remove " + beastObjectName + " from the list of BEAST objects");
+    }
 
 
     /**
@@ -267,7 +263,7 @@ public class DocMaker {
                     "		      <FRAME src='beast.png' align='center'>\n" +
                     "		      <FRAME src='contents.html'>\n" +
                     "		  </FRAMESET>\n" +
-                    "		  <FRAME name='display' src='contents.html'>\n" +
+                    "		  <FRAME name='display' src='front.html'>\n" +
                     "		</FRAMESET>\n" +
                     "		</HTML>");
             out.close();
@@ -443,16 +439,17 @@ public class DocMaker {
         buf.append("<h2>Inputs:</h2>\n");
         buf.append("<p>");
         List<Input<?>> inputs = beastObject.listInputs();
-        for (Input<?> input : inputs) {
-        	buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
-        }
-        buf.delete(buf.length() - 3, buf.length()-1);
-        buf.append("</p>\n");
-        
         // list its inputs
         if (inputs.size() == 0) {
             buf.append("&lt;none&gt;");
+        } else {
+            for (Input<?> input : inputs) {
+                buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
+            }
+            buf.delete(buf.length() - 3, buf.length()-1);
         }
+        buf.append("</p>\n");
+
         for (Input<?> input : inputs) {
         	buf.append("<p>&nbsp</p>");
             buf.append("<table id='" + input.getName() + "' border='1px' width='90%'>\n");
@@ -545,6 +542,62 @@ public class DocMaker {
     } // getType
 
     /**
+     *
+     * @throws FileNotFoundException
+     */
+    protected void createFrontPage() throws FileNotFoundException  {
+        PrintStream out = new PrintStream(m_sDir + "/front.html");
+        out.println("<html>\n<head><title>BEAST " + version.getVersionString() + " Documentation Front Page</title>\n" +
+                "<link rel='StyleSheet' href='doc.css' type='text/css'>\n" +
+                "</head>\n");
+        out.println("<body>\n");
+        out.println("<h1>BEAST " + version.getVersionString() + " XML Reference</h1>");
+        out.println("<p>This documentation is used to help the user who wants to edit " +
+                "BEAST2 <a href='http://www.w3schools.com/xml/'>XML</a> manually.</p>\n");
+
+        out.println("<h2>How to read:</h2>");
+        out.println("<ul>\n<li>Each page is documenting a <b>BEAST object</b>, which is used for " +
+                "a value of the <i>spec</i> attribute in the XML. It may contain one or more inputs.</li>");
+        out.println("<li>An <b>input</b> connects this BEAST object with the output from another BEAST object " +
+                "that is also the type of this input. Each input is documented in a table of the HTML page. ");
+        out.println("<ul>\n<li>The table title is the input name.</li>");
+        out.println("<li>The first row is its type defined by either a Java primitive wrapper class " +
+                "or Java implementation of a BEAST object.</li>");
+        out.println("<li>The second row describes what the input do. </li>");
+        out.println("The last row shows its validation rule, and the default value.</li>\n</ul>");
+
+        out.println("<li>There are three options for the <b>validation rule</b> of an input: " +
+                "\"Required\", \"Optional\", \"Either this, or\".</li>");
+        out.println("<ul>\n<li><b>Required</b> means this input is compulsory in the XML.</li>");
+        out.println("<li><b>Optional</b> means this input can be absent in the XML, " +
+                "in this case, the default value is used.</li>");
+        out.println("<li><b>Either this or</b> represents the situation that you have to choose this input " +
+                "or the alternative input in the XML, and it will be invalid if both are missing.</li>\n</ul>");
+        out.println("<li>If there is <b>***</b> behind a type, it indicates this input type is actually " +
+                "a list (java.util.List) of this Java class.</li>\n</ul>");
+
+        out.println("<h2>Example of beast.core.MCMC:</h2>");
+        out.println("<p>A common example for beast.core.MCMC is :</p>");
+        out.println("<xmp><run chainLength=\"100000000\" id=\"mcmc\" spec=\"MCMC\"></xmp>");
+        out.println("<p>But through its XML reference, we know there is a \"Optional\" input <i>preBurnin</i> " +
+                "available to define the burn-in, and it has to be an integer.</p>");
+        out.println("<p> So we can modify the XML to :</p>");
+        out.println("<xmp><run chainLength=\"1000000\" id=\"mcmc\" spec=\"MCMC\" preBurnin=\"1000\"></xmp>");
+
+        out.println("<h2>Example of beast.evolution.operators.ScaleOperator:</h2>");
+        out.println("<p>ScaleOperator has a \"Either this or\" rule for inputs <i>tree</i> and <i>parameter</i>, " +
+                "so that it has to either scale a tree :</p>");
+        out.println("<xmp><operator id='treeScaler' spec='ScaleOperator' scaleFactor=\"0.5\" weight=\"1\" tree=\"@tree\"/></xmp>");
+        out.println("<p>or a RealParameter, such as kappa of HKY :</p>");
+        out.println("<xmp><parameter id=\"hky.kappa\" value=\"1.0\" lower=\"0.0\"/>\n" +
+                "<operator id='kappaScaler' spec='ScaleOperator' scaleFactor=\"0.5\" weight=\"1\" parameter=\"@hky.kappa\"/></xmp>");
+
+        out.println("\n</body>\n");
+        out.println("</html>\n");
+        out.close();
+    }
+
+    /**
      * generate set of documents for plug ins
      * including index page + frame
      * individual pages for each plug in
@@ -554,6 +607,7 @@ public class DocMaker {
     public void generateDocs() throws FileNotFoundException {
         // first, produce CSS & index page
         createCSS();
+        createFrontPage();
         createIndex();
         // next, produce pages for individual plug-ins
         for (String beastObjectName : m_beastObjectNames) {
@@ -570,7 +624,7 @@ public class DocMaker {
     public static void main(String[] args) {
         try {
             System.err.println("Producing documentation...");
-            AddOnManager.loadExternalJars();
+            PackageManager.loadExternalJars();
             DocMaker b = new DocMaker(args);
             b.generateDocs();
             System.err.println("Done!!!");
