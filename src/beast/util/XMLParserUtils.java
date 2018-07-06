@@ -188,7 +188,7 @@ public class XMLParserUtils {
      *
      * @param string String to do variable replacement in.
      * @param variableDefs Map from variable names to values.
-     * @return
+     * @return modified string
      */
 	public static String replaceVariablesInString(String string, Map<String, String> variableDefs) {
 
