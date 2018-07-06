@@ -1,17 +1,19 @@
 package test.beast.util;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Taxon;
 import beast.util.XMLParser;
+import beast.util.XMLParserUtils;
 import beast.util.XMLProducer;
 import junit.framework.TestCase;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class XMLTest extends TestCase {
 
@@ -40,4 +42,20 @@ public class XMLTest extends TestCase {
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     }
 
+    @Test
+    public void testVariableReplacement() {
+
+        String stringWithVariables = "$(one) $(two) $(three=3)";
+
+        Map<String,String> variableDefs = new HashMap<>();
+
+        XMLParserUtils.extractVariableDefaultsFromString(stringWithVariables, variableDefs);
+
+        assertEquals(1, variableDefs.size());
+        assertTrue(variableDefs.containsKey("three"));
+        assertTrue(variableDefs.containsValue("3"));
+
+        String modifiedString = XMLParserUtils.replaceVariablesInString(stringWithVariables, variableDefs);
+        assertEquals("$(one) $(two) 3", modifiedString);
+	}
 }
