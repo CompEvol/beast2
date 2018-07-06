@@ -25,9 +25,6 @@
 package beast.util;
 
 
-import static beast.util.XMLParserUtils.processPlates;
-import static beast.util.XMLParserUtils.replaceVariable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -70,6 +67,8 @@ import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
+
+import static beast.util.XMLParserUtils.*;
 
 
 /**
@@ -254,13 +253,13 @@ public class XMLParser {
 	java.util.Map<String,String> parserDefinitions;
 
     public XMLParser() {
-        beastObjectsWaitingToInit = new ArrayList<>();
-        nodesWaitingToInit = new ArrayList<>();
+        this(new HashMap<>());
     }
 
-	public XMLParser(java.util.Map<String,String> parserDefinitions) {
-		this();
-		this.parserDefinitions = parserDefinitions;
+    public XMLParser(java.util.Map<String,String> parserDefinitions) {
+        beastObjectsWaitingToInit = new ArrayList<>();
+        nodesWaitingToInit = new ArrayList<>();
+        this.parserDefinitions = parserDefinitions;
 	}
 
 
@@ -272,28 +271,27 @@ public class XMLParser {
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
-        // Substitute occurrences of "$(filebase)" with name of file 
-        int pointIdx = file.getName().lastIndexOf('.');
-        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
-        if (doc.getElementsByTagName(BEAST_ELEMENT).item(0) == null) {
+        Node beastElement = doc.getElementsByTagName(BEAST_ELEMENT).item(0);
+
+        // Sanity check
+        if (beastElement == null) {
         	Log.err.println("Incorrect XML: Could not find 'beast' element in file " + file.getName());
         	throw new RuntimeException();
         }
-        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
 
-        // Substitute occurrences of "$(seed)" with RNG seed
-        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
-                String.valueOf(Randomizer.getSeed()));
-        
-        
-        if (parserDefinitions != null) {
-        	for (String name : parserDefinitions.keySet()) {
-                replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), name, 
-                		parserDefinitions.get(name));
-        	}
-        }
+        // Add special variables "filebase" (name of file excluding extension)
+        // and "seed" (RNG seed) to list of user-defined variables.
+        int pointIdx = file.getName().lastIndexOf('.');
+        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
+        parserDefinitions.put("filebase", baseName);
+        parserDefinitions.put("seed", String.valueOf(Randomizer.getSeed()));
 
-        
+        // Extract default values of variables if present
+        extractVariableDefaults(beastElement, parserDefinitions);
+
+        // Replace occurrences of variables with their corresponding values
+        replaceVariables(beastElement, parserDefinitions);
+
         IDMap = new HashMap<>();
         likelihoodMap = new HashMap<>();
         IDNodeMap = new HashMap<>();
