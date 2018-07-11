@@ -64,7 +64,7 @@ public class Arguments {
         boolean caseSensitive = false;
 
         String value = null;
-        List<String> additionalValues = new ArrayList<>();
+        List<String> additionalValues = new ArrayList<String>();
     }
     
     public static class IntegerOption extends Option {
@@ -478,7 +478,7 @@ public class Arguments {
     }
 
     private List<Integer> findArguments(String[] arguments, String label) {
-        List<Integer> indices = new ArrayList<>();
+        List<Integer> indices = new ArrayList<Integer>();
         for (int i = 0; i < arguments.length; i++) {
 
             if (arguments[i].length() - 1 >= label.length()) {
