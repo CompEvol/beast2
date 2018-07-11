@@ -144,12 +144,12 @@ public class BeastMCMC {
 
                             lastCommaIdx = strs[eqIdx+1].lastIndexOf(",");
                             String value;
-                            if (lastCommaIdx == -1) {
-                                if (eqIdx+1 != strs.length-1)
-                                    throw new IllegalArgumentException("Argument to -D is not well-formed: expecting comma-separated name=value pairs");
-
+                            if (eqIdx+1 == strs.length-1) {
                                 value = strs[eqIdx+1];
                             } else {
+                                if (lastCommaIdx == -1)
+                                    throw new IllegalArgumentException("Argument to -D is not well-formed: expecting comma-separated name=value pairs");
+
                                 value = strs[eqIdx+1].substring(0, lastCommaIdx);
                             }
                             parserDefinitions.put(name, value);
