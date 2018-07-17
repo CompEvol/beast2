@@ -235,6 +235,14 @@ public interface Parameter<T> extends Function {
             return Arrays.copyOf(values, values.length);
         }
 
+        /**
+         * Copies this parameters values to the given array
+         * @param copyTo
+         */
+        public void getValues(T[] copyTo) {
+            System.arraycopy(values, 0, copyTo, 0, values.length);
+        }
+
         public void setBounds(final T lower, final T upper) {
             m_fLower = lower;
             m_fUpper = upper;
