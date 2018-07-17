@@ -47,6 +47,7 @@ import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -2143,7 +2144,9 @@ public class PackageManager {
         
         // install packages that can be updated
         try {
-			prepareForInstall(packagesToInstall, false, null);
+            populatePackagesToInstall(packageMap, packagesToInstall);
+
+            prepareForInstall(packagesToInstall, false, null);
 
 	        if (getToDeleteListFile().exists()) {
 	        	if (useGUI) {
@@ -2160,8 +2163,12 @@ public class PackageManager {
 	        for (String packageName : dirList.keySet()) {
 	        	Log.info("Installed " + packageName + " in " + dirList.get(packageName));
 	        }
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (DependencyResolutionException | IOException e) {
+	        if (!java.awt.GraphicsEnvironment.isHeadless() && System.getProperty("no.beast.popup") == null) {
+				JOptionPane.showMessageDialog(null, "Install failed because: " + e.getMessage());
+			} else {
+				Log.err("Install failed because " + e.getMessage());
+			}
 			e.printStackTrace();
 		}
     }
