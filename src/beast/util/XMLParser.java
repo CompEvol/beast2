@@ -25,6 +25,7 @@
 package beast.util;
 
 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -262,8 +263,11 @@ public class XMLParser {
         this.parserDefinitions = parserDefinitions;
 	}
 
-
     public Runnable parseFile(final File file) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
+    	return parseFile(file, false);
+    }
+    
+    public Runnable parseFile(final File file, boolean sampleFromPrior) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
@@ -285,6 +289,13 @@ public class XMLParser {
         String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
         parserDefinitions.put("filebase", baseName);
         parserDefinitions.put("seed", String.valueOf(Randomizer.getSeed()));
+
+
+		if (sampleFromPrior) {
+			Element runElement = (Element) doc.getElementsByTagName(RUN_ELEMENT).item(0);
+	        runElement.setAttribute("sampleFromPrior", "true");
+		}
+		
 
         // Extract default values of variables if present
         extractVariableDefaults(beastElement, parserDefinitions);
