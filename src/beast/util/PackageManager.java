@@ -2163,8 +2163,15 @@ public class PackageManager {
 	        for (String packageName : dirList.keySet()) {
 	        	Log.info("Installed " + packageName + " in " + dirList.get(packageName));
 	        }
-		} catch (DependencyResolutionException | IOException e) {
-	        if (!java.awt.GraphicsEnvironment.isHeadless() && System.getProperty("no.beast.popup") == null) {
+		} catch (DependencyResolutionException e) {
+	        if (useGUI) {
+				JOptionPane.showMessageDialog(null, "Install failed because: " + e.getMessage());
+			} else {
+				Log.err("Install failed because " + e.getMessage());
+			}
+			e.printStackTrace();			
+		} catch (IOException e) {
+	        if (useGUI) {
 				JOptionPane.showMessageDialog(null, "Install failed because: " + e.getMessage());
 			} else {
 				Log.err("Install failed because " + e.getMessage());
