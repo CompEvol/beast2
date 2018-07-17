@@ -579,15 +579,29 @@ public class BeastLauncher {
 	                cmd.add("java");
             }
 
+            for (int i = 0; i < args.length; i++) {
+            	String arg = args[i];
+            	if (arg.startsWith("-Xmx")) {
+            		cmd.add(arg);
+            		args[i] = null;
+            	} else if (arg.startsWith("-Xms")) {
+            		cmd.add(arg);
+            		args[i] = null;
+            	}
+            }
+
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
-            }
+            }            
+            
             cmd.add("-cp");
             cmd.add(classPath.substring(1, classPath.length() - 1));
             cmd.add(main);
 
             for (String arg : args) {
-                cmd.add(arg);
+            	if (arg != null) {
+            		cmd.add(arg);
+            	}
             }
 
             final ProcessBuilder pb = new ProcessBuilder(cmd);
