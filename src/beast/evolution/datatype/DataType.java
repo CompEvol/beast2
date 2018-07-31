@@ -43,25 +43,55 @@ public interface DataType {
 	 * 
 	 * @throws IllegalArgumentException
 	 *             when parsing error occurs
+     *
+     * @deprecated Use stringToEncoding() instead.
 	 */
 	@Deprecated
 	List<Integer> string2state(String sequence) throws IllegalArgumentException;
 
+    /**
+     * Convert a sequence represented by a string into a sequence of integers
+     * representing the encoding chain for this data type. Ambiguous characters
+     * are represented by integer numbers less than 0 or greater or equal to
+     * getStateCount().
+     *
+     * @throws IllegalArgumentException
+     *             when parsing error occurs
+     */
 	List<Integer> stringToEncoding(String sequence) throws IllegalArgumentException;
+
+	/**
+	 * Convert an encoding chain into a sequence string. This is the inverse of
+	 * stringToEncoding() throws IllegalArgumentException when a code cannot be
+	 * mapped
+     *
+     * @deprecated Use encodingToString() instead
+	 */
+	@Deprecated
+	String state2string(List<Integer> encoding);
 
 	/**
 	 * Convert an encoding chain into a sequence string. This is the inverse of
 	 * stringToEncoding() throws IllegalArgumentException when a code cannot be
 	 * mapped *
 	 */
-	@Deprecated
-	String state2string(List<Integer> encoding);
-
 	String encodingToString(List<Integer> encoding);
 
+	/**
+	 * Convert an encoding chain into a sequence string. This is the inverse of
+	 * stringToEncoding() throws IllegalArgumentException when a code cannot be
+	 * mapped
+     *
+     * @deprecated Use encodingToString() instead.
+	 */
 	@Deprecated
 	String state2string(int[] encoding);
 
+	/**
+	 * Convert an encoding chain into a sequence string. This is the inverse of
+	 * stringToEncoding() throws IllegalArgumentException when a code cannot be
+	 * mapped *
+	 */
 	String encodingToString(int[] encoding);
 
 	/**
@@ -78,10 +108,16 @@ public interface DataType {
 	/**
 	 * Returns true if the code corresponds to more than one state, false
 	 * otherwise.
+     *
+     * @deprecated Use isAmbiguousCode instead.
 	 */
 	@Deprecated
 	boolean isAmbiguousState(int code);
 
+	/**
+	 * Returns true if the code corresponds to more than one state, false
+	 * otherwise.
+	 */
 	boolean isAmbiguousCode(int code);
 
 	/**
