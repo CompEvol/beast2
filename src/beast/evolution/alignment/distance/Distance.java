@@ -63,7 +63,7 @@ public interface Distance {
 	
 	            weight = patterns.getPatternWeight(i);
 	//			sumDistance += dataType.getObservedDistance(state1, state2) * weight;
-	            if (!dataType.isAmbiguousState(state1) && !dataType.isAmbiguousState(state2) &&
+	            if (!dataType.isAmbiguousCode(state1) && !dataType.isAmbiguousCode(state2) &&
 	                    state1 != state2) {
 	                sumDistance += weight;
 	            }

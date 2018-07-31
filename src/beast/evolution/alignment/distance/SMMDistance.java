@@ -23,7 +23,7 @@ public class SMMDistance extends Distance.Base {
         int state2 = pattern[taxon2];
         double distance = 0.0;
 
-        if (!dataType.isAmbiguousState(state1) && !dataType.isAmbiguousState(state2))
+        if (!dataType.isAmbiguousCode(state1) && !dataType.isAmbiguousCode(state2))
             distance = Math.abs(state1 - state2);
 
         return distance;

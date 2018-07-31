@@ -352,6 +352,6 @@ public class FilteredAlignmentTest extends TestCase {
 //            int[] sitePattern = data.getPattern(i);
 //            states[i] = sitePattern[iTaxon];
 //        }
-        return data.getDataType().state2string(states);
+        return data.getDataType().encodingToString(states);
     }
 }

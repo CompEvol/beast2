@@ -192,8 +192,8 @@ public class FilteredAlignment extends Alignment {
                 data[j][i] = sites.get(filter[j]);
                 if (convertDataType) {
                 	try {
-                		String code = baseType.getCode(data[j][i]);
-						data[j][i] = m_dataType.string2state(code).get(0);
+                		String code = baseType.getCharacter(data[j][i]);
+						data[j][i] = m_dataType.stringToEncoding(code).get(0);
                 	} catch (Exception e) {
                 		e.printStackTrace();
                 	}
@@ -301,7 +301,7 @@ public class FilteredAlignment extends Alignment {
                 sites[j] = counts.get(j).get(filter[i]);
                 if (convertDataType) {
                 	try {
-                		sites[j] = m_dataType.string2state(baseType.getCode(sites[j])).get(0);
+                		sites[j] = m_dataType.stringToEncoding(baseType.getCharacter(sites[j])).get(0);
                 	} catch (Exception e) {
                 		e.printStackTrace();
                 	}
