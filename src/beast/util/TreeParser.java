@@ -35,7 +35,6 @@ import beast.util.treeparser.NewickParser;
 import beast.util.treeparser.NewickParser.MetaContext;
 import beast.util.treeparser.NewickParserBaseVisitor;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import beast.core.Description;
@@ -422,7 +421,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         private int numberedNodeCount = 0;
 
         @Override
-        public Node visitTree(@NotNull NewickParser.TreeContext ctx) {
+        public Node visitTree(NewickParser.TreeContext ctx) {
             Node root = visit(ctx.node());
 
             // Ensure tree is properly sorted in terms of node numbers.

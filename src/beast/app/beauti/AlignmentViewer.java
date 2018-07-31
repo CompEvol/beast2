@@ -177,7 +177,7 @@ public class AlignmentViewer extends JPanel {
             for (int i = 0; i < siteCount; i++) {
                 int patternIndex_ = m_alignment.getPatternIndex(i);
                 int[] pattern = m_alignment.getPattern(patternIndex_);
-                String patternString = dataType.state2string(pattern);
+                String patternString = dataType.encodingToString(pattern);
 
                 if (patternString.contains(",")) {
                     // We have a string of comma separated values.

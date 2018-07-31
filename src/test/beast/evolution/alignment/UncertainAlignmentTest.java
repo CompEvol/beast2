@@ -62,7 +62,7 @@ public class UncertainAlignmentTest extends TestCase {
     	DataType dataType = data.getDataType();
         System.out.println("Most probable sequences:");
     	for (List<Integer> seq : data.getCounts()) {
-    		System.out.println(dataType.state2string(seq));    		
+    		System.out.println(dataType.encodingToString(seq));
     	}
     	
         return data;
@@ -105,7 +105,7 @@ public class UncertainAlignmentTest extends TestCase {
     	
     	System.out.println("Most likely sequences:");
     	for (List<Integer> seq : data.getCounts()) {
-    		System.out.println(dataType.state2string(seq));    		
+    		System.out.println(dataType.encodingToString(seq));
     	}
     	
     	Alignment data2 = getAlignment();
