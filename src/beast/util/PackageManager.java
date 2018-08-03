@@ -2099,7 +2099,7 @@ public class PackageManager {
 	    		}
 	    		buf.append("</table>");
 	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
-	    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New pacakges are available to install:</h2>" +
+	    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New packages are available to install:</h2>" +
 	    				buf.toString() + 
 	    				"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
 	    		        null, options, options[2]);
@@ -2120,7 +2120,7 @@ public class PackageManager {
 	    			return;
 	    		}
     		} else {
-    			Log.info("New pacakges are available to install:");
+    			Log.info("New packages are available to install:");
 	    		Log.info("Package name\tNew version\tInstalled");
 	    		for (Package _package : packagesToInstall.keySet()) {
 	    			Log.info(_package.packageName + "\t" + _package.getLatestVersion()+ "\t" + _package.getInstalledVersion());
