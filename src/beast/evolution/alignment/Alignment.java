@@ -405,7 +405,7 @@ public class Alignment extends Map<String> {
             states[i] = sitePattern[taxonIndex];
         }
         try {
-            return data.getDataType().state2string(states);
+            return data.getDataType().encodingToString(states);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -780,7 +780,7 @@ public class Alignment extends Map<String> {
 		}
 		String seq = null;
 		try {
-			seq = m_dataType.state2string(states);
+			seq = m_dataType.encodingToString(states);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

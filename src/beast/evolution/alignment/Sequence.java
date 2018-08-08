@@ -111,7 +111,7 @@ public class Sequence extends BEASTObject {
 	    	String data = dataInput.get();
 	        // remove spaces
 	        data = data.replaceAll("\\s", "");
-	        sequence = dataType.string2state(data);
+	        sequence = dataType.stringToEncoding(data);
     	}
 
         if (totalCountInput.get() == null) {

@@ -306,7 +306,6 @@ public class MCMC extends Runnable {
         logAlpha = 0;
         debugFlag = Boolean.valueOf(System.getProperty("beast.debug"));
 
-
 //        System.err.println("Start state:");
 //        System.err.println(state.toString());
 
@@ -392,7 +391,7 @@ public class MCMC extends Runnable {
                     reportLogLikelihoods(posterior, "");
                     Log.err.println("At sample " + sampleNr + "\nLikelihood incorrectly calculated: " + originalLogP + " != " + logLikelihood
                     		+ "(" + (originalLogP - logLikelihood) + ")"
-                            + " Operator: " + operator.getClass().getName());
+                            + " Operator: " + operator.getName());
                 }
                 if (sampleNr > NR_OF_DEBUG_SAMPLES * 3) {
                     // switch off debug mode once a sufficient large sample is checked

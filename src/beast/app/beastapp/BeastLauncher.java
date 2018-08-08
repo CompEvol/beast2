@@ -579,15 +579,20 @@ public class BeastLauncher {
 	                cmd.add("java");
             }
 
+            setJavaHeapAndStackSize(cmd, args);
+
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
-            }
+            }            
+            
             cmd.add("-cp");
             cmd.add(classPath.substring(1, classPath.length() - 1));
             cmd.add(main);
 
             for (String arg : args) {
-                cmd.add(arg);
+            	if (arg != null) {
+            		cmd.add(arg);
+            	}
             }
 
             final ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -652,4 +657,32 @@ public class BeastLauncher {
         }
 
     }
+
+	private static void setJavaHeapAndStackSize(List<String> cmd, String[] args) {
+        boolean heapSizeSet = false;
+        boolean stackSizeSet = false;
+        
+        // see if we have a cmd line argument for heap or stack size
+        for (int i = 0; i < args.length; i++) {
+        	String arg = args[i];
+        	if (arg.startsWith("-Xmx")) {
+        		cmd.add(arg);
+        		args[i] = null;
+        		heapSizeSet = true;
+        	} else if (arg.startsWith("-Xms")) {
+        		cmd.add(arg);
+        		args[i] = null;
+        		stackSizeSet = true;
+        	}
+        }            
+
+        // force default values if nothing is specified
+        if (!heapSizeSet) {
+        	cmd.add("-Xms8g");
+        }
+        if (!stackSizeSet) {
+        	cmd.add("-Xms256m");
+        }
+    }
+	
 }

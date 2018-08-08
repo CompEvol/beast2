@@ -25,44 +25,6 @@
 package beast.app;
 
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.border.EtchedBorder;
-import javax.swing.filechooser.FileFilter;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.json.JSONException;
-import org.xml.sax.SAXException;
-
 import beagle.BeagleFlag;
 import beast.app.beastapp.BeastDialog;
 import beast.app.beastapp.BeastMain;
@@ -72,13 +34,25 @@ import beast.app.util.Version;
 import beast.core.Logger;
 import beast.core.Runnable;
 import beast.core.util.Log;
-import beast.util.PackageManager;
-import beast.util.JSONParser;
-import beast.util.JSONParserException;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
-import beast.util.XMLParserException;
+import beast.util.*;
 import jam.util.IconUtils;
+import org.json.JSONException;
+import org.xml.sax.SAXException;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Main application for performing MCMC runs.
@@ -117,6 +91,7 @@ public class BeastMCMC {
         int i = 0;
         boolean resume = false;
         boolean useStrictVersions = false;
+        boolean sampleFromPrior = false;
         Map<String, String> parserDefinitions = new HashMap<>();
 
         File beastFile = null;
@@ -159,19 +134,33 @@ public class BeastMCMC {
                         System.setProperty("file.name.prefix", args[i + 1].trim());
                         i += 2;
                     } else if (args[i].equals("-D")) {
-            			String [] strs = args[i + 1].split(",");
-            			for (String str : strs) {
-            				String [] strs2 = str.split("=");
-            				if (strs2.length != 2) {
-            					throw new IllegalArgumentException("Argument \"" + str + "\" is not well-formed: expecting name=value pairs");
-            				}
-            				String name = strs2[0];
-            				String value = strs2[1];
-            				parserDefinitions.put(name, value);
+                        String [] strs = args[i + 1].split("=",-1);
+                        for (int eqIdx = 0; eqIdx<strs.length-1; eqIdx++) {
+                            int lastCommaIdx = strs[eqIdx].lastIndexOf(",");
+
+                            if (lastCommaIdx != -1 && eqIdx == 0)
+                                throw new IllegalArgumentException("Argument to -D is not well-formed: expecting comma-separated name=value pairs");
+
+                            String name = strs[eqIdx].substring(lastCommaIdx+1);
+
+                            lastCommaIdx = strs[eqIdx+1].lastIndexOf(",");
+                            String value;
+                            if (eqIdx+1 == strs.length-1) {
+                                value = strs[eqIdx+1];
+                            } else {
+                                if (lastCommaIdx == -1)
+                                    throw new IllegalArgumentException("Argument to -D is not well-formed: expecting comma-separated name=value pairs");
+
+                                value = strs[eqIdx+1].substring(0, lastCommaIdx);
+                            }
+                            parserDefinitions.put(name, value);
             			}
                         i += 2;
                     } else if (args[i].equals("-strictversions")) {
                     	useStrictVersions = true;
+                        i += 1;
+                    } else if (args[i].equals("-sampleFromPrior")) {
+                    	sampleFromPrior = true;
                         i += 1;
                     }
                     if (i == old) {
@@ -305,10 +294,10 @@ public class BeastMCMC {
         // parse xml
         Randomizer.setSeed(m_nSeed);
         if (beastFile.getPath().toLowerCase().endsWith(".json")) {
-            m_runnable = new JSONParser(parserDefinitions).parseFile(beastFile);
+            m_runnable = new JSONParser(parserDefinitions).parseFile(beastFile, sampleFromPrior);
         } else {        	
         	try {
-				m_runnable = new XMLParser(parserDefinitions).parseFile(beastFile);
+				m_runnable = new XMLParser(parserDefinitions).parseFile(beastFile, sampleFromPrior);
 			} catch (SAXException | ParserConfigurationException e) {
 				throw new IllegalArgumentException(e);
 			}

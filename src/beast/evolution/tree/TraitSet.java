@@ -45,6 +45,7 @@ public class TraitSet extends BEASTObject {
     final public static String DATE_TRAIT = "date";
     final public static String DATE_FORWARD_TRAIT = "date-forward";
     final public static String DATE_BACKWARD_TRAIT = "date-backward";
+    final public static String AGE_TRAIT = "age";
 
     /**
      * String values of taxa in order of taxons in alignment*
@@ -134,7 +135,7 @@ public class TraitSet extends BEASTObject {
             }
         }
 
-        if (traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
+        if (traitNameInput.get().equals(DATE_BACKWARD_TRAIT) || traitNameInput.get().equals(AGE_TRAIT)) {
             for (int i = 0; i < labels.size(); i++) {
                 values[i] = values[i] - minValue;
             }
@@ -253,7 +254,7 @@ public class TraitSet extends BEASTObject {
             return maxValue - height;
         }
 
-        if (traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
+        if (traitNameInput.get().equals(DATE_BACKWARD_TRAIT) || traitNameInput.get().equals(AGE_TRAIT)) {
             return minValue + height;
         }
         return height;
@@ -266,7 +267,7 @@ public class TraitSet extends BEASTObject {
     public boolean isDateTrait() {
         return traitNameInput.get().equals(DATE_TRAIT)
                 || traitNameInput.get().equals(DATE_FORWARD_TRAIT)
-                || traitNameInput.get().equals(DATE_BACKWARD_TRAIT);
+                || traitNameInput.get().equals(DATE_BACKWARD_TRAIT) || traitNameInput.get().equals(AGE_TRAIT);
     }
 
     /**

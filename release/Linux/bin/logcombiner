@@ -27,7 +27,7 @@ BEAST_LIB="$BEAST/lib"
 if [ -z "$JAVA_HOME" ]; then
   JAVA=java
 else
-  JAVA=$JAVA_HOME/bin/java
+  JAVA="$JAVA_HOME"/bin/java
 fi
-$JAVA -Dlauncher.wait.for.exit=true -Xms256m -Xmx4g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.app.tools.LogCombinerLauncher $*
+"$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx4g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.app.tools.LogCombinerLauncher $*
 

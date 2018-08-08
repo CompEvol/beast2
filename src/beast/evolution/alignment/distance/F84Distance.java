@@ -94,7 +94,7 @@ public class F84Distance extends Distance.Base {
             state2 = pattern[taxon2];
 
             weight = patterns.getPatternWeight(i);
-            if (!dataType.isAmbiguousState(state1) && !dataType.isAmbiguousState(state2) && state1 != state2) {
+            if (!dataType.isAmbiguousCode(state1) && !dataType.isAmbiguousCode(state2) && state1 != state2) {
 
                 if ((state1 == 0 && state2 == 2) || (state1 == 2 && state2 == 0)) {
                     // it's a transition

@@ -5,10 +5,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -142,45 +141,159 @@ public class XMLParserUtils {
     		e.printStackTrace();
     	}    	
     }
-    
+
     /**
-     * @param node the node to do variable replacement in
-     * @param var the variable name to replace
-     * @param valueString the value to replace the variable name with
+     * Pattern used to match variables in XML fragments.
      */
-    public static void replaceVariable(final Node node, final String var, final String valueString) {
+	private static Pattern variablePattern = Pattern.compile("\\$\\(([^\\)]+)\\)");
+
+    /**
+     * Identify variables in attribute values and CDATA contents and replace
+     * with their values as defined in the variableDefs map. Variables without
+     * definitions are left alone.
+     *
+     * @param node the node to do variable replacement in
+     * @param variableDefs map from variable names to values.
+     */
+    public static void replaceVariables(final Node node, Map<String, String> variableDefs) {
         switch (node.getNodeType()) {
-	        case Node.ELEMENT_NODE:  {
-	            final Element element = (Element) node;
-	            final NamedNodeMap atts = element.getAttributes();
+	        case Node.ELEMENT_NODE:
+				final Element element = (Element) node;
+				final NamedNodeMap atts = element.getAttributes();
 	            for (int i = 0; i < atts.getLength(); i++) {
 	                final Attr attr = (Attr) atts.item(i);
-	                if (attr.getValue().contains("$(" + var + ")")) {
-	                    String att = attr.getValue();
-	                    att = att.replaceAll("\\$\\(" + var + "\\)", valueString);
-	                    attr.setNodeValue(att);
-	                }
+	                attr.setNodeValue(replaceVariablesInString(attr.getValue(), variableDefs));
 	            }
-	        }
-	        case Node.CDATA_SECTION_NODE: {
+	            break;
+
+	        case Node.CDATA_SECTION_NODE:
 	        	String content = node.getTextContent();
-	        	if (content.contains("$(" + var + ")")) {
-	        		content = content.replaceAll("\\$\\(" + var + "\\)", valueString);
-	        		node.setNodeValue(content);
-	        	}
-	        }
+	        	node.setNodeValue(replaceVariablesInString(content, variableDefs));
+				break;
+
+			default:
+				break;
         }
 
         // process children
         final NodeList children = node.getChildNodes();
-        for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
-            final Node child = children.item(childIndex);
-            replaceVariable(child, var, valueString);
-        }
-    } // replace
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++)
+            replaceVariables(children.item(childIndex), variableDefs);
+    }
 
-    
-    /** return list of input types specified by Inputs or Param annotations 
+    /**
+     * Identify variables in the given string and replace with their values as
+     * defined in the variableDefs map.  Variables without definitions are left
+     * alone.
+     *
+     * @param string String to do variable replacement in.
+     * @param variableDefs Map from variable names to values.
+     * @return modified string
+     */
+	public static String replaceVariablesInString(String string, Map<String, String> variableDefs) {
+
+    	StringBuffer replacementStringBuffer = new StringBuffer();
+
+ 		Matcher variableMatcher = variablePattern.matcher(string);
+		while (variableMatcher.find()) {
+		    String varString = variableMatcher.group(1).trim();
+		    int eqIdx = varString.indexOf("=");
+
+		    String varName;
+		    if (eqIdx > -1)
+		        varName = varString.substring(0, eqIdx).trim();
+		    else
+				varName = varString;
+
+		    String replacementString = variableDefs.containsKey(varName)
+                    ? variableDefs.get(varName)
+                    : variableMatcher.group(0);
+
+            variableMatcher.appendReplacement(replacementStringBuffer,
+                    Matcher.quoteReplacement(replacementString));
+		}
+		variableMatcher.appendTail(replacementStringBuffer);
+
+		return replacementStringBuffer.toString();
+	}
+
+    /**
+     * Cached map used by replaceVariable().
+     */
+	private static Map<String, String> singleVarVal = new HashMap<>();
+
+    /**
+     * Identify a variable in the given DOM subtree matching the given name
+     * and replace it with the chosen value.  Other variables are left alone.
+     *
+     * @param node root node of DOM subtree to perform replacement in
+     * @param name name of variable
+     * @param value value to replace name with
+     */
+	public static void replaceVariable(final Node node, String name, String value) {
+	    singleVarVal.clear();
+	    singleVarVal.put(name, value);
+	    replaceVariables(node, singleVarVal);
+	}
+
+    /**
+     * Extract default values of variables defined in the DOM subtree below node.
+     * Default values are used to populate the variableDefs map.  Variables
+     * already defined in this map will NOT be modified.
+     *
+     * @param node root node of DOM subtree to extract default values from.
+     * @param variableDefs map which default values will be added to.
+     */
+	public static void extractVariableDefaults(final Node node, Map<String, String> variableDefs) {
+        switch (node.getNodeType()) {
+			case Node.ELEMENT_NODE:
+			    final Element element = (Element) node;
+			    final NamedNodeMap attrs = element.getAttributes();
+			    for (int i=0; i<attrs.getLength(); i++) {
+			    	Attr attr = (Attr) attrs.item(i);
+			    	extractVariableDefaultsFromString(attr.getValue(), variableDefs);
+				}
+				break;
+
+			case Node.CDATA_SECTION_NODE:
+				String content = node.getTextContent();
+				extractVariableDefaultsFromString(content, variableDefs);
+				break;
+
+			default:
+				break;
+		}
+
+        final NodeList children = node.getChildNodes();
+        for (int childIndex = 0; childIndex < children.getLength(); childIndex++)
+            extractVariableDefaults(children.item(childIndex), variableDefs);
+	}
+
+    /**
+     * Extract default values of variables defined in the given string.
+     * Default values are used to populate the variableDefs map.  Variables
+     * already defined in this map will NOT be modified.
+     *
+     * @param string string to extract default values from.
+     * @param variableDefs map which default values will be added to.
+     */
+	public static void extractVariableDefaultsFromString(String string, Map<String,String> variableDefs) {
+		Matcher variableMatcher = variablePattern.matcher(string);
+		while (variableMatcher.find()) {
+		    String varString = variableMatcher.group(1);
+
+		    int eqIdx = varString.indexOf("=");
+
+		    if (eqIdx > -1) {
+		        String varName = varString.substring(0, eqIdx).trim();
+
+		        if (!variableDefs.containsKey(varName))
+					variableDefs.put(varName, varString.substring(eqIdx+1, varString.length()));
+			}
+		}
+	}
+
+    /** return list of input types specified by Inputs or Param annotations
      * @param clazz Class to generate the list for
      * @param beastObject instantiation of the class, or null if not available
      * @return

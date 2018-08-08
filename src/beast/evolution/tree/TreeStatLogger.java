@@ -21,9 +21,18 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
     final public Input<Boolean> logHeightInput = new Input<>("logHeight", "If true, tree height will be logged.", true);
     final public Input<Boolean> logLengthInput = new Input<>("logLength", "If true, tree length will be logged.", true);
 
+    boolean logHeight, logLength;
+
     @Override
     public void initAndValidate() {
-    	if ((!logHeigthInput.get() || !logHeightInput.get()) && !logLengthInput.get()) {
+
+        // This confusing line is because the default situation is to log
+        // the tree height: we want the height to be logged only if neither of
+        // these defaults is altered.
+        logHeight = logHeightInput.get() && logHeigthInput.get();
+        logLength = logLengthInput.get();
+
+    	if (!logHeight && !logLength) {
     		Log.warning.println("TreeStatLogger " + getID() + "logs nothing. Set logHeight=true or logLength=true to log at least something");
     	}
     }
@@ -31,10 +40,10 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
     @Override
     public void init(PrintStream out) {
         final Tree tree = treeInput.get();
-        if (logHeigthInput.get() && logHeightInput.get()) {
+        if (logHeight) {
             out.print(tree.getID() + ".height\t");
         }
-        if (logLengthInput.get()) {
+        if (logLength) {
             out.print(tree.getID() + ".treeLength\t");
         }
     }
@@ -42,10 +51,10 @@ public class TreeStatLogger extends CalculationNode implements Loggable, Functio
     @Override
     public void log(long sample, PrintStream out) {
         final Tree tree = treeInput.get();
-        if (logHeigthInput.get() && logHeightInput.get()) {
+        if (logHeight) {
         	out.print(tree.getRoot().getHeight() + "\t");
         }
-        if (logLengthInput.get()) {
+        if (logLength) {
             out.print(getLength(tree) + "\t");
         }
     }

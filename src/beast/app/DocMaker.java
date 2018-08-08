@@ -553,7 +553,7 @@ public class DocMaker {
         out.println("<body>\n");
         out.println("<h1>BEAST " + version.getVersionString() + " XML Reference</h1>");
         out.println("<p>This documentation is used to help the user who wants to edit " +
-                "BEAST2 <a href='http://www.w3schools.com/xml/'>XML</a> manually.</p>\n");
+                "BEAST2 <a href='http://www.w3schools.com/xml/' target='_blank'>XML</a> manually.</p>\n");
 
         out.println("<h2>How to read:</h2>");
         out.println("<ul>\n<li>Each page is documenting a <b>BEAST object</b>, which is used for " +

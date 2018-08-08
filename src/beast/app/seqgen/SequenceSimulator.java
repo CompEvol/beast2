@@ -124,7 +124,7 @@ public class SequenceSimulator extends beast.core.Runnable {
      */
     Sequence intArray2Sequence(int[] seq, Node node)  {
         DataType dataType = m_data.get().getDataType();
-        String seqString = dataType.state2string(seq);
+        String seqString = dataType.encodingToString(seq);
 //    	StringBuilder seq = new StringBuilder();
 //    	String map = m_data.get().getMap();
 //    	if (map != null) {
