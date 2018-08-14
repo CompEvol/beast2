@@ -111,6 +111,7 @@ public class NexusParser {
             processSets();
 
         } catch (TreeParser.TreeParsingException e) {
+        	e.printStackTrace();
             int errorLine = lineNr + 1;
 
             if (e.getLineNum() != null)
@@ -236,7 +237,7 @@ public class NexusParser {
 //                }
 
 
-                if (translationMap != null) treeParser.translateLeafIds(translationMap);
+//                if (translationMap != null) treeParser.translateLeafIds(translationMap);
 
 
                 // this needs to go after translation map or listeners have an incomplete tree!
