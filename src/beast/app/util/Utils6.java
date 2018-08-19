@@ -154,18 +154,21 @@ public class Utils6 {
 				      //beastJar = "/Users/remco/workspace/beast2/build/dist/beast.jar";
 				      Process p = Runtime.getRuntime().exec(new String[]{java , "-cp" , beastJar , "beast.app.util.Utils"});
 				      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				      String line;
-				      while ((line = input.readLine()) != null) {
-				        Log.debug.println(line);
-				      }
-				      input.close();
+			          int c;
+			          while ((c = input.read()) != -1) {
+			              Log.debug.print((char)c);
+			          }
+			          input.close();			
+			          p.waitFor();
 				      if (p.exitValue() != 0) {
-				    	  if (GraphicsEnvironment.isHeadless()) {
+				    	  try {
+				    		  JOptionPane.showMessageDialog(null, cudaStatusOnMac);
+				    	  } catch (Exception e) {
+//				    	  if (GraphicsEnvironment.isHeadless()) {
 				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<br>", "\n");
 				    		  cudaStatusOnMac = cudaStatusOnMac.replaceAll("<.?html>","\n");
 				    		  Log.warning.println("WARNING: " + cudaStatusOnMac);
-				    	  } else {
-				    		  JOptionPane.showMessageDialog(null, cudaStatusOnMac);
+//				    	  } else {
 				    	  }
 				    	  return false;
 				      }
