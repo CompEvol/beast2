@@ -1,57 +1,6 @@
 package beast.app.beauti;
 
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import beast.app.BEASTVersion2;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -68,6 +17,31 @@ import beast.evolution.alignment.Alignment;
 import beast.math.distributions.MRCAPrior;
 import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
 
 
 public class Beauti extends JTabbedPane implements BeautiDocListener {
@@ -806,7 +780,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
-        if (!Utils.isMac() || Utils6.getMajorJavaVersion() != 8) {
+        if (!Utils.isMac() || Utils.getMajorJavaVersion() != Utils.JAVA_1_8) {
             helpMenu.add(a_about);
         }
 
@@ -1254,7 +1228,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             final Beauti beauti = new Beauti(doc);
             
-            if (Utils.isMac() && Utils6.getMajorJavaVersion() == 8) {
+            if (Utils.isMac() && Utils.getMajorJavaVersion() == Utils.JAVA_1_8) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
                 try {

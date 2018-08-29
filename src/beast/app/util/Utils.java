@@ -1,29 +1,6 @@
 package beast.app.util;
 
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import beast.app.beauti.BeautiPanel;
 import beast.app.beauti.BeautiPanelConfig;
 import beast.core.util.Log;
@@ -33,6 +10,15 @@ import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.util.TreeParser;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Andrew Rambaut
@@ -346,8 +332,12 @@ public class Utils {
 	    }
 	
 	}
-	
-	
+
+    /**
+     * Used to detect whether CUDA with BEAGLE is installed on OS X in {@link Utils6#testCudaStatusOnMac()},
+     * which is used by {@link beast.app.beastapp.BeastLauncher#main(String[])}.
+     * @see <a href="https://github.com/CompEvol/beast2/issues/500">issues 500</a>.
+     */
     public static void main(String[] args) {
 		try {
 			Sequence a = new Sequence("A", "A");
@@ -376,7 +366,7 @@ public class Utils {
 			e.printStackTrace();
 		}
 
-    	
+
     	System.out.println("Success");
     	// if we got this far, exit with status 0
 		System.exit(0);
@@ -397,7 +387,8 @@ public class Utils {
 	    Log.debug.println("Font is now at size " + fontSize);
 	}
 
-	
+	//++++++ dependency on Utils6
+
 	/**
 	 * Get value from beauti.properties file
 	 */
@@ -416,4 +407,71 @@ public class Utils {
     public static void logToSplashScreen(String msg) {
     	Utils6.logToSplashScreen(msg);
     }
+
+
+    //++++++ Java version
+    // Detect or compare the Java major number from a Java version string, such as "1.7.0_25" or "10.0.1".
+
+    public static final int JAVA_1_8 = 8;
+    public static final int JAVA_9 = 9;
+
+
+    /**
+     * Get the current Java version from "java.version".
+     * @return The Java version.
+     */
+    public static String getCurrentVersion() {
+        return System.getProperty("java.version");
+    }
+
+    /**
+     * parse a Java version string to an integer of major version like 7, 8, 9, 10, ...
+     */
+    public static int getMajorJavaVersion() {
+        String javaVersion = getCurrentVersion();
+        // javaVersion should be something like "1.7.0_25"
+        String[] version = javaVersion.split("\\.");
+        if (version.length > 2) {
+            int majorVersion = Integer.parseInt(version[0]);
+            if (majorVersion == 1) {
+                majorVersion = Integer.parseInt(version[1]);
+            }
+            return majorVersion;
+        }
+        try {
+            int majorVersion = Integer.parseInt(javaVersion);
+            return majorVersion;
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        return -1;
+    }
+
+    /**
+     * Compare the current Java major version to a given version.
+     * @param javaVersion an integer of major version.
+     * @return True, if current >= javaVersion.
+     */
+    public static boolean isMajorAtLeast(int javaVersion) {
+        int currentVersion = getMajorJavaVersion();
+        if (currentVersion < 2 || javaVersion < 2)
+            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
+                    javaVersion + " is not recognised !");
+        return currentVersion >= javaVersion;
+    }
+
+    /**
+     * Compare the current Java major version to a given version.
+     * @param javaVersion an integer of major version.
+     * @return True, if current < javaVersion.
+     */
+    public static boolean isMajorBelow(int javaVersion) {
+        int currentVersion = getMajorJavaVersion();
+        if (currentVersion < 2 || javaVersion < 2)
+            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
+                    javaVersion + " is not recognised !");
+        return currentVersion < javaVersion;
+    }
+
+
 }

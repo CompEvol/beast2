@@ -1,28 +1,13 @@
 package beast.app.util;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Properties;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-
 import beast.app.BEASTVersion;
 import beast.core.util.Log;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.net.URL;
+import java.util.Properties;
 
 /** Utils that work with Java6 **/
 public class Utils6 {
@@ -306,24 +291,12 @@ public class Utils6 {
     		
     	}
     }
-    
+
+    /**
+     * move to {@link Utils#getMajorJavaVersion()}.
+     */
+    @Deprecated
     public static int getMajorJavaVersion() {
-		String javaVersion = System.getProperty("java.version");
-		// javaVersion should be something like "1.7.0_25"
-		String[] version = javaVersion.split("\\.");
-		if (version.length > 2) {
-			int majorVersion = Integer.parseInt(version[0]);
-			if (majorVersion == 1) {
-				majorVersion = Integer.parseInt(version[1]);
-			}
-			return majorVersion;
-		}
-		try {
-			int majorVersion = Integer.parseInt(javaVersion);
-			return majorVersion;
-		} catch (NumberFormatException e) {
-			// ignore
-		}
-		return -1;
+		return Utils.getMajorJavaVersion();
     }
 }
