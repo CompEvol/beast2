@@ -10,11 +10,13 @@ import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.util.TreeParser;
+import jam.framework.Application;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashSet;
@@ -409,68 +411,19 @@ public class Utils {
     }
 
 
-    //++++++ Java version
-    // Detect or compare the Java major number from a Java version string, such as "1.7.0_25" or "10.0.1".
+    //++++++ Mac OS only
 
-    public static final int JAVA_1_8 = 8;
-    public static final int JAVA_9 = 9;
-
-
-    /**
-     * Get the current Java version from "java.version".
-     * @return The Java version.
-     */
-    public static String getCurrentVersion() {
-        return System.getProperty("java.version");
-    }
-
-    /**
-     * parse a Java version string to an integer of major version like 7, 8, 9, 10, ...
-     */
-    public static int getMajorJavaVersion() {
-        String javaVersion = getCurrentVersion();
-        // javaVersion should be something like "1.7.0_25"
-        String[] version = javaVersion.split("\\.");
-        if (version.length > 2) {
-            int majorVersion = Integer.parseInt(version[0]);
-            if (majorVersion == 1) {
-                majorVersion = Integer.parseInt(version[1]);
+    public static void macOSXRegistration(Application application) {
+        if (isMac()) {
+            NewOSXAdapter newOSXAdapter = new NewOSXAdapter(application);
+            try {
+                newOSXAdapter.registerMacOSXApplication(application);
+            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+                System.err.println("Exception while loading the OSXAdapter:");
+                e.printStackTrace();
             }
-            return majorVersion;
         }
-        try {
-            int majorVersion = Integer.parseInt(javaVersion);
-            return majorVersion;
-        } catch (NumberFormatException e) {
-            // ignore
-        }
-        return -1;
-    }
 
-    /**
-     * Compare the current Java major version to a given version.
-     * @param javaVersion an integer of major version.
-     * @return True, if current >= javaVersion.
-     */
-    public static boolean isMajorAtLeast(int javaVersion) {
-        int currentVersion = getMajorJavaVersion();
-        if (currentVersion < 2 || javaVersion < 2)
-            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
-                    javaVersion + " is not recognised !");
-        return currentVersion >= javaVersion;
-    }
-
-    /**
-     * Compare the current Java major version to a given version.
-     * @param javaVersion an integer of major version.
-     * @return True, if current < javaVersion.
-     */
-    public static boolean isMajorBelow(int javaVersion) {
-        int currentVersion = getMajorJavaVersion();
-        if (currentVersion < 2 || javaVersion < 2)
-            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
-                    javaVersion + " is not recognised !");
-        return currentVersion < javaVersion;
     }
 
 

@@ -780,7 +780,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
-        if (!Utils.isMac() || Utils.getMajorJavaVersion() != Utils.JAVA_1_8) {
+        if (!Utils.isMac() || Utils6.isMajorLower(Utils6.JAVA_1_8)) {
             helpMenu.add(a_about);
         }
 
@@ -1227,8 +1227,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             }
 
             final Beauti beauti = new Beauti(doc);
-            
-            if (Utils.isMac() && Utils.getMajorJavaVersion() == Utils.JAVA_1_8) {
+
+            if (Utils.isMac() && Utils6.isMajorAtLeast(Utils6.JAVA_1_8)) {
                 // set up application about-menu for Mac
                 // Mac-only stuff
                 try {
@@ -1266,16 +1266,23 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                             return null;
                         }
                     };
-                    jam.mac.Utils.macOSXRegistration(application);
+
+                    // https://github.com/CompEvol/beast2/issues/805
+                    if (Utils6.isMajorAtLeast(Utils6.JAVA_9)) // >= Java 9
+                        beast.app.util.Utils.macOSXRegistration(application);
+                    else // <= Java 8
+                        jam.mac.Utils.macOSXRegistration(application);
                 } catch (Exception e) {
                     // ignore
                 }
-                try {
-                    Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
-                    Method method = class_.getMethod("enablePrefs", boolean.class);
-                    method.invoke(null, false);
-                } catch (java.lang.NoSuchMethodException e) {
-                    // ignore
+                if (Utils6.isMajorLower(Utils6.JAVA_9)) {
+                    try {
+                        Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+                        Method method = class_.getMethod("enablePrefs", boolean.class);
+                        method.invoke(null, false);
+                    } catch (java.lang.NoSuchMethodException e) {
+                        // ignore
+                    }
                 }
             }
             beauti.setUpPanels();

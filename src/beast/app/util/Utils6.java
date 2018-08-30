@@ -9,8 +9,77 @@ import java.io.*;
 import java.net.URL;
 import java.util.Properties;
 
-/** Utils that work with Java6 **/
+/**
+ * The utils that work with Java6.
+ *
+ * Utils6 cannot depend on Utils class, where Utils6 is Java 6 compatible,
+ * but Utils works on Java 8 and later.
+ **/
 public class Utils6 {
+
+    //++++++ Java version
+    // Detect or compare the Java major number from a Java version string, such as "1.7.0_25" or "10.0.1".
+    public static final int JAVA_1_8 = 8;
+    public static final int JAVA_9 = 9;
+
+    /**
+     * Get the current Java version from "java.version".
+     * @return The Java version.
+     */
+    public static String getCurrentJavaVersion() {
+        return System.getProperty("java.version");
+    }
+
+    /**
+     * Compare the current Java major version to a given version.
+     * @param javaVersion an integer of major version.
+     * @return True, if current >= javaVersion.
+     */
+    public static boolean isMajorAtLeast(int javaVersion) {
+        int currentVersion = getMajorJavaVersion();
+        if (currentVersion < 2 || javaVersion < 2)
+            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
+                    javaVersion + " is not recognised !");
+        return currentVersion >= javaVersion;
+    }
+
+    /**
+     * Compare the current Java major version to a given version.
+     * @param javaVersion an integer of major version.
+     * @return True, if current < javaVersion.
+     */
+    public static boolean isMajorLower(int javaVersion) {
+        int currentVersion = getMajorJavaVersion();
+        if (currentVersion < 2 || javaVersion < 2)
+            throw new IllegalArgumentException("Java major version " + currentVersion + " or " +
+                    javaVersion + " is not recognised !");
+        return currentVersion < javaVersion;
+    }
+
+    /**
+     * parse a Java version string to an integer of major version like 7, 8, 9, 10, ...
+     */
+    public static int getMajorJavaVersion() {
+        String javaVersion = getCurrentJavaVersion();
+        // javaVersion should be something like "1.7.0_25"
+        String[] version = javaVersion.split("\\.");
+        if (version.length > 2) {
+            int majorVersion = Integer.parseInt(version[0]);
+            if (majorVersion == 1) {
+                majorVersion = Integer.parseInt(version[1]);
+            }
+            return majorVersion;
+        }
+        try {
+            int majorVersion = Integer.parseInt(javaVersion);
+            return majorVersion;
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        return -1;
+    }
+
+    //++++++ Graphics
 
     public static class Canvas extends JComponent {
 		private static final long serialVersionUID = 1L;
@@ -292,11 +361,4 @@ public class Utils6 {
     	}
     }
 
-    /**
-     * move to {@link Utils#getMajorJavaVersion()}.
-     */
-    @Deprecated
-    public static int getMajorJavaVersion() {
-		return Utils.getMajorJavaVersion();
-    }
 }
