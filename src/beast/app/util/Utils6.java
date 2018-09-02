@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 /**
@@ -171,7 +172,7 @@ public class Utils6 {
 	public static boolean testCudaStatusOnMac() {
 		String cudaStatusOnMac = "<html>It appears you have CUDA installed, but your computer hardware does not support it.<br>"
 				+ "You need to remove CUDA before BEAST/BEAUti can start.<br>"
-				+ "To remove CUDA, delete the following folders by typing in a terminal:<br>"
+				+ "To remove CUDA, delete the following folders (if they exist) by typing in a terminal:<br>"
 				+ "rm -r /Library/Frameworks/CUDA.framework<br>"
 				+ "rm -r /Developer/NVIDIA<br>"
 				+ "rm -r /usr/local/cuda<br>"
@@ -191,17 +192,34 @@ public class Utils6 {
 			try {
 			if (new File("/Library/Frameworks/CUDA.framework").exists() ||
 					new File("/Developer/NVIDIA").exists() ||
-					new File("/usr/local/cuda").exists()) {
-				      String java = System.getenv("java.home");
-				      if (java == null) {
-				    	  java ="/usr/bin/java";
-				      } else {
-				    	  java += "/bin/java";
-				      }
+					new File("/usr/local/cuda").exists() || true) {
+				
+					String java = null;
+					// first check we can find java of the pacakged JRE
+	            	Utils6 clu = new Utils6();
+	            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();            	
+	            	String jreDir = URLDecoder.decode(new File(launcherJar).getParent(), "UTF-8") + "/../jre1.8.0_161/";	            	            	
+	            	if (new File(jreDir).exists()) {
+		                java = jreDir + "bin/java";
+	            	}
+	            	if (java == null) {
+					      java = System.getenv("java.home");
+					      if (java == null) {
+					          if (System.getenv("JAVA_HOME") != null) {
+					              java = System.getenv("JAVA_HOME") + File.separatorChar
+					                      + "bin" + File.separatorChar + "java";
+					          } else {
+					          	  java = "java";
+					          }					    	  
+					      } else {
+					    	  java += "/bin/java";
+					      }
+	            	 }
 				      String beastJar = getPackageUserDir();
 				      beastJar += "/" + "BEAST" + "/" + "lib" + "/" + "beast.jar";
-				      if (!new File(beastJar).exists()) {
+				      if (!new File(beastJar).exists()) { 
 				    	  Log.debug.println("Could not find beast.jar, giving up testCudaStatusOnMac");
+					      //TODO: first time BEAST is started, BEAST will not be installed as package yet, so beastJar does not exist
 				    	  return true;
 				      }
 				      //beastJar = "\"" + beastJar + "\"";

@@ -1,10 +1,20 @@
-                    BEAST v2.5.0 2018
+                    BEAST v2.5.1 2018
                  Beast 2 development team 2011-2018
 Version History
-Last updated: April 2018
+Last updated: September 2018
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.5.1
+	Add -X flag to all applications, so more memory can be allocated
+	Fix some OS X with Java 9+ anomalies
+	More robust OS X CUDA check
+	More robust launch scripts
+	Better error reporting
+	More robust package manager
+	TreeAnnotator handles taxa that are numbers now
+	Allow multiple -D arguments to BEAST, allows commas in user defined variables	
+
 Version 2.5.0
         BEAST & friends are now compatible with Java 8, 9 and 10.
         All appllications start a bit faster now package discovery is cached.
