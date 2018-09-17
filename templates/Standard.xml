@@ -358,7 +358,8 @@
         <logger id='screenlog' logEvery="1000">
 	        <!--model idref='posterior'/-->
             <log idref="posterior"/>
-      	    <ESS spec='ESS' name='log' arg="@posterior"/>
+            <!--this ESS is computed solely based on the current BEAST run (not the chain)-->
+      	    <!--<ESS spec='ESS' name='log' arg="@posterior"/>-->
             <log idref="likelihood"/>
             <log idref="prior"/>
         </logger>
