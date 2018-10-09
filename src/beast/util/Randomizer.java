@@ -370,6 +370,32 @@ public class Randomizer {
         }
     }
 
+    public static double nextLogNormal(double M, double S, boolean MeanInRealspace) {
+        double Mean;
+        double StdEv;
+        //double Mean = Math.exp(mean + std * std/2.0);
+        //return Math.sqrt(std)*Randomizer.nextGaussian()+Mean;
+        //return random.nextLogNormal(mean, std, MeanInRealspace);
+        if(MeanInRealspace) {
+            //Mean=M;StdEv=S;
+            Mean = Math.log(M) - 0.5 * Math.log(S/(M*M)+1.0);
+            double x=Math.log((S*S)/(M*M));
+            StdEv=x+1.0;
+        }else{
+            Mean=M;
+            StdEv=S;
+            //Mean=Math.exp(M+S*S/2.0);
+            //double y=Math.exp(2.0*M+S*S);
+            //double z=Math.exp(S*S)-1;
+            //StdEv=y*z;
+        }
+        synchronized (random) {
+            double L=StdEv * random.nextGaussian() + Mean;
+            return Math.exp(L);
+            //return 1.0;
+        }
+    }
+
     /**
      * Samples a double uniformly from between low and high.
      * 
