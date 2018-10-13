@@ -107,6 +107,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         this.doc = doc;
         this.doc.addBeautiDocListener(this);
         doc.setBeauti(this);
+        BEAUtiIntances++;
     }
 
     void setTitle() {
@@ -1102,6 +1103,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     } // hidePanels
 
     public void setUpPanels() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    	if (isInitialising) {
+    		//return;
+    	}
         isInitialising = true;
         // remove any existing tabs
         if (getTabCount() > 0) {
@@ -1335,7 +1339,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             // check file needs to be save on closing main frame
             frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            BEAUtiIntances++;
             frame.addWindowListener(new WindowAdapter() {
                 @Override
 				public void windowClosing(WindowEvent e) {

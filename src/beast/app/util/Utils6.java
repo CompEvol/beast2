@@ -195,7 +195,7 @@ public class Utils6 {
 					new File("/usr/local/cuda").exists() || true) {
 				
 					String java = null;
-					// first check we can find java of the pacakged JRE
+					// first check we can find java of the packaged JRE
 	            	Utils6 clu = new Utils6();
 	            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();            	
 	            	String jreDir = URLDecoder.decode(new File(launcherJar).getParent(), "UTF-8") + "/../jre1.8.0_161/";	            	            	

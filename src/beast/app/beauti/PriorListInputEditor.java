@@ -342,6 +342,40 @@ public class PriorListInputEditor extends ListInputEditor {
 	        return selectedPlugins;
 	    }
 
+    	
+    	/* expect args to be TaxonSet, Distribution, tree partition (if any) */
+    	@Override
+    	public List<Distribution> createDistribution(BeautiDoc doc, List<Object> args) {
+	    	MRCAPrior prior = new MRCAPrior();
+            TaxonSet taxonSet = (TaxonSet) args.get(0);
+            BEASTObjectPanel.addPluginToMap(taxonSet, doc);
+            prior.taxonsetInput.setValue(taxonSet, prior);
+            prior.setID(taxonSet.getID() + ".prior");
+            // this removes the parametric distribution
+            prior.distInput.setValue(args.get(1), prior);
+
+            Logger logger = (Logger) doc.pluginmap.get("tracelog");
+            logger.loggersInput.setValue(prior, logger);
+
+            if (args.size() <= 2) {
+	            getDoc().scrubAll(true, false);
+	            State state = (State) doc.pluginmap.get("state");
+	            for (StateNode node : state.stateNodeInput.get()) {
+	                if (node instanceof Tree) { 
+	    	            prior.treeInput.setValue(node, prior);
+	    	            break;
+	                }
+	            }
+            } else {
+            	Object tree = doc.pluginmap.get("Tree.t:" + args.get(2));
+                prior.treeInput.setValue(tree, prior);
+            }
+            
+            List<Distribution> selectedPlugins = new ArrayList<>();
+	        selectedPlugins.add(prior);
+	        return selectedPlugins;
+    	}
+    	
 		@Override
 		public String getDescription() {
 			return "MRCA prior";
