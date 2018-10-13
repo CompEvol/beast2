@@ -312,7 +312,7 @@ public class MCMC extends Runnable {
         Log.info.println("Start likelihood: " + oldLogLikelihood + " " + (initialisationAttempts > 1 ? "after " + initialisationAttempts + " initialisation attempts" : ""));
         if (Double.isInfinite(oldLogLikelihood) || Double.isNaN(oldLogLikelihood)) {
             reportLogLikelihoods(posterior, "");
-            throw new RuntimeException("Could not find a proper state to initialise. Perhaps try another seed.");
+            throw new RuntimeException("Could not find a proper state to initialise. Perhaps try another seed.\nSee http://www.beast2.org/2018/07/04/fatal-errors.html for other possible solutions.");
         }
 
         loggers = loggersInput.get();
