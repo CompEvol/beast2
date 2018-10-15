@@ -839,7 +839,8 @@ public class JSONParser {
             }
 		}
 		if (clazzName == null) {
-			throw new JSONParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
+			throw new JSONParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?\n"
+					+ "Perhaps a package required for this class is not installed?", 1017);
 			// throw new ClassNotFoundException(specClass);
 		}
 				

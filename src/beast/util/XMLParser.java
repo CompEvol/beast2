@@ -770,7 +770,8 @@ public class XMLParser {
 						"Or perhaps there is a typo in spec and you meant " + XMLParserUtils.guessClass(specClass) + "?";
 				throw new XMLParserException(node, msg, 1018);				
 			}
-			throw new XMLParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?", 1017);
+			throw new XMLParserException(node, "Class could not be found. Did you mean " + XMLParserUtils.guessClass(specClass) + "?\n"
+					+ "Perhaps a package required for this class is not installed?", 1017);
 			// throw new ClassNotFoundException(specClass);
 		}
 				
