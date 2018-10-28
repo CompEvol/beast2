@@ -16,7 +16,7 @@ import beast.core.parameter.IntegerParameter;
 public class ChiSquare extends ParametricDistribution {
     final public Input<IntegerParameter> dfInput = new Input<>("df", "degrees if freedin, defaults to 1");
 
-    static org.apache.commons.math.distribution.ChiSquaredDistribution m_dist = new ChiSquaredDistributionImpl(1);
+    org.apache.commons.math.distribution.ChiSquaredDistribution m_dist = new ChiSquaredDistributionImpl(1);
 
     @Override
     public void initAndValidate() {

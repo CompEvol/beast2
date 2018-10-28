@@ -25,7 +25,7 @@ public class Gamma extends ParametricDistribution {
     		+ "For ShapeMean beta is interpreted as mean."
     		+ "For OneParameter beta is ignored.", mode.ShapeScale, mode.values());
 
-    static org.apache.commons.math.distribution.GammaDistribution m_dist = new GammaDistributionImpl(1, 1);
+    org.apache.commons.math.distribution.GammaDistribution m_dist = new GammaDistributionImpl(1, 1);
 
     mode parameterisation = mode.ShapeScale;
     		

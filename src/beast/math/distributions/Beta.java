@@ -17,7 +17,7 @@ public class Beta extends ParametricDistribution {
     final public Input<RealParameter> alphaInput = new Input<>("alpha", "first shape parameter, defaults to 1");
     final public Input<RealParameter> betaInput = new Input<>("beta", "the other shape parameter, defaults to 1");
 
-    static org.apache.commons.math.distribution.BetaDistribution m_dist = new BetaDistributionImpl(1, 1);
+    org.apache.commons.math.distribution.BetaDistribution m_dist = new BetaDistributionImpl(1, 1);
 
     @Override
     public void initAndValidate() {

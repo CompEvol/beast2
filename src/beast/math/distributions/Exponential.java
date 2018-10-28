@@ -16,7 +16,7 @@ import beast.core.util.Log;
 public class Exponential extends ParametricDistribution {
     final public Input<RealParameter> lambdaInput = new Input<>("mean", "mean parameter, defaults to 1");
 
-    static org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1);
+    org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1);
 
     @Override
     public void initAndValidate() {

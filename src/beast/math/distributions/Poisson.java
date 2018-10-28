@@ -14,7 +14,7 @@ import beast.core.parameter.RealParameter;
 public class Poisson extends ParametricDistribution {
     final public Input<RealParameter> lambdaInput = new Input<>("lambda", "rate parameter, defaults to 1");
 
-    static org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
+    org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
 
 
     // Must provide empty constructor for construction by XML. Note that this constructor DOES NOT call initAndValidate();
