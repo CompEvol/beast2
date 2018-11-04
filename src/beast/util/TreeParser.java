@@ -157,18 +157,6 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         
-        // check if all labels are in the Newick tree
-        if (labels != null) {
-        	boolean [] done = new boolean[labels.size()];
-        	checkAllLabelsAreCovered(getRoot(), done);
-            for (int i = 0; i < done.length; i++) {
-            	if (!done[i]) {
-            		Log.warning("WARNING: Taxon " + labels.get(i) + " was not found in the Newick tree");
-            	}
-            }        	
-        }
-        
-        
         super.initAndValidate();
         m_sTaxaNames = null;
 
@@ -238,6 +226,17 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         }
 
         initStateNodes();
+
+        // check if all labels are in the Newick tree
+        if (labels != null) {
+        	boolean [] done = new boolean[labels.size()];
+        	checkAllLabelsAreCovered(getRoot(), done);
+            for (int i = 0; i < done.length; i++) {
+            	if (!done[i]) {
+            		Log.warning("WARNING: Taxon " + labels.get(i) + " was not found in the Newick tree");
+            	}
+            }        	
+        }
     } // init
 
     private void checkAllLabelsAreCovered(Node node, boolean[] done) {
