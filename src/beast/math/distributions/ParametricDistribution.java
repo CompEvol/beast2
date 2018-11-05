@@ -70,6 +70,7 @@ public abstract class ParametricDistribution extends CalculationNode implements 
     /*
      * This implementation is only suitable for univariate distributions.
      * Must be overwritten for multivariate ones.
+     * @size sample size = number of samples to produce
      */
     public Double[][] sample(final int size) throws MathException {
         final Double[][] sample = new Double[size][];

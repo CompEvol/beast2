@@ -9,6 +9,7 @@ import beast.core.Function;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.util.Randomizer;
 
 
 
@@ -57,6 +58,7 @@ public class Dirichlet extends ParametricDistribution {
         public double logDensity(double x) {
             return Double.NaN;
         }
+        
     } // class DirichletImpl
 
 
@@ -79,4 +81,23 @@ public class Dirichlet extends ParametricDistribution {
         return logP;
     }
 
+	@Override
+	public Double[][] sample(int size) {
+		int dim = alphaInput.get().getDimension();
+		Double[][] samples = new Double[size][];
+		for (int i = 0; i < size; i++) {
+			Double[] dirichletSample = new Double[dim];
+			double sum = 0.0;
+			for (int j = 0; j < dim; j++) {
+				dirichletSample[j] = Randomizer.nextGamma(alphaInput.get().getValue(j), 1.0);
+				sum += dirichletSample[j];
+			}
+			for (int j = 0; j < dim; j++) {
+				dirichletSample[j] = dirichletSample[j] / sum;
+			}
+			samples[i] = dirichletSample;
+
+		}
+		return samples;
+	}
 }
