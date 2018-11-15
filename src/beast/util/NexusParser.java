@@ -829,6 +829,9 @@ public class NexusParser {
                 str = str.replaceAll("\\s*-\\s*", "-");
                 str = str.replaceAll("\\s*\\\\\\s*", "\\\\");
                 str = str.replaceAll("\\s*;", "");
+                // replace "," to " " as BEAST 1 uses ,
+                str = str.replaceAll(",\\s+", " ");
+                // use white space as delimiter
                 final String[] strs = str.trim().split("\\s+");
                 final String id = strs[1];
                 String rangeString = "";
