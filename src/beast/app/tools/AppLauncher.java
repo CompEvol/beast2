@@ -366,7 +366,7 @@ public class AppLauncher {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
             }
             cmd.add("-cp");
-            final String strClassPath = sanitise(System.getProperty("java.class.path"));
+            final String strClassPath = BeastLauncher.getPath(false, null);
             cmd.add(strClassPath);
             cmd.add(packageApp.className);
 
