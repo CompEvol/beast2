@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -360,7 +361,14 @@ public class AppLauncher {
 	                cmd.add("java");
 	            }
             }
-            // TODO: deal with java directives like -Xmx -Xms here
+            
+            // deal with java directives like -Xmx -Xms here
+            List<String> args = ManagementFactory.getRuntimeMXBean().getInputArguments();
+            for (String arg : args) {
+            	if (arg.startsWith("-X")) {
+            		cmd.add(arg);
+            	}
+            }
 
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
