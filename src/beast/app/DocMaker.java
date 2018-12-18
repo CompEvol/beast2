@@ -422,7 +422,7 @@ public class DocMaker {
         for (Citation citation : beastObject.getCitationList()) {
             buf.append("<h2>Reference:</h2><p>" + citation.value() + "</p>\n");
             if (citation.DOI().length() > 0) {
-                buf.append("<p><a href=\"http://dx.doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>\n");
+                buf.append("<p><a href=\"https://doi.org/" + citation.DOI() + "\">doi:" + citation.DOI() + "</a></p>\n");
             }
         }
 
