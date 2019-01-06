@@ -47,7 +47,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     RealParameter quantiles; // when mode=quantiles
 
     // if using categories, then it is set to be true; otherwise, it is set to be false.
-    boolean usingcategories;
+    //boolean usingcategories;
 
     ParametricDistribution distribution; //the distribution of the rates
     // i.e. LogNormal(M,S,MeanInRealSpace), then get the three parameters
@@ -92,7 +92,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
                 mode = Mode.rates;
             }
        } else
-           mode = Mode.categories; usingcategories = false; //right or wrong?
+           mode = Mode.categories; // usingcategories = false; //right or wrong?
         //Initialization for three modes
         //(1)// print information about which mode is used
         if (mode == Mode.categories) {
@@ -272,7 +272,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
    //???
   private void prepare() {
-        if (usingcategories) {
+        if (mode == Mode.categories) {
             // rates array initialized to correct length in initAndValidate
             // here we just reset rates to zero and they are computed by getRawRate(int i) as needed
            Arrays.fill(rates, 0.0);
@@ -317,7 +317,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     @Override
     public void store() {
         //used to "if (!usingquantiles)", which means categories are used
-            if (usingcategories) {
+            if (mode == Mode.categories) {
            System.arraycopy(rates, 0, storedRates, 0, rates.length);
             //double[] tmp1 = rates;
             //rates = storedRates;
@@ -329,7 +329,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     @Override
     public void restore() {
-        if(usingcategories){
+        if(mode == Mode.categories){
             double[] tmp = rates;
             rates = storedRates;
             storedRates = tmp;
