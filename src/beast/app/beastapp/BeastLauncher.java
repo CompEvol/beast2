@@ -1,40 +1,23 @@
 package beast.app.beastapp;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-
-import javax.swing.JOptionPane;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
 import beast.core.util.Log;
-import beast.util.PackageManager;
 import beast.util.Package;
+import beast.util.PackageManager;
 import beast.util.PackageVersion;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 /**
  * Loads beast.jar and launches BEAST through the BEASTMain class
@@ -260,8 +243,8 @@ public class BeastLauncher {
 			if (majorVersion < 8) {
 				String JAVA_VERSION_MSG = "<html>" + app + " requires Java version at least 8<br>"
 						+ "but the current version is " + majorVersion + ".<br><br>"
-						+ "You can get Java from <a href='https://www.java.com/en/'>https://www.java.com/</a>.<br><br> "
-						+ "Continuing, but expect the unexpected.</html>";
+						+ "Quit to update Java from <br>"
+						+ "<a href='https://www.java.com/en/'>https://www.java.com/</a>.</html>";
 				if (!java.awt.GraphicsEnvironment.isHeadless()) {
 					JOptionPane.showMessageDialog(null, JAVA_VERSION_MSG);
 				} else {
@@ -269,7 +252,7 @@ public class BeastLauncher {
 					JAVA_VERSION_MSG = JAVA_VERSION_MSG.replaceAll("<[^<]*>", "");
 					System.err.println(JAVA_VERSION_MSG);
 				}
-				return true;
+				return false; // if majorVersion < 8 then fail
 			}
 		} catch (NumberFormatException e) {
 			// We only get here if the JVM does not return the expected
