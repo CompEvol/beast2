@@ -745,16 +745,21 @@ public class Node extends BEASTObject {
         lengthMetaData.put(key, value);
     }
 
+    /**
+     * Retrieve metadata with key matching pattern.  If pattern
+     * happens to match either "date", "date-forward" or "date-backward",
+     * return the node age instead.
+     *
+     * @param pattern key to retrieve.
+     * @return metadata object or null of key not found.
+     */
     public Object getMetaData(final String pattern) {
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return height;
-        } else {
-            final Object d = metaData.get(pattern);
-            if (d != null) return d;
-        }
-        return 0;
+        } else
+            return metaData.get(pattern);
     }
 
     public Object getLengthMetaData(String key) {
