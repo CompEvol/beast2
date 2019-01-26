@@ -960,6 +960,12 @@ public class Node extends BEASTObject {
         return ((this.getLeft()).isDirectAncestor() || (this.getRight() != null && (this.getRight()).isDirectAncestor()));
     }
 
+    /**
+     * Retrieve the (technically leaf) node whose ID matches the ID of the taxon
+     * associated with this sampled ancestor.
+     *
+     * @return node corresponding to the sampled ancestor
+     */
     public Node getDirectAncestorChild() {
         if (!this.isFake()) {
             return null;
@@ -970,6 +976,11 @@ public class Node extends BEASTObject {
         return this.getRight();
     }
 
+    /**
+     * Retrieve the true child node of this sampled ancestor.
+     *
+     * @return true child node
+     */
     public Node getNonDirectAncestorChild(){
         if (!this.isFake()) {
             return null;
