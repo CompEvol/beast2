@@ -655,6 +655,10 @@ public class BeastLauncher {
         		cmd.add(arg);
         		args[i] = null;
         		stackSizeSet = true;
+        	} else if (arg.startsWith("-Xss")) {
+        		cmd.add(arg);
+        		args[i] = null;
+        		stackSizeSet = true;
         	}
         }            
 
