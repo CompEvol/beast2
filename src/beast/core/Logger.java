@@ -96,17 +96,17 @@ public class Logger extends BEASTObject {
     /**
      * offset for the sample number, which is non-zero when a chain is resumed *
      */
-    static long sampleOffset = -1;
+    static protected long sampleOffset = -1;
 
     /**
      * number of samples between logs *
      */
-    long every = 1;
+    protected long every = 1;
 
     /**
      * stream to log to
      */
-    PrintStream m_out;
+    protected PrintStream m_out;
 
     /**
      * keep track of time taken between logs to estimate speed *
@@ -345,7 +345,7 @@ public class Logger extends BEASTObject {
 	}
 
 
-	boolean openLogFile() throws IOException {
+	protected boolean openLogFile() throws IOException {
         if (isLoggingToStdout()) {
             m_out = System.out;
             return true;

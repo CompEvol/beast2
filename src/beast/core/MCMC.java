@@ -574,5 +574,9 @@ public class MCMC extends Runnable {
     public double robustlyCalcNonStochasticPosterior(final Distribution posterior) {
         return state.robustlyCalcNonStochasticPosterior(posterior);
     }
+    
+    public OperatorSchedule getOperatorSchedule() {
+    	return operatorSchedule;
+    }
 } // class MCMC
 
