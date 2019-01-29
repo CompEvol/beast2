@@ -12,6 +12,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +41,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import beast.app.beastapp.BeastLauncher;
 import beast.app.util.Utils;
+import beast.app.util.Utils6;
 import beast.core.util.Log;
 import beast.util.PackageManager;
 
@@ -337,18 +341,40 @@ public class AppLauncher {
             PackageManager.loadExternalJars();
 
             List<String> cmd = new ArrayList<>();
-            if (System.getenv("JAVA_HOME") != null) {
-                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
-                        + "bin" + File.separatorChar + "java");
-            } else
-                cmd.add("java");
-            // TODO: deal with java directives like -Xmx -Xms here
+            
+            if (Utils6.isMac()) {
+            	// check whether a bundled jre is present
+            	BeastLauncher clu = new BeastLauncher();
+            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();            	
+            	String jreDir = URLDecoder.decode(new File(launcherJar).getParent(), "UTF-8") + "/../jre1.8.0_161/";
+            	            	
+            	if (new File(jreDir).exists()) {
+	                cmd.add(jreDir + "bin/java");
+            	}
+			}
+
+            if (cmd.size() == 0) {
+	            if (System.getenv("JAVA_HOME") != null) {
+	                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
+	                        + "bin" + File.separatorChar + "java");
+	            } else {
+	                cmd.add("java");
+	            }
+            }
+            
+            // deal with java directives like -Xmx -Xms here
+            List<String> args = ManagementFactory.getRuntimeMXBean().getInputArguments();
+            for (String arg : args) {
+            	if (arg.startsWith("-X")) {
+            		cmd.add(arg);
+            	}
+            }
 
             if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
             	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
             }
             cmd.add("-cp");
-            final String strClassPath = sanitise(System.getProperty("java.class.path"));
+            final String strClassPath = BeastLauncher.getPath(false, null);
             cmd.add(strClassPath);
             cmd.add(packageApp.className);
 
