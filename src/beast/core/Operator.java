@@ -319,5 +319,27 @@ public abstract class Operator extends BEASTObject {
     public boolean requiresStateInitialisation() {
         return true;
     }
-
+    
+    // Added for coupled MCMC
+    public int get_m_nNrAccepted(){
+    	return m_nNrAccepted;
+    }
+    public int get_m_nNrRejected(){
+    	return m_nNrRejected;
+    }
+    public int get_m_nNrAcceptedForCorrection(){
+    	return m_nNrAcceptedForCorrection;
+    }
+    public int get_m_nNrRejectedForCorrection(){
+    	return m_nNrRejectedForCorrection;
+    }
+    
+    // Added for coupled MCMC
+    public void setAcceptedRejected(int m_nNrAccepted, int m_nNrRejected, int m_nNrAcceptedForCorrection, int m_nNrRejectedForCorrection){
+    	this.m_nNrAccepted = m_nNrAccepted;
+    	this.m_nNrRejected = m_nNrRejected;
+    	this.m_nNrAcceptedForCorrection = m_nNrAcceptedForCorrection;
+    	this.m_nNrRejectedForCorrection = m_nNrRejectedForCorrection;
+    }
+    
 } // class Operator

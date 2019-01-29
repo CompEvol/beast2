@@ -626,5 +626,16 @@ public class Logger extends BEASTObject {
     public static long getSampleOffset() {
         return sampleOffset < 0 ? 0 : sampleOffset;
     }
+    
+
+    public void setPrintStream(PrintStream m_out_alt){
+    	m_out = new PrintStream(m_out_alt);    	
+    }
+    
+    public PrintStream getPrintStream(){
+    	PrintStream m_out_alt = new PrintStream(m_out);
+    	return m_out_alt;
+    }
+
 
 } // class Logger
