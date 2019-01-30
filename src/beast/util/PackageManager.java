@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -474,8 +475,24 @@ public class PackageManager {
             Package thisPkg = entry.getKey();
             PackageVersion thisPkgVersion = entry.getValue();
 
-            // create directory
             URL templateURL = thisPkg.getVersionURL(thisPkgVersion);
+
+            // check the URL exists
+            HttpURLConnection huc = (HttpURLConnection) templateURL.openConnection();
+            huc.setRequestMethod("HEAD");
+            int responseCode = huc.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) { 
+            	// RRB: should be "if (responseCode != HttpURLConnection.HTTP_OK)"
+            	// but package file hosted on github (which are most of them)
+            	// produce a HttpURLConnection.HTTP_FORBIDDEN for some reason
+            	throw new IOException("Could not find pacakge at URL\n" + templateURL + "\n"
+            			+ "The server may be bussy, or network may be down.\n"
+            			+ "If you suspect there is a problem with the URL \n"
+            			+ "(the URL may have a typo, or the file was removed)\n"
+            			+ "please contact the package maintainer.\n");
+            }
+            
+            // create directory
             ReadableByteChannel rbc = Channels.newChannel(templateURL.openStream());
             String dirName = getPackageDir(thisPkg, thisPkgVersion, useAppDir, customDir);
             File dir = new File(dirName);
