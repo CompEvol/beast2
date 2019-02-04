@@ -1276,7 +1276,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                         beast.app.util.Utils.macOSXRegistration(application);
                     else // <= Java 8
                         jam.mac.Utils.macOSXRegistration(application);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     // ignore
                 }
                 if (Utils6.isMajorLower(Utils6.JAVA_9)) {

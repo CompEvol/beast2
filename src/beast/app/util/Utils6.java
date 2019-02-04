@@ -70,6 +70,11 @@ public class Utils6 {
                 majorVersion = Integer.parseInt(version[1]);
             }
             return majorVersion;
+        } else if (javaVersion.contains("-")) {
+        	version = javaVersion.split("-");
+            int majorVersion = Integer.parseInt(version[0]);
+            
+            return majorVersion;
         }
         try {
             int majorVersion = Integer.parseInt(javaVersion);
