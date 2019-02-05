@@ -1,5 +1,6 @@
 <!-- Build BEAST 2. It is also used by Hudson BEAST_2 project. JUnit test is available for this build. -->
-<project basedir="." default="build_jar_all_BEAST" name="BUILD_BEAST_2">
+<project basedir="." default="build_jar_all_BEAST" name="BUILD_BEAST_2" 
+	xmlns:fx="javafx:com.sun.javafx.tools.ant">
     <description>
         Build BEAST 2.
         Also used by Hudson BEAST_2 project.
@@ -259,7 +260,7 @@
     <property name="version" value="2.5.2" />
     <property name="version_number" value="2.5.2" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2018" />
+    <property name="copyright" value="Beast 2 development team 2011-2019" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="beast_name" value="beast" />
@@ -1053,6 +1054,8 @@
     </target>
 
 
+	<property environment="env"/>
+	
     <!-- Create the app bundle -->
     <target name="macjre">
         <delete dir="${Mac_package_dir}" />
@@ -1294,6 +1297,118 @@
         
        <copy file="${Mac_dir}/${BEAST_name} v${version}.dmg" tofile="../../tmp/${BEAST_name}_with_JRE.v${version}.dmg" />
 
+
+        <echo message="Mac with JRE version release is finished." />
+    </target>
+
+
+
+	<target name="init-fx-tasks">
+		<path id="fxant">
+			<filelist>
+				<file name="${java.home}/lib/ant-javafx.jar"/>
+				<!--file name="${java.home}/lib/jfxrt.jar"/-->
+			</filelist>
+		</path>
+	
+		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"      
+			uri="javafx:com.sun.javafx.tools.ant"
+			classpathref="fxant"/>
+	</target>
+
+    <!-- Create the app bundle -->
+    <target name="macjre3" depends="init-fx-tasks">
+    
+
+        <echo message="Creating BEAST.app ..." />
+
+		<!--
+		<fx:signjar destdir="/tmp" alias="${AppleSigner}" verbose="true" storePass="" keyPass="">
+			<fx:fileset dir='${dist}' includes='*.jar'/>
+		</fx:signjar>
+		-->
+		
+		<fx:resources id="appRes">
+			<fx:fileset dir="${dist}" includes="launcher.jar"/>
+			<fx:fileset dir="${dist}" includes="beast.jar"/>
+			<fx:fileset dir="${dist}" includes="beast.src.jar"/>
+  	        <fx:fileset dir="${common_dir}" includes="VERSION HISTORY.txt"/>
+    	    <fx:fileset dir="${common_dir}" includes="README.txt"/>
+        	<fx:fileset dir="${common_dir}" includes="LICENSE.txt"/>
+            <fx:fileset dir="./examples/" includes="*.xml" />
+            <fx:fileset dir="./examples/nexus" includes="**" />
+            <fx:fileset dir="./templates" includes="**" />
+		</fx:resources> 
+		
+		<fx:application id="fxApplication"
+			name="${BEAST_name}"
+			mainClass="beast.app.beastapp.BeastMain"
+			toolkit="fx"
+		    version="${version}"
+		>
+            <fx:argument>-window</fx:argument>
+            <fx:argument>-working</fx:argument>
+            <fx:argument>-options</fx:argument>
+		</fx:application>
+	
+		<mkdir dir="${Mac_package_dir}/build/classes/META-INF" />
+		
+		
+		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
+		<fx:deploy
+			embedJNLP="true"
+			extension="false"
+			width="1200" height="800" 
+			includeDT="false"
+			offlineAllowed="true"
+			outdir="${Mac_package_dir}"
+			outfile="${BEAST_name}" 
+			nativeBundles="image"
+			updatemode="background" >
+	
+	    	<fx:info title="${BEAST_name}" vendor="${appVendor}"
+            	copyright="${BEAST_name}, ${copyright}" description="${BEAST_name}">
+        		<fx:icon href="${common_dir}/icons/beast.icns"/>   
+    		</fx:info>
+			<fx:application refId="fxApplication"/>
+			<fx:resources refid="appRes"/>
+			<fx:platform>
+            	<fx:jvmarg value="-Xmx4g"/>
+	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
+    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        	    <fx:jvmarg value="-Duser.language=en"/>            
+            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
+			</fx:platform>
+
+
+
+			<fx:secondaryLauncher name="BEAUti"
+			    mainClass="beast.app.beauti.Beauti"
+			    version="${version}"
+			    title="BEAUti"
+			    description="BEAUti"
+			    copyright="${copyright}"
+			    menu="true"
+     			shortcut="false"
+     		>
+     			<fx:argument>-capture</fx:argument>
+            	<fx:jvmarg value="-Xmx4g"/>
+	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
+    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        	    <fx:jvmarg value="-Duser.language=en"/>            
+            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
+			</fx:secondaryLauncher>
+		</fx:deploy>
+
+
+        <echo message="Signing..." />
+
+        <exec executable="codesign">
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_dir}/${BEAST_name}/BEAST-${version}.dmg"/>
+        </exec>
 
         <echo message="Mac with JRE version release is finished." />
     </target>
