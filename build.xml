@@ -146,6 +146,27 @@
             <zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
             <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
         </jar>
+        
+        
+        <jar jarfile="${dist}/beauti.jar">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Main-Class" value="beast.app.beauti.Beauti" />
+            </manifest>
+            <fileset dir="${build}">
+                <include name="beast/**/*.class" />
+                <include name="beast/**/*.properties" />
+                <include name="beast/**/*.png" />
+                <include name="beagle/**/*.class" />
+                <include name="org/**/*.class" />
+            </fileset>
+            <zipgroupfileset dir="${lib}" includes="jam.jar" />
+            <zipgroupfileset dir="${lib}" includes="beagle.jar" />
+            <zipgroupfileset dir="${lib}" includes="colt.jar" />
+            <zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
+            <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
+        </jar>
+        
         <jar jarfile="${dist}/launcher.jar">
             <fileset dir="${build}">
                 <include name="beast/**/*Launcher*.class" />
@@ -160,6 +181,8 @@
                 <include name="beast/core/util/Log*.class" />
             </fileset>
         </jar>
+        
+
         <jar jarfile="${dist}/beast.src.jar">
             <fileset dir="${src}">
                 <include name="beast/**/*.java" />
@@ -1304,24 +1327,58 @@
 
 
 	<target name="init-fx-tasks">
+		<echo message="java.home = ${java.home} "/>
 		<path id="fxant">
 			<filelist>
-				<file name="${java.home}/lib/ant-javafx.jar"/>
-				<!--file name="${java.home}/lib/jfxrt.jar"/-->
+				<file name="${java.home}/../lib/ant-javafx.jar"/>
+				<file name="${java.home}/../lib/jfxrt.jar"/> <!-- jdk9, jdk10 -->
+				<file name="${java.home}/../jre/lib/ext/jfxrt.jar"/> <!-- jdk8 -->
 			</filelist>
 		</path>
 	
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"      
 			uri="javafx:com.sun.javafx.tools.ant"
 			classpathref="fxant"/>
+
 	</target>
 
     <!-- Create the app bundle -->
     <target name="macjre3" depends="init-fx-tasks">
     
 
-        <echo message="Creating BEAST.app ..." />
+        <delete dir="${Mac_package_dir}" />
+        <!--<delete file="${Mac_dir}/pack.temp.dmg"/>-->
+        <delete file="${Mac_dir}/BEAST v${version}.dmg"/>
+        <!-- Create the release directory -->
+        <mkdir dir="${Mac_package_dir}" />
 
+        <copy todir="${Mac_package_dir}/bin">
+            <fileset dir="${Linux_dir}/jrebin" />
+        </copy>
+        <chmod dir="${Mac_package_dir}/bin" perm="755" includes="**/**" />
+
+        <copy todir="${Mac_package_dir}/examples/">
+            <fileset dir="examples/">
+                <include name="*.xml" />
+                <include name="nexus/**" />
+                <exclude name="benchmark/**" />
+            </fileset>
+        </copy>
+
+<!--    <copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
+        <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
+        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Mac_package_dir}/lib"/>
+        <copy todir="${Mac_package_dir}/lib">
+            <fileset dir="${Mac_dir}/lib" />
+        </copy> -->
+
+        <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
+        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
+        <copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
+        
+        
 		<!--
 		<fx:signjar destdir="/tmp" alias="${AppleSigner}" verbose="true" storePass="" keyPass="">
 			<fx:fileset dir='${dist}' includes='*.jar'/>
@@ -1331,6 +1388,7 @@
 		<fx:resources id="appRes">
 			<fx:fileset dir="${dist}" includes="launcher.jar"/>
 			<fx:fileset dir="${dist}" includes="beast.jar"/>
+			<!--
 			<fx:fileset dir="${dist}" includes="beast.src.jar"/>
   	        <fx:fileset dir="${common_dir}" includes="VERSION HISTORY.txt"/>
     	    <fx:fileset dir="${common_dir}" includes="README.txt"/>
@@ -1338,6 +1396,7 @@
             <fx:fileset dir="./examples/" includes="*.xml" />
             <fx:fileset dir="./examples/nexus" includes="**" />
             <fx:fileset dir="./templates" includes="**" />
+            -->
 		</fx:resources> 
 		
 		<fx:application id="fxApplication"
@@ -1353,6 +1412,61 @@
 	
 		<mkdir dir="${Mac_package_dir}/build/classes/META-INF" />
 		
+				<fx:deploy
+			embedJNLP="true"
+			extension="false"
+			width="1200" height="800" 
+			includeDT="false"
+			offlineAllowed="true"
+			outdir="${Mac_package_dir}"
+			outfile="${BEAUti_name}" 
+			nativeBundles="image"
+			updatemode="background" >
+	
+	    	<fx:info title="${BEAUti_name}" vendor="${appVendor}"
+            	copyright="${BEAUti_name}, ${copyright}" description="${BEAUti_name}">
+        		<fx:icon href="${common_dir}/icons/beauti.icns"/>   
+    		</fx:info>
+			<fx:application id="BEAUtiApplication"
+				name="${BEAUti_name}"
+				mainClass="beast.app.beauti.Beauti"
+				toolkit="fx"
+			    version="${version}"
+			>
+            	<fx:argument>-capture</fx:argument>
+			</fx:application>
+			<fx:resources id="appResBEAUti">
+				<fx:fileset dir="${dist}" includes="beauti.jar"/>
+			</fx:resources> 
+			<fx:platform>
+            	<fx:jvmarg value="-Xmx4g"/>
+	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
+    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        	    <fx:jvmarg value="-Duser.language=en"/>            
+            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
+			</fx:platform>
+
+
+
+<!--
+			<fx:secondaryLauncher name="BEAUti"
+			    mainClass="beast.app.beauti.Beauti"
+			    version="${version}"
+			    title="BEAUti"
+			    description="BEAUti"
+			    copyright="${copyright}"
+			    menu="true"
+     			shortcut="false"
+     		>
+     			<fx:argument>-capture</fx:argument>
+            	<fx:jvmarg value="-Xmx4g"/>
+	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
+    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
+        	    <fx:jvmarg value="-Duser.language=en"/>            
+            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
+			</fx:secondaryLauncher>
+-->			
+		</fx:deploy>
 		
 		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
 		<fx:deploy
@@ -1371,7 +1485,9 @@
         		<fx:icon href="${common_dir}/icons/beast.icns"/>   
     		</fx:info>
 			<fx:application refId="fxApplication"/>
-			<fx:resources refid="appRes"/>
+			<fx:resources id="appResBEAUST">
+				<fx:fileset dir="${dist}" includes="beast.jar"/>
+			</fx:resources> 
 			<fx:platform>
             	<fx:jvmarg value="-Xmx4g"/>
 	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
@@ -1382,6 +1498,7 @@
 
 
 
+<!--
 			<fx:secondaryLauncher name="BEAUti"
 			    mainClass="beast.app.beauti.Beauti"
 			    version="${version}"
@@ -1398,7 +1515,9 @@
         	    <fx:jvmarg value="-Duser.language=en"/>            
             	<fx:jvmarg value="-Dbeast.load.jars=true"/>
 			</fx:secondaryLauncher>
+-->			
 		</fx:deploy>
+
 
 
         <echo message="Signing..." />
