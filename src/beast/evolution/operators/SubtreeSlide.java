@@ -112,7 +112,7 @@ public class SubtreeSlide extends TreeOperator {
         final double delta = getDelta();
         final double oldHeight = p.getHeight();
         final double newHeight = oldHeight + delta;
-
+        
         // 3. if the move is up
         if (delta > 0) {
 
@@ -129,20 +129,34 @@ public class SubtreeSlide extends TreeOperator {
                 }
                 // the moved node 'p' would become a child of 'newParent'
                 //
-
+             
                 // 3.1.1 if creating a new root
                 if (newChild.isRoot()) {
-                    replace(p, CiP, newChild);
-                    replace(PiP, p, CiP);
-
-                    p.setParent(null);
-                    tree.setRoot(p);
+                	if (CiP == null) {
+                		replace(p, i, newChild);
+                		replace(PiP, p, i);
+                		
+                		p.setParent(null);
+                		tree.setRoot(p);
+                	} else {
+	                	replace(p, CiP, newChild);
+	                	replace(PiP, p, CiP);
+	
+	                	p.setParent(null);
+	                	tree.setRoot(p);
+                	}
                 }
                 // 3.1.2 no new root
                 else {
-                    replace(p, CiP, newChild);
-                    replace(PiP, p, CiP);
-                    replace(newParent, newChild, p);
+                	if (CiP == null) {
+                		replace(p, i, newChild);
+                		replace(PiP, p, i);
+                		replace(newParent, newChild, p);
+                	} else {
+	                	replace(p, CiP, newChild);
+						replace(PiP, p, CiP);
+						replace(newParent, newChild, p);
+                	}
                 }
 
                 p.setHeight(newHeight);
@@ -168,7 +182,10 @@ public class SubtreeSlide extends TreeOperator {
             }
 
             // 4.1 will the move change the topology
-            if (CiP.getHeight() > newHeight) {
+            if (CiP == null) {
+                p.setHeight(newHeight);
+                logq = 0.0;
+            } else if (CiP.getHeight() > newHeight) {
 
                 final List<Node> newChildren = new ArrayList<>();
                 final int possibleDestinations = intersectingEdges(CiP, newHeight, newChildren);
@@ -239,8 +256,10 @@ public class SubtreeSlide extends TreeOperator {
             // TODO: verify that this makes sense
             return 0;
         } else {
-            final int count = intersectingEdges(node.getLeft(), height, directChildren) +
-                    intersectingEdges(node.getRight(), height, directChildren);
+            int count = 0;
+            for (Node child: node.getChildren()) {
+            		count += intersectingEdges(child, height, directChildren);
+            }
             return count;
         }
     }

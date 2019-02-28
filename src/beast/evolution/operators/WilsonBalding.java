@@ -113,6 +113,9 @@ public class WilsonBalding extends TreeOperator {
             return Double.NEGATIVE_INFINITY;
 
         final Node CiP = getOtherChild(p, i);
+        if (CiP == null) {
+        	return Double.NEGATIVE_INFINITY;
+        }
 
         final Node PiP = p.getParent();
 

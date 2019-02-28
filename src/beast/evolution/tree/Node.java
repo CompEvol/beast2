@@ -789,13 +789,12 @@ public class Node extends BEASTObject {
                 dof += 1;
         }
         if (!isLeaf()) {
-            dof += getLeft().scale(scale);
-            if (getRight() != null) {
-                dof += getRight().scale(scale);
-            }
-            if (height < getLeft().height || height < getRight().height) {
-                throw new IllegalArgumentException("Scale gives negative branch length");
-            }
+			for (Node child : children) {
+				child.scale(scale);
+				if (height < child.height) {
+					throw new IllegalArgumentException("Scale gives negative branch length");
+				}
+			}
         }
 
         return dof;

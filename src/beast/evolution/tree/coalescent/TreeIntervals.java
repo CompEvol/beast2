@@ -126,8 +126,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
     @Override
 	public int getSampleCount() {
-        // Assumes a binary tree!
-        return treeInput.get().getInternalNodeCount();
+        return treeInput.get().getLeafNodeCount() - 1;
     }
 
     /**
@@ -177,7 +176,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
 
         double time = 0;
         int coalescentIndex = 0;
-        for (int i = 0; i < intervals.length; i++) {
+        for (int i = 0; i < intervalCount; i++) {
             time += intervals[i];
             for (int j = 0; j < getCoalescentEvents(i); j++) {
                 coalescentTimes[coalescentIndex] = time;
@@ -372,8 +371,6 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
             do {
                 final int childIndex = indices[nodeNo];
                 final int childCount = childCounts[childIndex];
-                // don't use nodeNo from here on in do loop
-                nodeNo += 1;
                 if (childCount == 0) {
                     addLineage(intervalCount, tree.getNode(childIndex));
                     lineagesAdded += 1;
@@ -384,8 +381,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
                     final Node parent = tree.getNode(childIndex);
                     //assert childCounts[indices[nodeNo]] == beast.tree.getChildCount(parent);
                     //for (int j = 0; j < lineagesRemoved + 1; j++) {
-                    for (int j = 0; j < childCount; j++) {
-                        Node child = j == 0 ? parent.getLeft() : parent.getRight();
+                    for (Node child: parent.getChildren()) {
                         removeLineage(intervalCount, child);
                     }
 
@@ -397,6 +393,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
                     }
                 }
 
+                // don't use nodeNo from here on in do loop
+                nodeNo += 1;
                 if (nodeNo < nodeCount) {
                     next = times[indices[nodeNo]];
                 } else break;
@@ -473,7 +471,7 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
         for (int i = 0; i < nodes.length; i++) {
             Node node = nodes[i];
             times[i] = node.getHeight();
-            childCounts[i] = node.isLeaf() ? 0 : 2;
+            childCounts[i] = node.getChildren().size();
         }
     }
 
