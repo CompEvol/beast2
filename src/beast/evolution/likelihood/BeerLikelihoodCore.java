@@ -635,7 +635,79 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //        }
     }
 
-    /**
+    protected void mergePartials(
+    		double[] partials, double[] matrices,
+			double[] parentPartials) {
+		double sum;
+
+		int u = 0;
+		int v = 0;
+
+		for (int l = 0; l < nrOfMatrices; l++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
+				int w = l * matrixSize;
+
+				for (int i = 0; i < nrOfStates; i++) {
+					sum = 0.0;
+					for (int j = 0; j < nrOfStates; j++) {
+						sum += matrices[w] * partials[v + j];
+						w++;
+					}
+					parentPartials[u] *= sum;
+					u++;
+				}
+				v += nrOfStates;
+			}
+		}
+	}
+    
+
+    protected void mergeStates(
+			int[] states, double[] matrices, double[] parentPartials) {
+		double tmp;
+
+		int u = 0;
+		for (int l = 0; l < nrOfMatrices; l++) {
+			for (int k = 0; k < nrOfPatterns; k++) {
+				int state1 = states[k];
+				int w = l * matrixSize;
+
+				if (state1 < nrOfStates) {
+					for (int i = 0; i < nrOfStates; i++) {
+						tmp = matrices[w + state1];
+						parentPartials[u] *= tmp;
+						u++;
+					}
+				}
+			}
+		}
+	}
+
+    @Override
+	public void calculatePartials(int[] children, int parent) {
+		if (children.length < 1) {
+			throw new RuntimeException("Cannot calculate partials of leaf node");
+		}
+		createNodePartials(parent);
+		for (int child: children) {
+			if (states[child] != null) {
+				mergeStates(
+						states[child],
+						matrices[currentMatrixIndex[child]][child],
+						partials[currentPartialsIndex[parent]][parent]);
+			} else {
+				mergePartials(
+						partials[currentPartialsIndex[child]][child],
+						matrices[currentMatrixIndex[child]][child],
+						partials[currentPartialsIndex[parent]][parent]);
+			}
+		}
+		
+	}
+
+
+
+	/**
      * Calculates partial likelihoods at a node.
      *
      * @param nodeIndex1 the 'child 1' node

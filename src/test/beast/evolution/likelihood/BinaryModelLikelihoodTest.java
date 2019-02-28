@@ -5,9 +5,7 @@ package test.beast.evolution.likelihood;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -19,7 +17,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
-import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import junit.framework.TestCase;

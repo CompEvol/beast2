@@ -236,8 +236,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 true, m_useAmbiguities.get()
         );
 
-        final int extNodeCount = nodeCount / 2 + 1;
-        final int intNodeCount = nodeCount / 2;
+        final int extNodeCount = treeInput.get().getLeafNodeCount() + 1;
+        final int intNodeCount = nodeCount - extNodeCount;
 
         if (m_useAmbiguities.get() || m_useTipLikelihoods.get()) {
             setPartials(treeInput.get().getRoot(), dataInput.get().getPatternCount());
@@ -278,8 +278,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             likelihoodCore.setNodeStates(node.getNr(), states);
 
         } else {
-            setStates(node.getLeft(), patternCount);
-            setStates(node.getRight(), patternCount);
+        	for (Node child: node.getChildren()) {
+        		setStates(child, patternCount);
+        	}
         }
     }
 
@@ -541,28 +542,27 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         // If the node is internal, update the partial likelihoods.
         if (!node.isLeaf()) {
 
-            // Traverse down the two child nodes
-            final Node child1 = node.getLeft(); //Two children
-            final int update1 = traverse(child1);
-
-            final Node child2 = node.getRight();
-            final int update2 = traverse(child2);
+            // Traverse down all child nodes
+        	for (Node child: node.getChildren()) {
+        		update |= traverse(child);
+        	}
 
             // If either child node was updated then update this node too
-            if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
+            if (update != Tree.IS_CLEAN) {
 
-                final int childNum1 = child1.getNr();
-                final int childNum2 = child2.getNr();
-
+                int[] childNums = new int[node.getChildren().size()];
+                for (int i = 0; i<node.getChildren().size(); ++i) {
+                	childNums[i] = node.getChild(i).getNr();
+                }
+                
                 likelihoodCore.setNodePartialsForUpdate(nodeIndex);
-                update |= (update1 | update2);
                 if (update >= Tree.IS_FILTHY) {
                     likelihoodCore.setNodeStatesForUpdate(nodeIndex);
                 }
 
                 if (m_siteModel.integrateAcrossCategories()) {
                 	// TODO: Remove binary tree assumption
-                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeIndex);
+                    likelihoodCore.calculatePartials(childNums, nodeIndex);
                 } else {
                     throw new RuntimeException("Error TreeLikelihood 201: Site categories not supported");
                     //m_pLikelihoodCore->calculatePartials(childNum1, childNum2, nodeNum, siteCategories);

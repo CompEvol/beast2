@@ -137,6 +137,7 @@ abstract public class LikelihoodCore {
      * calculation differs-*
      */
     abstract public void calculatePartials(int node1, int node2Index, int node3);
+    abstract public void calculatePartials(int[] children, int parent);
     //abstract public void calculatePartials(int node1, int node2Index, int node3, int[] matrixMap);
 
     /**
