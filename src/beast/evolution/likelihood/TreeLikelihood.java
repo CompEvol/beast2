@@ -29,6 +29,7 @@ package beast.evolution.likelihood;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -44,6 +45,7 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
+import beast.util.Randomizer;
 
 @Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
@@ -255,7 +257,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 	public void sample(State state, Random random) {
         throw new UnsupportedOperationException("Can't sample a fixed alignment!");
     }
-
+    
     /**
      * set leaf states in likelihood core *
      */
@@ -301,6 +303,120 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         return taxonIndex;
 	}
 
+    private static double[] norm (double[] rawPs) {
+    	double n = 0.0;
+    	for (double p: rawPs) {
+    		n += p;
+    	}
+    	for (int i=0; i<rawPs.length; ++i) {
+    		rawPs[i] /= n;
+    	}
+    	return rawPs;
+    }
+    
+	/**
+	 * traverse to the root then, sample root values, and propagate back to the MRCA
+	 * along the path that goes between root and MRCA
+	 * 
+	 * @return sample
+	 */
+	private HashMap<Node, double[][]> nodePs = new HashMap<Node, double[][]>();
+	public double[][] getMarginalProbabilities(Node node) {
+		double[][] ps = nodePs.get(node);
+		if (ps != null) {
+			return ps;
+		}
+		int siteCount = dataInput.get().getSiteCount();
+		int stateCount = dataInput.get().getMaxStateCount();
+		ps = new double[siteCount][stateCount];
+
+		if (node.isRoot()) {
+			if (beagle != null) {throw new RuntimeException("BEAGLE is not supported yet");}
+
+			double[] p = new double[stateCount];
+			for (int i = 0; i < ps.length; i++) {
+				int offset = stateCount * dataInput.get().getPatternIndex(i);
+				for (int j = 0; j < stateCount; j++) {
+					p[j] = m_fRootPartials[offset + j];
+				}
+				ps[i] = norm(p);
+			}
+
+		} else {
+			double[][] parentSample = getMarginalProbabilities(node.getParent());
+
+			double[] p = new double[stateCount];
+			double[] partials = new double[dataInput.get().getPatternCount() * stateCount
+					* m_siteModel.getCategoryCount()];
+
+			if (m_siteModel.getCategoryCount() != 1) {
+				throw new RuntimeException("Gamma rate heterogeneity or proportion invariant is not supported yet");
+			}
+			if (beagle != null) {
+				throw new RuntimeException("BEAGLE is not supported yet");
+				// beagle.beagle.getPartials(arg0, arg1, arg2);
+				// getTransitionMatrix(nodeNum, probabilities);
+			} else {
+				likelihoodCore.getNodeMatrix(node.getNr(), 0, probabilities);
+			}
+
+			if (node.isLeaf()) {
+				if (!m_useAmbiguities.get()) {
+					// leaf node values come mainly from the states.
+					// only ambiguous sites are sampled
+
+					int[] states = new int[dataInput.get().getPatternCount() * m_siteModel.getCategoryCount()];
+					if (beagle != null) {
+						throw new RuntimeException("BEAGLE is not supported yet");
+						// beagle.beagle.getPartials(arg0, arg1, arg2);
+						// getTransitionMatrix(nodeNum, probabilities);
+					} else {
+						likelihoodCore.getNodeStates(node.getNr(), states);
+					}
+
+					for (int j = 0; j < ps.length; j++) {
+						int childIndex = dataInput.get().getPatternIndex(j);
+						ps[j][states[childIndex]] = 1;
+					}
+				} else {
+					// useAmbiguities == true
+					// sample conditioned on child partials
+					likelihoodCore.getNodePartials(node.getNr(), partials);
+
+					// sample using transition matrix and parent states
+					for (int j = 0; j < ps.length; j++) {
+						for (int parentIndex = 0; parentIndex < stateCount; ++parentIndex) {
+							double parentProb = parentSample[j][parentIndex];
+							int childIndex = dataInput.get().getPatternIndex(j) * stateCount;
+
+							for (int i = 0; i < stateCount; i++) {
+								p[i] = partials[childIndex + i] * probabilities[parentIndex + i] * parentProb;
+							}
+						}
+						ps[j] = norm(p);
+					}
+				}
+			} else {
+				likelihoodCore.getNodePartials(node.getNr(), partials);
+
+				// sample using transition matrix and parent states
+				for (int j = 0; j < ps.length; j++) {
+					for (int parentIndex = 0; parentIndex < stateCount; ++parentIndex) {
+						double parentProb = parentSample[j][parentIndex];
+						int childIndex = dataInput.get().getPatternIndex(j) * stateCount;
+
+						for (int i = 0; i < stateCount; i++) {
+							p[i] = partials[childIndex + i] * probabilities[parentIndex + i] * parentProb;
+						}
+					}
+					ps[j] = norm(p);
+				}
+			}
+		}
+		nodePs.put(node, ps);
+		return ps;
+	}
+
 	/**
      * set leaf partials in likelihood core *
      */
@@ -329,8 +445,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             likelihoodCore.setNodePartials(node.getNr(), partials);
 
         } else {
-            setPartials(node.getLeft(), patternCount);
-            setPartials(node.getRight(), patternCount);
+        	for (Node child: node.getChildren()) {
+        		setPartials(child, patternCount);
+        	}
         }
     }
 
@@ -444,6 +561,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 }
 
                 if (m_siteModel.integrateAcrossCategories()) {
+                	// TODO: Remove binary tree assumption
                     likelihoodCore.calculatePartials(childNum1, childNum2, nodeIndex);
                 } else {
                     throw new RuntimeException("Error TreeLikelihood 201: Site categories not supported");
