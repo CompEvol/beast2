@@ -1,5 +1,6 @@
 package beast.evolution.likelihood;
 
+import java.util.Arrays;
 
 /**
  * standard likelihood core, uses no caching *
@@ -476,7 +477,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 	public void createNodePartials(int nodeIndex) {
 
         this.partials[0][nodeIndex] = new double[partialsSize];
+        Arrays.fill(this.partials[0][nodeIndex], 1.0);
         this.partials[1][nodeIndex] = new double[partialsSize];
+        Arrays.fill(this.partials[1][nodeIndex], 1.0);
     }
 
     /**
@@ -675,6 +678,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 				if (state1 < nrOfStates) {
 					for (int i = 0; i < nrOfStates; i++) {
 						tmp = matrices[w + state1];
+						w += nrOfStates;
 						parentPartials[u] *= tmp;
 						u++;
 					}
