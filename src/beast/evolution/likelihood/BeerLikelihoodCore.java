@@ -475,11 +475,10 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     @Override
 	public void createNodePartials(int nodeIndex) {
-
         this.partials[0][nodeIndex] = new double[partialsSize];
-        Arrays.fill(this.partials[0][nodeIndex], 1.0);
+        Arrays.fill(this.partials[0][nodeIndex], 1.0/nrOfStates);
         this.partials[1][nodeIndex] = new double[partialsSize];
-        Arrays.fill(this.partials[1][nodeIndex], 1.0);
+        Arrays.fill(this.partials[1][nodeIndex], 1.0/nrOfStates);
     }
 
     /**
@@ -622,6 +621,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         if (useScaling) {
             scalePartials(nodeIndex3);
         }
+		System.out.println("?"+Arrays.toString(partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]));		
 
 //
 //        int k =0;
@@ -646,6 +646,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 		int u = 0;
 		int v = 0;
 
+		System.out.println("→"+Arrays.toString(partials));
+		System.out.println("*"+Arrays.toString(matrices));
+		System.out.println("x"+Arrays.toString(parentPartials));
 		for (int l = 0; l < nrOfMatrices; l++) {
 			for (int k = 0; k < nrOfPatterns; k++) {
 				int w = l * matrixSize;
@@ -662,6 +665,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 				v += nrOfStates;
 			}
 		}
+		System.out.println(Arrays.toString(parentPartials));
 	}
     
 
@@ -669,22 +673,26 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 			int[] states, double[] matrices, double[] parentPartials) {
 		double tmp;
 
+		System.out.println("→"+Arrays.toString(states));
+		System.out.println("*"+Arrays.toString(matrices));
+		System.out.println("x"+Arrays.toString(parentPartials));
+		
 		int u = 0;
-		for (int l = 0; l < nrOfMatrices; l++) {
-			for (int k = 0; k < nrOfPatterns; k++) {
-				int state1 = states[k];
-				int w = l * matrixSize;
+		for (int m = 0; m < nrOfMatrices; m++) {
+			for (int p = 0; p < nrOfPatterns; p++) {
+				int state = states[p];
+				int thisMatrixStart = m * matrixSize;
 
-				if (state1 < nrOfStates) {
+				if (state < nrOfStates) {
 					for (int i = 0; i < nrOfStates; i++) {
-						tmp = matrices[w + state1];
-						w += nrOfStates;
-						parentPartials[u] *= tmp;
-						u++;
+						parentPartials[p * nrOfStates + i] *= matrices[thisMatrixStart + i * nrOfStates + state];
 					}
+				} else {
+					// This is an ambiguous state. Leave the partials as they are.
 				}
 			}
 		}
+		System.out.println(Arrays.toString(parentPartials));
 	}
 
     @Override
@@ -706,7 +714,10 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 						partials[currentPartialsIndex[parent]][parent]);
 			}
 		}
-		
+        if (useScaling) {
+            scalePartials(parent);
+        }
+		System.out.println("="+Arrays.toString(partials[currentPartialsIndex[parent]][parent]));		
 	}
 
 
@@ -720,6 +731,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      * @param matrixMap  a map of which matrix to use for each pattern (can be null if integrating over categories)
      */
     public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3, int[] matrixMap) {
+    	
         if (states[nodeIndex1] != null) {
             if (states[nodeIndex2] != null) {
                 calculateStatesStatesPruning(
