@@ -476,9 +476,9 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     @Override
 	public void createNodePartials(int nodeIndex) {
         this.partials[0][nodeIndex] = new double[partialsSize];
-        Arrays.fill(this.partials[0][nodeIndex], 1.0/nrOfStates);
+        Arrays.fill(this.partials[0][nodeIndex], 1.0);
         this.partials[1][nodeIndex] = new double[partialsSize];
-        Arrays.fill(this.partials[1][nodeIndex], 1.0/nrOfStates);
+        Arrays.fill(this.partials[1][nodeIndex], 1.0);
     }
 
     /**
@@ -501,10 +501,48 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         }
     }
 
+    /**
+     * Gets the partials for a particular node.
+     *
+     * @param nodeIndex   the node
+     * @param outPartials an array into which the partials will go
+     * @deprecated This is identical to getNodePartials, which is part of the LikelihoodCore API.
+     */
+    @Deprecated
+    public void getPartials(int nodeIndex, double[] outPartials) {
+        getNodePartials(nodeIndex, outPartials);
+    }
+
+    /**
+     * Gets the partials for a particular node.
+     *
+     * @param nodeIndex   the node
+     * @param outPartials an array into which the partials will go
+     */
     @Override
     public void getNodePartials(int nodeIndex, double[] partialsOut) {
-        System.arraycopy(partials[currentPartialsIndex[nodeIndex]][nodeIndex], 0, partialsOut, 0, partialsOut.length);
+        System.arraycopy(partials[currentPartialsIndex[nodeIndex]][nodeIndex], 0, partialsOut, 0, partialsSize);
     }
+
+    /**
+	 * Gets the scaled partials for a particular node.
+	 *
+	 * @param nodeIndex        the index of the node
+	 * @param scalingThreshold the scaling threshold to be used
+	 * @return partials an array into which the partials will go
+	 */
+	public double[] getNodePartials(int nodeIndex, double scalingThreshold) {
+		double tmp = this.scalingThreshold;
+		this.scalingThreshold = scalingThreshold;
+		if (scalingFactors == null) {
+			scalingFactors = new double[2][nrOfNodes][nrOfPatterns];			
+		}
+		scalePartials(nodeIndex);
+		double[] result = new double[partialsSize];
+		getNodePartials(nodeIndex, result);
+		this.scalingThreshold = tmp;
+		return result;
+	}
 
     /**
      * Allocates states for a node
@@ -621,7 +659,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         if (useScaling) {
             scalePartials(nodeIndex3);
         }
-		System.out.println("?"+Arrays.toString(partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]));		
 
 //
 //        int k =0;
@@ -638,46 +675,25 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //        }
     }
 
-    protected void mergePartials(
-    		double[] partials, double[] matrices,
-			double[] parentPartials) {
+	protected void mergePartials(double[] partials, double[] matrices, double[] parentPartials) {
 		double sum;
 
-		int u = 0;
-		int v = 0;
-
-		System.out.println("→"+Arrays.toString(partials));
-		System.out.println("*"+Arrays.toString(matrices));
-		System.out.println("x"+Arrays.toString(parentPartials));
-		for (int l = 0; l < nrOfMatrices; l++) {
-			for (int k = 0; k < nrOfPatterns; k++) {
-				int w = l * matrixSize;
+		for (int m = 0; m < nrOfMatrices; m++) {
+			for (int p = 0; p < nrOfPatterns; p++) {
+				int thisMatrixStart = m * matrixSize;
 
 				for (int i = 0; i < nrOfStates; i++) {
 					sum = 0.0;
 					for (int j = 0; j < nrOfStates; j++) {
-						sum += matrices[w] * partials[v + j];
-						w++;
+						sum += matrices[thisMatrixStart + i * nrOfStates + j] * partials[p * nrOfStates + j];
 					}
-					parentPartials[u] *= sum;
-					u++;
+					parentPartials[thisMatrixStart + p * nrOfStates + i] *= sum;
 				}
-				v += nrOfStates;
 			}
 		}
-		System.out.println(Arrays.toString(parentPartials));
 	}
-    
 
-    protected void mergeStates(
-			int[] states, double[] matrices, double[] parentPartials) {
-		double tmp;
-
-		System.out.println("→"+Arrays.toString(states));
-		System.out.println("*"+Arrays.toString(matrices));
-		System.out.println("x"+Arrays.toString(parentPartials));
-		
-		int u = 0;
+	protected void mergeStates(int[] states, double[] matrices, double[] parentPartials) {
 		for (int m = 0; m < nrOfMatrices; m++) {
 			for (int p = 0; p < nrOfPatterns; p++) {
 				int state = states[p];
@@ -692,35 +708,33 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 				}
 			}
 		}
-		System.out.println(Arrays.toString(parentPartials));
 	}
 
-    @Override
+	/**
+     * Calculates partial likelihoods at a node, storing them internally.
+     *
+     * @param children   an array of child node indices
+     * @param nodeIndex3 the parent node index, for which partials will be calculated
+     */
+	@Override
 	public void calculatePartials(int[] children, int parent) {
 		if (children.length < 1) {
 			throw new RuntimeException("Cannot calculate partials of leaf node");
 		}
 		createNodePartials(parent);
-		for (int child: children) {
+		for (int child : children) {
 			if (states[child] != null) {
-				mergeStates(
-						states[child],
-						matrices[currentMatrixIndex[child]][child],
+				mergeStates(states[child], matrices[currentMatrixIndex[child]][child],
 						partials[currentPartialsIndex[parent]][parent]);
 			} else {
-				mergePartials(
-						partials[currentPartialsIndex[child]][child],
-						matrices[currentMatrixIndex[child]][child],
+				mergePartials(partials[currentPartialsIndex[child]][child], matrices[currentMatrixIndex[child]][child],
 						partials[currentPartialsIndex[parent]][parent]);
 			}
 		}
-        if (useScaling) {
-            scalePartials(parent);
-        }
-		System.out.println("="+Arrays.toString(partials[currentPartialsIndex[parent]][parent]));		
+		if (useScaling) {
+			scalePartials(parent);
+		}
 	}
-
-
 
 	/**
      * Calculates partial likelihoods at a node.
@@ -854,18 +868,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
             }
         }
         return logScalingFactor;
-    }
-
-    /**
-     * Gets the partials for a particular node.
-     *
-     * @param nodeIndex   the node
-     * @param outPartials an array into which the partials will go
-     */
-    public void getPartials(int nodeIndex, double[] outPartials) {
-        double[] partials1 = partials[currentPartialsIndex[nodeIndex]][nodeIndex];
-
-        System.arraycopy(partials1, 0, outPartials, 0, partialsSize);
     }
 
     /**

@@ -1,7 +1,6 @@
 package test.beast.evolution.likelihood;
 
 
-import beast.evolution.likelihood.BeagleTreeLikelihood;
 import org.junit.Test;
 
 import beast.core.parameter.RealParameter;
