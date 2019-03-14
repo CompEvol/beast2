@@ -138,17 +138,22 @@ public class NexusParser {
      *
      * Command may be terminated by either a ";" or an EOF. All whitespace
      * is converted to single spaces.
-     * TODO Respect quoted whitespace here.
-     * (Previous implementation didn't respect this either.)
      *
-     * Currently only used by parseTreesBlock.
+     * Currently only used by parseTreesBlock and parseTaxaBlock.
      */
     class NexusCommand {
         String command;
         String arguments;
 
+        Map<String,String> kvArgs;
+        List<String> argList;
+
         boolean isCommand(String commandName) {
             return command.equals(commandName.toLowerCase());
+        }
+
+        boolean isEndOfBlock() {
+            return command.equals("end");
         }
 
         NexusCommand(String commandString) {
@@ -163,10 +168,272 @@ public class NexusParser {
             }
         }
 
+        /**
+         * Used by argument processing methods to identify the end of a
+         * nexus comment, begining at index idx.  Allows for nested comments.
+         *
+         * @param idx index at start of comment
+         * @return first index past end of comment.
+         * @throws IOException if the comment or nested string is not terminated.
+         */
+        private int findCommentEnd(int idx) throws IOException {
+
+            idx += 1;
+
+            while (idx < arguments.length()) {
+
+                switch (arguments.charAt(idx)) {
+                    case ']':
+                        return idx+1;
+
+                    case '"':
+                    case '\'':
+                        idx = findStringEnd(idx, arguments.charAt(idx));
+                        break;
+
+                    default:
+                        idx += 1;
+                        break;
+                }
+            }
+
+            throw new IOException("Unterminated comment.");
+        }
+
+        /**
+         * Used by argument processing methods to identify the end of a
+         * string, begining at index idx with delmiter delim.
+         *
+         * @param idx index at start of string
+         * @param delim terminating index
+         * @return first index past end of string.
+         * @throws IOException if the string is not terminated.
+         */
+        private int findStringEnd(int idx, char delim) throws IOException {
+
+            idx += 1;
+
+            while (idx < arguments.length()) {
+
+                if (arguments.charAt(idx) == delim)
+                    return idx+1;
+
+                idx += 1;
+            }
+
+            throw new IOException("Unterminated string.");
+
+        }
+
+        /**
+         * Used by argument processing methods to identify the end of a
+         * chunk of whitespace.
+         *
+         * @param idx start of (potential) whitespace block.
+         * @return first non-whitespace character found.
+         */
+        private int findWhitespaceEnd(int idx) {
+            while (idx < arguments.length() && Character.isWhitespace(arguments.charAt(idx)))
+                idx += 1;
+
+            return idx;
+        }
+
+        /**
+         * Used by argument processing methods to identify the end of a token
+         * in a manner that allows for comments and strings.
+         *
+         * @param idx start index
+         * @return index of first character past the end of the identified token
+         * @throws IOException if unterminated comments or strings are found.
+         */
+        private int findTokenEnd(int idx) throws IOException {
+
+            boolean done = false;
+            while (!done && idx < arguments.length()) {
+
+                switch(arguments.charAt(idx)) {
+                    case '[':
+                        idx = findCommentEnd(idx);
+                        break;
+
+                    case '"':
+                    case '\'':
+                        idx = findStringEnd(idx, arguments.charAt(idx));
+                        break;
+
+                    default:
+                        if (Character.isWhitespace(arguments.charAt(idx))
+                                || arguments.charAt(idx) == '=')
+                            done = true;
+                        else
+                            idx += 1;
+                        break;
+                }
+            }
+
+            return idx;
+        }
+
+        /**
+         * Attempt to interpret arguments as key value pairs.
+         * Arguments matching this pattern are added to a map, which
+         * is then returned.
+         *
+         * @return map of key strings to value strings.
+         * @throws IOException if unterminated comments/strings are found.
+         */
+        Map<String,String> getKeyValueArgs() throws IOException {
+            if (kvArgs != null)
+                return kvArgs;
+
+            kvArgs = new HashMap<>();
+
+            int idx=0;
+            while (idx < arguments.length()) {
+
+                idx = findWhitespaceEnd(idx);
+
+                int keyStart = idx;
+                idx = findTokenEnd(idx);
+                int keyEnd = idx;
+
+                idx = findWhitespaceEnd(idx);
+
+                if (idx>= arguments.length() || arguments.charAt(idx) != '=')
+                    continue;
+
+                idx += 1;
+
+                idx = findWhitespaceEnd(idx);
+
+                int valStart = idx;
+                idx = findTokenEnd(idx);
+                int valEnd = idx;
+
+                kvArgs.put(arguments.substring(keyStart, keyEnd).trim(),
+                        arguments.substring(valStart, valEnd).trim());
+            }
+
+            return kvArgs;
+        }
+
+        /**
+         * Attempt to interpret arguments string as a whitespace-delimited set of
+         * individual arguments. Arguments matching this pattern are added to a
+         * list, which is then returned.
+         *
+         * @return list of argument strings in this command.
+         * @throws IOException if unterminated comments/strings are found.
+         */
+        List<String> getArgList() throws IOException {
+            if (argList != null)
+                return argList;
+
+            argList = new ArrayList<>();
+
+            int idx=0;
+            while (idx < arguments.length()) {
+                idx = findWhitespaceEnd(idx);
+
+                int keyStart = idx;
+                idx = findTokenEnd(idx);
+                int keyEnd = idx;
+
+                idx = findWhitespaceEnd(idx);
+
+                if (idx >= arguments.length() || arguments.charAt(idx) != '=') {
+                    argList.add(arguments.substring(keyStart, keyEnd).trim());
+                    continue;
+                }
+
+                idx += 1;
+
+                idx = findWhitespaceEnd(idx);
+
+                int valStart = idx;
+                idx = findTokenEnd(idx);
+                int valEnd = idx;
+
+                argList.add(arguments.substring(keyStart, valEnd).trim());
+            }
+
+            return argList;
+        }
+
         @Override
         public String toString() {
             return "Command: " + command + ", Args: " + arguments;
         }
+    }
+
+    /**
+     * Used to advance reader past nexus strings.
+     *
+     * @param fin intput file reader
+     * @param builder string builder where characters read are to be appended
+     * @param stringDelim string delimiter
+     *
+     * @throws IOException on unterminated string
+     */
+    private void readNexusString(BufferedReader fin, StringBuilder builder, char stringDelim) throws IOException {
+        boolean stringTerminated = false;
+        while(true) {
+            int nextVal = fin.read();
+            if (nextVal<0)
+                break;
+
+            char nextChar = (char)nextVal;
+
+            builder.append(nextChar);
+
+            if (nextChar == stringDelim) {
+                stringTerminated = true;
+                break;
+            }
+
+            if (nextChar == '\n')
+                lineNr += 1;
+        }
+
+        if (!stringTerminated)
+            throw new IOException("Unterminated string.");
+    }
+
+    /**
+     * Used to advance reader past nexus comments. Comments may themselves
+     * contain strings.
+     *
+     * @param fin intput file reader
+     * @param builder string builder where characters read are to be appended
+     *
+     * @throws IOException on unterminated comment.
+     */
+    private void readNexusComment(BufferedReader fin, StringBuilder builder) throws IOException {
+        boolean commentTerminated = false;
+        while(true) {
+            int nextVal = fin.read();
+            if (nextVal<0)
+                break;
+
+
+            char nextChar = (char)nextVal;
+            builder.append(nextChar);
+
+            if (nextChar == ']') {
+                commentTerminated = true;
+                break;
+            }
+
+            if (nextChar == '"' || nextChar == '\'')
+                readNexusString(fin, builder, nextChar);
+
+            if (nextChar == '\n')
+                lineNr += 1;
+        }
+
+        if (!commentTerminated)
+            throw new IOException("Unterminated comment.");
     }
 
     /**
@@ -189,12 +456,40 @@ public class NexusParser {
                 break;
 
             commandBuilder.append(nextChar);
+
+            switch (nextChar) {
+                case '[':
+                    readNexusComment(fin, commandBuilder);
+                    break;
+
+                case '"':
+                case '\'':
+                    readNexusString(fin, commandBuilder, nextChar);
+                    break;
+
+                case '\n':
+                    lineNr += 1;
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         if (commandBuilder.toString().isEmpty())
             return null;
         else
             return new NexusCommand(commandBuilder.toString());
+    }
+
+    /**
+     * Remove nexus comments from a given string.
+     *
+     * @param string input string
+     * @return string with nexus comments removed.
+     */
+    String stripNexusComments(String string) {
+        return string.replaceAll("\\[[^]]*]","");
     }
 
     protected void parseTreesBlock(final BufferedReader fin) throws IOException {
@@ -214,7 +509,7 @@ public class NexusParser {
         }
 
         // read trees
-        while (nextCommand != null) {
+        while (nextCommand != null && !nextCommand.isEndOfBlock()) {
             if (nextCommand.isCommand("tree")) {
                 String treeString = nextCommand.arguments;
                 final int i = treeString.indexOf('(');
@@ -232,13 +527,6 @@ public class NexusParser {
                         treeParser = new TreeParser(taxa, treeString, 1, false);
                     }
                 }
-//                catch (NullPointerException e) {
-//                    treeParser = new TreeParser(m_taxa, str, 1);
-//                }
-
-
-//                if (translationMap != null) treeParser.translateLeafIds(translationMap);
-
 
                 // this needs to go after translation map or listeners have an incomplete tree!
                 for (final NexusParserListener listener : listeners) {
@@ -248,9 +536,6 @@ public class NexusParser {
                 // this must come after listener or trees.size() gives the wrong index to treeParsed
                 trees.add(treeParser);
 
-//				Node tree = treeParser.getRoot();
-//				tree.sort();
-//				tree.labelInternalNodes(nrOfLabels);
             }
             nextCommand = readNextCommand(fin);
         }
@@ -311,51 +596,43 @@ public class NexusParser {
         return translationMap;
     }
 
+    /**
+     * Parse taxa block and add to taxa and taxonList.
+     */
     protected void parseTaxaBlock(final BufferedReader fin) throws IOException {
         taxa = new ArrayList<>();
         int expectedTaxonCount = -1;
-        String str;
+        NexusCommand nextCommand;
         do {
-            str = nextLine(fin);
-            if (str.toLowerCase().matches("\\s*dimensions\\s.*")) {
-                str = str.substring(str.toLowerCase().indexOf("ntax=") + 5);
-                str = str.replaceAll(";", "");
-                expectedTaxonCount = Integer.parseInt(str.trim());
-            } else if (str.toLowerCase().trim().startsWith("taxlabels")) {
-            	str = str.trim().substring(9).trim();
-            	boolean initial = (str.equals(""));
-                do {
-                	if (initial) {
-                        str = nextLine(fin);
-                	}
-                	initial = true;
-                    str = str.replaceAll(";", "");
-                    str = str.trim();
-                    if (str.length() > 0 && !str.toLowerCase().equals("end")) {
-                    	String [] strs = str.split("\\s+");
-                    	for (int i = 0; i < strs.length; i++) {
-                        	String taxon = strs[i];
-                            if (taxon.charAt(0) == '\'' || taxon.charAt(0) == '\"') {
-                            	while (i < strs.length && taxon.charAt(0) != taxon.charAt(taxon.length() - 1)) {
-                            		i++;
-                            		if (i == strs.length) {
-                            			throw new IOException("Unclosed quote starting with " + taxon);
-                            		}
-                            		taxon += " " + strs[i];
-                            	}
-                            	taxon = taxon.substring(1, taxon.length() - 1);
-                            }
-                        	if (!taxa.contains(taxon)) {
-                        		taxa.add(taxon);
-                        	}
-                        	if (!taxonListContains(taxon)) {
-                        		taxonList.add(new Taxon(taxon));
-                        	}
-                    	}
-                    }
-                } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
+            nextCommand = readNextCommand(fin);
+            if (nextCommand.isCommand("dimensions")) {
+                if (nextCommand.getKeyValueArgs().get("ntax") != null)
+                    expectedTaxonCount = Integer.parseInt(nextCommand.getKeyValueArgs().get("ntax"));
+            } else if (nextCommand.isCommand("taxlabels")) {
+
+                List<String> labels = nextCommand.getArgList();
+
+                for (String taxonString : labels) {
+                    taxonString = stripNexusComments(taxonString).trim();
+
+                    if (taxonString.isEmpty())
+                        continue;
+
+                    if (taxonString.charAt(0) == '\'' || taxonString.charAt(0) == '\"')
+                        taxonString = taxonString.substring(1, taxonString.length() - 1).trim();
+
+                    if (taxonString.isEmpty())
+                        continue;
+
+                    if (!taxa.contains(taxonString))
+                        taxa.add(taxonString);
+
+                    if (!taxonListContains(taxonString))
+                        taxonList.add(new Taxon(taxonString));
+
+                }
             }
-        } while (!str.toLowerCase().replaceAll(";", "").equals("end"));
+        } while (!nextCommand.isEndOfBlock());
         if (expectedTaxonCount >= 0 && taxa.size() != expectedTaxonCount) {
             throw new IOException("Number of taxa (" + taxa.size() + ") is not equal to 'dimension' " +
             		"field (" + expectedTaxonCount + ") specified in 'taxa' block");
