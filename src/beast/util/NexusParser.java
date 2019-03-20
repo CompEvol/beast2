@@ -129,6 +129,7 @@ public class NexusParser {
             throw new IOException(errorMsg);
 
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new IOException("Around line " + (lineNr+1) + "\n" + e.getMessage());
         }
     } // parseFile
@@ -898,7 +899,7 @@ public class NexusParser {
                 while (str.charAt(end) != c) {
                     end++;
                 }
-                taxon = str.substring(start, end);
+                taxon = str.substring(start, end).trim();
                 seqLen = 0;
                 end++;
             } else {
@@ -907,10 +908,10 @@ public class NexusParser {
                     end++;
                 }
                 if (end < str.length()) {
-                    taxon = str.substring(start, end);
+                    taxon = str.substring(start, end).trim();
                     seqLen = 0;
                 } else if ((prevTaxon == null || seqLen == charCount) && end == str.length()) {
-                    taxon = str.substring(start, end);
+                    taxon = str.substring(start, end).trim();
                     seqLen = 0;
                 } else {
                     taxon = prevTaxon;
