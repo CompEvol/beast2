@@ -1769,10 +1769,6 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         taboo.add(mcmc);
         // add loggers
         taboo.addAll(mcmc.loggersInput.get());
-        // add exception for *BEAST logger (perhaps need to be generalised?)
-        if (doc.pluginmap.containsKey("SpeciesTreeLoggerX")) {
-            taboo.add(doc.pluginmap.get("SpeciesTreeLoggerX"));
-        }
         // add trees
         for (StateNode node : mcmc.startStateInput.get().stateNodeInput.get()) {
             if (node instanceof Tree) {
@@ -1785,6 +1781,11 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             if (o instanceof MRCAPrior) {
                 taboo.add(o);
             }
+        }
+        // add anything else that's marked as unclonable
+        for (BEASTInterface o : doc.pluginmap.values()) {
+            if (o.notCloneable())
+                taboo.add(o);
         }
         if (tabooList != null) {
             taboo.addAll(tabooList);

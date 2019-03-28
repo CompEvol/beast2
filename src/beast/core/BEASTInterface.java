@@ -445,7 +445,16 @@ public interface BEASTInterface {
     		}
     	}
     }
-    
+
+    /**
+     * Returns true if the object implementing this interface should
+     * NOT be duplicated by BeautiDoc.deepCopyPlugin().  Used to avoid
+     * unwanted duplication of shared objects by the partition cloning
+     * operation.
+     */
+    default public boolean notCloneable() {
+        return false;
+    }
 }
 
 
