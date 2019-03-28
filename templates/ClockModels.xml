@@ -38,7 +38,7 @@
             </connect>
             <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
-                Scale up substitution rate c:$(n) and scale down tree t:($n)
+                Scale up substitution rate c:$(n) and scale down tree t:$(n)
             </connect>
         </subtemplate>
 
