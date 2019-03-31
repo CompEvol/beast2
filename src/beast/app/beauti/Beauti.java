@@ -1226,9 +1226,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 
             BeautiDoc doc = new BeautiDoc();
             BeautiDoc.baos = baos;
+
+            // make sure templates know we are in BEAUti while parsing arguments 
+            Beauti.BEAUtiIntances++;
             if (doc.parseArgs(args) == ActionOnExit.WRITE_XML) {
                 return null;
             }
+            // reset instances
+            Beauti.BEAUtiIntances--;
 
             final Beauti beauti = new Beauti(doc);
 
