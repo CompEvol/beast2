@@ -174,4 +174,8 @@ public class SpeciesTreeLogger extends BEASTObject implements Loggable {
         treeInput.get().close(out);
     }
 
+    @Override
+    public boolean notCloneable() {
+        return true;
+    }
 }
