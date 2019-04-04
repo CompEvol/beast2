@@ -512,7 +512,7 @@ public class TipDatesInputEditor extends BEASTObjectInputEditor {
                     case pattern:
                         for (String taxon : taxa) {
                             String match = dlg.match(taxon);
-                            if (match == null) {
+                            if (match == null || match.isEmpty()) {
                                 return;
                             }
                             if (traitBuilder.length() > 0) {
