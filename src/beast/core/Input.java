@@ -178,7 +178,7 @@ public class Input<T> {
      */
     public Input(String name, String tipText, Validate rule) {
         this(name, tipText);
-        if (rule != Validate.REQUIRED) {
+        if (rule != Validate.REQUIRED && rule != Validate.OPTIONAL) {
             Log.err.println("Programmer error: input rule should be REQUIRED for this Input constructor"
                     + " (" + name + ")");
         }
