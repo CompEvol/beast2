@@ -260,7 +260,7 @@
                      suppressInputs='beast.math.distributions.MarkovChainDistribution.parameter'>
             <![CDATA[
             <distribution spec="BayesianSkyline" id='BayesianSkyline.t:$(n)'>
-                <parameter name='popSizes' id='bPopSizes.t:$(n)' dimension="5" value="380.0" lower="0.0" upper="380000.0" estimate='true'/>
+                <parameter name='popSizes' id='bPopSizes.t:$(n)' dimension="5" value="380.0" lower="1.0" estimate='true'/>
                 <groupSizes spec='parameter.IntegerParameter' id='bGroupSizes.t:$(n)' dimension='5' value='1' estimate='true'/>
                 <treeIntervals spec='TreeIntervals' id='BSPTreeIntervals.t:$(n)' tree='@Tree.t:$(n)'/>
             </distribution>
