@@ -610,7 +610,7 @@ public class XMLParser {
 	            for (final String nameSpace : this.nameSpaces) {
 	                try {
 	                    // sanity check: class should exist
-	                    if (!isDone && Class.forName(nameSpace + clazz) != null) {
+	                    if (!isDone && Class.forName(nameSpace + clazz, true, BEASTClassLoader.classLoader) != null) {
 	                        element2ClassMap.put(name, clazz);
 	                        Log.debug.println(name + " => " + nameSpace + clazz);
 	                        final String reserved = getAttribute(child, "reserved");
@@ -669,7 +669,7 @@ public class XMLParser {
      */
     boolean checkType(final String className, final BEASTInterface beastObject, Node node) throws XMLParserException  {
         try {
-			if (className.equals(INPUT_CLASS) || Class.forName(className).isInstance(beastObject)) {
+			if (className.equals(INPUT_CLASS) || Class.forName(className, true, BEASTClassLoader.classLoader).isInstance(beastObject)) {
 			    return true;
 			}
 		} catch (ClassNotFoundException e) {
@@ -751,7 +751,7 @@ public class XMLParser {
             for (final String nameSpace : nameSpaces) {
                 try {
                     if (!isDone) {
-                        Class.forName(nameSpace + specClass);
+                        Class.forName(nameSpace + specClass, true, BEASTClassLoader.classLoader);
                         clazzName = nameSpace + specClass;
                         isDone = true;
                     }
@@ -777,7 +777,7 @@ public class XMLParser {
 				
 		// sanity check		
 		try {
-			Class<?> clazz = Class.forName(clazzName);
+			Class<?> clazz = Class.forName(clazzName, true, BEASTClassLoader.classLoader);
 			if (!BEASTInterface.class.isAssignableFrom(clazz)) {
 				throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
 			}
@@ -820,7 +820,7 @@ public class XMLParser {
 		// create new instance using class name
 		Object o = null;
 		try {
-			Class<?> c = Class.forName(clazzName); 
+			Class<?> c = Class.forName(clazzName, true, BEASTClassLoader.classLoader); 
 				o = c.newInstance();
 		} catch (InstantiationException e) {
 			// we only get here when the class exists, but cannot be
@@ -901,7 +901,7 @@ public class XMLParser {
 	private BEASTInterface useAnnotatedConstructor(Node node, String _id, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName(clazzName);
+			clazz = Class.forName(clazzName, true, BEASTClassLoader.classLoader);
 		} catch (ClassNotFoundException e) {
 			// cannot get here, since we checked the class existed before
 			e.printStackTrace();
@@ -1166,7 +1166,7 @@ public class XMLParser {
 		}
 		for (String nameSpace : nameSpaces) {
             try {
-				if (Class.forName(nameSpace + specClass) != null) {
+				if (Class.forName(nameSpace + specClass, true, BEASTClassLoader.classLoader) != null) {
 					String clazzName = nameSpace + specClass;
 					return clazzName;
 				}

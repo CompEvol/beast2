@@ -31,6 +31,7 @@ import beast.core.parameter.Map;
 import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.StandardData;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 
 import java.util.*;
@@ -67,7 +68,7 @@ public class Alignment extends Map<String> {
         List<String> m_sDataTypes = PackageManager.find(beast.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
         for (String dataTypeName : m_sDataTypes) {
             try {
-                DataType dataType = (DataType) Class.forName(dataTypeName).newInstance();
+                DataType dataType = (DataType) Class.forName(dataTypeName, true, BEASTClassLoader.classLoader).newInstance();
                 if (dataType.isStandard()) {
                     String description = dataType.getTypeDescription();
                     if (!types.contains(description)) {
@@ -265,7 +266,7 @@ public class Alignment extends Map<String> {
         for (String dataTypeName : dataTypes) {
             DataType dataType;
             try {
-                dataType = (DataType) Class.forName(dataTypeName).newInstance();
+                dataType = (DataType) Class.forName(dataTypeName, true, BEASTClassLoader.classLoader).newInstance();
                 if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
                     m_dataType = dataType;
                     break;

@@ -77,6 +77,9 @@ import java.util.zip.ZipFile;
 // TODO: on windows allow installation on drive D: and pick up add-ons in drive C:
 //@Description("Manage all BEAUti packages and list their dependencies")
 public class PackageManager {
+	
+
+	
     public static final BEASTVersion beastVersion = BEASTVersion.INSTANCE;
 
     public enum UpdateStatus {AUTO_CHECK_AND_ASK, AUTO_UPDATE, DO_NOT_CHECK};
@@ -762,7 +765,7 @@ public class PackageManager {
         
         URL u;
 		try {
-			u = Class.forName("beast.app.beastapp.BeastMain").getProtectionDomain().getCodeSource().getLocation();
+			u = Class.forName("beast.app.beastapp.BeastMain", true, BEASTClassLoader.classLoader).getProtectionDomain().getCodeSource().getLocation();
 		} catch (ClassNotFoundException e) {
 			// e.printStackTrace();
 			return null;
@@ -1051,13 +1054,13 @@ public class PackageManager {
         // way with java 8 when the -Dbeast.load.jars=true
         // directive is given. This can be useful for developers
         // but generally slows down application starting.
-        if (Boolean.getBoolean("beast.load.jars") == false || Utils6.getMajorJavaVersion() != 8) {
-            externalJarsLoaded = true;
-        	Utils6.logToSplashScreen("PackageManager::findDataTypes");
-            findDataTypes();
-        	Utils6.logToSplashScreen("PackageManager::Done");
-    		return;
-    	}
+//        if (Boolean.getBoolean("beast.load.jars") == false || Utils6.getMajorJavaVersion() != 8) {
+//            externalJarsLoaded = true;
+//        	Utils6.logToSplashScreen("PackageManager::findDataTypes");
+//            findDataTypes();
+//        	Utils6.logToSplashScreen("PackageManager::Done");
+//    		return;
+//    	}
 
         for (String jarDirName : getBeastDirectories()) {
         	loadPackage(jarDirName);
@@ -1070,7 +1073,7 @@ public class PackageManager {
     
 	private static void findDataTypes() {
 		try {
-			Method findDataTypes = Class.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
+			Method findDataTypes = Class.forName("beast.evolution.alignment.Alignment", true, BEASTClassLoader.classLoader).getMethod("findDataTypes");
 			findDataTypes.invoke(null);
 		} catch (Exception e) {
 			// too bad, cannot load data types
@@ -1176,7 +1179,7 @@ public class PackageManager {
                                     className = className.substring(0, className.lastIndexOf('.'));
                                     try {
                                         /*Object o =*/
-                                        Class.forName(className);
+                                        Class.forName(className, true, BEASTClassLoader.classLoader);
                                         loadedClass = className;
                                     } catch (Exception e) {
                                         // TODO: handle exception
@@ -1354,30 +1357,31 @@ public class PackageManager {
      * @throws IOException if something goes wrong when adding a url
      */
     public static void addURL(URL u) throws IOException {
-        // ClassloaderUtil clu = new ClassloaderUtil();
-        PackageManager clu = new PackageManager();
-        // URLClassLoader sysLoader = (URLClassLoader)
-        // ClassLoader.getSystemClassLoader();
-        URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
-        URL urls[] = sysLoader.getURLs();
-        for (URL url : urls) {
-            if (url.toString().toLowerCase().equals(u.toString().toLowerCase())) {
-                Log.debug.println("URL " + u + " is already in the CLASSPATH");
-                return;
-            }
-        }
-        Class<?> sysclass = URLClassLoader.class;
-        try {
-            // Parameters
-            Class<?>[] parameters = new Class[]{URL.class};
-            Method method = sysclass.getDeclaredMethod("addURL", parameters);
-            method.setAccessible(true);
-            method.invoke(sysLoader, u);
-            Log.debug.println("Loaded URL " + u);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw new IOException("Error, could not add URL to system classloader");
-        }
+    	BEASTClassLoader.classLoader.addURL(u);
+//        // ClassloaderUtil clu = new ClassloaderUtil();
+//        PackageManager clu = new PackageManager();
+//        // URLClassLoader sysLoader = (URLClassLoader)
+//        // ClassLoader.getSystemClassLoader();
+//        URLClassLoader sysLoader = (URLClassLoader) clu.getClass().getClassLoader();
+//        URL urls[] = sysLoader.getURLs();
+//        for (URL url : urls) {
+//            if (url.toString().toLowerCase().equals(u.toString().toLowerCase())) {
+//                Log.debug.println("URL " + u + " is already in the CLASSPATH");
+//                return;
+//            }
+//        }
+//        Class<?> sysclass = URLClassLoader.class;
+//        try {
+//            // Parameters
+//            Class<?>[] parameters = new Class[]{URL.class};
+//            Method method = sysclass.getDeclaredMethod("addURL", parameters);
+//            method.setAccessible(true);
+//            method.invoke(sysLoader, u);
+//            Log.debug.println("Loaded URL " + u);
+//        } catch (Throwable t) {
+//            t.printStackTrace();
+//            throw new IOException("Error, could not add URL to system classloader");
+//        }
         String classpath = System.getProperty("java.class.path");
         String jar = u + "";
         classpath += System.getProperty("path.separator") + jar.substring(5);
@@ -1556,7 +1560,7 @@ public class PackageManager {
         result = new ArrayList<String>();
 
         try {
-            cls = Class.forName(classname);
+            cls = Class.forName(classname, true, BEASTClassLoader.classLoader);
             result = find(cls, pkgnames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1580,7 +1584,7 @@ public class PackageManager {
         result = new ArrayList<String>();
 
         try {
-            cls = Class.forName(classname);
+            cls = Class.forName(classname, true, BEASTClassLoader.classLoader);
             result = find(cls, pkgname);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1653,7 +1657,7 @@ public class PackageManager {
             if (className.startsWith(pkgname)) {
                 //Log.debug.println(className);
                 try {
-                    Class<?> clsNew = Class.forName(className);
+                    Class<?> clsNew = Class.forName(className, true, BEASTClassLoader.classLoader);
 
                     // no abstract classes
                     if (!Modifier.isAbstract(clsNew.getModifiers()) &&
