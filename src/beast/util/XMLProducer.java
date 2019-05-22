@@ -94,7 +94,7 @@ public class XMLProducer extends XMLParser {
      * Given a plug-in, produces the XML in BEAST 2.0 format
      * representing the plug-in. This assumes beast object is Runnable
      */
-    public String toXML(BEASTInterface beastObject) {
+    public String toXML(BEASTInterface beastObject) {    	
         return toXML(beastObject, new ArrayList<>());
     }
 
@@ -816,12 +816,12 @@ public class XMLProducer extends XMLParser {
      */
     @SuppressWarnings("rawtypes")
     void beastObjectToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws ClassNotFoundException {
-        // determine element name, default is input, otherswise find one of the defaults
+        // determine element name, default is input, otherwise find one of the defaults
         String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
         	String className = element2ClassMap.get(key);
         	Class _class = Class.forName(className);
-        	if (_class.equals(beastObject.getClass())) {
+        	if (_class.equals(beastObject.getClass())) { 
         		elementName = key;
         	}
         }
@@ -894,7 +894,8 @@ public class XMLProducer extends XMLParser {
         }
         String className = beastObject.getClass().getName();
         if (skipInputs == false && (!element2ClassMap.containsKey(elementName) ||
-                !element2ClassMap.get(elementName).equals(className))) {
+                !element2ClassMap.get(elementName).equals(className) ||
+                reservedElements.contains(elementName))) {
             // only add spec element if it cannot be deduced otherwise (i.e., by idref or default mapping
             buf.append(" spec='" + className + "'");
         }
