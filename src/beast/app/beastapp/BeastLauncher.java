@@ -3,6 +3,7 @@ package beast.app.beastapp;
 import beast.app.BEASTVersion;
 import beast.app.util.Utils6;
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 import beast.util.Package;
 import beast.util.PackageManager;
 import beast.util.PackageVersion;
@@ -13,6 +14,7 @@ import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
@@ -540,100 +542,20 @@ public class BeastLauncher {
 
 	public static void run(String classPath, String main, String[] args) {
 		try {
-            List<String> cmd = new ArrayList<String>();
 
-            if (Utils6.isMac()) {
-            	// check whether a bundled jre is present
-            	BeastLauncher clu = new BeastLauncher();
-            	String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();            	
-            	String jreDir = URLDecoder.decode(new File(launcherJar).getParent(), "UTF-8") + "/../jre1.8.0_161/";
-            	            	
-            	if (new File(jreDir).exists()) {
-	                cmd.add(jreDir + "bin/java");
-            	}
+//            setJavaHeapAndStackSize(cmd, args);
+
+           
+			for (String jarFile : classPath.split(":")) {
+				if (jarFile.toLowerCase().endsWith("jar")) {
+					BEASTClassLoader.classLoader.addJar(jarFile);
+				}
 			}
+		
+			Class<?> mainClass = Class.forName(main, true, BEASTClassLoader.classLoader);
+			Method mainMethod = mainClass.getMethod("main", String [].class);
+			mainMethod.invoke(null, (Object) args);
 
-            if (cmd.size() == 0) {
-	            if (System.getenv("JAVA_HOME") != null) {
-	                cmd.add(System.getenv("JAVA_HOME") + File.separatorChar
-	                        + "bin" + File.separatorChar + "java");
-	            } else
-	                cmd.add("java");
-            }
-
-            setJavaHeapAndStackSize(cmd, args);
-
-            if (System.getProperty("java.library.path") != null && System.getProperty("java.library.path").length() > 0) {
-            	cmd.add("-Djava.library.path=" + sanitise(System.getProperty("java.library.path")));
-            }            
-            
-            cmd.add("-cp");
-            cmd.add(classPath.substring(1, classPath.length() - 1));
-            cmd.add(main);
-
-            for (String arg : args) {
-            	if (arg != null) {
-            		cmd.add(arg);
-            	}
-            }
-
-            final ProcessBuilder pb = new ProcessBuilder(cmd);
-
-            Map<String, String> environment = pb.environment();
-            System.err.println(pb.command());
-
-            //File log = new File("log");
-            pb.redirectErrorStream(true);
-            
-            // Start the process and wait for it to finish.
-            final Process process = pb.start();
-
-            Thread inputThread = null;
-            boolean waitToExit = System.getProperty("launcher.wait.for.exit") != null; 
-            if (main.equals("beast.app.beastapp.BeastMain") && waitToExit) {
-            	inputThread = new Thread() {
-	            	public void run() {
-	                    OutputStream out = process.getOutputStream();
-	                    byte [] buf = new byte[2048];
-	            		while (true) {
-	            			try {
-			                    int ni = System.in.available();
-			                    if (ni > 0) {
-			                      int c = System.in.read(buf, 0, Math.min(ni, buf.length));
-			                      System.err.print((char) c);
-			                      out.write(buf, 0, c);
-			                      out.flush();
-			                    }	 
-	            			} catch (IOException e) {
-	            				e.printStackTrace();
-	            			}
-	                		try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-	             		}
-	            	}
-	            };
-	            inputThread.start();
-            }
-
-            if (waitToExit) {
-	            int c;
-	            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	            while ((c = input.read()) != -1) {
-	                System.out.print((char)c);
-	            }
-	            input.close();
-	
-	            final int exitStatus = process.waitFor();
-	            if (exitStatus != 0) {
-	            	System.err.println(process.getErrorStream());
-	            }
-	            if (main.equals("beast.app.beastapp.BeastMain")) {
-	            	inputThread.stop();
-	            }
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
