@@ -638,7 +638,7 @@ public class JSONParser {
 								 for (String nameSpace : nameSpaces) {
 									 // sanity check: class should exist
 									 try {
-										if (!done && Class.forName(nameSpace + clazz) != null) {
+										if (!done && BEASTClassLoader.forName(nameSpace + clazz) != null) {
 											 element2ClassMap.put(mapName, clazz);
 											 Log.warning.println(mapName + " => " + nameSpace + clazz);
 											 done = true;
@@ -745,7 +745,7 @@ public class JSONParser {
 		}
 		for (String nameSpace : nameSpaces) {
 			try {
-				if (Class.forName(nameSpace + className).isInstance(beastObject)) {
+				if (BEASTClassLoader.forName(nameSpace + className).isInstance(beastObject)) {
 					return true;
 				}
 			} catch (Exception e) {
@@ -829,7 +829,7 @@ public class JSONParser {
             for (final String nameSpace : nameSpaces) {
                 try {
                     if (!isDone) {
-                        Class.forName(nameSpace + specClass);
+                    	BEASTClassLoader.forName(nameSpace + specClass);
                         clazzName = nameSpace + specClass;
                         isDone = true;
                     }
@@ -846,7 +846,7 @@ public class JSONParser {
 				
 		// sanity check		
 		try {
-			Class<?> clazz = Class.forName(clazzName);
+			Class<?> clazz = BEASTClassLoader.forName(clazzName);
 			if (!BEASTInterface.class.isAssignableFrom(clazz)) {
 				// if (o instanceof Input) {
 				// // if we got this far, it is a basic input,
@@ -943,7 +943,7 @@ public class JSONParser {
 		// create new instance using class name
 		Object o = null;
 		try {
-			Class<?> c = Class.forName(clazzName); 
+			Class<?> c = BEASTClassLoader.forName(clazzName); 
 				o = c.newInstance();
 		} catch (InstantiationException e) {
 			// we only get here when the class exists, but cannot be
@@ -1016,7 +1016,7 @@ public class JSONParser {
 	private BEASTInterface useAnnotatedConstructor(JSONObject node, String _id, String clazzName, List<NameValuePair> inputInfo) throws JSONParserException {
 		Class<?> clazz = null;
 		try {
-			clazz = Class.forName(clazzName);
+			clazz = BEASTClassLoader.forName(clazzName);
 		} catch (ClassNotFoundException e) {
 			// cannot get here, since we checked the class existed before
 			e.printStackTrace();
@@ -1141,7 +1141,7 @@ public class JSONParser {
 			try {
 				// parse inputs in occurrence of inputs in the parent object
 				// this determines the order in which initAndValidate is called
-				List<InputType> inputs = XMLParserUtils.listInputs(Class.forName(className), null);
+				List<InputType> inputs = XMLParserUtils.listInputs(BEASTClassLoader.forName(className), null);
 				Set<String> done = new HashSet<>();
 				for (InputType input : inputs) {
 					String name = input.name;

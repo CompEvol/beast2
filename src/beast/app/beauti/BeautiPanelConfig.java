@@ -13,6 +13,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 
 
 
@@ -223,7 +224,7 @@ public class BeautiPanelConfig extends BEASTObject {
                 }
             }
             if (typeInput.get() != null) {
-                type = Class.forName(typeInput.get());
+                type = BEASTClassLoader.forName(typeInput.get());
             }
             // sanity check
             if (!isList && (hasPartitionsInput.get() == Partition.none) && beastObjects.size() > 1) {

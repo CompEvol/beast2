@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import beast.core.BEASTObject;
 import beast.core.Input;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import beast.util.XMLParser;
 import junit.framework.TestCase;
@@ -26,7 +27,7 @@ public class XMLElementNameTest extends TestCase {
         List<String> improperInputs = new ArrayList<String>();
         for (String beastObjectName : pluginNames) {
             try {
-                BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+                BEASTObject beastObject = (BEASTObject) BEASTClassLoader.forName(beastObjectName).newInstance();
                 List<Input<?>> inputs = beastObject.listInputs();
                 Set<String> names = new HashSet<String>();
                 for (Input<?> input : inputs) {
@@ -70,7 +71,7 @@ public class XMLElementNameTest extends TestCase {
         List<String> improperInputs = new ArrayList<String>();
         for (String beastObjectName : pluginNames) {
             try {
-                BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+                BEASTObject beastObject = (BEASTObject) BEASTClassLoader.forName(beastObjectName).newInstance();
                 // check each input
                 List<Input<?>> inputs = beastObject.listInputs();
                 for (Input<?> input : inputs) {

@@ -15,6 +15,7 @@ import beast.core.BEASTInterface;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.math.distributions.MRCAPrior;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
 import org.w3c.dom.Document;
@@ -1286,7 +1287,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 }
                 if (Utils6.isMajorLower(Utils6.JAVA_9)) {
                     try {
-                        Class<?> class_ = Class.forName("jam.maconly.OSXAdapter");
+                        Class<?> class_ = BEASTClassLoader.forName("jam.maconly.OSXAdapter");
                         Method method = class_.getMethod("enablePrefs", boolean.class);
                         method.invoke(null, false);
                     } catch (java.lang.NoSuchMethodException e) {

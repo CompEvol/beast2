@@ -352,7 +352,7 @@ public class AppLauncher {
   				}
   			}
   		
-  			Class<?> mainClass = Class.forName(packageApp.className, true, BEASTClassLoader.classLoader);
+  			Class<?> mainClass = BEASTClassLoader.forName(packageApp.className);
   			Method mainMethod = mainClass.getMethod("main", String [].class);
   			mainMethod.invoke(null, (Object) additionalArgs);
 

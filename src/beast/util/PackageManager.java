@@ -765,7 +765,7 @@ public class PackageManager {
         
         URL u;
 		try {
-			u = Class.forName("beast.app.beastapp.BeastMain", true, BEASTClassLoader.classLoader).getProtectionDomain().getCodeSource().getLocation();
+			u = BEASTClassLoader.forName("beast.app.beastapp.BeastMain").getProtectionDomain().getCodeSource().getLocation();
 		} catch (ClassNotFoundException e) {
 			// e.printStackTrace();
 			return null;
@@ -1073,7 +1073,7 @@ public class PackageManager {
     
 	private static void findDataTypes() {
 		try {
-			Method findDataTypes = Class.forName("beast.evolution.alignment.Alignment", true, BEASTClassLoader.classLoader).getMethod("findDataTypes");
+			Method findDataTypes = BEASTClassLoader.forName("beast.evolution.alignment.Alignment").getMethod("findDataTypes");
 			findDataTypes.invoke(null);
 		} catch (Exception e) {
 			// too bad, cannot load data types
@@ -1179,7 +1179,7 @@ public class PackageManager {
                                     className = className.substring(0, className.lastIndexOf('.'));
                                     try {
                                         /*Object o =*/
-                                        Class.forName(className, true, BEASTClassLoader.classLoader);
+                                    	BEASTClassLoader.forName(className);
                                         loadedClass = className;
                                     } catch (Exception e) {
                                         // TODO: handle exception
@@ -1560,7 +1560,7 @@ public class PackageManager {
         result = new ArrayList<String>();
 
         try {
-            cls = Class.forName(classname, true, BEASTClassLoader.classLoader);
+            cls = BEASTClassLoader.forName(classname);
             result = find(cls, pkgnames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1584,7 +1584,7 @@ public class PackageManager {
         result = new ArrayList<String>();
 
         try {
-            cls = Class.forName(classname, true, BEASTClassLoader.classLoader);
+            cls = BEASTClassLoader.forName(classname);
             result = find(cls, pkgname);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1657,7 +1657,7 @@ public class PackageManager {
             if (className.startsWith(pkgname)) {
                 //Log.debug.println(className);
                 try {
-                    Class<?> clsNew = Class.forName(className, true, BEASTClassLoader.classLoader);
+                    Class<?> clsNew = BEASTClassLoader.forName(className);
 
                     // no abstract classes
                     if (!Modifier.isAbstract(clsNew.getModifiers()) &&

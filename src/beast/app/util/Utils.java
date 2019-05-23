@@ -9,6 +9,7 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.util.BEASTClassLoader;
 import beast.util.TreeParser;
 import jam.framework.Application;
 
@@ -98,7 +99,7 @@ public class Utils {
                     // We need to do this using dynamic class loading to avoid other platforms
                     // having to link to this class. If the Quaqua library is not on the classpath
                     // it simply won't be used.
-                    Class<?> qm = Class.forName("ch.randelshofer.quaqua.QuaquaManager");
+                    Class<?> qm = BEASTClassLoader.forName("ch.randelshofer.quaqua.QuaquaManager");
                     Method method = qm.getMethod("setExcludedUIs", Set.class);
 
                     Set<String> excludes = new HashSet<>();

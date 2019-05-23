@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import beast.util.BEASTClassLoader;
+
 /**
  * Since Oracle Java 9, Mac OS specific <code>com.apple.eawt</code> was replaced
  * by <code>java.awt.desktop</code>.
@@ -44,22 +46,22 @@ public class NewOSXAdapter implements InvocationHandler {
         }
 
         // using reflection to avoid Mac specific classes being required for compiling KSE on other platforms
-        Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
+        Class<?> applicationClass = BEASTClassLoader.forName("com.apple.eawt.Application");
         Class<?> quitHandlerClass;
         Class<?> aboutHandlerClass;
         Class<?> openFilesHandlerClass;
         Class<?> preferencesHandlerClass;
 
         if (Utils6.isMajorAtLeast(Utils6.JAVA_9)) {
-            quitHandlerClass = Class.forName("java.awt.desktop.QuitHandler");
-            aboutHandlerClass = Class.forName("java.awt.desktop.AboutHandler");
-//            openFilesHandlerClass = Class.forName("java.awt.desktop.OpenFilesHandler");
-//            preferencesHandlerClass = Class.forName("java.awt.desktop.PreferencesHandler");
+            quitHandlerClass = BEASTClassLoader.forName("java.awt.desktop.QuitHandler");
+            aboutHandlerClass = BEASTClassLoader.forName("java.awt.desktop.AboutHandler");
+//            openFilesHandlerClass = BEASTClassLoader.forName("java.awt.desktop.OpenFilesHandler");
+//            preferencesHandlerClass = BEASTClassLoader.forName("java.awt.desktop.PreferencesHandler");
         } else {
-            quitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
-            aboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
-//            openFilesHandlerClass = Class.forName("com.apple.eawt.OpenFilesHandler");
-//            preferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
+            quitHandlerClass = BEASTClassLoader.forName("com.apple.eawt.QuitHandler");
+            aboutHandlerClass = BEASTClassLoader.forName("com.apple.eawt.AboutHandler");
+//            openFilesHandlerClass = BEASTClassLoader.forName("com.apple.eawt.OpenFilesHandler");
+//            preferencesHandlerClass = BEASTClassLoader.forName("com.apple.eawt.PreferencesHandler");
         }
 
         Object application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);

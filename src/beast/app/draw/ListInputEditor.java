@@ -27,6 +27,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 
 public class ListInputEditor extends InputEditor.Base {
 
@@ -443,7 +444,7 @@ public class ListInputEditor extends InputEditor.Base {
         }
         /* create new beastObject */
         try {
-            BEASTInterface beastObject = (BEASTInterface) Class.forName(className.substring(4)).newInstance();
+            BEASTInterface beastObject = (BEASTInterface) BEASTClassLoader.forName(className.substring(4)).newInstance();
             BEASTObjectPanel.addPluginToMap(beastObject, doc);
             selectedPlugins.add(beastObject);
             return selectedPlugins;

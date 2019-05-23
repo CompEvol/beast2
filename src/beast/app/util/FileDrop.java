@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 
+import beast.util.BEASTClassLoader;
+
 /**
  * This class makes it easy to drag and drop files from the operating
  * system to a Java program. Any <tt>java.awt.Component</tt> can be
@@ -410,7 +412,7 @@ public class FileDrop {
             boolean support = false;
             try {
                 @SuppressWarnings("unused")
-				Class<?> arbitraryDndClass = Class.forName("java.awt.dnd.DnDConstants");
+				Class<?> arbitraryDndClass = BEASTClassLoader.forName("java.awt.dnd.DnDConstants");
                 support = true;
             }   // end try
             catch (Exception e) {

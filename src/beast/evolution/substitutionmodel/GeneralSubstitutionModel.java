@@ -36,6 +36,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
+import beast.util.BEASTClassLoader;
 
 
 
@@ -90,7 +91,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
      * @throws InstantiationException *
      */
     protected EigenSystem createEigenSystem() throws SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Constructor<?>[] ctors = Class.forName(eigenSystemClass.get()).getDeclaredConstructors();
+        Constructor<?>[] ctors = BEASTClassLoader.forName(eigenSystemClass.get()).getDeclaredConstructors();
         Constructor<?> ctor = null;
         for (int i = 0; i < ctors.length; i++) {
             ctor = ctors[i];

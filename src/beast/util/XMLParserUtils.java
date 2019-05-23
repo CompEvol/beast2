@@ -357,7 +357,7 @@ public class XMLParserUtils {
 	    			Type type = types[i + offset];
 	    			Class<?> clazz2 = null;
 					try {
-						clazz2 = Class.forName(type.getTypeName());
+						clazz2 = BEASTClassLoader.forName(type.getTypeName());
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

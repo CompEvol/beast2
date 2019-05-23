@@ -20,15 +20,18 @@ public class BEASTClassLoader extends URLClassLoader {
 
     @Override
     public void addURL(URL url) {
-    super.addURL(url);
-}
+    	super.addURL(url);
+    }
 
     public void addJar(String jarFile) {
+    	System.err.println("Attempting to load " + jarFile);
         File file = new File(jarFile);
         if (file.exists()) {
+        	System.err.println("found file " + jarFile);
                 try {
-                        URL url = file.toURI().toURL();
+                    URL url = file.toURI().toURL();
                     classLoader.addURL(url);
+                	System.err.println("Loaded " + url);
                 } catch (MalformedURLException e) {
                         e.printStackTrace();
                 }
@@ -49,4 +52,14 @@ public class BEASTClassLoader extends URLClassLoader {
              System.out.println("Classloader of ArrayList:"
                  + ArrayList.class.getClassLoader());    
             }
+
+	public static Class<?> forName(String className) throws ClassNotFoundException {
+		System.err.println("Loading: " + className);
+		try { 
+			return Class.forName(className, true, BEASTClassLoader.classLoader);
+		} catch (ClassNotFoundException e) {
+			return Class.forName(className, false, BEASTClassLoader.classLoader);
+		}
+	
+	}
 }

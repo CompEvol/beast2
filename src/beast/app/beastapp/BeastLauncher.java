@@ -544,15 +544,14 @@ public class BeastLauncher {
 		try {
 
 //            setJavaHeapAndStackSize(cmd, args);
-
            
-			for (String jarFile : classPath.split(":")) {
+			for (String jarFile : classPath.substring(1, classPath.length() - 1).split(":")) {
 				if (jarFile.toLowerCase().endsWith("jar")) {
 					BEASTClassLoader.classLoader.addJar(jarFile);
 				}
 			}
 		
-			Class<?> mainClass = Class.forName(main, true, BEASTClassLoader.classLoader);
+			Class<?> mainClass = BEASTClassLoader.forName(main);
 			Method mainMethod = mainClass.getMethod("main", String [].class);
 			mainMethod.invoke(null, (Object) args);
 

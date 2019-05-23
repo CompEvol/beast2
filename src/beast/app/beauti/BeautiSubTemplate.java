@@ -36,6 +36,7 @@ import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface.Base;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.util.BEASTClassLoader;
 import beast.util.XMLParser;
 
 
@@ -73,7 +74,7 @@ public class BeautiSubTemplate extends BEASTObject {
     @Override
     public void initAndValidate() {
     	try {
-        _class = Class.forName(classInput.get());
+        _class = BEASTClassLoader.forName(classInput.get());
         shortClassName = classInput.get().substring(classInput.get().lastIndexOf('.') + 1);
         instance = _class.newInstance();
         xml = xMLInput.get();//.m_sValue.get();

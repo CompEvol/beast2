@@ -9,6 +9,7 @@ import org.junit.Test;
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import junit.framework.TestCase;
 
@@ -31,7 +32,7 @@ public class DocumentationTest extends TestCase {
         final List<String> undocumentedPlugins = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {
-                final Class<?> pluginClass = Class.forName(beastObjectName);
+                final Class<?> pluginClass = BEASTClassLoader.forName(beastObjectName);
                 final Annotation[] classAnnotations = pluginClass.getAnnotations();
                 boolean hasSatisfactoryDescription = false;
                 for (final Annotation annotation : classAnnotations) {
@@ -62,7 +63,7 @@ public class DocumentationTest extends TestCase {
         final List<String> undocumentedInputs = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {
-                final BEASTObject beastObject = (BEASTObject) Class.forName(beastObjectName).newInstance();
+                final BEASTObject beastObject = (BEASTObject) BEASTClassLoader.forName(beastObjectName).newInstance();
                 final List<Input<?>> inputs = beastObject.listInputs();
                 for (final Input<?> input : inputs) {
                     boolean hasSatisfactoryDescription = false;

@@ -9,6 +9,7 @@ import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.util.BEASTClassLoader;
 import beast.core.MCMC;
 import beast.core.Operator;
 
@@ -121,7 +122,7 @@ public class BeautiConnector extends BEASTObject {
         	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
         	Class<?> class_;
 			try {
-				class_ = Class.forName(className);
+				class_ = BEASTClassLoader.forName(className);
 	        	method = class_.getMethod(methodName, BeautiDoc.class);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
 				throw new IllegalArgumentException(e.getMessage());
@@ -154,7 +155,7 @@ public class BeautiConnector extends BEASTObject {
             	String fullMethod = methodnput.get();
             	String className = fullMethod.substring(0, fullMethod.lastIndexOf('.'));
             	String methodName = fullMethod.substring(fullMethod.lastIndexOf('.') + 1);
-            	Class<?> class_ = Class.forName(className);
+            	Class<?> class_ = BEASTClassLoader.forName(className);
             	method = class_.getMethod(methodName, BeautiDoc.class);
         		method.invoke(null, doc);
         	} catch (Exception e) {

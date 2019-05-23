@@ -17,7 +17,7 @@ import beast.app.util.Utils;
  * Base class used for definining actions with a name, tool tip text, possibly
  * an icon and accelerator key.
  */
-public abstract class MyAction extends AbstractAction {
+public class MyAction extends AbstractAction {
     /**
      * for serialisation
      */
@@ -63,6 +63,6 @@ public abstract class MyAction extends AbstractAction {
       * )
       */
     @Override
-	abstract public void actionPerformed(ActionEvent ae);
+	public void actionPerformed(ActionEvent ae) {}
 
 } // class MyAction

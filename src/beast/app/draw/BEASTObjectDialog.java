@@ -18,6 +18,7 @@ import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
+import beast.util.BEASTClassLoader;
 import beast.util.XMLProducer;
 
 /**
@@ -184,9 +185,9 @@ public class BEASTObjectDialog extends JDialog {
                 BEASTInterface beastObject = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
                 dlg = new BEASTObjectDialog(new BEASTObjectPanel(beastObject, beastObject.getClass(), null), null);
             } else if (args.length == 1) {
-                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null), null);
+                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) BEASTClassLoader.forName(args[0]).newInstance(), BEASTClassLoader.forName(args[0]), null), null);
             } else if (args.length == 2) {
-                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null), null);
+                dlg = new BEASTObjectDialog(new BEASTObjectPanel((BEASTInterface) BEASTClassLoader.forName(args[0]).newInstance(), BEASTClassLoader.forName(args[1]), null), null);
             } else {
                 throw new IllegalArgumentException("Incorrect number of arguments");
             }

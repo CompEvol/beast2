@@ -820,7 +820,7 @@ public class XMLProducer extends XMLParser {
         String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
         	String className = element2ClassMap.get(key);
-        	Class _class = Class.forName(className);
+        	Class _class = BEASTClassLoader.forName(className);
         	if (_class.equals(beastObject.getClass())) {
         		elementName = key;
         	}

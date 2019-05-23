@@ -24,6 +24,7 @@ import beast.core.BEASTInterface;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 import beast.util.XMLProducer;
 
 /**
@@ -260,7 +261,7 @@ public class BEASTObjectPanel extends JPanel {
 //					return;
 //				}
 //				try {
-//					m_beastObject = (BEASTObject) Class.forName(className).newInstance();
+//					m_beastObject = (BEASTObject) BEASTClassLoader.forName(className).newInstance();
 //					m_pluginButton.setText(className.replaceAll(".*\\.", ""));
 //					// TODO: replace InputEditors where appropriate.
 //					
@@ -455,9 +456,9 @@ public class BEASTObjectPanel extends JPanel {
                 BEASTInterface beastObject = new beast.util.XMLParser().parseBareFragment(text.toString(), false);
                 pluginPanel = new BEASTObjectPanel(beastObject, beastObject.getClass(), null);
             } else if (args.length == 1) {
-                pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[0]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTInterface) BEASTClassLoader.forName(args[0]).newInstance(), BEASTClassLoader.forName(args[0]), null);
             } else if (args.length == 2) {
-                pluginPanel = new BEASTObjectPanel((BEASTInterface) Class.forName(args[0]).newInstance(), Class.forName(args[1]), null);
+                pluginPanel = new BEASTObjectPanel((BEASTInterface) BEASTClassLoader.forName(args[0]).newInstance(), BEASTClassLoader.forName(args[1]), null);
             } else {
                 throw new IllegalArgumentException("Incorrect number of arguments");
             }

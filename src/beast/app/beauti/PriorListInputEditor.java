@@ -36,6 +36,7 @@ import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.OneOnX;
 import beast.math.distributions.Prior;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 
 
@@ -229,7 +230,7 @@ public class PriorListInputEditor extends ListInputEditor {
         for (String _class: importerClasses) {
         	try {
         		if (!_class.startsWith(this.getClass().getName())) {
-        			PriorProvider priorProvider = (PriorProvider) Class.forName(_class).newInstance();
+        			PriorProvider priorProvider = (PriorProvider) BEASTClassLoader.forName(_class).newInstance();
 					priorProviders.add(priorProvider);
         		}
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
