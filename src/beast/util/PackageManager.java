@@ -481,7 +481,7 @@ public class PackageManager {
             HttpURLConnection huc = (HttpURLConnection) templateURL.openConnection();
             huc.setRequestMethod("HEAD");
             int responseCode = huc.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) { 
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_NOT_FOUND) { 
             	// RRB: should be "if (responseCode != HttpURLConnection.HTTP_OK)"
             	// but package file hosted on github (which are most of them)
             	// produce a HttpURLConnection.HTTP_FORBIDDEN for some reason
@@ -631,15 +631,15 @@ public class PackageManager {
      * 
      */
     private static void closeClassLoader() {
-    	//try {
-    		if (Utils6.isWindows()) {
+    	try {
+    		if (Utils6.isWindows() && Utils6.getMajorJavaVersion() == 8) {
+    			// this class cast exception works on java 8, but not java 9 or above
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
-    			// sysLoader.close(); <= only since Java 1.7
+    			sysLoader.close(); // <= only since Java 1.7
     		}
-		//} catch (IOException e) {
-		//	Log.warning.println("Could not close ClassLoader: " + e.getMessage());
-		//}
-		
+		} catch (IOException | ClassCastException e) {
+			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		}
 	}
 
 	private static void deleteRecursively(File file, List<File> deleteFailed) {
