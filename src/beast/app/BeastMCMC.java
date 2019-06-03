@@ -433,7 +433,7 @@ public class BeastMCMC {
             String iconLocation = "beast/app/draw/icons/beast.png";
             ImageIcon icon = null;
             try {
-                URL url = ClassLoader.getSystemResource(iconLocation);
+                URL url = BEASTClassLoader.classLoader.getResource(iconLocation);
                 if (url == null) {
                     System.err.println("Cannot find icon " + iconLocation);
                     return null;

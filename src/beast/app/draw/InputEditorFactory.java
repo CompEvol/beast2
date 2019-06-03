@@ -80,7 +80,7 @@ public class InputEditorFactory {
 	                }
 	            } catch (java.lang.InstantiationException e) {
 	                // ingore input editors that are inner classes
-	            } catch (Exception e) {
+	            } catch (Throwable e) {
 	                // print message
 	                Log.err.println(e.getClass().getName() + ": " + e.getMessage());
 	            }

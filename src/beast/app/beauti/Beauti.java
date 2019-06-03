@@ -149,7 +149,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_template = new ActionTemplate();
     Action a_managePackages = new ActionManagePacakges();
     Action a_clearClassPath = new ActionClearClassPath();
-    Action a_appLauncher = new ActionAppLauncher();
+    //Action a_appLauncher = new ActionAppLauncher();
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
@@ -421,18 +421,18 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     }
     
-    class ActionAppLauncher extends MyAction {
-        private static final long serialVersionUID = 1;
-
-        public ActionAppLauncher() {
-            super("Launch Apps", "Launch BEAST Apps supplied by packages", "launch", -1);
-        } // c'tor
-
-        @Override
-		public void actionPerformed(ActionEvent ae) {
-        	AppLauncher.main(new String[]{});
-        } // actionPerformed
-    }
+//    class ActionAppLauncher extends MyAction {
+//        private static final long serialVersionUID = 1;
+//
+//        public ActionAppLauncher() {
+//            super("Launch Apps", "Launch BEAST Apps supplied by packages", "launch", -1);
+//        } // c'tor
+//
+//        @Override
+//		public void actionPerformed(ActionEvent ae) {
+//        	AppLauncher.main(new String[]{});
+//        } // actionPerformed
+//    }
 
     //    class ActionImport extends MyAction {
 //        private static final long serialVersionUID = 1;
@@ -816,7 +816,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         templateMenu.add(a_template);
         fileMenu.add(a_managePackages);
         fileMenu.add(a_clearClassPath);
-        fileMenu.add(a_appLauncher);
+        //fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
@@ -1242,7 +1242,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 // set up application about-menu for Mac
                 // Mac-only stuff
                 try {
-                    URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "beauti.png");
+                    URL url = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + "beauti.png");
                     Icon icon = null;
                     if (url != null) {
                         icon = new ImageIcon(url);

@@ -35,6 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import beast.util.Randomizer;
 
@@ -71,7 +72,7 @@ public class ModelBuilder extends JPanel {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        java.net.URL tempURL = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
         try {
-            URL url = ClassLoader.getSystemResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
+            URL url = BEASTClassLoader.classLoader.getResource(beast.app.draw.ModelBuilder.ICONPATH + "/GenerationD.png");
             ImageIcon icon = new ImageIcon(url);
             f.setIconImage(icon.getImage());
         } catch (Exception e) {

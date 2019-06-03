@@ -2,6 +2,7 @@ package beast.app.util;
 
 import beast.app.BEASTVersion;
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -161,7 +162,7 @@ public class Utils6 {
 
 	public static ImageIcon getIcon(String iconLocation) {
 	    try {
-	        URL url = ClassLoader.getSystemResource(iconLocation);
+	        URL url = BEASTClassLoader.classLoader.getResource(iconLocation);
 	        if (url == null) {
 	        	Log.warning.println("Cannot find icon " + iconLocation);
 	            return null;

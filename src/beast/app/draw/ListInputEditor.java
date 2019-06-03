@@ -37,9 +37,9 @@ public class ListInputEditor extends InputEditor.Base {
 
     {
         try {
-            java.net.URL downURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "down.png");
+            java.net.URL downURL = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + "down.png");
             DOWN_ICON = ImageIO.read(downURL); 
-            java.net.URL leftURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "right.png");
+            java.net.URL leftURL = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + "right.png");
             RIGHT_ICON = ImageIO.read(leftURL);
         } catch (Exception e) {
             e.printStackTrace();

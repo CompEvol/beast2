@@ -80,6 +80,7 @@ import javax.swing.filechooser.FileFilter;
 import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.evolution.alignment.Sequence;
+import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
@@ -2167,8 +2168,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         f.add(drawTest, BorderLayout.CENTER);
 
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        java.net.URL tempURL = ClassLoader
-                .getSystemResource(ModelBuilder.ICONPATH + "/GenerationD.png");
+        java.net.URL tempURL = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + "/GenerationD.png");
         try {
             f.setIconImage(ImageIO.read(tempURL));
         } catch (Exception e) {

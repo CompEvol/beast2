@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import beast.app.util.Utils;
+import beast.util.BEASTClassLoader;
 
 
 
@@ -28,29 +29,48 @@ public class MyAction extends AbstractAction {
      */
 
     public MyAction(String name, String toolTipText, String icon, int acceleratorKey) {
-        this(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        super(name);
+        try {
+        	init(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));        
+        } catch (Throwable  e) {
+        	e.printStackTrace();
+        }
     } // c'tor
 
     public MyAction(String name, String toolTipText, String icon, String acceleratorKey) {
-        this(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey));
+        super(name);
+        try {
+        	init(name, toolTipText, icon, KeyStroke.getKeyStroke(acceleratorKey));
+        } catch (Throwable  e) {
+        	e.printStackTrace();
+        }
     } // c'tor
 
     public MyAction(String name, String toolTipText, String icon, KeyStroke acceleratorKeystroke) {
         super(name);
-        // setToolTipText(toolTipText);
-        putValue(Action.SHORT_DESCRIPTION, toolTipText);
-        putValue(Action.LONG_DESCRIPTION, toolTipText);
-        if (acceleratorKeystroke != null && acceleratorKeystroke.getKeyCode() >= 0) {
-            putValue(Action.ACCELERATOR_KEY, acceleratorKeystroke);
-        }
-        putValue(Action.MNEMONIC_KEY, new Integer(name.charAt(0)));
-        java.net.URL tempURL = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + icon + ".png");
-        if (!Utils.isMac()) {
-	        if (tempURL != null) {
-	            putValue(Action.SMALL_ICON, new ImageIcon(tempURL));
-	        } else {
-	            putValue(Action.SMALL_ICON, new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_4BYTE_ABGR)));
+        init(name, toolTipText, icon, acceleratorKeystroke);
+    }
+    
+    private void init(String name, String toolTipText, String icon, KeyStroke acceleratorKeystroke) {
+        try {
+        	// setToolTipText(toolTipText);
+        	putValue(Action.SHORT_DESCRIPTION, toolTipText);
+        	putValue(Action.LONG_DESCRIPTION, toolTipText);
+        	if (acceleratorKeystroke != null && acceleratorKeystroke.getKeyCode() >= 0) {
+        		putValue(Action.ACCELERATOR_KEY, acceleratorKeystroke);
+        	}
+        	putValue(Action.MNEMONIC_KEY, new Integer(name.charAt(0)));
+        
+	        if (!Utils.isMac()) {
+		        java.net.URL tempURL = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + icon + ".png");
+		        if (tempURL != null) {
+		            putValue(Action.SMALL_ICON, new ImageIcon(tempURL));
+		        } else {
+		            putValue(Action.SMALL_ICON, new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_4BYTE_ABGR)));
+		        }
 	        }
+        } catch (Throwable  e) {
+        	e.printStackTrace();
         }
     } // c'tor
 

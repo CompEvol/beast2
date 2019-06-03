@@ -322,7 +322,7 @@ public class Utils {
      */
 	public static ImageIcon getIcon(String iconLocation) {
 	    try {
-	        URL url = ClassLoader.getSystemResource(iconLocation);
+	        URL url = BEASTClassLoader.classLoader.getResource(iconLocation);
 	        if (url == null) {
 //	            System.err.println("Cannot find icon " + iconLocation);
 	            return null;

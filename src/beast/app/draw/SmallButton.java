@@ -8,6 +8,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import beast.util.BEASTClassLoader;
+
 /**
  * @author Alexei Drummond
  */
@@ -32,7 +34,7 @@ public class SmallButton extends JButton {
 	private void setIcon(String label) {
         if (label.equals("e")) {
         	setText("");
-            URL url = ClassLoader.getSystemResource(ModelBuilder.ICONPATH + "edit.png");
+            URL url = BEASTClassLoader.classLoader.getResource(ModelBuilder.ICONPATH + "edit.png");
             Icon icon = new ImageIcon(url);
         	setIcon(icon);
             setBorder(BorderFactory.createEmptyBorder());
