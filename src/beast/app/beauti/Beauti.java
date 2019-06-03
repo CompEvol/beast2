@@ -18,6 +18,7 @@ import beast.math.distributions.MRCAPrior;
 import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -149,13 +150,14 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     Action a_template = new ActionTemplate();
     Action a_managePackages = new ActionManagePacakges();
     Action a_clearClassPath = new ActionClearClassPath();
-    //Action a_appLauncher = new ActionAppLauncher();
+    
 //    public Action a_import = new ActionImport();
     public Action a_save = new ActionSave();
     Action a_saveas = new ActionSaveAs();
     Action a_close = new ActionClose();
     Action a_quit = new ActionQuit();
     Action a_viewall = new ActionViewAllPanels();
+    Action a_appLauncher = new ActionLaunch();
 
     Action a_help = new ActionHelp();
     Action a_msgs = new ActionMsgs();
@@ -404,6 +406,19 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     }
     
+    class ActionLaunch extends MyAction {
+        private static final long serialVersionUID = 1;
+
+        public ActionLaunch() {
+            super("Launch Apps", "Launch BEAST Apps supplied by packages", "launch", -1);
+        } // c'tor
+
+        @Override
+		public void actionPerformed(ActionEvent ae) {
+        	AppLauncher.main(new String[]{});
+        } // actionPerformed
+    }
+
     class ActionClearClassPath extends MyAction {
         private static final long serialVersionUID = 1;
 
@@ -421,18 +436,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         } // actionPerformed
     }
     
-//    class ActionAppLauncher extends MyAction {
-//        private static final long serialVersionUID = 1;
-//
-//        public ActionAppLauncher() {
-//            super("Launch Apps", "Launch BEAST Apps supplied by packages", "launch", -1);
-//        } // c'tor
-//
-//        @Override
-//		public void actionPerformed(ActionEvent ae) {
-//        	AppLauncher.main(new String[]{});
-//        } // actionPerformed
-//    }
 
     //    class ActionImport extends MyAction {
 //        private static final long serialVersionUID = 1;
@@ -816,7 +819,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         templateMenu.add(a_template);
         fileMenu.add(a_managePackages);
         fileMenu.add(a_clearClassPath);
-        //fileMenu.add(a_appLauncher);
+        fileMenu.add(a_appLauncher);
         fileMenu.addSeparator();
         fileMenu.add(a_save);
         fileMenu.add(a_saveas);
