@@ -92,7 +92,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	/** 
 	 * return new alignment, return null if not successful 
 	 * **/
-	protected List<BEASTInterface> getAlignments(BeautiDoc doc) {
+	public List<BEASTInterface> getAlignments(BeautiDoc doc) {
 		if (importers == null) {
 			initImporters();
 		}
