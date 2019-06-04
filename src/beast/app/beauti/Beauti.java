@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import beast.app.BEASTVersion2;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -37,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -781,6 +783,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
+        addCustomHelpMenus(helpMenu);
         if (!Utils.isMac() || Utils6.isMajorLower(Utils6.JAVA_1_8)) {
             helpMenu.add(a_about);
         }
@@ -790,7 +793,34 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         return menuBar;
     } // makeMenuBar
 
-    private void createFileMenu() {
+    // Find sub-classes of BeautiHelpAction and add custom help menu items
+    // for these classes
+    private void addCustomHelpMenus(JMenu helpMenu) {
+        String[] PACKAGE_DIRS = {"beast.app",};
+        String helpClass = "beast.app.beauti.BeautiHelpAction";
+        List<String> helpActions = new ArrayList<>();
+        for (String packageName : PACKAGE_DIRS) {
+        	helpActions.addAll(PackageManager.find(helpClass, packageName));
+        }
+        if (helpActions.size() > 1) {
+            helpMenu.addSeparator();
+            for (String className : helpActions) {
+            	if (!className.equals(helpClass)) {
+		            try {
+		            	Class<?> _class = Class.forName(className);
+		                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
+		                BeautiHelpAction helpAction = (BeautiHelpAction) con.newInstance(doc);
+		                helpMenu.add(helpAction);
+		            } catch (Throwable t) {
+		            	t.printStackTrace();
+		            }
+            	}
+            }
+            helpMenu.addSeparator();
+        }
+    }
+
+	private void createFileMenu() {
     	// first clear menu
    		fileMenu.removeAll();
 
