@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import beast.app.beastapp.BeastLauncher;
 import beast.app.draw.BEASTObjectPanel;
 import beast.app.draw.InputEditor;
 import beast.app.draw.InputEditorFactory;
@@ -485,7 +487,13 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         // first gather the set of potential directories with templates
         Set<String> dirs = new HashSet<>();
         String pathSep = System.getProperty("path.separator");
-        String classpath = System.getProperty("java.class.path");
+        String classpath = "";
+		try {
+			classpath = BeastLauncher.getPath(false, null);
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e1) {
+			e1.printStackTrace();
+		}//System.getProperty("java.class.path");
         String fileSep = System.getProperty("file.separator");
         if (fileSep.equals("\\")) {
             fileSep = "\\\\";

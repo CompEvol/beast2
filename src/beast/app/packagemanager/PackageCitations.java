@@ -56,7 +56,7 @@ public class PackageCitations {
     public void addJarFilesToClassPath() throws IOException {
         // add all jars to class path
         for (File f: libJarFile)
-            PackageManager.addURL(f.toURL());
+            PackageManager.addURL(f.toURI().toURL());
     }
 
     public void removeJarFilesFromClassPath() {

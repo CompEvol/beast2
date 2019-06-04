@@ -354,9 +354,15 @@ public class AppLauncher {
   		
   			Class<?> mainClass = BEASTClassLoader.forName(packageApp.className);
   			Method mainMethod = mainClass.getMethod("main", String [].class);
+System.err.println("About to invoke " + packageApp.className + " " + mainMethod);
+			if (additionalArgs == null) {
+				additionalArgs = new String[] {};
+			}
+System.err.println("Args:" + Arrays.toString(additionalArgs));
   			mainMethod.invoke(null, (Object) additionalArgs);
+System.err.println("Done invoking " + packageApp.className);
 
-          } catch (Exception e) {
+          } catch (Throwable e) {
               e.printStackTrace();
           }
 

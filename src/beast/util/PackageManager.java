@@ -1161,47 +1161,48 @@ public class PackageManager {
             if (jarDir.exists() && jarDir.isDirectory()) {
                 for (String fileName : jarDir.list()) {
                     if (fileName.endsWith(".jar")) {
-                        Log.debug.print("Probing: " + fileName + " ");
-                        // check that we are not reload existing classes
-                        String loadedClass = null;
-                        try {
-                            JarInputStream jarFile = new JarInputStream
-                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
-                            JarEntry jarEntry;
-
-                            while (loadedClass == null) {
-                                jarEntry = jarFile.getNextJarEntry();
-                                if (jarEntry == null) {
-                                    break;
-                                }
-                                if ((jarEntry.getName().endsWith(".class"))) {
-                                    String className = jarEntry.getName().replaceAll("/", "\\.");
-                                    className = className.substring(0, className.lastIndexOf('.'));
-                                    try {
-                                        /*Object o =*/
-                                    	BEASTClassLoader.forName(className);
-                                        loadedClass = className;
-                                    } catch (Exception e) {
-                                        // TODO: handle exception
-                                    }
-                                    if (loadedClass == null && packageNameAndVersion != null) {
-                                        classToPackageMap.put(className, packageNameAndVersion);
-                                    }
-                                }
-                            }
-                            jarFile.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-
-                        @SuppressWarnings("deprecation")
-                        URL url = new File(jarDir.getAbsolutePath() + "/" + fileName).toURL();
-                        if (loadedClass == null) {
+//                        Log.debug.print("Probing: " + fileName + " ");
+//                        // check that we are not reload existing classes
+//                        String loadedClass = null;
+//                        try {
+//                            JarInputStream jarFile = new JarInputStream
+//                                    (new FileInputStream(jarDir.getAbsolutePath() + "/" + fileName));
+//                            JarEntry jarEntry;
+//
+//                            while (loadedClass == null) {
+//                                jarEntry = jarFile.getNextJarEntry();
+//                                if (jarEntry == null) {
+//                                    break;
+//                                }
+//                                if ((jarEntry.getName().endsWith(".class"))) {
+//                                    String className = jarEntry.getName().replaceAll("/", "\\.");
+//                                    className = className.substring(0, className.lastIndexOf('.'));
+//                                    try {
+//                                        /*Object o =*/
+//                                    	BEASTClassLoader.forName(className);
+//                                        loadedClass = className;
+//                                    } catch (Throwable e) {
+//                                        // TODO: handle exception
+//                                    	e.printStackTrace();
+//                                    }
+//                                    if (loadedClass == null && packageNameAndVersion != null) {
+//                                        classToPackageMap.put(className, packageNameAndVersion);
+//                                    }
+//                                }
+//                            }
+//                            jarFile.close();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//
+//
+//                        @SuppressWarnings("deprecation")
+                        URL url = new File(jarDir.getAbsolutePath() + "/" + fileName).toURI().toURL();
+//                        if (loadedClass == null) {
                             addURL(url);
-                        } else {
-                            Log.debug.println("Skip loading " + url + ": contains class " + loadedClass + " that is already loaded");
-                        }
+//                        } else {
+//                            Log.debug.println("Skip loading " + url + ": contains class " + loadedClass + " that is already loaded");
+//                        }
                     }
                 }
             }
