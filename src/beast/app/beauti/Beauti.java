@@ -57,6 +57,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * current directory for opening files *
      */
     public static String g_sDir = System.getProperty("user.dir");
+    
+    public static void setCurrentDir(String currentDir) {
+    	g_sDir = currentDir;
+    	Utils.saveBeautiProperty("currentDir", currentDir);
+    }
 
 	/**
      * File extension for Beast specifications
@@ -250,8 +255,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
             if (doc.getFileName().lastIndexOf(fileSep) > 0) {
-                g_sDir = doc.getFileName().substring(0,
-                        doc.getFileName().lastIndexOf(fileSep));
+                setCurrentDir(doc.getFileName().substring(0,
+                        doc.getFileName().lastIndexOf(fileSep)));
             }
             if (!doc.getFileName().toLowerCase().endsWith(FILE_EXT) && !doc.getFileName().toLowerCase().endsWith(FILE_EXT2))
                 doc.setFileName(doc.getFileName().concat(FILE_EXT));
@@ -323,8 +328,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     fileSep = "\\\\";
                 }
                 if (doc.getFileName().lastIndexOf(fileSep) > 0) {
-                    g_sDir = doc.getFileName().substring(0,
-                            doc.getFileName().lastIndexOf(fileSep));
+                    setCurrentDir(doc.getFileName().substring(0,
+                            doc.getFileName().lastIndexOf(fileSep)));
                 }
                 try {
                 	// TODO: deal with json files
@@ -1078,7 +1083,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							g_sDir = dir;
+							setCurrentDir(dir);
 						}
 	
 		            };
@@ -1192,6 +1197,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public static Beauti main2(String[] args) {
     	Utils6.startSplashScreen();
     	Utils6.logToSplashScreen("Initialising BEAUti");
+    	
+    	// retrieve previously stored working directory
+    	String currentDir = Utils.getBeautiProperty("currentDir");
+    	if (currentDir != null && currentDir.length() > 1) {
+    		g_sDir = currentDir;
+    	}
+    	
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {

@@ -480,7 +480,7 @@ public class BeastMCMC {
                     if (rval == JFileChooser.APPROVE_OPTION) {
                         String fileName = fileChooser.getSelectedFile().toString();
                         if (fileName.lastIndexOf('/') > 0) {
-                            Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf('/'));
+                            Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf('/')));
                         }
                         m_fileEntry.setText(fileName);
                     }
