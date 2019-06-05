@@ -634,14 +634,16 @@ public class PackageManager {
      * 
      */
     private static void closeClassLoader() {
-    	//try {
-    		if (Utils6.isWindows()) {
+    	try {
+    		if (Utils6.isWindows() && Utils6.getMajorJavaVersion() == 8) {
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
-    			// sysLoader.close(); <= only since Java 1.7
+    			sysLoader.close(); // <= only since Java 1.7
     		}
-		//} catch (IOException e) {
-		//	Log.warning.println("Could not close ClassLoader: " + e.getMessage());
-		//}
+		} catch (IOException e) {
+			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		} catch (ClassCastException e) {
+			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		}
 		
 	}
 
