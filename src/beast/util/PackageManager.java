@@ -637,8 +637,10 @@ public class PackageManager {
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
     			sysLoader.close(); // <= only since Java 1.7
     		}
-		} catch (IOException | ClassCastException e) {
-			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+		} catch (IOException e) {
+            Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+        } catch (ClassCastException e) {
+            Log.warning.println("Could not close ClassLoader: " + e.getMessage());
 		}
 	}
 
