@@ -138,7 +138,7 @@ public class SequenceSimulator extends beast.core.Runnable {
 //			seq.append(seq[m_sequenceLength-1] + "");
 //    	}
         List<Sequence> taxa = m_data.get().sequenceInput.get();
-        String taxon = taxa.get(node.getNr()).taxonInput.get();
+        String taxon = node.getID() != null ? node.getID() : taxa.get(node.getNr()).taxonInput.get();
         return new Sequence(taxon, seqString);
     } // intArray2Sequence
 
