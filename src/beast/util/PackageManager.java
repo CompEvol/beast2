@@ -35,6 +35,8 @@ package beast.util;
 import beast.app.BEASTVersion;
 import beast.app.util.Arguments;
 import beast.app.util.Utils6;
+import beast.core.BEASTInterface;
+import beast.core.BEASTObjectStore;
 import beast.core.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1979,6 +1981,28 @@ public class PackageManager {
     	return classToPackageMap;
     }
 
+    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
+     * for all packages used by o and its predecessors in the model graph.
+     */
+    public static Set<String> getPackagesAndVersions(Object o) {
+    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
+    	getPackagesAndVersions(o, packagesAndVersions);
+    	return packagesAndVersions;
+    }
+    
+    /** traverse model graph starting at o, and collect packageAndVersion strings
+     * along the way.
+     */
+    private static void getPackagesAndVersions(Object o, Set<String> packagesAndVersions) {
+    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
+    	if (packageAndVersion != null) {
+    		packagesAndVersions.add(packageAndVersion);
+    	}
+    	for (BEASTInterface o2 : BEASTObjectStore.listActiveBEASTObjects(o)) {
+    		getPackagesAndVersions(o2, packagesAndVersions);
+    	}
+	}
+    
     private static void initPackageMap(String jarDirName) {
         try {
             File versionFile = new File(jarDirName + "/version.xml");

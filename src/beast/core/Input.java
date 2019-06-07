@@ -30,6 +30,7 @@ import beast.core.util.Log;
 
 import java.io.File;
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -707,6 +708,28 @@ public class Input<T> {
         }
     } // setStringValue
 
+    @SuppressWarnings("rawtypes")
+    private static void setStringValue( List list, String stringValue, Class<?> theClass) {
+        // remove start and end spaces
+        String stringValue2 = stringValue.replaceAll("^\\s+", "");
+        stringValue2 = stringValue2.replaceAll("\\s+$", "");
+        // split into space-separated bits
+        String[] stringValues = stringValue2.split("\\s+");
+        for (int i = 0; i < stringValues.length; i++) {
+        	list.add(fromString(stringValues[i % stringValues.length], theClass));
+//            if (theClass.equals(Integer.class)) {
+//                list.add(new Integer(stringValues[i % stringValues.length]));
+//            } else if (theClass.equals(Double.class)) {
+//                list.add(new Double(stringValues[i % stringValues.length]));
+//            } else if (theClass.equals(Boolean.class)) {
+//                String str = stringValues[i % stringValues.length].toLowerCase();
+//                list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
+//            } else if (theClass.equals(String.class)) {
+//                list.add(new String(stringValues[i % stringValues.length]));
+//            }
+        }		
+	}
+    
     /**
      * validate input according to validation rule *
      *
@@ -766,5 +789,138 @@ public class Input<T> {
     public String toString() {
     	return String.format("Input(\"%s\")", name);
     }
+
+	public static Object fromString(Object arg, Class<?> type) { 
+		// deal with the case where the Input type has a String constructor
+		// and the args[i] is a String -- we need to invoke the String constructor 
+		if (arg instanceof String && type != String.class) {
+			if (type.isEnum()) {
+				try {
+					arg = Enum.valueOf((Class<Enum>) type, arg.toString());
+				} catch (IllegalArgumentException e) {
+					Object[] possibleValues = type.getEnumConstants();
+					for (Object o :possibleValues) {
+						if (o.toString().equals(arg.toString())) {
+							return o;
+						}
+					}
+				}
+			} else if (type.isArray()) {
+				Class<?> componentType = type.getComponentType();				
+				List list = new ArrayList();
+				setStringValue(list, (String) arg, componentType);
+				arg = list;
+			} else if (type.getDeclaredConstructors().length > 0) {
+			    for (Constructor<?> argctor : type.getDeclaredConstructors()) {
+			    	Class<?>[] argtypes  = argctor.getParameterTypes();
+			    	if (argtypes.length == 1 && argtypes[0] == String.class) {
+			    		Object o;
+						try {
+							o = argctor.newInstance(arg);
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+								| InvocationTargetException e) {
+							e.printStackTrace();
+							throw new RuntimeException("Use of String constructor failed: " + e.getMessage());
+						}
+			    		arg = o;
+			    		break;
+			    	}
+			    }
+			} else if (type.isPrimitive()) {
+				// convert from a primitive type
+				if (type.equals(Integer.TYPE)) {
+					arg = (int) new Integer(arg.toString());
+				} else if (type.equals(Long.TYPE)) {
+					arg = (long) new Long(arg.toString());
+				} else if (type.equals(Short.TYPE)) {
+					arg = (short) new Short(arg.toString());
+				} else if (type.equals(Float.TYPE)) {
+					arg = (float) new Float(arg.toString());
+				} else if (type.equals(Double.TYPE)) {
+					arg = (double) new Double(arg.toString());
+				} else if (type.equals(Boolean.TYPE)) {
+					arg = (boolean) new Boolean(arg.toString());
+				} else if (type.equals(Byte.TYPE)) {
+					arg = (byte) new Byte(arg.toString());
+				} else if (type.equals(Character.TYPE)) {
+					if (arg.toString().length() == 1) {
+						arg = arg.toString().charAt(0);
+					} else {
+						throw new IllegalArgumentException("expeted character, but got string of length " + arg.toString().length());
+					}
+				}
+			} else {
+				throw new IllegalArgumentException("cannot match value for c'tor");
+			}
+		}
+		if (type.isArray() && arg instanceof List) {
+			List list = (List) arg;
+			Class<?> componentType = type.getComponentType();				
+			if (componentType.isPrimitive()) {
+				// have to convert objects to primitives
+            	Object [] objectArray = (Object[]) list.toArray();
+        		if (componentType.equals(Integer.TYPE)) {
+        			int [] array = new int[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (int) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Long.TYPE)) {
+        			long [] array = new long[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (long) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Short.TYPE)) {
+        			short [] array = new short[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (short) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Float.TYPE)) {
+        			float [] array = new float[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (float) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Double.TYPE)) {
+        			double [] array = new double[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (double) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Boolean.TYPE)) {
+        			boolean [] array = new boolean[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (boolean) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Byte.TYPE)) {
+        			byte [] array = new byte[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (byte) objectArray[k];
+	            	}
+	            	return array;
+                } else if (componentType.equals(Character.TYPE)) {
+        			char [] array = new char[objectArray.length];
+	            	for (int k = 0; k < array.length; k++) {
+	            		array[k] = (char) objectArray[k];
+	            	}
+	            	return array;
+            	}
+			}
+			// convert list to array of type componentType
+			Object array = java.lang.reflect.Array.newInstance(componentType, list.size());
+			for (int i = 0; i < list.size(); i++) {
+				if (list.get(i) instanceof VirtualBEASTObject) {
+					Array.set(array, i, ((VirtualBEASTObject)list.get(i)).getObject());
+				} else {
+					Array.set(array, i, list.get(i));
+				}
+			}
+			return array;
+		}
+		return arg;
+	}
 
 } // class Input

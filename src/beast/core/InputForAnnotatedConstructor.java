@@ -1,25 +1,27 @@
 package beast.core;
 
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 
 @Description("Emulates the behaviour of an Input for constructors annotated with Param annotations.")
 public class InputForAnnotatedConstructor<T> extends Input<T> {
 	
 	/** BEAST object for which to emulate this Input **/
-	BEASTInterface beastObject;
+	Object beastObject;
 	
 	/** get and set methods **/
 	Method getter, setter;
 	
 	
-	public InputForAnnotatedConstructor(BEASTInterface beastObject, Class<?> theClass, Param param) throws NoSuchMethodException, SecurityException,  IllegalArgumentException  {
+	public InputForAnnotatedConstructor(Object beastObject, Class<?> theClass, Param param) throws NoSuchMethodException, SecurityException,  IllegalArgumentException  {
 		if (beastObject == null) {
 			throw new NullPointerException();
 		}
@@ -29,14 +31,7 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 			throw new NullPointerException();
 		}
 		this.theClass = theClass;
-		
-		// TODO: handle defaultValue from Param annotations
-		// this.defaultValue = param.defaultValue();
-		if (param.description().trim().length() == 0) {
-			Log.warning.println("Param annotation found without proper description " + param.toString());
-		}
-		this.tipText = param.description();
-		
+				
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -46,7 +41,9 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 		
 		String methodName = "get" + 
 		    	name.substring(0, 1).toUpperCase() +
-		    	name.substring(1);
+		    	name.substring(1)
+		    	// + "List"
+		    	;
 		try {
 			getter = beastObject.getClass().getMethod(methodName);
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
@@ -56,13 +53,63 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 
 		methodName = "set" + 
 		    	name.substring(0, 1).toUpperCase() +
-		    	name.substring(1);
+		    	name.substring(1)
+		    	//  + "List"
+		    	;
 		try {
-			setter = beastObject.getClass().getMethod(methodName, theClass);
+			setter = beastObject.getClass().getMethod(methodName, theClass /*List.class*/);
 		} catch (NoSuchMethodException | SecurityException | IllegalArgumentException e) {
 			Log.err.println("Programmer error: when getting here an InputType was identified, but no setter for Param annotation found");
 			throw e;
 		}
+		
+		this.tipText = param.description().trim();
+		for (Annotation annotation :getter.getAnnotations()) {
+			if (annotation.annotationType() == Description.class) {
+				if (this.tipText.length() > 0) {
+					throw new RuntimeException("Programmer error: Double description found on @Param(" + name + ") and its getter method " + theClass.getName() + "." + getter.getName() +"()"); 
+				}
+				this.tipText = ((Description) annotation).value();
+			}
+		}
+		if (tipText.length() == 0) {
+			Log.warning.println("Param annotation found without proper description " + param.toString());
+		}
+
+		if (param.optional()) {
+			String defaultValue = param.defaultValue();
+			try {
+				this.defaultValue = (T) fromString(defaultValue, this.theClass);
+
+				methodName = "default" + 
+				    	name.substring(0, 1).toUpperCase() +
+				    	name.substring(1)
+				    	//  + "List"
+				    	;
+				try {
+					Method defaultValueMethod = beastObject.getClass().getMethod(methodName, theClass);
+					// check whether this is a static method
+					if (!Modifier.isStatic(defaultValueMethod.getModifiers())) {
+						throw new RuntimeException("Programmer error: method " + theClass.getName() + "." +  methodName + "() must be static");
+					}
+					this.defaultValue = (T) defaultValueMethod.invoke(null);
+				} catch (NoSuchMethodException | SecurityException | IllegalArgumentException | 
+						InvocationTargetException | IllegalAccessException e) {
+					// ignore
+				}
+				
+			} catch (RuntimeException e) {
+				if (defaultValue.equals("")) {
+					// ignore failure to find default value
+					// if the annotation sets it to an empty String.
+				} else {
+					throw e;
+				}
+//				e.printStackTrace();
+//				throw new IllegalArgumentException(e.getMessage());
+			}
+		}
+		
 	}
 	
 	@Override
@@ -122,7 +169,26 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
                 }
                 setValue(value);
             } else {
-                throw new RuntimeException("Input 102: type mismatch for input " + getName());
+            	// check whether this has a primitive type
+            	if (theClass.equals(Integer.TYPE) && Integer.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Long.TYPE) && Long.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Short.TYPE) && Short.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Float.TYPE) && Float.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Double.TYPE) && Double.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Boolean.TYPE) && Boolean.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Byte.TYPE) && Byte.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else if (theClass.equals(Character.TYPE) && Character.class.isAssignableFrom(value.getClass())) {
+					setValue(value);
+				} else {
+					throw new RuntimeException("Input 102: type mismatch for input " + getName());
+				}
             }
         }
 	}
@@ -132,7 +198,7 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 		try {
 			setter.invoke(beastObject, value);
 			if (value instanceof BEASTInterface) {
-	              ((BEASTInterface) value).getOutputs().add(beastObject);
+	              ((BEASTInterface) value).getOutputs().add(BEASTObjectStore.INSTANCE.getBEASTObject(beastObject));
 			}
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -198,11 +264,9 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
             }
         }
         if (theClass.equals(Function.class)) {
-            final RealParameter param = new RealParameter();
-            param.initByName("value", valueString, "upper", 0.0, "lower", 0.0, "dimension", 1);
-            param.initAndValidate();
+        	final Function.Constant param = new Function.Constant(valueString);
         	setValue(param);
-            param.getOutputs().add(beastObject);
+            param.getOutputs().add(BEASTObjectStore.INSTANCE.getBEASTObject(beastObject));
             return;
         }
 
@@ -246,12 +310,12 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
             final Object o = ctor.newInstance(v);
             setValue(o);
             if (o instanceof BEASTInterface) {
-                ((BEASTInterface) o).getOutputs().add(beastObject);
+                ((BEASTInterface) o).getOutputs().add(BEASTObjectStore.INSTANCE.getBEASTObject(beastObject));
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
                     "' with value '" + valueString + "'.\nExpected something of type " + getType().getName() +
-                    ". " + (e.getMessage() != null ? e.getMessage() : ""));
+                    ".\n" + (e.getMessage() != null ? e.getMessage() : ""));
         }
     } // setStringValue
 
@@ -274,4 +338,14 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
 		return null;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof InputForAnnotatedConstructor)) {
+			return false;
+		}
+		InputForAnnotatedConstructor other = (InputForAnnotatedConstructor) obj;
+		return other.getName().equals(getName()) &&
+				other.tipText.equals(tipText) &&
+				other.getType().equals(getType());
+	}
 }

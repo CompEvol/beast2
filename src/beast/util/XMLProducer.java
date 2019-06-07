@@ -27,7 +27,6 @@ package beast.util;
 
 
 
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -60,6 +59,7 @@ import org.xml.sax.SAXException;
 
 import beast.app.BEASTVersion2;
 import beast.core.BEASTInterface;
+import beast.core.BEASTObjectStore;
 import beast.core.Input;
 
 /**
@@ -94,37 +94,14 @@ public class XMLProducer extends XMLParser {
      * Given a plug-in, produces the XML in BEAST 2.0 format
      * representing the plug-in. This assumes beast object is Runnable
      */
-    public String toXML(BEASTInterface beastObject) {    	
+    public String toXML(Object beastObject) {
         return toXML(beastObject, new ArrayList<>());
     }
 
-    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
-     * for all packages used by o and its predecessors in the model graph.
-     */
-    public Set<String> getPackagesAndVersions(BEASTInterface o) {
-    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
-    	getPackagesAndVersions(o, packagesAndVersions);
-    	return packagesAndVersions;
-    }
-    
-    /** traverse model graph starting at o, and collect packageAndVersion strings
-     * along the way.
-     */
-    private void getPackagesAndVersions(BEASTInterface o, Set<String> packagesAndVersions) {
-    	Map<String, String > classToPackageMap = PackageManager.getClassToPackageMap();
-    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
-    	if (packageAndVersion != null) {
-    		packagesAndVersions.add(packageAndVersion);
-    	}
-    	for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
-    		getPackagesAndVersions(o2, packagesAndVersions);
-    	}
-	}
-
-    public String toXML(BEASTInterface beastObject, Collection<BEASTInterface> others) {
+    public String toXML(Object beastObject, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
-        	Set<String> requiredPacakges = getPackagesAndVersions(beastObject);
+        	Set<String> requiredPacakges = PackageManager.getPackagesAndVersions(beastObject);
         	String required = requiredPacakges.toString();
         	required = required.substring(1, required.length() - 1);
         	required = required.replaceAll(", ", ":");
@@ -181,29 +158,27 @@ public class XMLProducer extends XMLParser {
             xml = sortTags(xml);
             
 
-            // the following fails on Windows with Java 9, so commented out
-            //insert newlines in alignments 
-//            int k = xml.indexOf("<data ");
-//            StringBuffer buf2 = new StringBuffer(xml); 
-//            while (k > 0) {
-//            	while (xml.charAt(k) != '>') {
-//            		if (xml.charAt(k) == ' ' && !xml.startsWith("idref", k+1)) {
-//            			buf2.setCharAt(k, '\n');
-//            		}
-//            		k++;
-//            	}
-//            	k = xml.indexOf("<data ", k + 1);
-//            }
-//            
-//
-//            return buf2.toString();
-            return xml;
+            //insert newlines in alignments
+            int k = xml.indexOf("<data ");
+            StringBuffer buf2 = new StringBuffer(xml); 
+            while (k > 0) {
+            	while (xml.charAt(k) != '>') {
+            		if (xml.charAt(k) == ' ' && !xml.startsWith("idref", k+1)) {
+            			buf2.setCharAt(k, '\n');
+            		}
+            		k++;
+            	}
+            	k = xml.indexOf("<data ", k + 1);
+            }
+            
+
+            return buf2.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     } // toXML
-
+    
     // ensure attributes are ordered so that id goes first, then spec, then remainder of attributes
     private String sortTags(String xml) {
     	//if (true) return xml;
@@ -815,13 +790,13 @@ public class XMLProducer extends XMLParser {
      * @throws ClassNotFoundException 
      */
     @SuppressWarnings("rawtypes")
-    void beastObjectToXML(BEASTInterface beastObject, StringBuffer buf, String name, boolean isTopLevel) throws ClassNotFoundException {
+    void beastObjectToXML(Object beastObject, StringBuffer buf, String name, boolean isTopLevel) throws ClassNotFoundException {
         // determine element name, default is input, otherwise find one of the defaults
         String elementName = "input";
         for (String key : element2ClassMap.keySet()) {
         	String className = element2ClassMap.get(key);
         	Class _class = Class.forName(className);
-        	if (_class.equals(beastObject.getClass())) { 
+        	if (_class.equals(beastObject.getClass())) {
         		elementName = key;
         	}
         }
@@ -862,8 +837,8 @@ public class XMLProducer extends XMLParser {
         // open element
         buf.append("<").append(elementName);
         
-        if (beastObject.getID() == null) {
-        	String id = beastObject.getClass().getName();
+        if (BEASTObjectStore.getId(beastObject) == null) {
+        	String id = BEASTObjectStore.getClassName(beastObject);
         	if (id.contains(".")) {
         		id = id.substring(id.lastIndexOf('.') + 1);
         	}
@@ -874,27 +849,28 @@ public class XMLProducer extends XMLParser {
                 }
                 id = id + k;
             }
-            beastObject.setID(id);
+            BEASTObjectStore.setId(beastObject, id);
         }
 
         boolean skipInputs = false;
+        BEASTInterface beastObject2 = BEASTObjectStore.INSTANCE.getBEASTObject(beastObject);
         // isDone.contains(beastObject) fails when BEASTObjects override equals(), so use a stream with == instead
-        if (isDone.stream().anyMatch(x -> x == beastObject)) {
+        if (isDone.stream().anyMatch(x -> x == beastObject2)) {
             // XML is already produced, we can idref it
-            buf.append(" idref='" + normalise(beastObject.getID()) + "'");
+            buf.append(" idref='" + normalise(BEASTObjectStore.getId(beastObject)) + "'");
             skipInputs = true;
         } else {
             // see whether a reasonable id can be generated
-            if (beastObject.getID() != null && !beastObject.getID().equals("")) {
-                String id = beastObject.getID();
+            if (BEASTObjectStore.getId(beastObject) != null && !BEASTObjectStore.getId(beastObject).equals("")) {
+                String id = BEASTObjectStore.getId(beastObject);
                 // ensure ID is unique, if not add index behind
                 uniqueID(id, buf);
             }
-            isDone.add(beastObject);
+            isDone.add(BEASTObjectStore.INSTANCE.getBEASTObject(beastObject));
         }
-        String className = beastObject.getClass().getName();
+        String className = BEASTObjectStore.getClassName(beastObject);
         if (skipInputs == false && (!element2ClassMap.containsKey(elementName) ||
-                !element2ClassMap.get(elementName).equals(className) ||
+                !element2ClassMap.get(elementName).equals(className)||                
                 reservedElements.contains(elementName))) {
             // only add spec element if it cannot be deduced otherwise (i.e., by idref or default mapping
             buf.append(" spec='" + className + "'");
@@ -907,16 +883,21 @@ public class XMLProducer extends XMLParser {
         if (!skipInputs) {
             // process inputs of this beast object
             // first, collect values as attributes
-            List<Input<?>> inputs = beastObject.listInputs();
+            List<Input<?>> inputs = BEASTObjectStore.listInputs(beastObject);
+            Collections.sort(inputs, (a,b) -> {return a.getName().compareTo(b.getName());});
             for (Input<?> input : inputs) {
             	Object value = input.get();
-                inputToXML(input, value, beastObject, buf, true);
+            	if (value != null) {
+            		inputToXML(input, value, beastObject, buf, true);
+            	}
             }
             // next, collect values as input elements
             StringBuffer buf2 = new StringBuffer();
             for (Input input : inputs) {
             	Object value = input.get();
-                inputToXML(input, value, beastObject, buf2, false);
+            	if (value != null) {
+            		inputToXML(input, value, beastObject, buf2, false);
+            	}
             }
             if (buf2.length() == 0) {
                 // if nothing was added by the inputs, close element
@@ -972,13 +953,14 @@ public class XMLProducer extends XMLParser {
      * @param isShort: flag to indicate attribute/value format (true) or element format (false)
      * @throws ClassNotFoundException 
      */
-    void inputToXML(Input<?> input, Object value, BEASTInterface beastObject, StringBuffer buf, boolean isShort) throws ClassNotFoundException {
+    void inputToXML(Input<?> input, Object value, Object beastObject, StringBuffer buf, boolean isShort) throws ClassNotFoundException {
     	//if (input.getName().equals("*")) {
     		// this can happen with beast.core.parameter.Map
     		// and * is not a valid XML attribute name
     		//return;
     	//}
         if (value != null) {
+        	String name = input.getName();
             if (value instanceof Map) {
                 // distinguish between List, Map, BEASTInterface and primitive input types
             	if (isShort) {
@@ -1002,7 +984,7 @@ public class XMLProducer extends XMLParser {
                 	}
                 }
             	return;
-            } else if (input.getName().startsWith("*")) {
+            } else if (name.startsWith("*") || name.equals("id") || name.equals("name")) {
         		// this can happen with private inputs, like in ThreadedTreeLikelihood
         		// and * is not a valid XML attribute name
         		return;
@@ -1011,8 +993,8 @@ public class XMLProducer extends XMLParser {
                 	int k = 0;
                 	List<?> list = (List<?>) value;
                     for (Object o2 : list) {
-                    	if (o2 instanceof BEASTInterface) {
-                    		beastObjectToXML((BEASTInterface) o2, buf, input.getName(), false);
+                    	if (!BEASTObjectStore.isPrimitive(o2) ) {
+                    		beastObjectToXML(o2, buf, input.getName(), false);
                     	} else {
                     		k++;
                     		buf.append(o2.toString());
@@ -1023,41 +1005,111 @@ public class XMLProducer extends XMLParser {
                     }
                 }
                 return;
+            } else if (value.getClass().isArray()) {
+                if (isShort) {
+	            	StringBuilder buf2 = new StringBuilder();
+	            	buf2.append(" " + input.getName() + "=\"");
+	            	Class type = value.getClass().getComponentType();
+	            	if (type.isPrimitive()) {
+	            		if (type.equals(Integer.TYPE)) {
+			            	for (int o : (int []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Long.TYPE)) {
+			            	for (long o : (long []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Short.TYPE)) {
+			            	for (short o : (short []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Float.TYPE)) {
+			            	for (float o : (float []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Double.TYPE)) {
+			            	for (double o : (double []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Boolean.TYPE)) {
+			            	for (boolean o : (boolean []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Byte.TYPE)) {
+			            	for (byte o : (byte []) value) {
+			            		buf2.append(o + " ");
+			            	}
+	                    } else if (type.equals(Character.TYPE)) {
+			            	for (char o : (char []) value) {
+			            		buf2.append(o + " ");
+			            	}
+		            	}	            		
+	            	} else {
+		            	for (Object o2 : (Object []) value) {
+	                    	if (BEASTObjectStore.isPrimitive(o2)) {
+	                    		buf2.append(o2.toString() + " ");
+	                    	} else {
+	                    		return;
+	                    	}
+		            	}
+	                }	            	
+	            	buf2.deleteCharAt(buf2.length() - 1);
+	            	buf2.append("\"");
+	            	buf.append(buf2);
+                } else {
+	            	Class type = value.getClass().getComponentType();
+                	if (!type.isPrimitive()) {
+		            	for (Object o2 : (Object []) value) {
+	                    	StringBuffer buf3 = new StringBuffer();
+	                    	if (!BEASTObjectStore.isPrimitive(o2)) {
+	                    		beastObjectToXML(o2, buf3, input.getName(), false);
+		                        buf.append(buf3);
+	                    	}
+		            	}
+                	}
+                }
+            	return;
             } else if (value instanceof BEASTInterface) {
-            	if (!value.equals(input.defaultValue)) {
-                    if (isShort && isDone.contains(value)) {
-                        buf.append(" " + input.getName() + "='@" + normalise( ((BEASTInterface) value).getID() ) + "'");
-                        if (!isInputsDone.containsKey(beastObject)) {
-                        	isInputsDone.put(beastObject, new HashSet<>());
+            	if (input.defaultValue == null || !value.equals(input.defaultValue)) {
+            		BEASTInterface bo2 = BEASTObjectStore.INSTANCE.getBEASTObject(beastObject);
+            		BEASTInterface value2 = BEASTObjectStore.INSTANCE.getBEASTObject(value);
+                    if (isShort && isDone.contains(value2)) {
+                        buf.append(" " + input.getName() + "='@" + normalise( value2.getID() ) + "'");
+                        if (!isInputsDone.containsKey(bo2)) {
+                        	isInputsDone.put(bo2, new HashSet<>());
                         }
-                        isInputsDone.get(beastObject).add(input.getName());
+                        isInputsDone.get(bo2).add(input.getName());
                     }
-                    if (!isShort && (!isInputsDone.containsKey(beastObject) ||
-                    		!isInputsDone.get(beastObject).contains(input.getName()))) {
+                    if (!isShort && (!isInputsDone.containsKey(bo2) ||
+                    		!isInputsDone.get(bo2).contains(input.getName()))) {
                         beastObjectToXML((BEASTInterface) value, buf, input.getName(), false);
                     }
             	}
                 return;
             } else {
-            	if (!value.equals(input.defaultValue)) {
-                    // primitive type
-                    String valueString = value.toString();
-                    if (isShort) {
-                        if (valueString.indexOf('\n') < 0) {
-                            buf.append(" " + input.getName() + "='" + normalise(value.toString()) + "'");
-                        }
-                    } else {
-                        if (valueString.indexOf('\n') >= 0) {
-                            for (int j = 0; j < indent; j++) {
-                                buf.append("    ");
-                            }
-                            if (input.getName().equals("value")) {
-                                buf.append(normalise(value.toString()));
-                            } else {
-                                buf.append("<input name='" + input.getName() + "'>" + normalise(value.toString()) + "</input>\n");
-                            }
-                        }
-                    }
+            	if (BEASTObjectStore.isPrimitive(value)) {             	
+	            	if (!value.equals(input.defaultValue)) {
+	                    // primitive type
+	                    String valueString = value.toString();
+	                    if (isShort) {
+	                        if (valueString.indexOf('\n') < 0) {
+	                            buf.append(" " + input.getName() + "='" + normalise(value.toString()) + "'");
+	                        }
+	                    } else {
+	                        if (valueString.indexOf('\n') >= 0) {
+	                            for (int j = 0; j < indent; j++) {
+	                                buf.append("    ");
+	                            }
+	                            if (input.getName().equals("value")) {
+	                                buf.append(normalise(value.toString()));
+	                            } else {
+	                                buf.append("<input name='" + input.getName() + "'>" + normalise(value.toString()) + "</input>\n");
+	                            }
+	                        }
+	                    }
+	            	}
+            	} else {
+            		inputToXML(input, BEASTObjectStore.INSTANCE.getBEASTObject(value), beastObject, buf, isShort);
             	}
                 return;
             }

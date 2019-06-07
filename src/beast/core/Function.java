@@ -19,7 +19,9 @@ public interface Function {
      *         value, but for a Tree this can be the root height, while the individual
      *         values obtained from getValue(dim) return the node heights.
      */
-    public double getArrayValue();
+    default public double getArrayValue() {
+    	return getArrayValue(0);
+    }
 
     /**
      * @param dim requested dimension
@@ -36,5 +38,64 @@ public interface Function {
             values[i] = getArrayValue(i);
         }
         return values;
+    }
+
+    @Description("Function that does not change over time")
+    public class Constant extends BEASTObject implements Function {
+    	private double [] values;
+    	private String[] names;
+    	
+    	public Constant() {
+    		values = new double[1];
+    	}
+    	public Constant(@Param(name="value", description="Space delimited string of double values") String v) {
+    		setValue(v);
+    	}
+    	
+    	public void setValue(String v) {
+    		String [] strs = v.trim().split("\\s+");    		
+    		values = new double[strs.length];
+    		for (int i = 0; i < strs.length; i++) {
+    			values[i] = Double.parseDouble(strs[i]);
+    		}
+    	}
+
+    	public String getValue() {
+    		StringBuilder b = new StringBuilder();
+    		for (int i = 0; i < values.length; i++) {
+    			b.append(values[i] + " ");
+    		}
+    		return b.toString().trim();
+    	}
+    	
+		@Override
+		public int getDimension() {
+			return values.length;
+		}
+
+		@Override
+		public double getArrayValue(int dim) {
+			return values[dim];
+		}
+		
+		@Override
+		public void initAndValidate() {
+		}
+		
+		
+//		@Override
+//		public String getDimensionName(int dim) {
+//			if (names != null && names.length > dim) {
+//				return names[dim];
+//			}
+//			return Function.super.getDimensionName(dim);
+//		}
+//		
+//		@Override
+//		public void setDimensionNames(String[] names) {
+//			this.names = names.clone();
+//			
+//		}
+    	
     }
 }

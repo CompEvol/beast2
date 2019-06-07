@@ -25,7 +25,11 @@ public class JSONTest extends TestCase {
 		BEASTObject beastObject = parser.parseFile(new File(JSON_FILE));
 		JSONProducer producer = new JSONProducer();
 		String actual = producer.toJSON(beastObject).trim();//.replaceAll("\\s+", " ");
-		
+
+		FileWriter outfile = new FileWriter(new File("/tmp/testUCLNclock.json"));
+		outfile.write(actual);
+		outfile.close();
+
 		String expected = BeautiDoc.load(JSON_FILE).trim();//.replaceAll("\\s+", " ");
 		assertEquals("Produced JSON differs from original", 
 				expected, 
@@ -70,7 +74,8 @@ public class JSONTest extends TestCase {
 
     	
     	JSONParser parser = new JSONParser();
-    	BEASTInterface b = parser.parseFile(new File("/tmp/JSONTest.json"));
+    	BEASTInterface b;
+    	b = parser.parseFile(new File("/tmp/JSONTest.json"));
     	assertEquals(3, (int) ((AnnotatedRunnableTestClass) b).getParam1());
     	assertEquals(2, ((AnnotatedRunnableTestClass) b).getTaxon().size());
     	
@@ -85,8 +90,10 @@ public class JSONTest extends TestCase {
     			"        {id: \"JSONTest\",\n" + 
     			"         spec: \"test.beast.util.AnnotatedRunnableTestClass\",\n" + 
     			"         taxon: [\n" + 
-    			"                 {id: \"first one\" },\n" + 
-    			"                 {id: \"second one\" }\n" + 
+    			"                 {id: \"first one\", spec: \"Taxon\" },\n" + 
+    			"                 {id: \"second one\", spec: \"Taxon\" }\n" + 
+//    			"                 {id: \"first one\" },\n" + 
+//    			"                 {id: \"second one\" }\n" + 
     			"          ]\n" + 
     			"        }\n" + 
     			"]\n" + 

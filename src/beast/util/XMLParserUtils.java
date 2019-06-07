@@ -473,6 +473,26 @@ public class XMLParserUtils {
         return p[n];
     }
 
+    public static String resolveClass(String specClass, String [] nameSpaces) {
+		for (String nameSpace : nameSpaces) {
+			if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
+				String clazzName = nameSpace + specClass;
+				return clazzName;
+			}
+		}
+		for (String nameSpace : nameSpaces) {
+            try {
+				if (Class.forName(nameSpace + specClass) != null) {
+					String clazzName = nameSpace + specClass;
+					return clazzName;
+				}
+			} catch (ClassNotFoundException e) {
+				// ignore
+			}
+		}
+		return null;
+	}
+    
 }
 
 
