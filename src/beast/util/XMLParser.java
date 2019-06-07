@@ -61,6 +61,7 @@ import beast.core.BEASTInterface;
 import beast.core.BEASTObjectStore;
 import beast.core.Distribution;
 import beast.core.Input;
+import beast.core.Input.Validate;
 import beast.core.Logger;
 import beast.core.Operator;
 import beast.core.Param;
@@ -872,20 +873,20 @@ public class XMLParser {
 		}
 		
 		// fill in missing inputs, if an input provider is available
-//		try {
-//			if (requiredInputProvider != null) {
-//				for (Input<?> input : beastObject.listInputs()) {
-//					if (input.get() == null && input.getRule() == Validate.REQUIRED) {
-//						Object o2 = requiredInputProvider.createInput(beastObject, input, partitionContext);
-//						if (o2 != null) {
-//							input.setValue(o2, beastObject);
-//						}
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			throw new XMLParserException(node, e.getMessage(), 1008);			
-//		}
+		try {
+			if (requiredInputProvider != null) {
+				for (Input<?> input : beastObject.listInputs()) {
+					if (input.get() == null && input.getRule() == Validate.REQUIRED) {
+						Object o2 = requiredInputProvider.createInput(beastObject, input, partitionContext);
+						if (o2 != null) {
+							input.setValue(o2, beastObject);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new XMLParserException(node, e.getMessage(), 1008);			
+		}
 		
 		// sanity check: all attributes should be valid input names
 		for (NameValuePair pair : inputInfo) {
