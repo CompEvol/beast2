@@ -637,10 +637,11 @@ public class PackageManager {
     		if (Utils6.isWindows() && Utils6.getMajorJavaVersion() == 8) {
     			// this class cast exception works on java 8, but not java 9 or above
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
-    			sysLoader.close(); // <= only since Java 1.7
-    		}
-		} catch (IOException e) {
-            Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+    			// sysLoader.close(); // <= only since Java 1.7, so should be commented out for
+    			// build of launcher.jar with java 6 compatibility 
+    		}		
+    	//} catch (IOException e) {
+        //    Log.warning.println("Could not close ClassLoader: " + e.getMessage());
         } catch (ClassCastException e) {
             Log.warning.println("Could not close ClassLoader: " + e.getMessage());
 		}
