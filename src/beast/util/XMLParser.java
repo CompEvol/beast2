@@ -25,14 +25,19 @@
 package beast.util;
 
 
+import static beast.util.XMLParserUtils.processPlates;
+import static beast.util.XMLParserUtils.replaceVariable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +58,7 @@ import org.xml.sax.SAXException;
 
 import beast.app.beauti.PartitionContext;
 import beast.core.BEASTInterface;
+import beast.core.BEASTObjectStore;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -61,15 +67,13 @@ import beast.core.Operator;
 import beast.core.Param;
 import beast.core.Runnable;
 import beast.core.State;
-import beast.core.parameter.Map;
+import beast.core.VirtualBEASTObject;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Tree;
-
-import static beast.util.XMLParserUtils.*;
 
 
 /**
@@ -151,23 +155,23 @@ import static beast.util.XMLParserUtils.*;
 
 
 public class XMLParser {
-    final static String DATA_CLASS = Alignment.class.getName();
-    final static String SEQUENCE_CLASS = Sequence.class.getName();
-    final static String STATE_CLASS = State.class.getName();
-    final static String LIKELIHOOD_CLASS = Distribution.class.getName();
-    final static String LOG_CLASS = Logger.class.getName();
-    final static String OPERATOR_CLASS = Operator.class.getName();
-    final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
+
+
+	final static String DATA_CLASS = Alignment.class.getName();
+	final static String SEQUENCE_CLASS = Sequence.class.getName();
+	final static String STATE_CLASS = State.class.getName();
+	final static String LIKELIHOOD_CLASS = Distribution.class.getName();
+	final static String LOG_CLASS = Logger.class.getName();
+	final static String OPERATOR_CLASS = Operator.class.getName();
+	final static String REAL_PARAMETER_CLASS = RealParameter.class.getName();
     final static String BEAST_INTERFACE_CLASS = BEASTInterface.class.getName();
     final static String INPUT_CLASS = Input.class.getName();
-    final static String TREE_CLASS = Tree.class.getName();
+	final static String TREE_CLASS = Tree.class.getName();
     final static String RUNNABLE_CLASS = Runnable.class.getName();
 
-
-    /* This is the set of keywords in XML.
-* This list should not be added to unless there
-* is a very very good reason. */
     public final static String BEAST_ELEMENT = "beast";
+    public final static String RUN_ELEMENT = "run";
+    public final static String PLATE_ELEMENT = "plate";
     public final static String MAP_ELEMENT = "map";
     public final static String DISTRIBUTION_ELEMENT = "distribution";
     public final static String OPERATOR_ELEMENT = "operator";
@@ -178,11 +182,9 @@ public class XMLParser {
     public final static String STATE_ELEMENT = "state";
     public final static String TREE_ELEMENT = "tree";
     public final static String REAL_PARAMETER_ELEMENT = "parameter";
-    public final static String RUN_ELEMENT = "run";
-    public final static String PLATE_ELEMENT = "plate";
-
+    
     Runnable m_runnable;
-    State m_state;
+    //State m_state;
     /**
      * DOM document representation of XML file *
      */
@@ -227,10 +229,15 @@ public class XMLParser {
 			this.value = value;
 			processed = false;
 		}
+		@Override
+		public String toString() {
+			return name + " "  + value;
+		}
 	}
 
     List<BEASTInterface> beastObjectsWaitingToInit;
     List<Node> nodesWaitingToInit;
+	java.util.Map<String,String> parserDefinitions;
 
     public HashMap<String, String> getElement2ClassMap() {
         return element2ClassMap;
@@ -251,17 +258,18 @@ public class XMLParser {
      */
     RequiredInputProvider requiredInputProvider = null;
     PartitionContext partitionContext = null;
-	java.util.Map<String,String> parserDefinitions;
 
     public XMLParser() {
-        this(new HashMap<>());
-    }
-
-    public XMLParser(java.util.Map<String,String> parserDefinitions) {
         beastObjectsWaitingToInit = new ArrayList<>();
         nodesWaitingToInit = new ArrayList<>();
-        this.parserDefinitions = parserDefinitions;
+    }
+    
+	public XMLParser(java.util.Map<String,String> parserDefinitions) {
+		this();
+		this.parserDefinitions = parserDefinitions;
 	}
+
+
 
     public Runnable parseFile(final File file) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
     	return parseFile(file, false);
@@ -275,33 +283,30 @@ public class XMLParser {
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
-        Node beastElement = doc.getElementsByTagName(BEAST_ELEMENT).item(0);
-
-        // Sanity check
-        if (beastElement == null) {
+        // Substitute occurrences of "$(filebase)" with name of file 
+        int pointIdx = file.getName().lastIndexOf('.');
+        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
+        if (doc.getElementsByTagName(BEAST_ELEMENT).item(0) == null) {
         	Log.err.println("Incorrect XML: Could not find 'beast' element in file " + file.getName());
         	throw new RuntimeException();
         }
+        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
 
-        // Add special variables "filebase" (name of file excluding extension)
-        // and "seed" (RNG seed) to list of user-defined variables.
-        int pointIdx = file.getName().lastIndexOf('.');
-        String baseName = pointIdx<0 ? file.getName() : file.getName().substring(0, pointIdx);
-        parserDefinitions.put("filebase", baseName);
-        parserDefinitions.put("seed", String.valueOf(Randomizer.getSeed()));
-
+        // Substitute occurrences of "$(seed)" with RNG seed
+//        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
+//                String.valueOf(Randomizer.getSeed()));
+        
+        if (parserDefinitions != null) {
+        	for (String name : parserDefinitions.keySet()) {
+                replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), name, 
+                		parserDefinitions.get(name));
+        	}
+        }
 
 		if (sampleFromPrior) {
 			Element runElement = (Element) doc.getElementsByTagName(RUN_ELEMENT).item(0);
 	        runElement.setAttribute("sampleFromPrior", "true");
 		}
-		
-
-        // Extract default values of variables if present
-        extractVariableDefaults(beastElement, parserDefinitions);
-
-        // Replace occurrences of variables with their corresponding values
-        replaceVariables(beastElement, parserDefinitions);
 
         IDMap = new HashMap<>();
         likelihoodMap = new HashMap<>();
@@ -676,7 +681,7 @@ public class XMLParser {
 			throw new XMLParserException(node, "Class not found:" + e.getMessage(), 444);
 		}
         // parameter clutch
-        if (className.equals(RealParameter.class.getName()) && beastObject instanceof Parameter<?>) {
+        if (className.equals("RealParameter") && beastObject instanceof Parameter<?>) {
             return true;
         }
         return false;
@@ -744,7 +749,7 @@ public class XMLParser {
         
 		String clazzName = null;
 		// determine clazzName from specName, taking name spaces in account
-		clazzName = resolveClass(specClass);
+		clazzName = XMLParserUtils.resolveClass(specClass, nameSpaces);
 		if (clazzName == null) {
 			// try to create the old-fashioned way by creating the class
             boolean isDone = false;
@@ -779,10 +784,10 @@ public class XMLParser {
 		try {
 			Class<?> clazz = BEASTClassLoader.forName(clazzName);
 			if (!BEASTInterface.class.isAssignableFrom(clazz)) {
-				throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
+				// throw new XMLParserException(node, "Expected object to be instance of BEASTObject", 108);
 			}
 		} catch (ClassNotFoundException e1) {
-			// should never happen since clazzName is in the list of classes collected by the PackageManager
+			// should never happen since clazzName is in the list of classes collected by the AddOnManager
 			e1.printStackTrace();
 			throw new RuntimeException(e1);
 		}
@@ -829,19 +834,32 @@ public class XMLParser {
 		} catch (ClassNotFoundException e) {
 			// ignore -- class was found in beastObjectNames before
 		} catch (IllegalAccessException e) {
-			// T O D O Auto-generated catch block
-			e.printStackTrace();
-			throw new XMLParserException(node, "Cannot access class. Please check the spec attribute.", 1011);
+			// try to call static method clazzName.newInstance()
+			Class<?> c;
+			try {
+				c = Class.forName(clazzName);
+				Method newInstance;
+				newInstance = c.getDeclaredMethod("newInstance");
+				if (!Modifier.isStatic(newInstance.getModifiers())) {
+					throw new XMLParserException(node, "Found method newInstance() but it is not static so it cannot be accessed", 1112);					
+				}
+				o = newInstance.invoke(null);
+			} catch (NullPointerException e1) { 
+				throw new XMLParserException(node, "Cannot access newInstance(). Perhaps the methods is not defined?", 1111);
+			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+				e1.printStackTrace();
+				throw new XMLParserException(node, "Cannot access class. Please check the spec attribute.", 1011);
+			} 
 		}
 		
 		// set id
-		beastObject = (BEASTInterface) o;
+		beastObject = BEASTObjectStore.INSTANCE.getBEASTObject(o);
 		beastObject.setID(ID);
 
 		// hack required to make log-parsing easier
-		if (o instanceof State) {
-			m_state = (State) o;
-		}
+		//if (o instanceof State) {
+		//	m_state = (State) o;
+		//}
 
 		// process inputs for annotated constructors
 		for (NameValuePair pair : inputInfo) {
@@ -871,15 +889,13 @@ public class XMLParser {
 		}
 		
 		// sanity check: all attributes should be valid input names
-		if (!(beastObject instanceof Map)) {
-			for (NameValuePair pair : inputInfo) {
-				String name = pair.name;
-				if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
-					try {
-						beastObject.getInput(name);
-					} catch (Exception e) {
-						throw new XMLParserException(node, e.getMessage(), 1009);
-					}
+		for (NameValuePair pair : inputInfo) {
+			String name = pair.name;
+			if (!(name.equals("id") || name.equals("idref") || name.equals("spec") || name.equals("name"))) {
+				try {
+					beastObject.getInput(name);
+				} catch (Exception e) {
+					throw new XMLParserException(node, e.getMessage(), 1009);
 				}
 			}
 		}
@@ -899,6 +915,11 @@ public class XMLParser {
     
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BEASTInterface useAnnotatedConstructor(Node node, String _id, String clazzName, List<NameValuePair> inputInfo) throws XMLParserException {
+		
+		if (clazzName.startsWith("dr")) {
+			int h =3;
+			h++;
+		}
 		Class<?> clazz = null;
 		try {
 			clazz = BEASTClassLoader.forName(clazzName);
@@ -906,14 +927,32 @@ public class XMLParser {
 			// cannot get here, since we checked the class existed before
 			e.printStackTrace();
 		}
+
+
+		// try to find a constructor that has Param annotations where all values of inputInfo can be matched
 	    Constructor<?>[] allConstructors = clazz.getDeclaredConstructors();
+	    boolean hasID = false;
+	    boolean hasName = false;
 	    for (Constructor<?> ctor : allConstructors) {
 	    	Annotation[][] annotations = ctor.getParameterAnnotations();
 	    	List<Param> paramAnnotations = new ArrayList<>();
+	    	int optionals = 0;
 	    	for (Annotation [] a0 : annotations) {
 		    	for (Annotation a : a0) {
 		    		if (a instanceof Param) {
-		    			paramAnnotations.add((Param) a);
+		    			Param param = (Param) a;
+		    			paramAnnotations.add(param);
+		    			if (param.name().equals("id") && !hasID) {
+		    				inputInfo.add(new NameValuePair("id", _id));
+		    				hasID = true;
+		    			}
+		    			if (param.name().equals("name") && !hasName) {
+		    				inputInfo.add(new NameValuePair("name", node.getAttributes().getNamedItem("name")));
+		    				hasName = true;
+		    			}
+		    			if (param.optional()) {
+		    				optionals++;
+		    			}
 		    		}
 	    		}
 	    	}
@@ -924,34 +963,63 @@ public class XMLParser {
 
 	    	Class<?>[] types  = ctor.getParameterTypes();
     		//Type[] gtypes = ctor.getGenericParameterTypes();
-	    	if (types.length > 0 && paramAnnotations.size() == types.length) {
+    		int offset = clazz.isMemberClass() && !clazz.getEnclosingClass().isInterface() ? 1 : 0;
+	    	if (types.length > 0 && paramAnnotations.size() == types.length - offset &&
+	    			paramAnnotations.size() <= types.length + optionals) {
 		    	try {
 		    		Object [] args = new Object[types.length];
-		    		for (int i = 0; i < types.length; i++) {
-		    			Param param = paramAnnotations.get(i);
+		    		if (clazz.isMemberClass()) {
+						Class<?> enclosingClass = clazz.getEnclosingClass();
+						if (!enclosingClass.isInterface()) {
+							Object enclosingInstance = enclosingClass.newInstance();
+			    			args[0] = enclosingInstance;
+						}
+		    		}
+		    		for (int i = offset; i < types.length; i++) {
+		    			Param param = paramAnnotations.get(i - offset);
 		    			Type type = types[i];
 		    			if (type.getTypeName().equals("java.util.List")) {
 		    				if (args[i] == null) {
 		    					// no need to parameterise list due to type erasure
 		    					args[i] = new ArrayList();
 		    				}
-		    				List<Object> values = getListOfValues(param, inputInfo);
-		    				((List)args[i]).addAll(values);
-		    			} else {
-		    				args[i] = getValue(param, types[i], inputInfo);
-		    				// deal with the case where the Input type has a String constructor
-		    				// and the args[i] is a String -- we need to invoke the String constructor 
-		    				if (args[i].getClass().equals(String.class) && types[i] != String.class) {
-		    				    for (Constructor<?> argctor : types[i].getDeclaredConstructors()) {
-		    				    	Class<?>[] argtypes  = argctor.getParameterTypes();
-		    				    	if (argtypes.length == 1 && argtypes[0] == String.class) {
-		    				    		Object o = argctor.newInstance(args[i]);
-		    				    		args[i] = o;
-		    				    		break;
-		    				    	}
-		    				    }
+		    				List<Object> values = XMLParser.getListOfValues(param, inputInfo);
+		    				for (Object v : values) {
+		    					if (v instanceof VirtualBEASTObject) {
+		    						((List)args[i]).add(((VirtualBEASTObject) v).getObject());
+		    					} else {
+		    						((List)args[i]).add(v);
+		    					}
 		    				}
-		    			}
+		    			} else if (type.getTypeName().endsWith("[]")) {
+							String typeName = type.getTypeName();
+							typeName = typeName.substring(0, typeName.length() - 2);
+							try {
+								if (!BEASTObjectStore.isPrimitiveType(typeName)) {
+									List<Object> values = XMLParser.getListOfValues(param, inputInfo);
+									Object array = java.lang.reflect.Array.newInstance(Class.forName(typeName), values.size());
+									for (int k = 0; k < values.size(); k++) {
+										Object v = values.get(k);
+										if (v instanceof VirtualBEASTObject) {
+											Array.set(array, k, ((VirtualBEASTObject) v).getObject());
+										} else {
+											Array.set(array, k, v);
+										}
+									}
+									args[i] = array;
+								} else {
+									args[i] = getValue(param, types[i], inputInfo);
+									args[i] = Input.fromString(args[i], types[i]);
+								}
+							} catch (ClassNotFoundException | NegativeArraySizeException e) {
+								args[i] = getValue(param, types[i], inputInfo);
+								args[i] = Input.fromString(args[i], types[i]);
+							}
+						} else {
+							args[i] = getValue(param, types[i], inputInfo);
+							args[i] = Input.fromString(args[i], types[i]);
+
+						}
 		    		}
 
 		    		// ensure all inputs are used
@@ -961,16 +1029,29 @@ public class XMLParser {
 			    			allUsed= false;
 			    		}
 			    	}
+			    	
+			    	if (allUsed) {
+				    	// ensure all arguments are set
+				    	for (int i = 0; i < args.length; i++) {
+				    		if (args[i] == null) {
+				    			allUsed= false;
+				    		}
+				    	}
+			    	}
 
 			    	if (allUsed) {
 				    	try {
 							Object o = ctor.newInstance(args);
-							BEASTInterface beastObject = (BEASTInterface) o;
+							BEASTInterface beastObject = BEASTObjectStore.INSTANCE.getBEASTObject(o);
+							beastObject.setID(_id);
 							register(node, beastObject);
 							return beastObject;
-						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				    	} catch (IllegalAccessException e) {
+							throw new XMLParserException(node, "Could not create object: " + e.getMessage() + "\n"
+									+ "(Perhaps a programmer error: the constructor or class may not be public)", 1014);
+						} catch (InstantiationException | IllegalArgumentException | InvocationTargetException e) {
 							throw new XMLParserException(node, "Could not create object: " + e.getMessage(), 1012);
-						}
+				    	}
 			    	}
 				} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException e) {
@@ -987,67 +1068,35 @@ public class XMLParser {
 		for (NameValuePair pair : inputInfo) {
 			if (pair.name.equals(param.name())) {
 				pair.processed = true;
-				if (type.isAssignableFrom(Integer.class)) {
-					return Integer.parseInt((String) pair.value);
+				Object value = pair.value;
+				if (value instanceof VirtualBEASTObject) {
+					value = ((VirtualBEASTObject) value).getObject();
 				}
-				if (type.isAssignableFrom(Double.class)) {
-					return Double.parseDouble((String) pair.value);
-				}
-				return pair.value;
+				return value;
 			}
 		}
-		
-		// could not find Param entry in inputInfo
 		
 		// check if this parameter is required or optional
 		if (!param.optional()) {
 			throw new IllegalArgumentException();
 		}
-
-		// try using a String constructor of the default value
-        Constructor<?> ctor;
-        String value = param.defaultValue();
-        Object v = value; 
-        try {
-        	ctor = type.getDeclaredConstructor(String.class);
-        } catch (NoSuchMethodException e) {
-        	// we get here if there is not String constructor
-        	// try integer constructor instead
-        	try {
-        		if (value.startsWith("0x")) {
-        			v = Integer.parseInt(value.substring(2), 16);
-        		} else {
-        			v = Integer.parseInt(value);
-        		}
-            	ctor = type.getDeclaredConstructor(int.class);
-            	
-        	} catch (NumberFormatException e2) {
-            	// could not parse as integer, try double instead
-        		v = Double.parseDouble(value);
-            	ctor = type.getDeclaredConstructor(double.class);
-        	}
-        }
-        ctor.setAccessible(true);
-        final Object o = ctor.newInstance(v);
-        return o;
+		return param.defaultValue();
 	}
 
 	static List<Object> getListOfValues(Param param, List<NameValuePair> inputInfo) {
 		List<Object> values = new ArrayList<>();
 		for (NameValuePair pair : inputInfo) {
 			if (pair.name.equals(param.name())) {
-				values.add(pair.value);
+				if (pair.value instanceof List) {
+					values.addAll((List) pair.value);
+				} else {
+					values.add(pair.value);
+				}
 				pair.processed = true;
 			}
 		}
 		return values;
 	}
-
-
-	@Deprecated // use XMLParserUtils.getLevenshteinDistance instead
-    public static int getLevenshteinDistance(final String s, final String t) {
-    	return XMLParserUtils.getLevenshteinDistance(s, t);
-    }
     
     private List<NameValuePair> parseInputs(Node node, String clazzName) throws XMLParserException {
     	List<NameValuePair> inputInfo = new ArrayList<>();
@@ -1101,7 +1150,7 @@ public class XMLParser {
                 }                
                 String classname = null;
         		// determine clazzName from specName, taking name spaces in account
-                classname = resolveClass(specClass);
+                classname = XMLParserUtils.resolveClass(specClass, nameSpaces);
         		if (classname == null) {
         			classname = specClass;
         		}
@@ -1157,26 +1206,6 @@ public class XMLParser {
         return inputInfo;
     } // setInputs
     
-    private String resolveClass(String specClass) {
-		for (String nameSpace : nameSpaces) {
-			if (XMLParserUtils.beastObjectNames.contains(nameSpace + specClass)) {
-				String clazzName = nameSpace + specClass;
-				return clazzName;
-			}
-		}
-		for (String nameSpace : nameSpaces) {
-            try {
-				if (BEASTClassLoader.forName(nameSpace + specClass) != null) {
-					String clazzName = nameSpace + specClass;
-					return clazzName;
-				}
-			} catch (ClassNotFoundException e) {
-				// ignore
-			}
-		}
-		return null;
-	}
-
     void setInput(final Node node, final BEASTInterface beastObject, final String name, final BEASTInterface beastObject2) throws XMLParserException {
         try {
             final Input<?> input = beastObject.getInput(name);
@@ -1184,7 +1213,11 @@ public class XMLParser {
             // for non-list inputs, this should be true if the value was not already set before
             // for list inputs this is always true.
             if (input.get() == input.defaultValue) {
-                beastObject.setInputValue(name, beastObject2);
+            	if (beastObject2 instanceof VirtualBEASTObject) {
+            		beastObject.setInputValue(name, ((VirtualBEASTObject)beastObject2).getObject());
+            	} else {
+            		beastObject.setInputValue(name, beastObject2);
+            	}
             } else {
                 throw new XMLParserException(node, "\nMultiple entries for input \"" + input.getName() + "\" but only single entry expected "
                 		+ "in element \"" + node.getNodeName() + "\"", 130);
@@ -1308,7 +1341,6 @@ public class XMLParser {
         }
         return false;
     }
-
     public interface RequiredInputProvider {
 		Object createInput(BEASTInterface beastObject, Input<?> input, PartitionContext context);
     }
@@ -1338,3 +1370,4 @@ public class XMLParser {
     }
     
 } // class XMLParser
+

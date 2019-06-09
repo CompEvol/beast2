@@ -19,8 +19,8 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     double[] m_empiricalRates;
 
     @Override
-    public void initAndValidate() {
-        frequencies = getEmpericalFrequencieValues();
+    public void initAndValidate() {    	
+        frequencies = frequenciesInput.get() != null ? frequenciesInput.get() : getEmpericalFrequencieValues();
         m_empiricalRates = getEmpericalRateValues();
         int freqs = frequencies.getFreqs().length;
         if (m_empiricalRates.length != freqs * (freqs - 1)) {

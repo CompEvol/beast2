@@ -177,7 +177,7 @@ public class LogCombinerDialog {
                 	fileSep = "\\\\";
                 }
                 if (fileName.lastIndexOf(fileSep) > 0) {
-                    Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf(fileSep));
+                    Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(fileSep)));
                 }
                 fileNameText.setText(outputFile.getName());
 
@@ -296,7 +296,7 @@ public class LogCombinerDialog {
             }
 
             if (fileName.lastIndexOf(fileSep) > 0) {
-                Beauti.g_sDir = fileName.substring(0, fileName.lastIndexOf(fileSep));
+                Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(fileSep)));
             }
         }
 

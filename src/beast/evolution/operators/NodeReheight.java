@@ -203,10 +203,8 @@ public class NodeReheight extends TreeOperator {
     }
 
     /**
-     * construct tree top down by joining heighest left and right nodes *
+     * construct tree top down by joining highest left and right nodes *
      */
-
-
     private Node reconstructTree(final double[] heights, final int[] reverseOrder, final int from, final int to, final boolean[] hasParent) {
         //nodeIndex = maxIndex(heights, 0, heights.length);
         int nodeIndex = -1;

@@ -230,6 +230,10 @@ public interface Parameter<T> extends Function {
             return values[param];
         }
 
+        public T getStoredValue(final int param) {
+            return storedValues[param];
+        }
+        
         @Override
         public T[] getValues() {
             return Arrays.copyOf(values, values.length);

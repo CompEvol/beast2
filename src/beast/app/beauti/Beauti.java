@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import beast.app.BEASTVersion2;
 import beast.app.beauti.BeautiDoc.ActionOnExit;
 import beast.app.beauti.BeautiDoc.DOC_STATUS;
@@ -39,6 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -57,6 +59,11 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      * current directory for opening files *
      */
     public static String g_sDir = System.getProperty("user.dir");
+    
+    public static void setCurrentDir(String currentDir) {
+    	g_sDir = currentDir;
+    	Utils.saveBeautiProperty("currentDir", currentDir);
+    }
 
 	/**
      * File extension for Beast specifications
@@ -251,8 +258,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
             if (doc.getFileName().lastIndexOf(fileSep) > 0) {
-                g_sDir = doc.getFileName().substring(0,
-                        doc.getFileName().lastIndexOf(fileSep));
+                setCurrentDir(doc.getFileName().substring(0,
+                        doc.getFileName().lastIndexOf(fileSep)));
             }
             if (!doc.getFileName().toLowerCase().endsWith(FILE_EXT) && !doc.getFileName().toLowerCase().endsWith(FILE_EXT2))
                 doc.setFileName(doc.getFileName().concat(FILE_EXT));
@@ -324,8 +331,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                     fileSep = "\\\\";
                 }
                 if (doc.getFileName().lastIndexOf(fileSep) > 0) {
-                    g_sDir = doc.getFileName().substring(0,
-                            doc.getFileName().lastIndexOf(fileSep));
+                    setCurrentDir(doc.getFileName().substring(0,
+                            doc.getFileName().lastIndexOf(fileSep)));
                 }
                 try {
                 	// TODO: deal with json files
@@ -785,6 +792,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         helpMenu.add(a_msgs);
         helpMenu.add(a_citation);
         helpMenu.add(a_viewModel);
+        addCustomHelpMenus(helpMenu);
         if (!Utils.isMac() || Utils6.isMajorLower(Utils6.JAVA_1_8)) {
             helpMenu.add(a_about);
         }
@@ -794,7 +802,34 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         return menuBar;
     } // makeMenuBar
 
-    private void createFileMenu() {
+    // Find sub-classes of BeautiHelpAction and add custom help menu items
+    // for these classes
+    private void addCustomHelpMenus(JMenu helpMenu) {
+        String[] PACKAGE_DIRS = {"beast.app",};
+        String helpClass = "beast.app.beauti.BeautiHelpAction";
+        List<String> helpActions = new ArrayList<>();
+        for (String packageName : PACKAGE_DIRS) {
+        	helpActions.addAll(PackageManager.find(helpClass, packageName));
+        }
+        if (helpActions.size() > 1) {
+            helpMenu.addSeparator();
+            for (String className : helpActions) {
+            	if (!className.equals(helpClass)) {
+		            try {
+		            	Class<?> _class = Class.forName(className);
+		                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
+		                BeautiHelpAction helpAction = (BeautiHelpAction) con.newInstance(doc);
+		                helpMenu.add(helpAction);
+		            } catch (Throwable t) {
+		            	t.printStackTrace();
+		            }
+            	}
+            }
+            helpMenu.addSeparator();
+        }
+    }
+
+	private void createFileMenu() {
     	// first clear menu
    		fileMenu.removeAll();
 
@@ -1052,7 +1087,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							g_sDir = dir;
+							setCurrentDir(dir);
 						}
 	
 		            };
@@ -1166,6 +1201,13 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     public static Beauti main2(String[] args) {
     	Utils6.startSplashScreen();
     	Utils6.logToSplashScreen("Initialising BEAUti");
+    	
+    	// retrieve previously stored working directory
+    	String currentDir = Utils.getBeautiProperty("currentDir");
+    	if (currentDir != null && currentDir.length() > 1) {
+    		g_sDir = currentDir;
+    	}
+    	
         try {
         	ByteArrayOutputStream baos = null;
             for (String arg : args) {

@@ -87,10 +87,10 @@ import beast.util.XMLProducer;
 public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     final static String STANDARD_TEMPLATE = "templates/Standard.xml";
 
-    final static int ALIGNMENT_PARTITION = 3;
-    final static int SITEMODEL_PARTITION = 0;
-    final static int CLOCKMODEL_PARTITION = 1;
-    final static int TREEMODEL_PARTITION = 2;
+    final public static int ALIGNMENT_PARTITION = 3;
+    final public static int SITEMODEL_PARTITION = 0;
+    final public static int CLOCKMODEL_PARTITION = 1;
+    final public static int TREEMODEL_PARTITION = 2;
 
     public enum ActionOnExit {
         UNKNOWN, SHOW_DETAILS_USE_TEMPLATE, SHOW_DETAILS_USE_XML_SPEC, WRITE_XML, MERGE_AND_WRITE_XML
@@ -2409,6 +2409,9 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     }
 
     public JFrame getFrame() {
+    	if (beauti == null) {
+    		return null;
+    	}
         return beauti.frame;
     }
 
@@ -2419,7 +2422,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     /** create taxonset, one taxon for each sequence in the alignment
      * and assign taxonset to the alignment
      * **/
-    static void createTaxonSet(Alignment a, BeautiDoc doc) {
+    static public void createTaxonSet(Alignment a, BeautiDoc doc) {
         List<String> taxaNames = a.getTaxaNames();
         TaxonSet taxonset = new TaxonSet();
         for (final String taxaName : taxaNames) {

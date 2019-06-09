@@ -24,8 +24,8 @@
 package beast.core;
 
 
+
 import beast.core.util.Log;
-import beast.util.BEASTClassLoader;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -35,11 +35,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface BEASTInterface {
+	final static String DEFEAULT_DESCRIPTION = "Not documented!!!";
+	
 	/**
 	 * initAndValidate is supposed to check validity of values of inputs, and initialise. 
 	 * If for some reason this fails, the most appropriate exception to throw is 
@@ -219,12 +222,19 @@ public interface BEASTInterface {
     default public List<Input<?>> listInputs() { 
         final List<Input<?>> inputs = new ArrayList<>();
         
+        Map<String, Input> inputNames = new LinkedHashMap<>();
+        
         // First, collect all Inputs
         final Field[] fields = getClass().getFields();
         for (final Field field : fields) {
             if (field.getType().isAssignableFrom(Input.class)) {
             	try {
             		final Input<?> input = (Input<?>) field.get(this);
+            		if (inputNames.keySet().contains(input.getName())) {
+            			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+            					+ "Classes should have unique input names");
+            		}
+            		inputNames.put(input.getName(), input);
             		inputs.add(input);
             	} catch (IllegalAccessException e) {
             		// not a publicly accessible input, ignore
@@ -232,8 +242,14 @@ public interface BEASTInterface {
             }
         }
         
+        listAnnotatedInputs(this, inputs, inputNames);
+    
+	    return inputs;
+    } // listInputs
+    
+    default void listAnnotatedInputs(Object o, List<Input<?>> inputs, Map<String, Input> inputNames) {
         // Second, collect InputForAnnotatedConstructors of annotated constructor (if any)
-	    Constructor<?>[] allConstructors = this.getClass().getDeclaredConstructors();
+	    Constructor<?>[] allConstructors = o.getClass().getDeclaredConstructors();
 	    for (Constructor<?> ctor : allConstructors) {
 	    	Annotation[][] annotations = ctor.getParameterAnnotations();
 	    	List<Param> paramAnnotations = new ArrayList<>();
@@ -253,42 +269,92 @@ public interface BEASTInterface {
 	    		}
 	    		for (int i = 0; i < paramAnnotations.size(); i++) {
 	    			Param param = paramAnnotations.get(i);
-	    			Type type = types[i + offset];
-	    			Class<?> clazz = null;
-					try {
-						clazz = BEASTClassLoader.forName(type.getTypeName());
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    			Class<?> type = types[i + offset];
+	    			Class<?> clazz = type;
+					if (type.isArray()) {
+						// nothing to do
+					} else if (type.isPrimitive()) {
+						// nothing to do
+						
+						// it's probably a primitive
+//						if (type.equals(Integer.TYPE)) {
+//							clazz = int.class;
+//						} else if (type.equals(Long.TYPE)) {
+//							clazz = long.class;
+//						} else if (type.equals(Short.TYPE)) {
+//							clazz = short.class;
+//						} else if (type.equals(Float.TYPE)) {
+//							clazz = float.class;
+//						} else if (type.equals(Double.TYPE)) {
+//							clazz = double.class;
+//						} else if (type.equals(Boolean.TYPE)) {
+//							clazz = boolean.class;
+//						} else if (type.equals(Byte.TYPE)) {
+//							clazz = byte.class;							
+//						} else if (type.equals(Character.TYPE)) {
+//							clazz = char.class;							
+//						}
+					} else {
+						try {
+							clazz = Class.forName(type.getTypeName());
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+							throw new RuntimeException("Cannot find type " + e.getMessage());
+						}
 					}
 	    			if (clazz.isAssignableFrom(List.class)) {
                         Type[] genericTypes2 = ((ParameterizedType) gtypes[i + offset]).getActualTypeArguments();
                         Class<?> theClass = (Class<?>) genericTypes2[0];
 	    				InputForAnnotatedConstructor<?> t = null;
 						try {
-							t = new InputForAnnotatedConstructor<>(this, theClass, param);
+							t = new InputForAnnotatedConstructor<>(o, theClass, param);
 						} catch (NoSuchMethodException | SecurityException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-	    				inputs.add(t);
+	            		if (inputNames.keySet().contains(t.getName())) {
+	            			Input input = inputNames.get(t.getName());
+	            			if (!(input instanceof InputForAnnotatedConstructor)) {
+	                			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+	                					+ "Classes should have unique input names");	            				
+	            			}
+	            			if (!input.equals(t)) {
+	            				throw new RuntimeException("Programmer error: @Param inputs with same name ("+ input.getName() +") should be equal to previously used annotations");
+	            			}
+	            		} else {
+	            			inputNames.put(t.getName(), t);
+	            			inputs.add(t);
+	            		}
 	    			} else {
 	    				InputForAnnotatedConstructor<?> t = null;
 						try {
-							t = new InputForAnnotatedConstructor<>(this, types[i + offset], param);
+							t = new InputForAnnotatedConstructor<>(o, types[i + offset], param);
 						} catch (NoSuchMethodException | SecurityException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-	    				inputs.add(t);
+	            		if (inputNames.keySet().contains(t.getName())) {
+	            			Input input = inputNames.get(t.getName());
+	            			if (!(input instanceof InputForAnnotatedConstructor)) {
+	                			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+	                					+ "Classes should have unique input names");	            				
+	            			}
+	            			if ((input.defaultValue != null && !input.defaultValue.toString().equals(t.defaultValue.toString())) ||
+	            				!input.getTipText().equals(t.getTipText())) {
+	            				throw new RuntimeException("Programmer error: @Param inputs with same name should be equal to previously used annotations");
+	            			}
+	            		} else {
+	            			inputNames.put(t.getName(), t);
+	            			inputs.add(t);
+	            		}
 	    			}
 	    		}
 	    	}
 		}
-	    
-	    return inputs;
-    } // listInputs
 
+    }
+    
+ 
     /**
      * create array of all plug-ins in the inputs that are instantiated.
      * If the input is a List of plug-ins, these individual plug-ins are
@@ -456,6 +522,8 @@ public interface BEASTInterface {
     default public boolean notCloneable() {
         return false;
     }
+    
+    
 }
 
 

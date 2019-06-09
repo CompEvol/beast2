@@ -93,7 +93,7 @@ public class BeautiAlignmentProvider extends BEASTObject {
 	/** 
 	 * return new alignment, return null if not successful 
 	 * **/
-	protected List<BEASTInterface> getAlignments(BeautiDoc doc) {
+	public List<BEASTInterface> getAlignments(BeautiDoc doc) {
 		if (importers == null) {
 			initImporters();
 		}
@@ -106,6 +106,12 @@ public class BeautiAlignmentProvider extends BEASTObject {
         File [] files = beast.app.util.Utils.getLoadFiles("Load Alignment File",
                 new File(Beauti.g_sDir), "Alignment files", extensions.toArray(new String[]{}));
         if (files != null && files.length > 0) {
+            String fileSep = System.getProperty("file.separator");
+            if (fileSep.equals("\\")) {
+                fileSep = "\\\\";
+            }
+        	Beauti.setCurrentDir(files[0].getPath().substring(0,
+        			files[0].getPath().lastIndexOf(fileSep)));
             return getAlignments(doc, files);
         }
 		return null;

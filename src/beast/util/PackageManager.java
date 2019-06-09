@@ -35,6 +35,8 @@ package beast.util;
 import beast.app.BEASTVersion;
 import beast.app.util.Arguments;
 import beast.app.util.Utils6;
+import beast.core.BEASTInterface;
+import beast.core.BEASTObjectStore;
 import beast.core.util.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -484,7 +486,7 @@ public class PackageManager {
             HttpURLConnection huc = (HttpURLConnection) templateURL.openConnection();
             huc.setRequestMethod("HEAD");
             int responseCode = huc.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) { 
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_NOT_FOUND) { 
             	// RRB: should be "if (responseCode != HttpURLConnection.HTTP_OK)"
             	// but package file hosted on github (which are most of them)
             	// produce a HttpURLConnection.HTTP_FORBIDDEN for some reason
@@ -636,15 +638,16 @@ public class PackageManager {
     private static void closeClassLoader() {
     	try {
     		if (Utils6.isWindows() && Utils6.getMajorJavaVersion() == 8) {
+    			// this class cast exception works on java 8, but not java 9 or above
     			URLClassLoader sysLoader = (URLClassLoader) PackageManager.class.getClassLoader();
-    			sysLoader.close(); // <= only since Java 1.7
-    		}
-		} catch (IOException e) {
-			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
-		} catch (ClassCastException e) {
-			Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+    			// sysLoader.close(); // <= only since Java 1.7, so should be commented out for
+    			// build of launcher.jar with java 6 compatibility 
+    		}		
+    	//} catch (IOException e) {
+        //    Log.warning.println("Could not close ClassLoader: " + e.getMessage());
+        } catch (ClassCastException e) {
+            Log.warning.println("Could not close ClassLoader: " + e.getMessage());
 		}
-		
 	}
 
 	private static void deleteRecursively(File file, List<File> deleteFailed) {
@@ -1984,6 +1987,28 @@ public class PackageManager {
     	return classToPackageMap;
     }
 
+    /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
+     * for all packages used by o and its predecessors in the model graph.
+     */
+    public static Set<String> getPackagesAndVersions(Object o) {
+    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
+    	getPackagesAndVersions(o, packagesAndVersions);
+    	return packagesAndVersions;
+    }
+    
+    /** traverse model graph starting at o, and collect packageAndVersion strings
+     * along the way.
+     */
+    private static void getPackagesAndVersions(Object o, Set<String> packagesAndVersions) {
+    	String packageAndVersion = classToPackageMap.get(o.getClass().getName());
+    	if (packageAndVersion != null) {
+    		packagesAndVersions.add(packageAndVersion);
+    	}
+    	for (BEASTInterface o2 : BEASTObjectStore.listActiveBEASTObjects(o)) {
+    		getPackagesAndVersions(o2, packagesAndVersions);
+    	}
+	}
+    
     private static void initPackageMap(String jarDirName) {
         try {
             File versionFile = new File(jarDirName + "/version.xml");

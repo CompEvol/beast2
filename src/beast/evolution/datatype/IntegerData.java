@@ -30,4 +30,9 @@ public class IntegerData extends Base {
     	}
     	return code + "";
     }
+    
+	@Override
+	public int[] getStatesForCode(int code) {
+		return new int[]{code};
+	}
 }

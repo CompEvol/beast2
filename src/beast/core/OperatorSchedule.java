@@ -416,7 +416,7 @@ public class OperatorSchedule extends BEASTObject {
     /** 
      * collect all operators (both local and from sub schedules) and calculate weight for each of them 
      * **/
-    private void reweightOperators() {
+    protected void reweightOperators() {
     	Set<Operator> allOperators = new LinkedHashSet<>();
     	Set<Operator> subOperators = new LinkedHashSet<>();
     	allOperators.addAll(operators);

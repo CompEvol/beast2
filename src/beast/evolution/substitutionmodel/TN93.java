@@ -59,7 +59,7 @@ import beast.evolution.tree.Node;
 
 @Description("TN93 (Tamura and Nei, 1993) substitution model of nucleotide evolution.")
 @Citation(value = "Tamura, K., & Nei, M. (1993). Estimation of the number of nucleotide substitutions in the control region " +
-        "of mitochondrial DNA in humans and chimpanzees. Molecular Biology and Evolution, 10(3), 512-526.", DOI = "", year = 1994, firstAuthorSurname = "tamura")
+        "of mitochondrial DNA in humans and chimpanzees. Molecular Biology and Evolution, 10(3), 512-526.", DOI = "10.1093/oxfordjournals.molbev.a040023", year = 1994, firstAuthorSurname = "tamura")
 public class TN93 extends SubstitutionModel.NucleotideBase {
     final public Input<RealParameter> kappa1Variable = new Input<>("kappa1", "rate of A<->G transitions", Validate.REQUIRED);
     final public Input<RealParameter> kappa2Variable = new Input<>("kappa2", "rate of C<->T transitions", Validate.REQUIRED);

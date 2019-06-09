@@ -278,7 +278,7 @@ public class PriorListInputEditor extends ListInputEditor {
         return selectedPlugins;
     }
     
-    class MRCAPriorProvider implements PriorProvider {
+    public class MRCAPriorProvider implements PriorProvider {
     	@Override
     	public List<Distribution> createDistribution(BeautiDoc doc) {
 	    	MRCAPrior prior = new MRCAPrior();

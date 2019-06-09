@@ -17,12 +17,13 @@ beast: [
 	},
 
 	{id: "mcmc",
-	 spec: "MCMC", chainLength: 10000000,
-	 state: {id: "state", storeEvery: 5000,
+	 spec: "MCMC", chainLength: "10000000",
+	 state: {id: "state",
+		 spec: "State", storeEvery: 5000,
 		 stateNode: [
 			{id: "Tree.t:dna",
 			 spec: "beast.evolution.tree.Tree",
-				 taxonset: {id: "TaxonSet.dna", alignment: "@dna" }
+				 taxonset: {id: "TaxonSet.dna", spec: "TaxonSet", alignment: "@dna" }
 			},
 			 {id: "birthRate.t:dna", spec: "parameter.RealParameter", value: [ 1.0 ] },
 			 {id: "kappa.s:dna", spec: "parameter.RealParameter", lower: 0.0, value: [ 2.0 ] },
@@ -67,7 +68,7 @@ beast: [
 					 spec: "SiteModel", mutationRate: "1.0", shape: "1.0", proportionInvariant: "0.0",
 					 substModel: {id: "hky.s:dna",
 						 spec: "HKY", kappa: "@kappa.s:dna",
-							 frequencies: {id: "estimatedFreqs.s:dna", frequencies: "@freqParameter.s:dna" }
+							 frequencies: {id: "estimatedFreqs.s:dna", spec: "Frequencies", frequencies: "@freqParameter.s:dna" }
 						}
 					},
 				 branchRateModel: {id: "RelaxedClock.c:dna",
@@ -101,7 +102,8 @@ beast: [
 		}
 	  ],
 	 logger: [
-		{id: "tracelog", fileName: "dna.log", logEvery: 1000, model: "@posterior", sort: "smart", sanitiseHeaders: true,
+		{id: "tracelog",
+		 spec: "Logger", fileName: "dna.log", logEvery: 1000, model: "@posterior", sort: "smart", sanitiseHeaders: true,
 		 log: [
 			 {idref: "posterior" },
 			 {idref: "likelihood" },
@@ -116,7 +118,8 @@ beast: [
 			 {idref: "freqParameter.s:dna" }
 		  ]
 		},
-		{id: "screenlog", logEvery: 1000,
+		{id: "screenlog",
+		 spec: "Logger", logEvery: 1000,
 		 log: [
 			 {idref: "posterior" },
 			 {id: "ESS.0", spec: "util.ESS", arg: "@posterior" },
@@ -124,7 +127,8 @@ beast: [
 			 {idref: "prior" }
 		  ]
 		},
-		{id: "treelog.t:dna", fileName: "$(tree).trees", logEvery: 1000, mode: "tree",
+		{id: "treelog.t:dna",
+		 spec: "Logger", fileName: "$(tree).trees", logEvery: 1000, mode: "tree",
 		 log: [
 			 {id: "TreeWithMetaDataLogger.t:dna", spec: "beast.evolution.tree.TreeWithMetaDataLogger", tree: "@Tree.t:dna", branchratemodel: "@RelaxedClock.c:dna" }
 		  ]

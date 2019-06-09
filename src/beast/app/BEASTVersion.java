@@ -50,9 +50,9 @@ public class BEASTVersion extends Version {
                 "Designed and developed by",
                 "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut & Marc A. Suchard",
                 "",
-                "Department of Computer Science",
+                "Centre for Computational Evolution",
                 "University of Auckland",
-                "remco@cs.auckland.ac.nz",
+                "r.bouckaert@auckland.ac.nz",
                 "alexei@cs.auckland.ac.nz",
                 "",
                 "Institute of Evolutionary Biology",
@@ -85,8 +85,8 @@ public class BEASTVersion extends Version {
         return
                 "<p>Designed and developed by<br>" +
                         "Remco Bouckaert, Alexei J. Drummond, Andrew Rambaut and Marc A. Suchard</p>" +
-                        "<p>Department of Computer Science, University of Auckland<br>" +
-                        "<a href=\"mailto:remco@cs.auckland.ac.nz\">remco@cs.auckland.ac.nz</a><br>" +
+                        "<p>Centre for Computational Evolution, University of Auckland<br>" +
+                        "<a href=\"mailto:r.bouckaert@auckland.ac.nz\">r.bouckaert@auckland.ac.nz</a><br>" +
                         "<a href=\"mailto:alexei@cs.auckland.ac.nz\">alexei@cs.auckland.ac.nz</a></p>" +
                         "<p>Institute of Evolutionary Biology, University of Edinburgh<br>" +
                         "<a href=\"mailto:a.rambaut@ed.ac.uk\">a.rambaut@ed.ac.uk</a></p>" +

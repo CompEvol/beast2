@@ -187,7 +187,7 @@ ___________________________________________________________________________
 BEAST is an extremely complex program and as such will inevitably have
 bugs. Please email us to discuss any problems:
 
-<remco@cs.auckland.ac.nz>
+<r.bouckaert@auckland.ac.nz>
 <alexei@cs.auckland.ac.nz>
 <a.rambaut@ed.ac.uk>
 <msuchard@ucla.edu>
