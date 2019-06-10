@@ -109,7 +109,9 @@ public class Tree extends StateNode implements TreeInterface {
         String [] taxa = getTaxaNames();
         for (int i = 0; i < getNodeCount() && i < taxa.length; i++) {
             if( taxa[i] != null ) {
-                if( m_nodes[i].getID() == null ) {
+            	if (m_nodes[i] == null) {
+            		Log.warning("WARNING: Expected a node for taxon " + taxa[i] + " but dic not find one in the expected location in the m_nodes array");
+            	} else if( m_nodes[i].getID() == null ) {
                     m_nodes[i].setID(taxa[i]);
                 }
             }

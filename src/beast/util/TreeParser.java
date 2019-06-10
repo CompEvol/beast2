@@ -28,8 +28,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import beast.util.treeparser.NewickParser;
 import beast.util.treeparser.NewickParser.MetaContext;
@@ -156,6 +158,31 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
             setRoot(parseNewick(newickInput.get()));
         }
 
+        // sanity check: make sure taxon labels and leaf node IDs match
+        // this must happen before super.initAndValidate(), otherwise a
+        // NullPointerException can be thrown by "if( m_nodes[i].getID() == null )"
+        // in Tree.initAndValidate()
+        if (labels != null) {
+        	if (labels.size() != root.getLeafNodeCount()) {
+    			Log.warning("WARNING: The number of taxa (" + labels.size() + ") does not match the number of leafs in the tree (" + root.getLeafNodeCount() + ")");
+        	}
+        	Set<String> taxaSet = new LinkedHashSet<>();
+        	for (Node node : root.getAllLeafNodes()) {
+        		taxaSet.add(node.getID());
+        	}
+        	Set<String> labelsNotInTree = new LinkedHashSet<>();
+        	labelsNotInTree.addAll(labels);
+        	labelsNotInTree.removeAll(taxaSet);
+        	if (!labelsNotInTree.isEmpty()) {
+        		Log.warning("WARNING: Taxa not found in tree: " + labelsNotInTree);
+        	}
+        	Set<String> treeNotInLabels = new LinkedHashSet<>();
+        	treeNotInLabels.addAll(taxaSet);
+        	treeNotInLabels.removeAll(labels);
+        	if (!treeNotInLabels.isEmpty()) {
+        		Log.warning("WARNING: Nodes in tree not found in taxa: " + treeNotInLabels);
+        	}
+        }
         
         super.initAndValidate();
         m_sTaxaNames = null;
@@ -227,30 +254,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
 
         initStateNodes();
 
-        // check if all labels are in the Newick tree
-        if (labels != null) {
-        	boolean [] done = new boolean[labels.size()];
-        	checkAllLabelsAreCovered(getRoot(), done);
-            for (int i = 0; i < done.length; i++) {
-            	if (!done[i]) {
-            		Log.warning("WARNING: Taxon " + labels.get(i) + " was not found in the Newick tree");
-            	}
-            }        	
-        }
     } // init
-
-    private void checkAllLabelsAreCovered(Node node, boolean[] done) {
-    	if (node.isLeaf()) {
-			int i = labels.indexOf(node.getID());
-			if (i >=0 && i < done.length) {
-				done[i] = true;
-			}
-    	} else {
-    		for (Node child : node.getChildren()) {
-    			checkAllLabelsAreCovered(child, done);
-    		}
-    	}
-	}
 
 	public TreeParser() {
     }
