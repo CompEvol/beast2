@@ -1978,6 +1978,8 @@ public class PackageManager {
      */
     private static TreeMap<String, Package> packages = new TreeMap<String, Package>();
    
+    public static Map<String, String> getRawClassToPackageMap() {return classToPackageMap;}
+    
     public static Map<String, String> getClassToPackageMap() {
     	if (classToPackageMap.size() == 0) {
             for (String jarDirName : getBeastDirectories()) {
@@ -1986,6 +1988,7 @@ public class PackageManager {
     	}
     	return classToPackageMap;
     }
+
 
     /** return set of Strings in the format of classToPackageMap (like "bModelTest v0.3.2")
      * for all packages used by o and its predecessors in the model graph.
@@ -2009,7 +2012,7 @@ public class PackageManager {
     	}
 	}
     
-    private static void initPackageMap(String jarDirName) {
+    public static void initPackageMap(String jarDirName) {
         try {
             File versionFile = new File(jarDirName + "/version.xml");
             String packageNameAndVersion = null;
