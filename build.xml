@@ -283,8 +283,8 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.5.3" />
-    <property name="version_number" value="2.5.3" />
+    <property name="version" value="2.6.0" />
+    <property name="version_number" value="2.6.0" />
     <property name="release_dir" value="release" />
     <property name="copyright" value="Beast 2 development team 2011-2019" />
 

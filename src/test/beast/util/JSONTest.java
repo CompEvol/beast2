@@ -39,7 +39,7 @@ public class JSONTest extends TestCase {
     @Test
     public void testJSONFragmentParsing() throws Exception {
     	JSONParser parser = new JSONParser();
-    	String json = "{version: \"2.5\",\n" + 
+    	String json = "{version: \"2.6\",\n" + 
     			"\n" + 
     			"beast: [\n" + 
     			"{spec:\"beast.core.parameter.RealParameter\",\n" +
