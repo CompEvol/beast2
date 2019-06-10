@@ -1,7 +1,7 @@
-                    BEAST v2.5.2 2019
+                    BEAST v2.6.0 2019
                  Beast 2 development team 2011-2019
 
-Last updated: January 2019
+Last updated: June 2019
 
 Contents:
 1) INTRODUCTION
