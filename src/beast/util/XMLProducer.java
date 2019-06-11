@@ -61,6 +61,7 @@ import beast.app.BEASTVersion2;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObjectStore;
 import beast.core.Input;
+import beast.core.util.Log;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -101,7 +102,7 @@ public class XMLProducer extends XMLParser {
     public String toXML(Object beastObject, Collection<BEASTInterface> others) {
         try {
             StringBuffer buf = new StringBuffer();
-        	Set<String> requiredPacakges = PackageManager.getPackagesAndVersions(beastObject);
+        	Set<String> requiredPacakges = ClassToPackageMap.getPackagesAndVersions(beastObject);
         	String required = requiredPacakges.toString();
         	required = required.substring(1, required.length() - 1);
         	required = required.replaceAll(", ", ":");

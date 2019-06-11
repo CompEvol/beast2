@@ -65,8 +65,8 @@ public class BEASTClassLoader extends URLClassLoader {
 		} catch (Throwable e) {
 			try { 
 				return Class.forName(className, false, BEASTClassLoader.classLoader);
-			} catch (Throwable e2) {
-				return null;
+			} catch (NoClassDefFoundError e2) {
+				throw new ClassNotFoundException(e2.getMessage());
 			}
 			
 		}	
