@@ -585,13 +585,23 @@ public class NexusParser {
         final Map<String, String> translationMap = new HashMap<>();
 
         final String[] taxaTranslations = translateArgs.toString().split(",");
-        for (final String taxaTranslation : taxaTranslations) {
-            final String[] translation = taxaTranslation.trim().split("[\t ]+");
-            if (translation.length == 2) {
-                translationMap.put(translation[0], translation[1]);
+        for (String taxaTranslation : taxaTranslations) {
+        	taxaTranslation = taxaTranslation.trim();
+        	// find first whitespace character in taxaTranslation
+        	int k = 0;
+        	while (k < taxaTranslation.length() && !Character.isWhitespace(taxaTranslation.charAt(k))) {
+        		k++;
+        	}
+            //final String[] translation = taxaTranslation.trim().split("[\t ]+");
+            //if (translation.length == 2) {
+            //    translationMap.put(translation[0], translation[1]);
+        	if (k > 0) {
+            	String nr = taxaTranslation.substring(0, k);
+            	String translation = taxaTranslation.substring(k).trim();
+            	translationMap.put(nr, translation);
 //                Log.info.println(translation[0] + " -> " + translation[1]);
             } else {
-                Log.warning.println("Ignoring translation:" + Arrays.toString(translation));
+                Log.warning.println("Ignoring translation:" + taxaTranslation);
             }
         }
         return translationMap;

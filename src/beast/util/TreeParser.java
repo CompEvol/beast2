@@ -162,7 +162,7 @@ public class TreeParser extends Tree implements StateNodeInitialiser {
         // this must happen before super.initAndValidate(), otherwise a
         // NullPointerException can be thrown by "if( m_nodes[i].getID() == null )"
         // in Tree.initAndValidate()
-        if (labels != null) {
+        if (labels != null && isLabelledNewickInput.get()) {
         	if (labels.size() != root.getLeafNodeCount()) {
     			Log.warning("WARNING: The number of taxa (" + labels.size() + ") does not match the number of leafs in the tree (" + root.getLeafNodeCount() + ")");
         	}

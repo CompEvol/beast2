@@ -110,7 +110,7 @@ public class Tree extends StateNode implements TreeInterface {
         for (int i = 0; i < getNodeCount() && i < taxa.length; i++) {
             if( taxa[i] != null ) {
             	if (m_nodes[i] == null) {
-            		Log.warning("WARNING: Expected a node for taxon " + taxa[i] + " but dic not find one in the expected location in the m_nodes array");
+            		Log.warning("WARNING: Expected a node for taxon " + taxa[i] + " but did not find one in the expected location in the m_nodes array");
             	} else if( m_nodes[i].getID() == null ) {
                     m_nodes[i].setID(taxa[i]);
                 }
@@ -681,7 +681,17 @@ public class Tree extends StateNode implements TreeInterface {
     static void printTranslate(Node node, List<String> translateLines, int nodeCount) {
         if (node.isLeaf()) {
             final String nr = (node.getNr() + taxaTranslationOffset) + "";
-            String line = "\t\t" + "    ".substring(nr.length()) + nr + " " + node.getID();
+            String line = "\t\t" + "    ".substring(nr.length()) + nr + " ";
+            if (node.getID().indexOf(' ') > 0) {
+            	char c = node.getID().charAt(0);
+            	if (c == '\"' || c == '\'') {
+                	line += node.getID();
+            	} else {
+            		line += '\"' + node.getID() + "\"";
+            	}
+            } else {
+            	line += node.getID();
+            }
             if (node.getNr() < nodeCount) {
                 line += ",";
             }
@@ -699,8 +709,8 @@ public class Tree extends StateNode implements TreeInterface {
         printTranslate(node, translateLines, nodeCount);
         Collections.sort(translateLines);
         for (String line : translateLines) {
-            line = line.split("\\s+")[2];
-            out.println("\t\t\t" + line.replace(',', ' '));
+            line = line.substring(line.indexOf(" ", 5)).replace(',', ' ').trim();
+            out.println("\t\t\t" + line);
         }
     }
 
