@@ -62,9 +62,12 @@ public class BEASTClassLoader extends URLClassLoader {
 		// System.err.println("Loading: " + className);
 		try { 
 			return Class.forName(className, true, BEASTClassLoader.classLoader);
-		} catch (ClassNotFoundException e) {
-			return Class.forName(className, false, BEASTClassLoader.classLoader);
-		}
-	
+		} catch (ClassNotFoundException | NoClassDefFoundError e) {
+			try { 
+				return Class.forName(className, false, BEASTClassLoader.classLoader);
+			} catch (ClassNotFoundException | NoClassDefFoundError e2) {
+				return null;
+			}
+		}	
 	}
 }
