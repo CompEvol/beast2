@@ -1,6 +1,6 @@
 package test.beast.core;
 
-import java.util.List;
+import java.util.*;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -121,7 +121,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		JSONProducer producer = new JSONProducer();
         String json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", s: [John, Peter] }", json2);
+		assertEqualJSON("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", s: [John, Peter] }", json2);
 
 	}
 	
@@ -147,7 +147,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
         String json2 = producer.toJSON(pi3);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
         System.out.println(json2);
-        assertEquals(json, json2);
+        assertEqualJSON(json, json2);
 
 		
 		String json3 = "{spec: \"test.beast.core.PrimitiveBeastObject\",\n" + 
@@ -162,7 +162,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		pi3 = (PrimitiveBeastObject) o.get(0);		
         json2 = producer.toJSON(pi3);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-        assertEquals(json, json2);
+		assertEqualJSON(json, json2);
 	}
 
 	
@@ -264,7 +264,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		JSONProducer producer = new JSONProducer();
 		String json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"3\", e: \"two\" }", json2);
+		assertEqualJSON("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"3\", e: \"two\" }", json2);
 		
 		// test int c'tor and default value
 		json = "{id: testObject, spec: test.beast.core.PrimitiveBeastObject, i: 2}";
@@ -276,7 +276,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		
 		json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"2\" }", json2);
+		assertEqualJSON("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"2\" }", json2);
 
 	
 		// test array of primitive values
@@ -291,7 +291,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", a: [1.0, 15.0, 17.0] }", json2);
+		assertEqualJSON("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", a: [1.0, 15.0, 17.0] }", json2);
 
 		// test array of object values
 		json = "{id: testObject, spec: test.beast.core.PrimitiveBeastObject, b: [1.0, 15.0, 17.0]}";
@@ -305,7 +305,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", b: [1.0, 15.0, 17.0] }", json2);
+		assertEqualJSON("{id: \"testObject\", spec: \"test.beast.core.PrimitiveBeastObject\", i: \"0\", e: \"none\", b: [1.0, 15.0, 17.0] }", json2);
 		
 		// test inner class inside base class
 		InnerClass io = null;
@@ -317,7 +317,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		assertEquals(3.0, io.getA()[1]);	
 		json2 = producer.toJSON(io);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{spec: \"test.beast.core.PrimitiveBeastObject$InnerClass\", e: \"none\", i: \"0\", a: [1.0, 3.0] }", json2);
+		assertEqualJSON("{spec: \"test.beast.core.PrimitiveBeastObject$InnerClass\", e: \"none\", i: \"0\", a: [1.0, 3.0] }", json2);
 
 		// test inner class inside interface
 		InterfaceInnerClass iio = null;
@@ -328,6 +328,27 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		assertEquals(5, iio.getI());
 		json2 = producer.toJSON(iio);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
-		assertEquals("{spec: \"test.beast.core.PrimitiveInterface$InterfaceInnerClass\", i: \"5\" }", json2);
+		assertEqualJSON("{spec: \"test.beast.core.PrimitiveInterface$InterfaceInnerClass\", i: \"5\" }", json2);
 	}	
+	
+	void assertEqualJSON(String expected, String obtained) {
+		if (expected.equals(obtained)) {
+			return;
+		}
+		Set<String> eSet = new LinkedHashSet<>();
+		for (String str : expected.split(",")) {
+			eSet.add(str.replaceAll("[{}]","").trim());
+		}
+		Set<String> oSet = new LinkedHashSet<>();
+		for (String str : obtained.split(",")) {
+			oSet.add(str.replaceAll("[{}]","").trim());
+		}
+		if (eSet.size() == oSet.size()) {
+			eSet.removeAll(oSet);
+			if (eSet.isEmpty()) {
+				return;
+			}
+		}
+		assertEquals(expected, obtained);
+	}
 }

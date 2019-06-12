@@ -1408,6 +1408,7 @@ public class PackageManager {
 
         for (String path : classpath.split(pathSep)) {
             //Log.debug.println("loadallclasses " + path);
+            path = path.replaceAll("%20", " ");
             File filepath = new File(path);
 
             if (filepath.isDirectory()) {
