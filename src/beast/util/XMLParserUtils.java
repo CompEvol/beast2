@@ -482,7 +482,7 @@ public class XMLParserUtils {
 		}
 		for (String nameSpace : nameSpaces) {
             try {
-				if (Class.forName(nameSpace + specClass) != null) {
+				if (BEASTClassLoader.forName(nameSpace + specClass) != null) {
 					String clazzName = nameSpace + specClass;
 					return clazzName;
 				}

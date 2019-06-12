@@ -26,6 +26,7 @@ package beast.core;
 
 
 import beast.core.util.Log;
+import beast.util.BEASTClassLoader;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -296,7 +297,7 @@ public interface BEASTInterface {
 //						}
 					} else {
 						try {
-							clazz = Class.forName(type.getTypeName());
+							clazz = BEASTClassLoader.forName(type.getTypeName());
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 							throw new RuntimeException("Cannot find type " + e.getMessage());

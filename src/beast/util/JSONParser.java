@@ -965,7 +965,7 @@ public class JSONParser {
 			// try to call static method clazzName.newInstance()
 			Class<?> c;
 			try {
-				c = Class.forName(clazzName);
+				c = BEASTClassLoader.forName(clazzName);
 				Method newInstance;
 				newInstance = c.getDeclaredMethod("newInstance");
 				if (!Modifier.isStatic(newInstance.getModifiers())) {

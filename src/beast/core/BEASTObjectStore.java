@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import beast.util.BEASTClassLoader;
+
 
 /** 
  * database of all beast objects -- this allows management of VirtualBEASTObjects
@@ -126,7 +128,7 @@ public class BEASTObjectStore {
 			return true;
 		}
 		try {
-			Class clazz = Class.forName(typeName);
+			Class clazz = BEASTClassLoader.forName(typeName);
 
 			if (clazz.isPrimitive()) {
 				return true;

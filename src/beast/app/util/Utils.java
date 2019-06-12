@@ -60,7 +60,7 @@ public class Utils {
      */
     public static Image getImage(Object caller, String name) {
 
-        java.net.URL url = caller.getClass().getResource(name);
+        java.net.URL url = BEASTClassLoader.classLoader.getResource(name);
         if (url != null) {
             return Toolkit.getDefaultToolkit().createImage(url);
         } else {

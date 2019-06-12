@@ -816,7 +816,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             for (String className : helpActions) {
             	if (!className.equals(helpClass)) {
 		            try {
-		            	Class<?> _class = Class.forName(className);
+		            	Class<?> _class = BEASTClassLoader.forName(className);
 		                Constructor<?> con = _class.getConstructor(BeautiDoc.class);
 		                BeautiHelpAction helpAction = (BeautiHelpAction) con.newInstance(doc);
 		                helpMenu.add(helpAction);

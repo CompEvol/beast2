@@ -837,7 +837,7 @@ public class XMLParser {
 			// try to call static method clazzName.newInstance()
 			Class<?> c;
 			try {
-				c = Class.forName(clazzName);
+				c = BEASTClassLoader.forName(clazzName);
 				Method newInstance;
 				newInstance = c.getDeclaredMethod("newInstance");
 				if (!Modifier.isStatic(newInstance.getModifiers())) {
@@ -997,7 +997,7 @@ public class XMLParser {
 							try {
 								if (!BEASTObjectStore.isPrimitiveType(typeName)) {
 									List<Object> values = XMLParser.getListOfValues(param, inputInfo);
-									Object array = java.lang.reflect.Array.newInstance(Class.forName(typeName), values.size());
+									Object array = java.lang.reflect.Array.newInstance(BEASTClassLoader.forName(typeName), values.size());
 									for (int k = 0; k < values.size(); k++) {
 										Object v = values.get(k);
 										if (v instanceof VirtualBEASTObject) {
