@@ -545,7 +545,7 @@ public class BeastLauncher {
 
 //            setJavaHeapAndStackSize(cmd, args);
            
-			for (String jarFile : classPath.substring(1, classPath.length() - 1).split(":")) {
+			for (String jarFile : classPath.substring(1, classPath.length() - 1).split(File.pathSeparator)) {
 				if (jarFile.toLowerCase().endsWith("jar")) {
 					BEASTClassLoader.classLoader.addJar(jarFile);
 				}

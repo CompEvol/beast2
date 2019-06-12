@@ -346,7 +346,7 @@ public class AppLauncher {
 			String classPath = BeastLauncher.getPath(false, null);
              
             PackageManager.loadExternalJars();
-  			for (String jarFile : classPath.split(":")) {
+  			for (String jarFile : classPath.split(File.pathSeparator)) {
   				if (jarFile.toLowerCase().endsWith("jar")) {
   					BEASTClassLoader.classLoader.addJar(jarFile);
   				}

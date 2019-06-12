@@ -257,9 +257,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // System.out.println("Saving to file \""+
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
-            if (doc.getFileName().lastIndexOf(fileSep) > 0) {
+            if (doc.getFileName().lastIndexOf(File.separator) > 0) {
                 setCurrentDir(doc.getFileName().substring(0,
-                        doc.getFileName().lastIndexOf(fileSep)));
+                        doc.getFileName().lastIndexOf(File.separator)));
             }
             if (!doc.getFileName().toLowerCase().endsWith(FILE_EXT) && !doc.getFileName().toLowerCase().endsWith(FILE_EXT2))
                 doc.setFileName(doc.getFileName().concat(FILE_EXT));
@@ -326,13 +326,9 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 doc.newAnalysis();
                 doc.setFileName(file.getAbsolutePath());
-                String fileSep = System.getProperty("file.separator");
-                if (fileSep.equals("\\")) {
-                    fileSep = "\\\\";
-                }
-                if (doc.getFileName().lastIndexOf(fileSep) > 0) {
+                if (doc.getFileName().lastIndexOf(File.separator) > 0) {
                     setCurrentDir(doc.getFileName().substring(0,
-                            doc.getFileName().lastIndexOf(fileSep)));
+                            doc.getFileName().lastIndexOf(File.separator)));
                 }
                 try {
                 	// TODO: deal with json files

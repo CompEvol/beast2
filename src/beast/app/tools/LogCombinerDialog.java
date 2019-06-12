@@ -172,12 +172,8 @@ public class LogCombinerDialog {
                 }
                 outputFile = file;
                 String fileName = file.getAbsolutePath();
-                String fileSep = System.getProperty("file.separator");
-                if (fileSep.equals("\\")) {
-                	fileSep = "\\\\";
-                }
-                if (fileName.lastIndexOf(fileSep) > 0) {
-                    Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(fileSep)));
+                if (fileName.lastIndexOf(File.separator) > 0) {
+                    Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
                 }
                 fileNameText.setText(outputFile.getName());
 
@@ -290,13 +286,8 @@ public class LogCombinerDialog {
             files.add(fileInfo);
 
             String fileName = file.getAbsolutePath();
-            String fileSep = System.getProperty("file.separator");
-            if (fileSep.equals("\\")) {
-            	fileSep = "\\\\";
-            }
-
-            if (fileName.lastIndexOf(fileSep) > 0) {
-                Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(fileSep)));
+            if (fileName.lastIndexOf(File.separator) > 0) {
+                Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
             }
         }
 
