@@ -543,7 +543,19 @@ public class BeastLauncher {
 	public static void run(String classPath, String main, String[] args) {
 		try {
 
-//            setJavaHeapAndStackSize(cmd, args);
+	        for (int i = 0; i < args.length; i++) {
+	        	String arg = args[i];
+	        	if (arg.startsWith("-Xmx") ||
+	        		arg.startsWith("-Xms") ||
+	        	    arg.startsWith("-Xss")) {
+	        		// warn BEAST v2.5.x users that memory/stack allocation uses a different mechanism now
+	        		Log.warning("WARNING: the -Xmx, -Xms and -Xss arguments will be ignored for setting memory/stack space");
+	        		Log.warning("WARNING: If you want to use any of these arguments you must either change the script, or");
+	        		Log.warning("WARNING: call `java -Xmx16g -cp /path/to/launcher.jar " + main + " arg1 arg2 ...` instead");
+	        		Log.warning("WARNING: where `/path/to/` is replaced by the path to where the launcher.jar file is, and");
+	        		Log.warning("WARNING: arg1 the first argument, arg2, the second, etc.");
+	        	}
+	        }            
            
 			for (String jarFile : classPath.substring(1, classPath.length() - 1).split(File.pathSeparator)) {
 				if (jarFile.toLowerCase().endsWith("jar")) {
@@ -559,37 +571,6 @@ public class BeastLauncher {
             e.printStackTrace();
         }
 
-    }
-
-	private static void setJavaHeapAndStackSize(List<String> cmd, String[] args) {
-        boolean heapSizeSet = false;
-        boolean stackSizeSet = false;
-        
-        // see if we have a cmd line argument for heap or stack size
-        for (int i = 0; i < args.length; i++) {
-        	String arg = args[i];
-        	if (arg.startsWith("-Xmx")) {
-        		cmd.add(arg);
-        		args[i] = null;
-        		heapSizeSet = true;
-        	} else if (arg.startsWith("-Xms")) {
-        		cmd.add(arg);
-        		args[i] = null;
-        		stackSizeSet = true;
-        	} else if (arg.startsWith("-Xss")) {
-        		cmd.add(arg);
-        		args[i] = null;
-        		stackSizeSet = true;
-        	}
-        }            
-
-        // force default values if nothing is specified
-        if (!heapSizeSet) {
-        	cmd.add("-Xms8g");
-        }
-        if (!stackSizeSet) {
-        	cmd.add("-Xms256m");
-        }
-    }
+    }	
 	
 }
