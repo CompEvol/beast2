@@ -315,7 +315,7 @@ public class LinkUnlinkTest extends BeautiBase {
 		f.selectTab("Site Model");
         JComboBoxFixture substModel = beautiFrame.comboBox("substModel");
         substModel.selectItem("HKY");
-		assertParameterCountInPriorIs(6);		
+		assertParameterCountInPriorIs(7);		
 		
 		f.selectTab("Partitions");
 		warning("Link site models");
@@ -323,10 +323,11 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.button("Link Site Models").click();
 		printBeautiState(f);
 
-		assertParameterCountInPriorIs(6);		
+		assertParameterCountInPriorIs(7);		
 		beautiFrame.button("Unlink Site Models").click();
 
-		assertParameterCountInPriorIs(12);		
+		printBeautiState(f);
+		assertParameterCountInPriorIs(15);		
 
 		warning("Delete second partition");
 		f.selectTab("Partitions");
@@ -334,7 +335,7 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.button("-").click();
 		printBeautiState(f);
 
-		assertParameterCountInPriorIs(8);		
+		assertParameterCountInPriorIs(10);		
 
 		warning("Delete first partition");
 		f.selectTab("Partitions");
@@ -343,8 +344,8 @@ public class LinkUnlinkTest extends BeautiBase {
 		beautiFrame.table().selectCell(TableCell.row(0).column(1));
 		beautiFrame.button("-").click();
 		printBeautiState(f);
-		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "KappaPrior.s:59");		
-		assertParameterCountInPriorIs(4);
+		assertPriorsEqual("YuleModel.t:26", "YuleBirthRatePrior.t:26", "KappaPrior.s:59", "FrequenciesPrior.s:59");		
+		assertParameterCountInPriorIs(5);
 		
 		makeSureXMLParses();
 	}
