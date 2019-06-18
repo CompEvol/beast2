@@ -34,7 +34,7 @@ import beast.evolution.alignment.TaxonSet;
 public class TaxonSetDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     public boolean isOK = false;
-    TaxonSet taxonSet;
+    protected TaxonSet taxonSet;
     String id;
     List<Taxon> _candidates;
 

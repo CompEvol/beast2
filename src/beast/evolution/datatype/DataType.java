@@ -150,14 +150,14 @@ public interface DataType {
 
 	@Description(value = "Basic data type implementation, with methods for decoding and encoding sequence strings", isInheritable = false)
 	public abstract class Base extends BEASTObject implements DataType {
-		protected int stateCount;
-		protected String codeMap;
-		protected int codeLength;
+		public int stateCount;
+		public String codeMap;
+		public int codeLength;
 		/**
 		 * mapping codes to sets of states FIXME: This should be named
 		 * "mapCodeToState*List*", because that's what it does.
 		 */
-		protected int[][] mapCodeToStateSet;
+		public int[][] mapCodeToStateSet;
 
 		@Override
 		public void initAndValidate() {
