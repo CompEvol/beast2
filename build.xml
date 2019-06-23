@@ -16,7 +16,7 @@
     <property name="dist" location="../beast2/build/dist" />
     <property name="test" location="../beast2/test" />
 
-    <property name="main_class_BEAST" value="beast.app.beastapp.BeastMain" />
+    <property name="main_class_BEASTLauncher" value="beast.app.beastapp.BeastLauncher" />
     <property name="report" value="build/junitreport" />
 
     <path id="classpath">
@@ -48,14 +48,14 @@
     <target name="build_all_BEAST" depends="clean,compile-all,junit" description="Clean and Build all run-time stuff">
     </target>
 
-    <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
+    <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar -->
     <target name="build_jar_all_BEAST"
             depends="clean,compile-all,junit,dist_all_BEAST"
             description="Clean and Build all run-time stuff">
     </target>
 
 
-    <!-- No JUnit Test, clean previous build, compile Java source code, and make the beast.jar and beauti.jar -->
+    <!-- No JUnit Test, clean previous build, compile Java source code, and make the beast.jar -->
     <target name="build_jar_all_BEAST_NoJUnitTest"
             depends="clean,compile-all,dist_all_BEAST"
             description="Clean and Build all run-time stuff">
@@ -133,27 +133,6 @@
         <jar jarfile="${dist}/beast.jar">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
-                <attribute name="Main-Class" value="${main_class_BEAST}" />
-            </manifest>
-            <fileset dir="${build}">
-                <include name="beast/**/*.class" />
-                <include name="beast/**/*.properties" />
-                <include name="beast/**/*.png" />
-                <include name="beagle/**/*.class" />
-                <include name="org/**/*.class" />
-            </fileset>
-            <zipgroupfileset dir="${lib}" includes="jam.jar" />
-            <zipgroupfileset dir="${lib}" includes="beagle.jar" />
-            <zipgroupfileset dir="${lib}" includes="colt.jar" />
-            <zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
-            <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
-        </jar>
-        
-        
-        <jar jarfile="${dist}/beauti.jar">
-            <manifest>
-                <attribute name="Built-By" value="${user.name}" />
-                <attribute name="Main-Class" value="beast.app.beauti.Beauti" />
             </manifest>
             <fileset dir="${build}">
                 <include name="beast/**/*.class" />
@@ -170,6 +149,10 @@
         </jar>
         
         <jar jarfile="${dist}/launcher.jar">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Main-Class" value="${main_class_BEASTLauncher}" />
+            </manifest>
             <fileset dir="${build}">
                 <include name="beast/**/*Launcher*.class" />
                 <exclude name="beast/app/tools/AppLauncher.class"/>
@@ -339,7 +322,7 @@
         <copy todir="${Windows_package_dir}/bin">
             <fileset dir="${Windows_dir}/scripts"/>
         </copy>
-        <copy file="${dist}/beauti.jar" todir="${Windows_package_dir}/lib"/>-->
+        -->
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
@@ -475,7 +458,7 @@
         <copy todir="${Windows_package_dir}/bin">
             <fileset dir="${Windows_dir}/scripts"/>
         </copy>
-        <copy file="${dist}/beauti.jar" todir="${Windows_package_dir}/lib"/>-->
+        -->
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
@@ -608,7 +591,7 @@
         <copy todir="${Windows_package_dir}/bin">
             <fileset dir="${Windows_dir}/scripts"/>
         </copy>
-        <copy file="${dist}/beauti.jar" todir="${Windows_package_dir}/lib"/>-->
+        -->
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
@@ -736,7 +719,7 @@
         <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
         <!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
-        <copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
+        -->
         <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
@@ -807,7 +790,7 @@
         <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
         <!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
-        <copy file="${dist}/beauti.jar" todir="${Linux_package_dir}/lib" /> -->
+        -->
         <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
@@ -882,7 +865,7 @@
             <fileset dir="${common_dir}/doc" />
         </copy>
 
-        <copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
+		-->
         <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
@@ -1112,7 +1095,7 @@
             <fileset dir="${common_dir}/doc" />
         </copy>
 
-        <copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
+		-->
         <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
@@ -1368,7 +1351,6 @@
             </fileset>
         </copy>
 
-<!--    <copy file="${dist}/beauti.jar" todir="${Mac_package_dir}/lib" /> -->
         <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
