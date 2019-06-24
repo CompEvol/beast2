@@ -42,12 +42,18 @@ import beast.util.Randomizer;
 @Description("MCMC chain. This is the main element that controls which posterior " +
         "to calculate, how long to run the chain and all other properties, " +
         "which operators to apply on the state space and where to log results.")
-@Citation(value=
-        "Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,\n" +
-                "  Rambaut A, Drummond AJ (2014) BEAST 2: A software platform for Bayesian\n" +
-                "  evolutionary analysis. PLoS Computational Biology 10(4): e1003537"
-        , year = 2014, firstAuthorSurname = "bouckaert",
-        DOI="10.1371/journal.pcbi.1003537")
+//@Citation(value=
+//        "Bouckaert RR, Heled J, Kuehnert D, Vaughan TG, Wu C-H, Xie D, Suchard MA,\n" +
+//                "  Rambaut A, Drummond AJ (2014) BEAST 2: A software platform for Bayesian\n" +
+//                "  evolutionary analysis. PLoS Computational Biology 10(4): e1003537"
+//        , year = 2014, firstAuthorSurname = "bouckaert",
+//        DOI="10.1371/journal.pcbi.1003537")
+@Citation(value="Bouckaert, Remco, Timothy G. Vaughan, Joëlle Barido-Sottani, Sebastián Duchêne, \n"
+		+ "  Mathieu Fourment, Alexandra Gavryushkina, Joseph Heled et al. \n"
+		+ "  BEAST 2.5: An advanced software platform for Bayesian evolutionary analysis. \n"
+		+ "  PLoS computational biology 15, no. 4 (2019): e1006650.", 
+        year = 2019, firstAuthorSurname = "bouckaert",
+		DOI="10.1371/journal.pcbi.1006650")
 public class MCMC extends Runnable {
 
     final public Input<Long> chainLengthInput =
