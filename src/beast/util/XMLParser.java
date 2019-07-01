@@ -372,7 +372,7 @@ public class XMLParser {
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 final Node child = children.item(i);
-                Log.warning.println(child.getNodeName());
+                Log.debug.println(child.getNodeName());
                 if (!child.getNodeName().equals(MAP_ELEMENT)) {
                     beastObjects.add(createObject(child, BEAST_INTERFACE_CLASS));
                 }

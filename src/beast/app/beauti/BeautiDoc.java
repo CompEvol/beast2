@@ -763,7 +763,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //			}
 //		}
         String xml = new XMLProducer().toXML(mcmc.get(), beastObjects);
-
+        
         xml = xml.replaceFirst("<beast ", "<beast beautitemplate='" + templateName + "' beautistatus='" + getBeautiStatus() + "' ");
         return xml + "\n";
     }
@@ -1198,7 +1198,12 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
             // collectTreePriors();
 
             Log.warning.println("PARTITIONS:\n");
-            Log.warning.println(Arrays.toString(currentPartitions));
+            if (currentPartitions[0].size() < 25) {
+            	Log.warning.println(Arrays.toString(currentPartitions));
+            } else {
+            	Log.warning.println(currentPartitions[0].size() + " partitions");
+            	Log.debug.println(Arrays.toString(currentPartitions));
+            }
 
             determineLinks();
         } catch (Exception e) {

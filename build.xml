@@ -893,7 +893,7 @@
             <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home"/>
             -->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -922,7 +922,7 @@
                    mainclassname="beast.app.beauti.BeautiLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
@@ -950,7 +950,7 @@
                    mainclassname="beast.app.tools.LogCombinerLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -976,7 +976,7 @@
                    mainclassname="beast.app.treeannotator.TreeAnnotatorLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1001,7 +1001,7 @@
                    copyright="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
                    mainclassname="viz.DensiTree">
             <classpath file="${tools_dir}/DensiTree.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1026,7 +1026,7 @@
                    mainclassname="beast.app.tools.AppLauncherLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1123,7 +1123,7 @@
             <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home"/>
             -->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1155,7 +1155,7 @@
                    mainclassname="beast.app.beauti.BeautiLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Xdock:name=&quot;BEAUti&quot;"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
@@ -1186,7 +1186,7 @@
                    mainclassname="beast.app.tools.LogCombinerLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1215,7 +1215,7 @@
                    mainclassname="beast.app.treeannotator.TreeAnnotatorLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1243,7 +1243,7 @@
                    copyright="DensiTree, http://compevol.auckland.ac.nz/software/DensiTree/"
                    mainclassname="viz.DensiTree">
             <classpath file="${tools_dir}/DensiTree.jar"/>
-            <option value="-Xmx4g"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1271,7 +1271,7 @@
                    mainclassname="beast.app.tools.AppLauncherLauncher">
             <!--librarypath file="${dist}/beast.jar"/-->
             <classpath file="${Mac_package_dir}/lib/launcher.jar"/>
-            <option value="-Xmx1024M"/>
+            <option value="-Xmx8g"/>
             <option value="-Dapple.laf.useScreenMenuBar=true"/>
             <option value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
             <option value="-Duser.language=en"/>            
@@ -1424,7 +1424,7 @@
 				<fx:fileset dir="${dist}" includes="beauti.jar"/>
 			</fx:resources> 
 			<fx:platform>
-            	<fx:jvmarg value="-Xmx4g"/>
+            	<fx:jvmarg value="-Xmx8g"/>
 	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
     	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         	    <fx:jvmarg value="-Duser.language=en"/>            
@@ -1444,7 +1444,7 @@
      			shortcut="false"
      		>
      			<fx:argument>-capture</fx:argument>
-            	<fx:jvmarg value="-Xmx4g"/>
+            	<fx:jvmarg value="-Xmx8g"/>
 	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
     	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         	    <fx:jvmarg value="-Duser.language=en"/>            
@@ -1474,7 +1474,7 @@
 				<fx:fileset dir="${dist}" includes="beast.jar"/>
 			</fx:resources> 
 			<fx:platform>
-            	<fx:jvmarg value="-Xmx4g"/>
+            	<fx:jvmarg value="-Xmx8g"/>
 	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
     	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         	    <fx:jvmarg value="-Duser.language=en"/>            
@@ -1494,7 +1494,7 @@
      			shortcut="false"
      		>
      			<fx:argument>-capture</fx:argument>
-            	<fx:jvmarg value="-Xmx4g"/>
+            	<fx:jvmarg value="-Xmx8g"/>
 	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
     	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
         	    <fx:jvmarg value="-Duser.language=en"/>            

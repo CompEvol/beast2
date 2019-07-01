@@ -373,7 +373,7 @@ public class BeautiSubTemplate extends BEASTObject {
             for (BEASTInterface beastObject : beastObjects) {
                 doc.addPlugin(beastObject);
                 try {
-                	Log.warning.println("Adding " + beastObject.getClass().getName() + " " + beastObject);
+                	Log.debug.println("Adding " + beastObject.getClass().getName() + " " + beastObject);
                 } catch (Exception e) {
                 	Log.err.println("Adding " + beastObject.getClass().getName());
 				}
@@ -385,7 +385,7 @@ public class BeautiSubTemplate extends BEASTObject {
                 }
                 //System.out.println(connector.sourceID + " == " + connector.targetID);
                 if (connector.targetID != null && connector.targetID.equals("prior")) {
-                	Log.warning.println(">>> No description for connector " + connector.sourceID + " == " + connector.targetID);
+                	Log.debug.println(">>> No description for connector " + connector.sourceID + " == " + connector.targetID);
                 }
                 if (connector.getTipText() != null) {
                 	String ID = BeautiDoc.translatePartitionNames(connector.sourceID, context);

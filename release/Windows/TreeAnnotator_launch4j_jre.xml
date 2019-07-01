@@ -8,7 +8,7 @@
   <jre>
     <minVersion>1.6.0</minVersion>
     <initialHeapSize>256</initialHeapSize>
-    <maxHeapSize>4048</maxHeapSize>
+    <maxHeapSize>8096</maxHeapSize>
     <opt>-Duser.language=en</opt>
     <path>jre</path>
   </jre>    

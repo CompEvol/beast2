@@ -27,6 +27,7 @@ package beast.util;
 
 
 
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,7 +37,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +61,6 @@ import beast.app.BEASTVersion2;
 import beast.core.BEASTInterface;
 import beast.core.BEASTObjectStore;
 import beast.core.Input;
-import beast.core.util.Log;
 
 /**
  * converts MCMC plug in into XML, i.e. does the reverse of XMLParser
@@ -885,7 +884,7 @@ public class XMLProducer extends XMLParser {
             // process inputs of this beast object
             // first, collect values as attributes
             List<Input<?>> inputs = BEASTObjectStore.listInputs(beastObject);
-            Collections.sort(inputs, (a,b) -> {return a.getName().compareTo(b.getName());});
+            //Collections.sort(inputs, (a,b) -> {return a.getName().compareTo(b.getName());});
             for (Input<?> input : inputs) {
             	Object value = input.get();
             	if (value != null) {
@@ -977,11 +976,13 @@ public class XMLProducer extends XMLParser {
                 	}
                 	for (String key : map.keySet()) {
                         //buf.append("        <input name='" + key + "'>");
-                        buf.append("\n        " + key);
-                		for (int k = key.length(); k < whiteSpaceWidth; k++) {
-                			buf.append(' ');
+                		if (!name.startsWith("*")) {
+	                        buf.append("\n        " + key);
+	                		for (int k = key.length(); k < whiteSpaceWidth; k++) {
+	                			buf.append(' ');
+	                		}
+	                		buf.append("=\"" + normalise(map.get(key).toString()) + "\"");
                 		}
-                		buf.append("=\"" + normalise(map.get(key).toString()) + "\"");
                 	}
                 }
             	return;
