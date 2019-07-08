@@ -184,7 +184,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 		assertEquals(Enumeration.two, po.getE());
 		
 		xml2 = producer.toRawXML(po).trim();
-		assertEquals(xml, xml2);
+		assertEqualXML(xml, xml2);
 
 		// test int c'tor and default value
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject' i='2'/>";
@@ -208,7 +208,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		xml2 = producer.toRawXML(po).trim();
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject' a=\"1.0 15.0 17.0\" e='none' i='0'/>";
-		assertEquals(xml, xml2);
+		assertEqualXML(xml, xml2);
 
 
 		// test object array c'tor
@@ -222,7 +222,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		xml2 = producer.toRawXML(po).trim();
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject' b=\"1.0 15.0 17.0\" e='none' i='0'/>";
-		assertEquals(xml, xml2);
+		assertEqualXML(xml, xml2);
 		
 		// test inner class inside base class
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject$InnerClass' a='2.0 5.0 7.0'/>";
@@ -235,7 +235,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		xml2 = producer.toRawXML(po).trim();
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject$InnerClass' a=\"2.0 5.0 7.0\" e='none' i='0'/>";
-		assertEquals(xml, xml2);
+		assertEqualXML(xml, xml2);
 
 		// test inner class inside interface 
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveInterface$InterfaceInnerClass' i='7'/>";
@@ -245,7 +245,7 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 
 		xml2 = producer.toRawXML(iio).trim();
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveInterface$InterfaceInnerClass' i='7'/>";
-		assertEquals(xml, xml2);
+		assertEqualXML(xml, xml2);
 	}	
 
 	@Test
@@ -347,6 +347,41 @@ public class InputForAnnotatedConstructorTest extends TestCase {
 			eSet.removeAll(oSet);
 			if (eSet.isEmpty()) {
 				return;
+			}
+		}
+		assertEquals(expected, obtained);
+	}
+	
+	void assertEqualXML(String expected, String obtained) {
+		if (expected.equals(obtained)) {
+			return;
+		}
+		// check element names match
+		String prefix1 = expected.substring(0, expected.indexOf(' '));
+		String prefix2 = obtained.substring(0, expected.indexOf(' '));
+		if (prefix1.equals(prefix2)) {
+			expected = expected.substring(prefix1.length(), expected.length() - 2).trim();
+			obtained = obtained.substring(prefix1.length(), obtained.length() - 2).trim();
+			// check attributes match
+			String [] strs = expected.split("=");
+			Set<String> eSet = new LinkedHashSet<>();
+			for (int i = 0; i < strs.length - 1; i++) {
+				String name = i == 0 ? strs[i] : strs[i].substring(strs[i].lastIndexOf(' ')+1); 
+				String value = i == strs.length - 2 ? strs[i+1] : strs[i+1].substring(0, strs[i+1].lastIndexOf(' ') - 1);
+				eSet.add(name + " = " + value);
+			}
+			strs = expected.split("=");
+			Set<String> oSet = new LinkedHashSet<>();
+			for (int i = 0; i < strs.length - 1; i++) {
+				String name = i == 0 ? strs[i] : strs[i].substring(strs[i].lastIndexOf(' ')+1); 
+				String value = i == strs.length - 2 ? strs[i+1] : strs[i+1].substring(0, strs[i+1].lastIndexOf(' ') - 1);
+				oSet.add(name + " = " + value);
+			}
+			if (eSet.size() == oSet.size()) {
+				eSet.removeAll(oSet);
+				if (eSet.isEmpty()) {
+					return;
+				}
 			}
 		}
 		assertEquals(expected, obtained);
