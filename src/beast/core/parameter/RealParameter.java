@@ -103,7 +103,7 @@ public class RealParameter extends Parameter.Base<Double> {
             nScaled += 1;
 
             if (values[i] < m_fLower || values[i] > m_fUpper) {
-                throw new IllegalArgumentException("parameter scaled our of range");
+                throw new IllegalArgumentException("parameter scaled out of range");
             }
         }
 

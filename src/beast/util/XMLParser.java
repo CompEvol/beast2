@@ -293,8 +293,8 @@ public class XMLParser {
         replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "filebase", baseName);
 
         // Substitute occurrences of "$(seed)" with RNG seed
-//        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
-//                String.valueOf(Randomizer.getSeed()));
+        replaceVariable(doc.getElementsByTagName(BEAST_ELEMENT).item(0), "seed",
+                String.valueOf(Randomizer.getSeed()));
         
         if (parserDefinitions != null) {
         	for (String name : parserDefinitions.keySet()) {
