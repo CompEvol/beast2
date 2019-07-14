@@ -552,10 +552,10 @@
                 <copy file="${beast1_dir}/LogCombiner.exe" todir="${Windows_package_dir}" />
                 <copy file="${beast1_dir}/TreeAnnotator.exe" todir="${Windows_package_dir}" />
         -->
-        <zip destfile="${Windows_dir}/${BEAST_name}.v${version}.zip">
+        <zip destfile="${Windows_dir}/${BEAST_name}_with_JRE.v${version}.zip">
             <zipfileset dir="${Windows_package_dir}" prefix="${BEAST_name}" />
         </zip>
-       <copy file="${Windows_dir}/${BEAST_name}.v${version}.zip" todir="../../tmp/" />
+       <copy file="${Windows_dir}/${BEAST_name}_with_JRE.v${version}.zip" todir="../../tmp/" />
 
         <echo message="Windows version release is finished." />
     </target>
@@ -954,7 +954,7 @@
             </fileset>
         </copy>
         <exec executable="cp">
-		    <arg line="-R ../jre1.8.0_161.jre/Contents/Home ${Mac_package_dir}/jre1.8.0_161"/>
+		    <arg line="-R ../jdk8u212-b04-jre/Contents/Home ${Mac_package_dir}/jre1.8.0_212"/>
 		</exec>
         <exec executable="gcc">
 		    <arg line="release/Mac/launch.c -o JavaAppLauncher"/>

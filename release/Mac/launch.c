@@ -36,29 +36,29 @@ int main(int argc, char *argv[]) {
 	if (strstr(argv[0], "AppLauncher.app") != NULL) {
 		strstr(argv[0], "AppLauncher.app")[0] = 0;
 		normalise(argv[0], path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.tools.AppLauncherLauncher", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.tools.AppLauncherLauncher", path, path);
 	} else if (strstr(argv[0], "BEAST.app") != NULL) {
 		strstr(argv[0], "BEAST.app")[0] = 0;
 		normalise(argv[0], path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.beastapp.BeastLauncher -window -options -working", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.beastapp.BeastLauncher -window -options -working", path, path);
 	} else if (strstr(argv[0], "DensiTree.app") != NULL) {
 		strstr(argv[0], "DensiTree.app")[0] = 0;
 		normalise(argv[0], path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -jar %sDensiTree.app/Contents/Java/DensiTree.jar", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -jar %sDensiTree.app/Contents/Java/DensiTree.jar", path, path);
 	} else if (strstr(argv[0], "LogCombiner.app") != NULL) {
 		strstr(argv[0], "LogCombiner.app")[0] = 0;
 		normalise(argv[0], path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.tools.LogCombinerLauncher", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.tools.LogCombinerLauncher", path, path);
 	} else if (strstr(argv[0], "TreeAnnotator.app") != NULL) {
 		strstr(argv[0], "TreeAnnotator.app")[0] = 0;
 		normalise(argv[0], path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.treeannotator.TreeAnnotatorLauncher", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.treeannotator.TreeAnnotatorLauncher", path, path);
 	} else if (strstr(argv[0], "BEAUti.app") != NULL) {
 		strstr(argv[0], "BEAUti.app")[0] = 0;
 //		fprintf(fout, "argv0 = %s\n", argv[0]);
 		normalise(argv[0], path);
 //		fprintf(fout, "path = %s\n", path);
-		sprintf(s, "%sjre1.8.0_161/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.beauti.BeautiLauncher -capture", path, path);
+		sprintf(s, "%sjre1.8.0_212/bin/java -Xmx4g -Dapple.laf.useScreenMenuBar=true -Djava.library.path=$JAVAROOT:/usr/local/lib -Duser.language=en -cp %slib/launcher.jar beast.app.beauti.BeautiLauncher -capture", path, path);
 	}
 
 	//fprintf(fout,"%s\n", s);
