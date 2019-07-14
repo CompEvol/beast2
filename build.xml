@@ -773,7 +773,7 @@
         </copy>
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
         <exec executable="cp">
-		<arg line="-R ../jre1.8.0_161 ${Linux_package_dir}/jre1.8.0_161"/>
+             <arg line="-R ../jdk8u212-b04-jre ${Linux_package_dir}/jre1.8.0_212"/>
 	</exec>
 
         <!--<copy todir="${Linux_package_dir}/doc">
