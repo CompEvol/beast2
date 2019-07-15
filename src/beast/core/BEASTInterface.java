@@ -232,7 +232,7 @@ public interface BEASTInterface {
             	try {
             		final Input<?> input = (Input<?>) field.get(this);
             		if (inputNames.keySet().contains(input.getName())) {
-            			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+            			throw new RuntimeException("Programmer error in class " + this.getClass().getName() + ": multiple inputs with name " + input.getName() + " found (perhaps in sub and super classes)\n"
             					+ "Classes should have unique input names");
             		}
             		inputNames.put(input.getName(), input);
@@ -316,7 +316,7 @@ public interface BEASTInterface {
 	            		if (inputNames.keySet().contains(t.getName())) {
 	            			Input input = inputNames.get(t.getName());
 	            			if (!(input instanceof InputForAnnotatedConstructor)) {
-	                			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+	                			throw new RuntimeException("Programmer error in class " + this.getClass().getName() + ": multiple inputs with name " + input.getName() + " found (perhaps in sub and super classes)\n"
 	                					+ "Classes should have unique input names");	            				
 	            			}
 	            			if (!input.equals(t)) {
@@ -337,7 +337,7 @@ public interface BEASTInterface {
 	            		if (inputNames.keySet().contains(t.getName())) {
 	            			Input input = inputNames.get(t.getName());
 	            			if (!(input instanceof InputForAnnotatedConstructor)) {
-	                			throw new RuntimeException("Programmer error: multiple inputs with name " + input.getName() + "  found (perhaps in sub and super classes)\n"
+	                			throw new RuntimeException("Programmer error in class " + this.getClass().getName() + ": multiple inputs with name " + input.getName() + " found (perhaps in sub and super classes)\n"
 	                					+ "Classes should have unique input names");	            				
 	            			}
 	            			if ((input.defaultValue != null && !input.defaultValue.toString().equals(t.defaultValue.toString())) ||
