@@ -3,17 +3,21 @@ package test.beast.app.beauti;
 
 
 
+import static org.fest.swing.edt.GuiActionRunner.execute;
+
 import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.fest.assertions.Assertions;
 import org.fest.swing.data.TableCell;
+import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.JComboBoxFixture;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
 
+import beast.app.util.Utils;
 import beast.core.BEASTInterface;
 import beast.core.Distribution;
 import beast.core.Function;
@@ -528,7 +532,21 @@ public class LinkUnlinkTest extends BeautiBase {
 	@Test // issue #413
 	public void starBeastLinkTreesAndDeleteTest() throws Exception {
 		warning("Select StarBeast template");
-		beautiFrame.menuItemWithPath("File", "Template", "StarBeast").click();
+		if (!Utils.isMac()) {
+			beautiFrame.menuItemWithPath("File", "Template", "StarBeast").click();
+		} else {
+			execute(new GuiTask() {
+		        @Override
+				protected void executeInEDT() {
+		        	try {
+		    			beauti.doc.loadNewTemplate("templates/StarBeast.xml");
+		    			beauti.refreshPanel();
+		        	} catch (Exception e) {
+						e.printStackTrace();
+					}
+		        }
+		    });
+		}
 
 		warning("Load gopher data 26.nex, 47.nex");
 		importAlignment("examples/nexus", new File("26.nex"), new File("47.nex"));

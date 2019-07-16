@@ -10,7 +10,8 @@ import beast.core.parameter.Parameter;
 @Description("A temporary helper class to solve compound state nodes for operators, " +
         "but it cannot be used as input, before the framework is modified.")
 public class CompoundParameterHelper<T> {
-    protected int[] parameterIndex; // store the index of parameter list
+    protected int[] parameterIndex1; // index to select parameter
+    protected int[] parameterIndex2; // index to select dimension inside parameter
 
     final List<Parameter<T>> parameterList;
 
@@ -26,18 +27,22 @@ public class CompoundParameterHelper<T> {
             dim += para.getDimension();
         }
 
-        parameterIndex = new int[dim];
+        parameterIndex1 = new int[dim];
+        parameterIndex2 = new int[dim];
 
+        int k = 0;
         for (int y = 0; y < parameterList.size(); y++) {
             final Parameter<T> para = parameterList.get(y);
             for (int d = 0; d < para.getDimension(); d++) {
-                parameterIndex[y + d] = y;
+                parameterIndex1[k] = y;
+                parameterIndex2[k] = d;
+                k++;
             }
         }
     }
 
     public int getDimension() {
-        return parameterIndex.length;
+        return parameterIndex1.length;
     }
 
     public void setValue(final int param, final T value) {
@@ -57,25 +62,14 @@ public class CompoundParameterHelper<T> {
         return parameterList.get(getY(param)).getUpper();
     }
 
-    // given {{?,?,?,?}{?,?}{?,?,?}}, parameterIndex[] is 0 0 0 0 1 1 2 2 2, param starts from 0;
-    // if param < 4, then getX(param) = param;
-    // if param >= 4, then getX(param) = param - the sum of previous dimensions
-    // for example, param = 7, then getX = 7 - (4 + 2) = 1
+    // the index inside a parameter
     protected int getX(final int param) {
-        int sumPrevDim = parameterList.get(0).getDimension();
-        if (param < sumPrevDim) {
-            return param;
-        }
-        for (int y = 1; y < getY(param); y++) {
-            sumPrevDim += parameterList.get(y).getDimension();
-        }
-
-        return param - sumPrevDim;
+        return parameterIndex2[param];
     }
 
     // the index of parameter list
     protected int getY(final int param) {
-        return parameterIndex[param];
+        return parameterIndex1[param];
     }
 
 }
