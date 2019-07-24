@@ -323,6 +323,7 @@
             <fileset dir="${Windows_dir}/scripts"/>
         </copy>
         -->
+        <copy file="${dist}/launcher.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
@@ -459,6 +460,7 @@
             <fileset dir="${Windows_dir}/scripts"/>
         </copy>
         -->
+        <copy file="${dist}/launcher.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
