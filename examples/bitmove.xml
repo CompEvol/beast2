@@ -1,0 +1,23 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.branchratemodel:beast.evolution.likelihood:beast.core.parameter'>
+
+    <parameter spec='BooleanParameter' name='indicators' id='indicators' dimension="5" value="true true false false false"/>
+
+    <run spec="MCMC" id="mcmc" chainLength="100000"> <!--autoOptimize="true"-->
+        <state>
+            <input name='stateNode' idref='indicators'/>
+        </state>
+	
+	<distribution spec="CompoundDistribution" id="posterior"/>
+
+        <operator id="bitmove" spec="BitMoveOperator" weight="1">
+            <input name="parameter" idref="indicators"/>
+        </operator>
+
+        <logger logEvery="10" fileName="$(filebase).log">
+            <log idref="indicators"/>
+            <log id="sum" spec="beast.core.util.Sum" arg="@indicators"/>
+        </logger>
+    </run>
+
+</beast>
