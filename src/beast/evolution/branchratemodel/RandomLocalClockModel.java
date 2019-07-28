@@ -23,11 +23,10 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
             new Input<>("rates",
                     "the rate parameters associated with nodes in the tree for sampling of individual rates among branches.",
                     Input.Validate.REQUIRED);
-    //    public Input<RealParameter> meanRateInput =
-//            new Input<>("meanRate",
-//                    "an optional parameter to set the mean rate across the whole tree");
+
     final public Input<Tree> treeInput =
             new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
+
     final public Input<Boolean> ratesAreMultipliersInput =
             new Input<>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
 
