@@ -13,12 +13,16 @@ import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.IntegerParameter;
-
+import beast.evolution.tree.Tree;
 
 
 @Description("calculates sum of a valuable")
 public class Sum extends CalculationNode implements Function, Loggable {
     final public Input<List<Function>> functionInput = new Input<>("arg", "argument to be summed", new ArrayList<>(), Validate.REQUIRED);
+
+    final public Input<Tree> treeInput = new Input<>("tree", "the tree corresponding to the function to be summed, indexing by node numbers assumed.", Validate.OPTIONAL);
+
+    final public Input<Boolean> ignoreZeroBranchLengthsInput = new Input<>("ignoreZeroBranchLengths", "true if quantities in the argument should only be summed for non-zero branch lengths.", false, Validate.OPTIONAL);
 
     enum Mode {integer_mode, double_mode}
 
@@ -27,6 +31,9 @@ public class Sum extends CalculationNode implements Function, Loggable {
     boolean needsRecompute = true;
     double sum = 0;
     double storedSum = 0;
+
+    Tree tree;
+    boolean ignoreZeroBranchLengths = false;
 
     @Override
     public void initAndValidate() {
@@ -37,6 +44,8 @@ public class Sum extends CalculationNode implements Function, Loggable {
 	            mode = Mode.double_mode;
 	        }
         }
+        tree = treeInput.get();
+        ignoreZeroBranchLengths = ignoreZeroBranchLengthsInput.get();
     }
 
     @Override
@@ -57,10 +66,21 @@ public class Sum extends CalculationNode implements Function, Loggable {
      */
     void compute() {
         sum = 0;
-        for (Function v : functionInput.get()) {
-	        for (int i = 0; i < v.getDimension(); i++) {
-	            sum += v.getArrayValue(i);
-	        }
+        if (tree != null && ignoreZeroBranchLengths) {
+            for (Function v : functionInput.get()) {
+                for (int i = 0; i < v.getDimension(); i++) {
+                    if (!tree.getNode(i).isDirectAncestor()) {
+                        sum += v.getArrayValue(i);
+                    }
+                }
+            }
+        } else {
+
+            for (Function v : functionInput.get()) {
+                for (int i = 0; i < v.getDimension(); i++) {
+                    sum += v.getArrayValue(i);
+                }
+            }
         }
         needsRecompute = false;
     }
