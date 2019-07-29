@@ -25,6 +25,8 @@ public class Tree extends StateNode implements TreeInterface {
     final public Input<String> nodeTypeInput = new Input<>("nodetype",
             "type of the nodes in the beast.tree", Node.class.getName());
 
+    final public Input<Boolean> adjustTreeNodeHeightsInput = new Input<>("adjustTreeNodeHeights", "if true (default), then tree node heights are adjusted to avoid non-positive branch lengths. If you want to maintain zero branch lengths then you must set this to false.", true, Input.Validate.OPTIONAL);
+
     /**
      * state of dirtiness of a node in the tree
      * DIRTY means a property on the node has changed, but not the topology. "property" includes the node height
@@ -226,7 +228,7 @@ public class Tree extends StateNode implements TreeInterface {
     final static double EPSILON = 0.0000001;
 
     protected void adjustTreeNodeHeights(final Node node) {
-        if (!node.isLeaf()) {
+        if (!node.isLeaf() && adjustTreeNodeHeightsInput.get()) {
             for (final Node child : node.getChildren()) {
                 adjustTreeNodeHeights(child);
             }
