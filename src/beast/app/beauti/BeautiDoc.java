@@ -490,6 +490,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         String classpath = "";
 		try {
 			classpath = BeastLauncher.getPath(false, null);
+			classpath = classpath.substring(1, classpath.length()-1);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e1) {
 			e1.printStackTrace();

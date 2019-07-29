@@ -303,6 +303,11 @@ public class BeastLauncher {
 		return version;
 	}
 
+	/**
+	 * @param useStrictVersions
+	 * @param beastFile
+	 * @return Class path string for main BEAST process, enclosed in literal quotes.
+	 */
 	public static String getPath(boolean useStrictVersions, String beastFile) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		installBEASTPackage();
 		PackageManager.initialise();
