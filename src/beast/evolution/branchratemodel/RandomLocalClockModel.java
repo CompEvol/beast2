@@ -1,6 +1,7 @@
 package beast.evolution.branchratemodel;
 
 
+import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.BooleanParameter;
@@ -12,7 +13,10 @@ import beast.evolution.tree.Tree;
 /**
  * @author Alexei Drummond
  */
-@Description("Random Local Clock Model, whatever that is....")
+@Description("Random Local Clock Model.")
+@Citation(value =
+        "Drummond AJ, Suchard MA (2010) Bayesian random local clocks, or one rate to rule them all. BMC biology 8, 114.", DOI = "10.1186/1741-7007-8-114",
+        year = 2010, firstAuthorSurname = "drummond")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
     final public Input<BooleanParameter> indicatorParamInput =
@@ -30,12 +34,17 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     final public Input<Boolean> ratesAreMultipliersInput =
             new Input<>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
 
+    final public Input<Boolean> scalingInput = new Input<>("scaling", "if false, then ignore meanRate input and leave rates unscaled.", true, Input.Validate.OPTIONAL);
+
     Tree m_tree;
     RealParameter meanRate;
+    boolean scaling = true;
 
     @Override
     public void initAndValidate() {
         m_tree = treeInput.get();
+
+        scaling = scalingInput.get();
 
         BooleanParameter indicators = indicatorParamInput.get();
 
@@ -57,7 +66,6 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         	Log.warning.println("RandomLocalClockModel::Setting dimension of rates to " + (m_tree.getNodeCount() - 1));
             rates.setDimension(m_tree.getNodeCount() - 1);
         }
-
 
         ratesAreMultipliers = ratesAreMultipliersInput.get();
 
@@ -98,30 +106,34 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     private void recalculateScaleFactor() {
 
-        BooleanParameter indicators = indicatorParamInput.get();
-        RealParameter rates = rateParamInput.get();
+        if (scaling) {
+            BooleanParameter indicators = indicatorParamInput.get();
+            RealParameter rates = rateParamInput.get();
 
-        calculateUnscaledBranchRates(m_tree.getRoot(), 1.0, indicators, rates);
+            calculateUnscaledBranchRates(m_tree.getRoot(), 1.0, indicators, rates);
 
-        double timeTotal = 0.0;
-        double branchTotal = 0.0;
+            double timeTotal = 0.0;
+            double branchTotal = 0.0;
 
-        for (int i = 0; i < m_tree.getNodeCount(); i++) {
-            Node node = m_tree.getNode(i);
-            if (!node.isRoot()) {
+            for (int i = 0; i < m_tree.getNodeCount(); i++) {
+                Node node = m_tree.getNode(i);
+                if (!node.isRoot()) {
 
-                double branchInTime = node.getParent().getHeight() - node.getHeight();
+                    double branchInTime = node.getParent().getHeight() - node.getHeight();
 
-                double branchLength = branchInTime * unscaledBranchRates[node.getNr()];
+                    double branchLength = branchInTime * unscaledBranchRates[node.getNr()];
 
-                timeTotal += branchInTime;
-                branchTotal += branchLength;
+                    timeTotal += branchInTime;
+                    branchTotal += branchLength;
+                }
             }
+
+            scaleFactor = timeTotal / branchTotal;
+
+            scaleFactor *= meanRate.getValue();
+        } else {
+            scaleFactor = 1.0;
         }
-
-        scaleFactor = timeTotal / branchTotal;
-
-        scaleFactor *= meanRate.getValue();
     }
 
     @Override
@@ -167,6 +179,6 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
     private boolean recompute = true;
     double[] unscaledBranchRates;
-    double scaleFactor;
+    double scaleFactor = 1.0;
     boolean ratesAreMultipliers = false;
 }
