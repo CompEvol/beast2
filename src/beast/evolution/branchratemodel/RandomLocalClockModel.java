@@ -105,12 +105,12 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
     }
 
     private void recalculateScaleFactor() {
+        BooleanParameter indicators = indicatorParamInput.get();
+        RealParameter rates = rateParamInput.get();
+
+        calculateUnscaledBranchRates(m_tree.getRoot(), 1.0, indicators, rates);
 
         if (scaling) {
-            BooleanParameter indicators = indicatorParamInput.get();
-            RealParameter rates = rateParamInput.get();
-
-            calculateUnscaledBranchRates(m_tree.getRoot(), 1.0, indicators, rates);
 
             double timeTotal = 0.0;
             double branchTotal = 0.0;
