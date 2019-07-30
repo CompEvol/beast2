@@ -1,6 +1,5 @@
 package beast.evolution.branchratemodel;
 
-
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
@@ -15,7 +14,8 @@ import beast.evolution.tree.Tree;
  */
 @Description("Random Local Clock Model.")
 @Citation(value =
-        "Drummond AJ, Suchard MA (2010) Bayesian random local clocks, or one rate to rule them all. BMC biology 8, 114.", DOI = "10.1186/1741-7007-8-114",
+        "Drummond AJ, Suchard MA (2010) Bayesian random local clocks, or one rate to rule them all. BMC biology 8, 114.",
+        DOI = "10.1186/1741-7007-8-114",
         year = 2010, firstAuthorSurname = "drummond")
 public class RandomLocalClockModel extends BranchRateModel.Base {
 
@@ -32,11 +32,16 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
             new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
 
     final public Input<Boolean> ratesAreMultipliersInput =
-            new Input<>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).", false);
+            new Input<>("ratesAreMultipliers", "true if the rates should be treated as multipliers (default false).",
+                    false);
 
-    final public Input<Boolean> scalingInput = new Input<>("scaling", "if false, then ignore meanRate input and leave rates unscaled.", true, Input.Validate.OPTIONAL);
+    final public Input<Boolean> scalingInput =
+            new Input<>("scaling", "if false, then ignore meanRate input and leave rates unscaled.",
+                    true, Input.Validate.OPTIONAL);
 
-    final public Input<Boolean> includeRootInput = new Input<>("includeRoot", "if true, then the root can take on an abritrary rate, otherwise the root branch has rate 1.0.", false, Input.Validate.OPTIONAL);
+    final public Input<Boolean> includeRootInput =
+            new Input<>("includeRoot", "if true, then the root can take on an arbitrary rate, otherwise the root branch has rate 1.0.",
+                    false, Input.Validate.OPTIONAL);
 
     Tree tree;
     RealParameter meanRate;
