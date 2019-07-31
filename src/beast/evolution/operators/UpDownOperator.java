@@ -27,7 +27,7 @@ public class UpDownOperator extends Operator {
             "zero or more items to scale upwards", new ArrayList<>());
     final public Input<List<StateNode>> downInput = new Input<>("down",
             "zero or more items to scale downwards", new ArrayList<>());
-    final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to acheive a good acceptance rate (default true)", true);
+    final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
     final public Input<Boolean> elementWiseInput = new Input<>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
 
     final public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0);

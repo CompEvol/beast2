@@ -148,7 +148,7 @@ public class LogAnalyser {
         while (fin.ready()) {
             str = fin.readLine();
             int i = 0;
-            if (str.indexOf('#') < 0 && str.matches("[0-9].*")) // {
+            if (str.indexOf('#') < 0 && str.matches("[-0-9].*")) // {
                 //data++;
                 if (++data >= 0) //{
                     for (String str2 : str.split("\\s")) {
@@ -481,6 +481,7 @@ public class LogAnalyser {
                 "ACT", "ESS", "geometric-mean"
         };
 
+        out.print("sample\tfilename\t");
         for (int paramIdx=1; paramIdx<m_sLabels.length; paramIdx++) {
             for (int i=0; i<postFix.length; i++) {
                 if (paramIdx> 1 || i>0)
@@ -613,6 +614,7 @@ public class LogAnalyser {
                             if (idx == 0)
                                 analyser.printOneLineHeader(System.out);
 
+                            System.out.print(idx + "\t" + files.get(idx) + "\t");
                             analyser.printOneLine(System.out);
                         }
 
