@@ -123,7 +123,7 @@ public class LogAnalyser {
             str = fin.readLine();
             if (str.indexOf('#') < 0 && str.matches(".*[0-9a-zA-Z].*")) {
                 if (m_sLabels == null)
-                    m_sLabels = str.split("\\s");
+                    m_sLabels = str.split("\\t");
                 else
                     data++;
             } else {
