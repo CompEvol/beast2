@@ -267,7 +267,7 @@ public class TreeAnnotator {
                 }
             }
             // we got to the end of the translate block
-            // read bunrinCount trees
+            // read burninCount trees
             current = 0;
             while (current < burninCount && fin.ready()) {
     			str = nextLine();
