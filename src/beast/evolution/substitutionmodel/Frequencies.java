@@ -116,7 +116,7 @@ public class Frequencies extends CalculationNode {
      * Estimate from sequence alignment.
      * This version matches the implementation in Beast 1 & PAUP  *
      */
-    void estimateFrequencies() {
+    protected void estimateFrequencies() {
         Alignment alignment = dataInput.get();
         DataType dataType = alignment.getDataType();
         int stateCount = alignment.getMaxStateCount();
