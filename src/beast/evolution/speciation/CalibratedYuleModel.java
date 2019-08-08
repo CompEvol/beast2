@@ -422,6 +422,10 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
     public double getCorrection(final TreeInterface tree, final double lam) {
         double logL = 0.0;
 
+        if (orderedCalibrations == null) {
+        	Log.warning.println("WARNING: Calibrated Yule prior could not find any properly configured calibrations. Add a calibration to make this a valid analysis.");                                	
+        	return 0;
+        }
         final int calCount = orderedCalibrations.length;
         final double[] hs = new double[calCount];
 
