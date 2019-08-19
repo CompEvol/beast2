@@ -72,7 +72,7 @@ To run BEAUti simply double-click the "BEAUti.exe" file in the BEAST
 folder. If this doesn't work then you may not have Java installed correctly. 
 Try opening an MS-DOS window and typing:
 
-	java -cp lib/beast.jar beast.app.beauti.Beauti
+	java -cp lib/launcher.jar beast.app.beauti.BeautiLauncher
 
 __________________________________________________________________________
 4) RUNNING BEAST
@@ -82,7 +82,7 @@ folder. You will be asked to select a BEAST XML input file.
 
 Alternatively open a Command window and type:
 	
-	java -jar lib/beast.jar input.xml
+	java -jar lib/launcher.jar input.xml
 
 Where "input.xml" is the name of a BEAST XML format file. This file can
 either be created from scratch using a text editor or be created by the
@@ -127,7 +127,7 @@ BEAST arguments:
     
 For example:
 
-     java -jar lib/beast.jar -seed 123456 -overwrite input.xml
+     java -jar lib/launcher.jar -seed 123456 -overwrite input.xml
 
 On Linux, there is a bin directory inside the beast directory that has 
 a number of scripts for starting programs, including beast, and beauti, 
