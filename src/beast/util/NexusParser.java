@@ -724,7 +724,7 @@ public class NexusParser {
 
                 final String character = getAttValue("nchar", str);
                 if (character == null) {
-                    throw new IOException("nchar attribute expected (e.g. 'dimensions char=123') expected, not " + str);
+                    throw new IOException("nchar attribute expected (e.g. 'dimensions nchar=123') expected, not " + str);
                 }
                 charCount = Integer.parseInt(character);
                 final String taxa = getAttValue("ntax", str);
@@ -1225,7 +1225,7 @@ public class NexusParser {
             		String [] strs3 = str0.split("[\\(,\\)]");
 
             		try {
-                        MRCAPrior prior = getMRCAPrior(taxonset, strs3);
+                        MRCAPrior prior = getMRCAPrior(taxonset, strs3, false);
 
                         // should set Tree before initialising, but we do not know the tree yet...
                         if (calibrations == null) {
@@ -1253,6 +1253,10 @@ public class NexusParser {
      * @throws RuntimeException
      */
     public MRCAPrior getMRCAPrior(TaxonSet taxonset, String[] strs3) throws RuntimeException {
+    	return getMRCAPrior(taxonset, strs3, false);    	
+    }
+    
+    public MRCAPrior getMRCAPrior(TaxonSet taxonset, String[] strs3, boolean useOriginate) throws RuntimeException {
         RealParameter[] param = new RealParameter[strs3.length];
         for (int i = 1; i < strs3.length; i++) {
             try {
@@ -1312,7 +1316,8 @@ public class NexusParser {
         prior.isMonophyleticInput.setValue(true, prior);
         prior.distInput.setValue(distr, prior);
         prior.taxonsetInput.setValue(taxonset, prior);
-        prior.setID(taxonset.getID() + ".prior");
+        prior.useOriginateInput.setValue(useOriginate, prior);
+        prior.setID(taxonset.getID() + (useOriginate ? ".originate." : "") + ".prior");
         return prior;
     }
 
