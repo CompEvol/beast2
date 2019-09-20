@@ -313,6 +313,14 @@
                 <exclude name="benchmark/**" />
             </fileset>
         </copy>
+        
+        <mkdir dir="${Windows_package_dir}/bat" />
+        <copy todir="${Windows_package_dir}/bat/">
+            <fileset dir="${Windows_dir}/bat">
+                <include name="*.bat" />
+            </fileset>
+        </copy>
+
         <!--<copy todir="${Windows_package_dir}/native">
             <fileset dir="${common_dir}/native"/>
         </copy>
@@ -449,6 +457,13 @@
         </copy>
         <copy todir="${Windows_package_dir}/jre">
             <fileset dir="../jdk8u212-b04-jre" />
+        </copy>
+
+        <mkdir dir="${Windows_package_dir}/bat" />
+        <copy todir="${Windows_package_dir}/bat/">
+            <fileset dir="${Windows_dir}/bat">
+                <include name="*.bat" />
+            </fileset>
         </copy>
         <!--<copy todir="${Windows_package_dir}/native">
             <fileset dir="${common_dir}/native"/>
