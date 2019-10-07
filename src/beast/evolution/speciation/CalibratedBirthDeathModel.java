@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import beast.core.Citation;
 import org.apache.commons.math.MathException;
 
 import beast.core.Description;
@@ -32,9 +33,9 @@ import beast.math.statistic.RPNcalculator;
         " calibrated nodes (the root age of the clade) is identical to the specified calibration, " +
         "and the density ratio between trees with equal calibration values is equal to the ratio under the " +
         "Birth-Death prior.")
-//@Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time " +
-//        "Estimation. " +
-//        "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087")
+@Citation(value = "Heled J, Drummond AJ. Calibrated Tree Priors for Relaxed Phylogenetics and Divergence Time " +
+        "Estimation. " +
+        "Syst Biol (2012) 61 (1): 138-149.", DOI = "10.1093/sysbio/syr087")
 public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
 
     static enum Type {
