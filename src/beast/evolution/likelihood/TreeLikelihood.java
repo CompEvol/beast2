@@ -26,12 +26,6 @@
 
 package beast.evolution.likelihood;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -44,6 +38,8 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
+
+import java.util.*;
 
 @Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
@@ -332,6 +328,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             setPartials(node.getLeft(), patternCount);
             setPartials(node.getRight(), patternCount);
         }
+    }
+
+    // for testing
+    public double[] getRootPartials() {
+        return m_fRootPartials.clone();
     }
 
     /**
