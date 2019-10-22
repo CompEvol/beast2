@@ -53,8 +53,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     //boolean usingcategories;
 
     ParametricDistribution distribution; //the distribution of the rates
-    // i.e. LogNormal(M,S,MeanInRealSpace), then get the three parameters
-    double M;double S;boolean MeanInRealSpace;
 
     RealParameter meanRate;
     Tree tree;
@@ -84,13 +82,6 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         }
 
         
-        //get the mean and standard deviation of lognormal distribution
-        if(distribution instanceof LogNormalDistributionModel){
-            LogNormalDistributionModel mylognormal=(LogNormalDistributionModel)distribution;
-             M=mylognormal.MParameterInput.get().getValue();
-             S=mylognormal.SParameterInput.get().getValue();
-             MeanInRealSpace=mylognormal.hasMeanInRealSpaceInput.get();
-        }
         // if categories is null, then usingcategories is false; otherwise, it is set to be true.
         //if(categories==null){
             //usingcategories = false;
@@ -158,10 +149,16 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             case rates: {
                 if (rateParameter.getDimension() != branchCount) {
                     rateParameter.setDimension(branchCount);
-                    //randomly draw rates from the lognormal distribution
+                    //randomly draw rates from the distribution
+                    Double[][] initialRates0 = null;
+					try {
+						initialRates0 = distribution.sample(branchCount);
+					} catch (MathException e) {
+						e.printStackTrace();
+					}
                     Double [] initialRates = new Double[branchCount];
                     for (int i = 0; i < branchCount; i++) {
-                        initialRates[i] =Randomizer.nextLogNormal(M,S,MeanInRealSpace);
+                    	initialRates[i] = initialRates0[i][0];
                     }
                     RealParameter other = new RealParameter(initialRates);
                     rateParameter.assignFromWithoutID(other);
