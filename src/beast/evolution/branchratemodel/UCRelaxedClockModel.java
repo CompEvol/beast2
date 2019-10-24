@@ -1,6 +1,7 @@
 package beast.evolution.branchratemodel;
 
 
+
 import java.util.Arrays;
 
 import org.apache.commons.math.MathException;
@@ -15,7 +16,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.math.distributions.ParametricDistribution;
 import beast.util.Randomizer;
-import beast.math.distributions.LogNormalDistributionModel;
 
 /**
  * @author Alexei Drummond
@@ -271,6 +271,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         return rates[category];
     }
     
+    
     // when mode=quantiles
     private double getRawRateForQuantile(Node node) {
         int nodeNumber = node.getNr();
@@ -290,6 +291,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         double q = quantiles.getValue(nodeNumber);
         double v = q * (rates.length - 1);
         int i = (int) v;
+        
+        // make sure cached rates are calculated
         if (rates[i] == 0.0 && i > 0) {
 	        try {
 	            rates[i] = distribution.inverseCumulativeProbability(((double)i) / rates.length);
@@ -304,10 +307,18 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 	            throw new RuntimeException("Failed to compute inverse cumulative probability!");
 	        }
         }
+        
+        // return piecewise linear approximation
         double r = rates[i] + (rates[i+1] - rates[i]) * (v - i);
         return r;
     }
 
+	// access to rate cache 
+	public double [] getRates() {return rates;}
+
+	
+   
+    
     private void prepare() {
       if (rates != null) {
             // rates array initialized to correct length in initAndValidate
