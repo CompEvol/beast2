@@ -293,23 +293,34 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         int i = (int) v;
         
         // make sure cached rates are calculated
-        if (rates[i] == 0.0 && i > 0) {
+        if (rates[i] == 0.0) {
 	        try {
-	            rates[i] = distribution.inverseCumulativeProbability(((double)i) / rates.length);
+	        	if (i > 0) {
+	        		rates[i] = distribution.inverseCumulativeProbability(((double)i) / (rates.length-1));
+	        	} else {
+	        		rates[i] = distribution.inverseCumulativeProbability(0.1 / (rates.length-1));
+	        	}
 	        } catch (MathException e) {
 	            throw new RuntimeException("Failed to compute inverse cumulative probability!");
 	        }
         }
-        if (rates[i + 1] == 0.0) {
+        if (i < rates.length - 1 && rates[i + 1] == 0.0) {
 	        try {
-	            rates[i + 1] = distribution.inverseCumulativeProbability(((double)(i + 1)) / rates.length);
+	        	if (i < rates.length - 2) {
+	        		rates[i + 1] = distribution.inverseCumulativeProbability(((double)(i + 1)) / (rates.length-1));
+	        	} else {
+	        		rates[i + 1] = distribution.inverseCumulativeProbability((rates.length - 1 - 0.1) / (rates.length-1));
+	        	}
 	        } catch (MathException e) {
 	            throw new RuntimeException("Failed to compute inverse cumulative probability!");
 	        }
         }
         
         // return piecewise linear approximation
-        double r = rates[i] + (rates[i+1] - rates[i]) * (v - i);
+        double r = rates[i];
+        if (i < rates.length - 1) {
+        	r += (rates[i+1] - rates[i]) * (v - i);
+        }
         return r;
     }
 
