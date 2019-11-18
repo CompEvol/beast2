@@ -638,6 +638,12 @@ public class Logger extends BEASTObject {
     	PrintStream m_out_alt = new PrintStream(m_out);
     	return m_out_alt;
     }
+    
+    // Returns the file name
+    public String getFileName() {
+    	return fileName;
+    }
+    
 
 
 } // class Logger
