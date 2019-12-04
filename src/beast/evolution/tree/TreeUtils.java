@@ -1,11 +1,6 @@
 package beast.evolution.tree;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Alexei Drummond and Alexandra Gavryushkina
@@ -29,6 +24,26 @@ public class TreeUtils {
                 node.setLeft(node.getRight());
                 node.setRight(temp);
             }
+        }
+    }
+
+    public static SortedSet<String> rotateTreeAlphabetically(Node node) {
+        if (node.isLeaf()) {
+            TreeSet leafSet = new TreeSet();
+            leafSet.add(node.getID());
+            return leafSet;
+        } else {
+
+            SortedSet<String> left = rotateTreeAlphabetically(node.getLeft());
+            SortedSet<String> right = rotateTreeAlphabetically(node.getRight());
+
+            if (left.first().compareTo(right.first()) > 0) {
+                Node temp = node.getLeft();
+                node.setLeft(node.getRight());
+                node.setRight(temp);
+            }
+            left.addAll(right);
+            return left;
         }
     }
 
@@ -381,5 +396,7 @@ public class TreeUtils {
         }
         return idx;
     }
+
+
 }
 
