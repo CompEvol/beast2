@@ -33,7 +33,6 @@ public interface TreeInterface {
     * number.
     */
 
-
     /**
      * @param node  top of tree/sub tree (null defaults to whole tree)
      * @param nodes array to fill (null will result in creating a new one)
@@ -52,8 +51,7 @@ public interface TreeInterface {
         return nodes;
     }
 
-    static int
-    getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
+    static int getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
         //node.m_tree = this;
         for (final Node child : node.children) {
             pos = getNodesPostOrder(child, nodes, pos);

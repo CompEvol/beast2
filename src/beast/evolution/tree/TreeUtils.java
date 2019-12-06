@@ -279,9 +279,22 @@ public class TreeUtils {
      */
     public static Set<String> getDescendantLeaves(Tree tree, Node node) {
 
-        HashSet<String> set = new HashSet<>();
+        TreeSet<String> set = new TreeSet<>();
         getDescendantLeaves(tree, node, set);
         return set;
+    }
+
+    /**
+     * @param tree the tree
+     * @param node the node to get names of leaves below
+     * @return a set of taxa names (as strings) of the leaf nodes descended from the given node.
+     */
+    public static List<String> getDescendantLeavesSortedList(Tree tree, Node node) {
+
+        List<String> list = new ArrayList<>();
+        getDescendantLeaves(tree, node, list);
+        Collections.sort(list);
+        return list;
     }
 
     /**
@@ -289,7 +302,7 @@ public class TreeUtils {
      * @param node the node to get name of leaves below
      * @param set  will be populated with taxa names (as strings) of the leaf nodes descended from the given node.
      */
-    private static void getDescendantLeaves(Tree tree, Node node, Set<String> set) {
+    private static void getDescendantLeaves(Tree tree, Node node, Collection<String> set) {
 
         if (node.isLeaf()) {
             set.add(tree.getTaxonId(node));
