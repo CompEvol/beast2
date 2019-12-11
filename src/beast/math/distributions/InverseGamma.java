@@ -92,7 +92,7 @@ public class InverseGamma extends ParametricDistribution {
             double logP = -(m_fAlpha + 1.0) * Math.log(x) - (m_fBeta / x) + C;
             return logP;
         }
-    } // class OneOnXImpl
+    } // class InverseGammaImpl
 
 
     @Override

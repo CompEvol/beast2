@@ -179,6 +179,7 @@ public class XMLParser {
 
 
     static HashMap<String, String> element2ClassMap;
+    static HashMap<String, String> oldClass2ClassMap;
     static Set<String> reservedElements;
     static {
         element2ClassMap = new HashMap<>();
@@ -194,6 +195,30 @@ public class XMLParser {
         reservedElements = new HashSet<>();
         for (final String element : element2ClassMap.keySet()) {
         	reservedElements.add(element);
+        }
+        
+        // Parse version.xml files
+        // Encoded in version.xml as <map from="old.class.Name" to="new.class.Name"/>
+        // This helps with refactoring packages while keeping old XML parseable.
+        oldClass2ClassMap = new HashMap<>();
+        for (String dir : PackageManager.getBeastDirectories()) {
+        	File file = new File(dir + "/version.xml");
+        	if (file.exists()) {
+        		try {
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    Document doc = factory.newDocumentBuilder().parse(file);
+                    doc.normalize();
+                    NodeList nodes = doc.getElementsByTagName("map");
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Element map = (Element) nodes.item(i);
+                        String fromClass = map.getAttribute("from");
+                        String toClass = map.getAttribute("to");
+                        oldClass2ClassMap.put(fromClass, toClass);
+                    }
+                } catch (ParserConfigurationException|SAXException|IOException e) {
+                    e.printStackTrace();
+                }        		
+        	}
         }
     }
 
@@ -739,6 +764,10 @@ public class XMLParser {
                     }
                 } catch (ClassNotFoundException e) {
                     // class does not exist -- try another namespace
+                	if (oldClass2ClassMap.containsKey(nameSpace + specClass)) {
+                		clazzName = oldClass2ClassMap.get(nameSpace + specClass);
+                		isDone = true;
+                	}
                 }
             }
 		}
