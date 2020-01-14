@@ -3,14 +3,18 @@ package beast.app.beauti;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.Box;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import beast.app.draw.BEASTObjectInputEditor;
 import beast.app.draw.InputEditor;
+import beast.app.draw.InputEditorFactory;
 import beast.app.draw.ListInputEditor;
 import beast.core.BEASTInterface;
 import beast.core.Input;
@@ -48,8 +52,13 @@ public class OperatorListInputEditor extends ListInputEditor {
     	box.add(Box.createHorizontalStrut(20));
     	add(box);
     	
+
     	m_buttonStatus = ButtonStatus.NONE;
     	super.init(input, beastObject, itemNr, isExpandOption, addButtons);
+    	
+    	BEASTObjectInputEditor osEditor = new BEASTObjectInputEditor(doc);
+    	osEditor.init(((BEASTInterface) doc.mcmc.get()).getInput("operatorschedule"), (BEASTInterface) doc.mcmc.get(), -1, isExpandOption, addButtons);
+    	add(osEditor);
     }
     
     @Override

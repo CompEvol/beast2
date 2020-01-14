@@ -29,6 +29,9 @@
         collapsedPlugins ='beast.core.MCMC.logger'
         suppressPlugins = 'beast.core.MCMC.operator,
     		beast.core.MCMC.operatorschedule,
+    		beast.core.OperatorSchedule.subschedule,
+    		beast.core.OperatorSchedule.operatorPattern,
+			beast.core.OperatorSchedule.operator,
 	        beast.evolution.tree.coalescent.Coalescent.treeIntervals,
 	        beast.evolution.tree.coalescent.Coalescent.tree,
 	        beast.core.MCMC.state,
@@ -322,6 +325,15 @@
 ]]>
         </subtemplate>
 
+
+        <subtemplate id='DefaultOperatorSchedule' class='beast.core.OperatorSchedule' mainid='OperatorSchedule'
+        	>
+<![CDATA[
+        <operatorschedule id="OperatorSchedule" spec="beast.core.OperatorSchedule"/>
+]]>
+        </subtemplate>
+		
+
     </beauticonfig>
 
 
@@ -335,7 +347,7 @@
 <!-- framework for main model -->
 
     <run spec="MCMC" id="mcmc" chainLength="10000000">
-
+		<operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
         <state storeEvery='5000' id='state'>
         </state>
 
