@@ -136,6 +136,17 @@ public class Node extends BEASTObject {
     }
 
     /**
+     * Set the node height in operators for data augmentation likelihood.
+     * It only changes this node to be dirty, not any of child nodes.
+     * @param height  new node height
+     */
+    public void setHeightDA(final double height) {
+        startEditing();
+        this.height = height;
+        isDirty |= Tree.IS_DIRTY;
+    }
+
+    /**
      * @return length of branch between this node and its parent in the beast.tree
      */
     public final double getLength() {
