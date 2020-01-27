@@ -383,10 +383,10 @@ System.err.println("Done invoking " + packageApp.className);
         ps.println("\nAppLauncher: Run installed BEAST 2 package apps.\n" +
                         "\n" +
                         "Usage:\n" +
-                        "\tappstore\n" +
-                        "\tappstore -help\n" +
-                        "\tappstore -list [package_name]\n" +
-                        "\tappstore <app_class_name|app_description>");
+                        "\tapplauncher\n" +
+                        "\tapplauncher -help\n" +
+                        "\tapplauncher -list [package_name]\n" +
+                        "\tapplauncher <app_class_name|app_description>");
     }
 
     private void printAppList(List<PackageApp> appList, PrintStream ps) {
