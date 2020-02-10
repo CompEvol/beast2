@@ -1,16 +1,22 @@
-                    BEAST v2.6.1 2019
-                 Beast 2 development team 2011-2019
+                    BEAST v2.6.2 2020
+                 Beast 2 development team 2011-2020
 Version History
-Last updated: August 2019
+Last updated: February 2020
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.2
+	Allow operator schedule changes in BEAUti
+	Fix quantile parameterisation of relaxed clocks
+	Add batch file for Windows command line usage
+	Improve error messages
+	Provide better access in API for developers
+
 Version 2.6.1
 	Fix bug in BEAUti so that template of "last" package is recognised
 	Make loganalyser deal with spacees in trace log names
 	Add column to LogAnalyser -oneline output
 	Random local clock fix for unscaled rates
-
 
 Version 2.6.0
 	Robustify application launching and package upgrading (especially for Windows)
