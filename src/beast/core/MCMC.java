@@ -34,6 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import beast.core.Input.Validate;
 import beast.core.util.CompoundDistribution;
 import beast.core.util.Evaluator;
 import beast.core.util.Log;
@@ -94,7 +95,7 @@ public class MCMC extends Runnable {
     final public Input<Boolean> sampleFromPriorInput = new Input<>("sampleFromPrior", "whether to ignore the likelihood when sampling (default false). " +
             "The distribution with id 'likelihood' in the posterior input will be ignored when this flag is set.", false);
 
-    final public Input<OperatorSchedule> operatorScheduleInput = new Input<>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule());
+    final public Input<OperatorSchedule> operatorScheduleInput = new Input<>("operatorschedule", "specify operator selection and optimisation schedule", new OperatorSchedule(), Validate.REQUIRED);
 
     /**
      * Alternative representation of operatorsInput that allows random selection
