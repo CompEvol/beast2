@@ -27,9 +27,6 @@
 package beast.evolution.substitutionmodel;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
@@ -37,6 +34,9 @@ import beast.core.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
 import beast.util.BEASTClassLoader;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 
@@ -174,9 +174,16 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     } // getTransitionProbabilities
 
     /**
+     * access to (copy of) relative rates *
+     */
+    public double[] getRelativeRates() {
+        return relativeRates.clone();
+    }
+
+    /**
      * access to (copy of) rate matrix *
      */
-    protected double[][] getRateMatrix() {
+    public double[][] getRateMatrix() {
         return rateMatrix.clone();
     }
 
