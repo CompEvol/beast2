@@ -99,6 +99,41 @@ public class Randomizer {
         return s;
     }
 
+    /**
+     * Binary search to sample an integer given a cumulative probability distribution.
+     * Modified from {@link java.util.Arrays#binarySearch(double[], double)}.
+     * @param cpd  normalized cumulative probability distribution.
+     * @return     a sample (index of <code>cpd[]</code>) according to CPD.
+     *             Negative integer if something is wrong.
+     */
+    public static int binarySearchSampling(double[] cpd) {
+        double U = random.nextDouble();
+
+        if (U <= cpd[0])
+            return 0;
+
+        int mid,low = 0;
+        int high = cpd.length - 1;
+        double midVal;
+        while (low <= high) {
+            mid = (low + high) >>> 1;
+            midVal = cpd[mid];
+
+//            if (U <= cpd[mid] && U > cpd[mid - 1])
+//                return mid; // take i where cpd[i - 1] < U <= cpd[i]
+
+            if (midVal < U)
+                low = mid + 1;
+            else if (midVal > U) {
+                if (cpd[mid - 1] < U)
+                    return mid;
+                high = mid - 1;
+            } else
+                return mid; // cpd == random
+
+        }
+        return -(low + 1);  // cpd not found.
+    }
 
     /**
      * @param pdf array of unnormalized probabilities
