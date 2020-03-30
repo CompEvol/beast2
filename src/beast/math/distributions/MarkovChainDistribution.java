@@ -4,11 +4,14 @@ package beast.math.distributions;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.*;
 import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.math.distributions.LogNormalDistributionModel.LogNormalImpl;
 
@@ -29,13 +32,13 @@ public class MarkovChainDistribution extends Distribution {
     final public Input<Boolean> useLogInput = new Input<>("uselog", "use logarithm of parameter values (default false)", false);
     final public Input<Double> shapeInput = new Input<>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
     		" or precision parameter if the log normal is used.", 1.0);
-    final public Input<Function> parameterInput = new Input<>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
+    final public Input<RealParameter> parameterInput = new Input<>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
     final public Input<Boolean> useLogNormalInput = new Input<>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
 
     // **************************************************************
     // Private instance variables
     // **************************************************************
-    private Function chainParameter = null;
+    private RealParameter chainParameter = null;
     private boolean jeffreys = false;
     private boolean reverse = false;
     private boolean uselog = false;
@@ -91,9 +94,9 @@ public class MarkovChainDistribution extends Distribution {
 
     private double getChainValue(int i) {
         if (uselog) {
-            return Math.log(chainParameter.getArrayValue(index(i)));
+            return Math.log(chainParameter.getValue(index(i)));
         } else {
-            return chainParameter.getArrayValue(index(i));
+            return chainParameter.getValue(index(i));
         }
     }
 
