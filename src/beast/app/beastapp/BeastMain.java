@@ -284,6 +284,7 @@ public class BeastMain {
                         new Arguments.Option("version", "Print version and stop"),
                         new Arguments.Option("strictversions", "Use only package versions as specified in the 'required' attribute"),
                         new Arguments.StringOption("D", "DEFINITIONS", "attribute-value pairs to be replaced in the XML, e.g., -D \"arg1=10,arg2=20\"").allowMultipleUse(),
+                        new Arguments.StringOption("DF", "DEFINITIONFILE", "as -D, but attribute-value pairs defined in file in a JSON file").allowMultipleUse(),
                         new Arguments.Option("sampleFromPrior", "samples from prior for MCMC analysis (by adding sampleFromPrior=\"true\" in the first run element)"),
                 });
 
@@ -538,7 +539,15 @@ public class BeastMain {
                 MCMCargs.add(optionVal);
             }
         }
-
+        if (arguments.hasOption("DF")) {
+            MCMCargs.add("-DF");
+            MCMCargs.add(arguments.getStringOption("DF"));
+            for (String optionVal : arguments.getAdditionalStringOptions("DF")) {
+                MCMCargs.add("-DF");
+                MCMCargs.add(optionVal);
+            }
+        }
+        
         if (beagleShowInfo) {
             Log.info.println("\n--- BEAGLE RESOURCES ---\n");
             for (beagle.ResourceDetails details : BeagleFactory.getResourceDetails())

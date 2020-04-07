@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.6">
+
+
+    <data
+id="RSV2"
+spec="Alignment"
+name="alignment">
+$(sequences)
+                    </data>
+
+
+    
+
+
+    
+
+
+    
+<map name="Uniform" >beast.math.distributions.Uniform</map>
+<map name="Exponential" >beast.math.distributions.Exponential</map>
+<map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
+<map name="Normal" >beast.math.distributions.Normal</map>
+<map name="Beta" >beast.math.distributions.Beta</map>
+<map name="Gamma" >beast.math.distributions.Gamma</map>
+<map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
+<map name="prior" >beast.math.distributions.Prior</map>
+<map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
+<map name="OneOnX" >beast.math.distributions.OneOnX</map>
+
+
+<run id="mcmc" spec="MCMC" chainLength="$(chainLength)">
+    <state id="state" spec="State" storeEvery="5000">
+        <tree id="Tree.t:RSV2" spec="beast.evolution.tree.Tree" name="stateNode">
+            <trait id="dateTrait.t:RSV2" spec="beast.evolution.tree.TraitSet" traitname="date" value="$(dates)">
+                <taxa id="TaxonSet.RSV2" spec="TaxonSet">
+                    <alignment idref="RSV2"/>
+                </taxa>
+            </trait>
+            <taxonset idref="TaxonSet.RSV2"/>
+        </tree>
+        <parameter id="clockRate.c:RSV2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="kappa.s:RSV2" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+        <parameter id="gammaShape.s:RSV2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="popSize.t:RSV2" spec="parameter.RealParameter" name="stateNode">0.3</parameter>
+        <parameter id="freqParameter.s:RSV2" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+    </state>
+
+    <init id="RandomTree.t:RSV2" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:RSV2" taxa="@RSV2">
+        <populationModel id="ConstantPopulation0.t:RSV2" spec="ConstantPopulation">
+            <parameter id="randomPopSize.t:RSV2" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+        </populationModel>
+    </init>
+
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <distribution id="CoalescentConstant.t:RSV2" spec="Coalescent">
+                <populationModel id="ConstantPopulation.t:RSV2" spec="ConstantPopulation" popSize="@popSize.t:RSV2"/>
+                <treeIntervals id="TreeIntervals.t:RSV2" spec="TreeIntervals" tree="@Tree.t:RSV2"/>
+            </distribution>
+            <prior id="ClockPrior.c:RSV2" name="distribution" x="@clockRate.c:RSV2">
+                <Uniform id="Uniform.0" name="distr" upper="Infinity"/>
+            </prior>
+            <prior id="FrequenciesPrior.s:RSV2" name="distribution" x="@freqParameter.s:RSV2">
+                <Uniform id="Uniform.3" name="distr"/>
+            </prior>
+            <prior id="GammaShapePrior.s:RSV2" name="distribution" x="@gammaShape.s:RSV2">
+                <Exponential id="Exponential.0" name="distr">
+                    <parameter id="RealParameter.0" spec="parameter.RealParameter" estimate="false" name="mean">1.0</parameter>
+                </Exponential>
+            </prior>
+            <prior id="KappaPrior.s:RSV2" name="distribution" x="@kappa.s:RSV2">
+                <LogNormal id="LogNormalDistributionModel.0" name="distr">
+                    <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                    <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                </LogNormal>
+            </prior>
+            <prior id="PopSizePrior.t:RSV2" name="distribution" x="@popSize.t:RSV2">
+                <OneOnX id="OneOnX.1" name="distr"/>
+            </prior>
+        </distribution>
+        <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+            <distribution id="treeLikelihood.RSV2" spec="ThreadedTreeLikelihood" data="@RSV2" tree="@Tree.t:RSV2">
+                <siteModel id="SiteModel.s:RSV2" spec="SiteModel" gammaCategoryCount="4" shape="@gammaShape.s:RSV2">
+                    <parameter id="mutationRate.s:RSV2" spec="parameter.RealParameter" estimate="false" name="mutationRate">1.0</parameter>
+                    <parameter id="proportionInvariant.s:RSV2" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+                    <substModel id="hky.s:RSV2" spec="HKY" kappa="@kappa.s:RSV2">
+                        <frequencies id="estimatedFreqs.s:RSV2" spec="Frequencies" frequencies="@freqParameter.s:RSV2"/>
+                    </substModel>
+                </siteModel>
+                <branchRateModel id="StrictClock.c:RSV2" spec="beast.evolution.branchratemodel.StrictClockModel" clock.rate="@clockRate.c:RSV2"/>
+            </distribution>
+        </distribution>
+    </distribution>
+
+    <operator id="StrictClockRateScaler.c:RSV2" spec="ScaleOperator" parameter="@clockRate.c:RSV2" scaleFactor="0.75" weight="3.0"/>
+
+    <operator id="strictClockUpDownOperator.c:RSV2" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
+        <up idref="clockRate.c:RSV2"/>
+        <down idref="Tree.t:RSV2"/>
+    </operator>
+
+    <operator id="KappaScaler.s:RSV2" spec="ScaleOperator" parameter="@kappa.s:RSV2" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="gammaShapeScaler.s:RSV2" spec="ScaleOperator" parameter="@gammaShape.s:RSV2" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="CoalescentConstantTreeScaler.t:RSV2" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:RSV2" weight="3.0"/>
+
+    <operator id="CoalescentConstantTreeRootScaler.t:RSV2" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@Tree.t:RSV2" weight="3.0"/>
+
+    <operator id="CoalescentConstantUniformOperator.t:RSV2" spec="Uniform" tree="@Tree.t:RSV2" weight="30.0"/>
+
+    <operator id="CoalescentConstantSubtreeSlide.t:RSV2" spec="SubtreeSlide" tree="@Tree.t:RSV2" weight="15.0"/>
+
+    <operator id="CoalescentConstantNarrow.t:RSV2" spec="Exchange" tree="@Tree.t:RSV2" weight="15.0"/>
+
+    <operator id="CoalescentConstantWide.t:RSV2" spec="Exchange" isNarrow="false" tree="@Tree.t:RSV2" weight="3.0"/>
+
+    <operator id="CoalescentConstantWilsonBalding.t:RSV2" spec="WilsonBalding" tree="@Tree.t:RSV2" weight="3.0"/>
+
+    <operator id="PopSizeScaler.t:RSV2" spec="ScaleOperator" parameter="@popSize.t:RSV2" scaleFactor="0.75" weight="3.0"/>
+
+    <operator id="FrequenciesExchanger.s:RSV2" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="freqParameter.s:RSV2"/>
+    </operator>
+
+    <logger id="tracelog" spec="Logger" fileName="RSV2.log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+        <log idref="treeLikelihood.RSV2"/>
+        <log id="TreeHeight.t:RSV2" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:RSV2"/>
+        <log idref="clockRate.c:RSV2"/>
+        <log idref="kappa.s:RSV2"/>
+        <log idref="gammaShape.s:RSV2"/>
+        <log idref="popSize.t:RSV2"/>
+        <log idref="CoalescentConstant.t:RSV2"/>
+        <log idref="freqParameter.s:RSV2"/>
+    </logger>
+
+    <logger id="screenlog" spec="Logger" logEvery="10000">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+    </logger>
+
+    <logger id="treelog.t:RSV2" spec="Logger" fileName="RSV2.trees" logEvery="10000" mode="tree">
+        <log id="TreeWithMetaDataLogger.t:RSV2" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:RSV2"/>
+    </logger>
+
+    <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+
+</run>
+
+</beast>

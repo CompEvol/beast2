@@ -1,13 +1,16 @@
 package test.beast.integration;
 
 
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
+import beast.app.beastapp.BeastMain;
 import beast.core.Logger;
 import beast.core.MCMC;
 import beast.util.Randomizer;
@@ -128,6 +131,20 @@ public class ExampleXmlParsingTest extends TestCase {
         }
     } // test_ThatXmlExamplesRun
 
+    
+    @Test
+    public void test_ThatParameterisedXmlExamplesRuns() throws IOException {
+        String dir = System.getProperty("user.dir") + "/examples/parameterised";
+        Logger.FILE_MODE = Logger.LogFileMode.overwrite;
+        System.out.println("Test that parameterised XML example runs in " + dir + "/RSV2.xml");
+        Randomizer.setSeed(127);
+        BeastMain.main(new String[]{
+        		"-D", "chainLength=1000",
+        		"-DF", dir + "/RSV2.json", 
+        		dir + "/RSV2.xml"});
+    } // test_ThatParameterisedXmlExamplesRuns
+  
+    
 
     public static void main(String args[]) {
         org.junit.runner.JUnitCore.main("test.beast.integration.ExampleXmlParsingTest");

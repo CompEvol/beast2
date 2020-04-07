@@ -29,6 +29,7 @@ import beagle.BeagleFlag;
 import beast.app.beastapp.BeastDialog;
 import beast.app.beastapp.BeastMain;
 import beast.app.beauti.Beauti;
+import beast.app.beauti.BeautiDoc;
 import beast.app.draw.ExtensionFileFilter;
 import beast.app.util.Version;
 import beast.core.Logger;
@@ -37,6 +38,7 @@ import beast.core.util.Log;
 import beast.util.*;
 import jam.util.IconUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -59,9 +61,9 @@ import java.util.concurrent.Executors;
  * See getUsage() for command line options.
  */
 public class BeastMCMC {
-    final public static String VERSION = "2.0 Release candidate";
+    final public static String VERSION = BEASTVersion2.INSTANCE.getVersionString();
     final public static String DEVELOPERS = "Beast 2 development team";
-    final public static String COPYRIGHT = "Beast 2 development team 2011";
+    final public static String COPYRIGHT = "Beast 2 development team " + BEASTVersion2.INSTANCE.getDateString();
 
     /**
      * number of threads used to run the likelihood beast.core *
@@ -156,6 +158,15 @@ public class BeastMCMC {
                             parserDefinitions.put(name, value);
             			}
                         i += 2;
+                    } else if (args[i].equals("-DF")) {
+                        String argFile = args[i + 1];
+                		String jsonString = BeautiDoc.load(argFile);
+                		JSONObject jsonDictionary = new JSONObject(jsonString);
+                		for (String key : jsonDictionary.keySet()) {
+                			Log.warning("Found definition of " + key + " " + jsonDictionary.getString(key).length());
+                            parserDefinitions.put(key, jsonDictionary.getString(key));
+                		}
+                        i += 2;                    
                     } else if (args[i].equals("-strictversions")) {
                     	useStrictVersions = true;
                         i += 1;

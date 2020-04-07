@@ -25,6 +25,7 @@
 package beast.util;
 
 
+import beast.app.beauti.BeautiDoc;
 import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Runnable;
@@ -41,7 +42,10 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -281,7 +285,22 @@ public class XMLParser {
         // parse the XML file into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
-        doc = factory.newDocumentBuilder().parse(file);
+        String xml = BeautiDoc.load(file);
+        for (String key: parserDefinitions.keySet()) {
+        	xml = xml.replaceAll("\\$\\(" + key + "\\)", parserDefinitions.get(key));
+        }
+        
+//        try {
+//	        FileWriter outfile = new FileWriter("/tmp/beast.xml");
+//	        outfile.write(xml);
+//	        outfile.close();
+//	        System.exit(0);
+//        } catch (IOException e) {
+//        	// ignore
+//        }
+
+        
+        doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         doc.normalize();
         processPlates(doc,PLATE_ELEMENT);
 
