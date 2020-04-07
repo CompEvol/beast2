@@ -123,7 +123,7 @@ $(sequences)
         <parameter idref="freqParameter.s:RSV2"/>
     </operator>
 
-    <logger id="tracelog" spec="Logger" fileName="RSV2.log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+    <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
         <log idref="posterior"/>
         <log idref="likelihood"/>
         <log idref="prior"/>
@@ -143,7 +143,7 @@ $(sequences)
         <log idref="prior"/>
     </logger>
 
-    <logger id="treelog.t:RSV2" spec="Logger" fileName="RSV2.trees" logEvery="10000" mode="tree">
+    <logger id="treelog.t:RSV2" spec="Logger" fileName="$(filebase).trees" logEvery="10000" mode="tree">
         <log id="TreeWithMetaDataLogger.t:RSV2" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:RSV2"/>
     </logger>
 
