@@ -241,8 +241,8 @@ public class XMLParser {
 		}
 	}
 
-    List<BEASTInterface> beastObjectsWaitingToInit;
-    List<Node> nodesWaitingToInit;
+    List<BEASTInterface> beastObjectsWaitingToInit = new ArrayList<>();
+    List<Node> nodesWaitingToInit = new ArrayList<>();
 	java.util.Map<String,String> parserDefinitions;
 
     public HashMap<String, String> getElement2ClassMap() {
@@ -266,12 +266,10 @@ public class XMLParser {
     PartitionContext partitionContext = null;
 
     public XMLParser() {
-        beastObjectsWaitingToInit = new ArrayList<>();
-        nodesWaitingToInit = new ArrayList<>();
+        this.parserDefinitions = new HashMap<>();
     }
     
 	public XMLParser(java.util.Map<String,String> parserDefinitions) {
-		this();
 		this.parserDefinitions = parserDefinitions;
 	}
 
