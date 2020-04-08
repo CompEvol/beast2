@@ -81,7 +81,7 @@ public class LogAnalyser {
         readLogFile(fileName, burnInPercentage);
         this.quiet = quiet;
         if (calcStats) {
-        	calcStats();
+        	calcStats(null);
         }
     }
 
@@ -90,23 +90,35 @@ public class LogAnalyser {
     }
 
     public LogAnalyser(String fileName, int burnInPercentage) throws IOException {
-    	this(fileName, burnInPercentage, false, true);
+    	this(fileName, burnInPercentage, false, true, null);
     }
 
-    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws IOException {
-    	this(fileName, burnInPercentage, quiet, true);
+    public LogAnalyser(String fileName, int burnInPercentage, String [] tags) throws IOException {
+    	this(fileName, burnInPercentage, false, true, tags);
     }
     
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet) throws IOException {
+    	this(fileName, burnInPercentage, quiet, true, null);
+    }
+    
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet, String [] tags) throws IOException {
+    	this(fileName, burnInPercentage, quiet, true, tags);
+    }
+
     public LogAnalyser(String fileName) throws IOException {
         this(fileName, BURN_IN_PERCENTAGE);
     }
 
     public LogAnalyser(String fileName, int burnInPercentage, boolean quiet, boolean calcStats) throws IOException {
+    	this(fileName, burnInPercentage, quiet, calcStats, null);
+    }
+    
+    public LogAnalyser(String fileName, int burnInPercentage, boolean quiet, boolean calcStats, String [] tags) throws IOException {
         this.fileName = fileName;
         this.quiet = quiet;
         readLogFile(fileName, burnInPercentage);
         if (calcStats) {
-        	calcStats();
+        	calcStats(tags);
         }
     }
 
@@ -195,6 +207,10 @@ public class LogAnalyser {
      * First column (sample nr) is not set *
      */
     public void calcStats() {
+    	calcStats(null);
+    }
+    
+    public void calcStats(String [] tags) {
         logln("\nCalculating statistics\n\n" + BAR);
         int stars = 0;
         int items = m_sLabels.length;
@@ -209,54 +225,56 @@ public class LogAnalyser {
         m_fGeometricMean = new Double[items];
         int sampleInterval = (int) (m_fTraces[0][1] - m_fTraces[0][0]);
         for (int i = 1; i < items; i++) {
-            // calc mean and standard deviation
-            Double[] trace = m_fTraces[i];
-            double sum = 0, sum2 = 0;
-            for (double f : trace) {
-                sum += f;
-                sum2 += f * f;
-            }
-            if (m_types[i] != type.NOMINAL) {
-                m_fMean[i] = sum / trace.length;
-                m_fStdDev[i] = Math.sqrt(sum2 / trace.length - m_fMean[i] * m_fMean[i]);
-            } else {
-                m_fMean[i] = Double.NaN;
-                m_fStdDev[i] = Double.NaN;
-            }
-
-            if (m_types[i] == type.REAL || m_types[i] == type.INTEGER) {
-                // calc median, and 95% HPD interval
-                Double[] sorted = trace.clone();
-                Arrays.sort(sorted);
-                m_fMedian[i] = sorted[trace.length / 2];
-                // n instances cover 95% of the trace, reduced down by 1 to match Tracer
-                int n = (int) ((sorted.length - 1) * 95.0 / 100.0);
-                double minRange = Double.MAX_VALUE;
-                int hpdIndex = 0;
-                for (int k = 0; k < sorted.length - n; k++) {
-                    double range = sorted[k + n] - sorted[k];
-                    if (range < minRange) {
-                        minRange = range;
-                        hpdIndex = k;
-                    }
-                }
-                m_f95HPDlow[i] = sorted[hpdIndex];
-                m_f95HPDup[i] = sorted[hpdIndex + n];
-
-                // calc effective sample size
-                m_fACT[i] = ESS.ACT(m_fTraces[i], sampleInterval);
-                m_fStdError[i] = ESS.stdErrorOfMean(trace, sampleInterval);
-                m_fESS[i] = trace.length / (m_fACT[i] / sampleInterval);
-
-                // calc geometric mean
-                if (sorted[0] > 0) {
-                    // geometric mean is only defined when all elements are positive
-                    double gm = 0;
-                    for (double f : trace)
-                        gm += Math.log(f);
-                    m_fGeometricMean[i] = Math.exp(gm / trace.length);
-                } else
-                    m_fGeometricMean[i] = Double.NaN;
+        	if (matchesTags(tags, i)) {
+	            // calc mean and standard deviation
+	            Double[] trace = m_fTraces[i];
+	            double sum = 0, sum2 = 0;
+	            for (double f : trace) {
+	                sum += f;
+	                sum2 += f * f;
+	            }
+	            if (m_types[i] != type.NOMINAL) {
+	                m_fMean[i] = sum / trace.length;
+	                m_fStdDev[i] = Math.sqrt(sum2 / trace.length - m_fMean[i] * m_fMean[i]);
+	            } else {
+	                m_fMean[i] = Double.NaN;
+	                m_fStdDev[i] = Double.NaN;
+	            }
+	
+	            if (m_types[i] == type.REAL || m_types[i] == type.INTEGER) {
+	                // calc median, and 95% HPD interval
+	                Double[] sorted = trace.clone();
+	                Arrays.sort(sorted);
+	                m_fMedian[i] = sorted[trace.length / 2];
+	                // n instances cover 95% of the trace, reduced down by 1 to match Tracer
+	                int n = (int) ((sorted.length - 1) * 95.0 / 100.0);
+	                double minRange = Double.MAX_VALUE;
+	                int hpdIndex = 0;
+	                for (int k = 0; k < sorted.length - n; k++) {
+	                    double range = sorted[k + n] - sorted[k];
+	                    if (range < minRange) {
+	                        minRange = range;
+	                        hpdIndex = k;
+	                    }
+	                }
+	                m_f95HPDlow[i] = sorted[hpdIndex];
+	                m_f95HPDup[i] = sorted[hpdIndex + n];
+	
+	                // calc effective sample size
+	                m_fACT[i] = ESS.ACT(m_fTraces[i], sampleInterval);
+	                m_fStdError[i] = ESS.stdErrorOfMean(trace, sampleInterval);
+	                m_fESS[i] = trace.length / (m_fACT[i] / sampleInterval);
+	
+	                // calc geometric mean
+	                if (sorted[0] > 0) {
+	                    // geometric mean is only defined when all elements are positive
+	                    double gm = 0;
+	                    for (double f : trace)
+	                        gm += Math.log(f);
+	                    m_fGeometricMean[i] = Math.exp(gm / trace.length);
+	                } else
+	                    m_fGeometricMean[i] = Double.NaN;
+	            }
             } else {
                 m_fMedian[i] = Double.NaN;
                 m_f95HPDlow[i] = Double.NaN;
@@ -433,6 +451,10 @@ public class LogAnalyser {
      */
     final String SPACE = OutputUtils.SPACE;
     public void print(PrintStream out) {
+    	print(out, null);
+    }
+    
+    public void print(PrintStream out, String [] tags) {
     	// set up header for prefix, if any is specified
     	String prefix = System.getProperty("prefix");
     	String prefixHead = (prefix == null ? "" : "prefix ");
@@ -476,46 +498,65 @@ public class LogAnalyser {
      * @param out output stream
      */
     public void printOneLineHeader(PrintStream out) {
+    	printOneLineHeader(out, null);
+    }
 
+    public void printOneLineHeader(PrintStream out, String [] tags) {
         String[] postFix = {
                 "mean", "stderr", "stddev",
                 "median", "95%HPDlo", "95%HPDup",
                 "ACT", "ESS", "geometric-mean"
         };
 
-        out.print("sample\tfilename\t");
+        out.print("sample\tfilename");
         for (int paramIdx=1; paramIdx<m_sLabels.length; paramIdx++) {
-            for (int i=0; i<postFix.length; i++) {
-                if (paramIdx> 1 || i>0)
-                    out.print("\t");
-
-                out.print(m_sLabels[paramIdx] + "." + postFix[i]);
-            }
+        	if (matchesTags(tags, paramIdx)) {
+	            for (int i=0; i<postFix.length; i++) {
+	                out.print("\t");
+	                out.print(m_sLabels[paramIdx] + "." + postFix[i]);
+	            }
+        	}
         }
 
-        out.println();
+        out.println("\t");
     }
 
+    
+    private boolean matchesTags(String [] tags, int paramIdx) {
+    	if (tags == null) {
+    		return true;
+    	}
+		String label = m_sLabels[paramIdx];
+		for (String tag:tags) {
+			if (label.equals(tag)) {
+				return true;
+			}
+		}
+		return false;
+    }
+    
     /**
      * Display results for single log on one line.
      *
      * @param out output stream
      */
     public void printOneLine(PrintStream out) {
-
+        printOneLine(out, null);
+    }
+    
+    public void printOneLine(PrintStream out, String [] tags) {
         for (int paramIdx=1; paramIdx<m_sLabels.length; paramIdx++) {
-            if (paramIdx>1)
-                out.print("\t");
-
-            out.print(m_fMean[paramIdx] + "\t");
-            out.print(m_fStdError[paramIdx] + "\t");
-            out.print(m_fStdDev[paramIdx] + "\t");
-            out.print(m_fMedian[paramIdx] + "\t");
-            out.print(m_f95HPDlow[paramIdx] + "\t");
-            out.print(m_f95HPDup[paramIdx] + "\t");
-            out.print(m_fACT[paramIdx] + "\t");
-            out.print(m_fESS[paramIdx] + "\t");
-            out.print(m_fGeometricMean[paramIdx]);
+	        if (matchesTags(tags, paramIdx)) {
+	            out.print(m_fMean[paramIdx] + "\t");
+	            out.print(m_fStdError[paramIdx] + "\t");
+	            out.print(m_fStdDev[paramIdx] + "\t");
+	            out.print(m_fMedian[paramIdx] + "\t");
+	            out.print(m_f95HPDlow[paramIdx] + "\t");
+	            out.print(m_f95HPDup[paramIdx] + "\t");
+	            out.print(m_fACT[paramIdx] + "\t");
+	            out.print(m_fESS[paramIdx] + "\t");
+	            out.print(m_fGeometricMean[paramIdx] + "\t");
+            }
         }
 
         out.println();
@@ -536,6 +577,7 @@ public class LogAnalyser {
     	System.out.println("-burnin <burninPercentage>");
     	System.out.println("--burnin <burninPercentage>");
     	System.out.println("-b <burninPercentage> percentage of log file to disregard, default " + BURN_IN_PERCENTAGE);
+    	System.out.println("-t <tag>[,tag]+ comma separates list of tags to be processed. If nothing is specified all tags are processed and displayed.");
         System.out.println("-oneline Display only one line of output per file.\n" +
                 "         Header is generated from the first file only.\n" +
                 "         (Implies quiet mode.)");
@@ -558,6 +600,7 @@ public class LogAnalyser {
                 boolean oneLine = false;
                 boolean quiet = false;
             	List<String> files = new ArrayList<>();
+            	String [] tags = null;
             	int i = 0;
             	while (i < args.length) {
             		String arg = args[i];
@@ -572,7 +615,16 @@ public class LogAnalyser {
             			burninPercentage = Integer.parseInt(args[i+1]);
             			i += 2;
             			break;
-
+            		case "-t":
+            		case "-tag":
+            		case "--tag":
+            			if (i+1 >= args.length) {
+            				Log.warning.println("-t argument requires another argument");
+            				printUsageAndExit();
+            			}
+            			tags = args[i+1].trim().split(",");
+            			i += 2;
+            			break;
                     case "-oneline":
                         oneLine = true;
                         i += 1;
@@ -605,25 +657,26 @@ public class LogAnalyser {
 	                if (file == null) {
 	                    return;
 	                }
-	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage, quiet);
-	                analyser.print(System.out);
+	                analyser = new LogAnalyser(file.getAbsolutePath(), burninPercentage, quiet, tags);
+	                analyser.print(System.out, tags);
             	} else {
             		// process files
                     if (oneLine) {
                         for (int idx=0; idx<files.size(); idx++) {
-                            analyser = new LogAnalyser(files.get(idx), burninPercentage, true);
+                            analyser = new LogAnalyser(files.get(idx), burninPercentage, true, tags);
 
-                            if (idx == 0)
-                                analyser.printOneLineHeader(System.out);
+                            if (idx == 0) {
+                                analyser.printOneLineHeader(System.out, tags);
+                            }
 
                             System.out.print(idx + "\t" + files.get(idx) + "\t");
-                            analyser.printOneLine(System.out);
+                            analyser.printOneLine(System.out, tags);
                         }
 
                     } else {
                         for (String file : files) {
-                            analyser = new LogAnalyser(file, burninPercentage, quiet);
-                            analyser.print(System.out);
+                            analyser = new LogAnalyser(file, burninPercentage, quiet, tags);
+                            analyser.print(System.out, tags);
                         }
                     }
             }
