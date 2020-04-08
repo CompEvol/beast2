@@ -5,9 +5,11 @@ package test.beast.integration;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fest.swing.security.ExitException;
 import org.junit.Test;
 
 import beast.app.beastapp.BeastMain;
@@ -132,18 +134,58 @@ public class ExampleXmlParsingTest extends TestCase {
     } // test_ThatXmlExamplesRun
 
     
+    protected static class ExitException extends SecurityException 
+    {
+        public final int status;
+        public ExitException(int status) 
+        {
+            super("There is no escape!");
+            this.status = status;
+        }
+    }
+    
     @Test
     public void test_ThatParameterisedXmlExamplesRuns() throws IOException {
         String dir = System.getProperty("user.dir") + "/examples/parameterised";
         Logger.FILE_MODE = Logger.LogFileMode.overwrite;
         System.out.println("Test that parameterised XML example runs in " + dir + "/RSV2.xml");
         Randomizer.setSeed(127);
+        
+        // prevent System.exit() having an effect
+        final SecurityManager securityManager = new SecurityManager() {
+            @Override
+            public void checkPermission( Permission permission ) {
+              if( "exitVM".equals( permission.getName() ) ) {
+                // throw new RuntimeException("Exit called") ;
+            	  System.err.println("Exit called");
+              }
+            }
+            @Override
+            public void checkExit(int status) 
+            {
+            	throw new ExitException(status);
+            }
+        };
+        SecurityManager sm = System.getSecurityManager();
+        System.setSecurityManager( securityManager ) ;
+          
+        try {
         BeastMain.main(new String[]{
         		"-D", "chainLength=1000",
         		"-DF", dir + "/RSV2.json", 
         		dir + "/RSV2.xml"});
+        } catch (ExitException e) {
+        	if (e.status != 0) {
+        		e.printStackTrace();
+        		throw new RuntimeException("Exitted with status = " + e.status);
+        	}
+        }
+                
+        // reinstate System.exit() behaviour
+        System.setSecurityManager(sm) ;
     } // test_ThatParameterisedXmlExamplesRuns
   
+    
     
 
     public static void main(String args[]) {
