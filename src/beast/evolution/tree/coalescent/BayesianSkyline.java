@@ -19,7 +19,7 @@ import java.util.Random;
  * @author Alexei Drummond
  */
 @Description("Bayesian skyline: A likelihood function for the generalized skyline plot coalescent.")
-@Citation(value="Drummond, A. J., Rambaut, A., Shapiro, B. E. T. H., & Pybus, O. G. (2005).\n" +
+@Citation(value="Drummond, A. J., Rambaut, A., Shapiro, B, & Pybus, O. G. (2005).\n" +
         "Bayesian coalescent inference of past population dynamics from molecular sequences.\n" +
         "Molecular biology and evolution, 22(5), 1185-1192.",
         year = 2005, firstAuthorSurname = "Drummond", DOI="10.1093/molbev/msi103")

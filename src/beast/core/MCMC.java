@@ -49,8 +49,11 @@ import beast.util.Randomizer;
 //                "  evolutionary analysis. PLoS Computational Biology 10(4): e1003537"
 //        , year = 2014, firstAuthorSurname = "bouckaert",
 //        DOI="10.1371/journal.pcbi.1003537")
-@Citation(value="Bouckaert, Remco, Timothy G. Vaughan, Joëlle Barido-Sottani, Sebastián Duchêne, \n"
-		+ "  Mathieu Fourment, Alexandra Gavryushkina, Joseph Heled et al. \n"
+@Citation(value="Bouckaert, Remco, Timothy G. Vaughan, Joëlle Barido-Sottani, Sebastián Duchêne, Mathieu Fourment, \n"
+		+ "Alexandra Gavryushkina, Joseph Heled, Graham Jones, Denise Kühnert, Nicola De Maio, Michael Matschiner, \n"
+        + "Fábio K. Mendes, Nicola F. Müller, Huw A. Ogilvie, Louis du Plessis, Alex Popinga, Andrew Rambaut, \n"
+        + "David Rasmussen, Igor Siveroni, Marc A. Suchard, Chieh-Hsi Wu, Dong Xie, Chi Zhang, Tanja Stadler, \n"
+        + "Alexei J. Drummond \n"
 		+ "  BEAST 2.5: An advanced software platform for Bayesian evolutionary analysis. \n"
 		+ "  PLoS computational biology 15, no. 4 (2019): e1006650.", 
         year = 2019, firstAuthorSurname = "bouckaert",
