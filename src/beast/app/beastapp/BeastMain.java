@@ -284,7 +284,8 @@ public class BeastMain {
                         new Arguments.Option("version", "Print version and stop"),
                         new Arguments.Option("strictversions", "Use only package versions as specified in the 'required' attribute"),
                         new Arguments.StringOption("D", "DEFINITIONS", "attribute-value pairs to be replaced in the XML, e.g., -D \"arg1=10,arg2=20\"").allowMultipleUse(),
-                        new Arguments.StringOption("DF", "DEFINITIONFILE", "as -D, but attribute-value pairs defined in file in a JSON file").allowMultipleUse(),
+                        new Arguments.StringOption("DF", "DEFINITIONFILE", "as -D, but attribute-value pairs defined in file in JSON format").allowMultipleUse(),
+                        new Arguments.StringOption("DFout", "DEFINITIONRESULTFILE", "BEAST XML file written when -DF option is used"),
                         new Arguments.Option("sampleFromPrior", "samples from prior for MCMC analysis (by adding sampleFromPrior=\"true\" in the first run element)"),
                 });
 
@@ -546,6 +547,10 @@ public class BeastMain {
                 MCMCargs.add("-DF");
                 MCMCargs.add(optionVal);
             }
+        }
+        if (arguments.hasOption("DFout")) {
+            MCMCargs.add("-DFout");
+            MCMCargs.add(arguments.getStringOption("DFout"));
         }
         
         if (beagleShowInfo) {

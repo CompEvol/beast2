@@ -94,6 +94,8 @@ public class BeastMCMC {
         boolean resume = false;
         boolean useStrictVersions = false;
         boolean sampleFromPrior = false;
+        boolean hasDF = false;
+        String outFile = null;
         Map<String, String> parserDefinitions = new HashMap<>();
 
         File beastFile = null;
@@ -166,6 +168,10 @@ public class BeastMCMC {
                 			Log.warning("Found definition of " + key + " " + jsonDictionary.getString(key).length());
                             parserDefinitions.put(key, jsonDictionary.getString(key));
                 		}
+                		hasDF = true;
+                        i += 2;     
+                    } else if (args[i].equals("-DFout")) {
+                    	outFile = args[i + 1];                    	 
                         i += 2;                    
                     } else if (args[i].equals("-strictversions")) {
                     	useStrictVersions = true;
@@ -189,6 +195,14 @@ public class BeastMCMC {
             throw new IllegalArgumentException("Error parsing command line arguments: " + Arrays.toString(args) + "\nArguments ignored\n\n" + getUsage());
         }
 
+        if (hasDF && outFile == null && beastFile != null) {
+        	outFile = beastFile.getAbsolutePath();
+        	if (outFile.toLowerCase().endsWith(".xml")) {
+        		outFile = outFile.substring(0, outFile.length() - 4);
+        	}
+    		outFile = outFile + ".out.xml";
+        }        	
+        
         if (beastFile == null) {
             // Not resuming so get starting options...
 
@@ -308,7 +322,7 @@ public class BeastMCMC {
             m_runnable = new JSONParser(parserDefinitions).parseFile(beastFile, sampleFromPrior);
         } else {        	
         	try {
-				m_runnable = new XMLParser(parserDefinitions).parseFile(beastFile, sampleFromPrior);
+				m_runnable = new XMLParser(parserDefinitions, outFile).parseFile(beastFile, sampleFromPrior);
 			} catch (SAXException | ParserConfigurationException e) {
 				throw new IllegalArgumentException(e);
 			}

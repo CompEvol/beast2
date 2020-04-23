@@ -172,7 +172,8 @@ public class ExampleXmlParsingTest extends TestCase {
         try {
         BeastMain.main(new String[]{
         		"-D", "chainLength=1000",
-        		"-DF", dir + "/RSV2.json", 
+        		"-DF", dir + "/RSV2.json",
+        		"-DFout", "/tmp/RSV2.out.xml",
         		dir + "/RSV2.xml"});
         } catch (ExitException e) {
         	if (e.status != 0) {
@@ -180,9 +181,14 @@ public class ExampleXmlParsingTest extends TestCase {
         		throw new RuntimeException("Exitted with status = " + e.status);
         	}
         }
-                
+        
         // reinstate System.exit() behaviour
         System.setSecurityManager(sm) ;
+
+        if (!new File("/tmp/RSV2.out.xml").exists()) {
+    		throw new RuntimeException("Could not find file /tmp/RSV2.out.xml");
+        }
+                
     } // test_ThatParameterisedXmlExamplesRuns
   
     

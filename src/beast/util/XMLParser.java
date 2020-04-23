@@ -264,6 +264,13 @@ public class XMLParser {
      */
     RequiredInputProvider requiredInputProvider = null;
     PartitionContext partitionContext = null;
+    
+    /**
+     * if outFile is not null, an XML file merged with parser definitions processed 
+     * will be saved here
+     */
+    String outFile;
+    
 
     public XMLParser() {
         this.parserDefinitions = new HashMap<>();
@@ -273,6 +280,10 @@ public class XMLParser {
 		this.parserDefinitions = parserDefinitions;
 	}
 
+	public XMLParser(java.util.Map<String,String> parserDefinitions, String outFile) {
+		this.parserDefinitions = parserDefinitions;
+		this.outFile = outFile;
+	}
 
 
     public Runnable parseFile(final File file) throws SAXException, IOException, ParserConfigurationException, XMLParserException {
@@ -288,14 +299,17 @@ public class XMLParser {
         	xml = xml.replaceAll("\\$\\(" + key + "\\)", parserDefinitions.get(key));
         }
         
-//        try {
-//	        FileWriter outfile = new FileWriter("/tmp/beast.xml");
-//	        outfile.write(xml);
-//	        outfile.close();
-//	        System.exit(0);
-//        } catch (IOException e) {
-//        	// ignore
-//        }
+        try {
+        	if (parserDefinitions != null && parserDefinitions.size() > 1) {
+	    		Log.warning("Outputting merged file to " + outFile);
+		        FileWriter outfile = new FileWriter(outFile);
+		        outfile.write(xml);
+		        outfile.close();
+        	}
+        } catch (IOException e) {
+        	// ignore
+    		Log.warning("Something went wroting outputting merged file: " + e.getMessage());
+        }
 
         
         doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
