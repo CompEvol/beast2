@@ -60,17 +60,17 @@ public class Node extends BEASTObject {
      * Don't use m_left and m_right directly
      * Use getChildCount() and getChild(x) or getChildren() instead
      */
-    List<Node> children = new ArrayList<>();
+    protected List<Node> children = new ArrayList<>();
 
     /**
      * parent node in the beast.tree, null if root *
      */
-    Node parent = null;
+    protected Node parent = null;
 
     /**
      * status of this node after an operation is performed on the state *
      */
-    int isDirty = Tree.IS_CLEAN;
+    protected int isDirty = Tree.IS_CLEAN;
 
     /**
      * meta-data contained in square brackets in Newick *
@@ -204,7 +204,7 @@ public class Node extends BEASTObject {
      * @param parent     the node to become parent
      * @param inOperator if true, then startEditing() is called and setting the parent will make tree "filthy"
      */
-    void setParent(final Node parent, final boolean inOperator) {
+    protected void setParent(final Node parent, final boolean inOperator) {
         if (inOperator) startEditing();
         if (this.parent != parent) {
         	this.parent = parent;
