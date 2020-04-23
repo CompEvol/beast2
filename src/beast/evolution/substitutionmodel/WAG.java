@@ -6,7 +6,7 @@ import beast.evolution.datatype.DataType;
 import beast.math.statistic.DiscreteStatistics;
 
 @Description("WAG model of amino acid evolution by " +
-        "S. Whelan and N. Goldman. 2000. Bioinformatics ?.")
+        "S. Whelan and N. Goldman. 2001. Molecular biology and evolution 18.5 (2001): 691-699 ")
 
 public class WAG extends EmpiricalSubstitutionModel {
 
