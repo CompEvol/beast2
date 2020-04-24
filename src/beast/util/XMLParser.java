@@ -30,6 +30,7 @@ import beast.app.beauti.PartitionContext;
 import beast.core.*;
 import beast.core.Runnable;
 import beast.core.Input.Validate;
+import beast.core.Logger.LogFileMode;
 import beast.core.parameter.Parameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
@@ -43,10 +44,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
@@ -299,18 +302,7 @@ public class XMLParser {
         	xml = xml.replaceAll("\\$\\(" + key + "\\)", parserDefinitions.get(key));
         }
         
-        try {
-        	if (parserDefinitions != null && parserDefinitions.size() > 1) {
-	    		Log.warning("Outputting merged file to " + outFile);
-		        FileWriter outfile = new FileWriter(outFile);
-		        outfile.write(xml);
-		        outfile.close();
-        	}
-        } catch (IOException e) {
-        	// ignore
-    		Log.warning("Something went wroting outputting merged file: " + e.getMessage());
-        }
-
+        outputXML(xml);
         
         doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes()));
         doc.normalize();
@@ -355,7 +347,44 @@ public class XMLParser {
         }
     } // parseFile
 
-    /**
+    private void outputXML(String xml) {
+        try {
+        	if (parserDefinitions != null && parserDefinitions.size() > 1) {
+	    		Log.warning("Outputting merged file to " + outFile);
+                File file2 = new File(outFile);
+                if (file2.exists()) {
+                    if (Logger.FILE_MODE == LogFileMode.only_new_or_exit) {
+                        Log.err.println("Trying to write file " + outFile + " but the file already exists. Exiting now.");
+                        throw new RuntimeException("Use overwrite or resume option, or remove the file");
+                    }
+                    // Check with user what to do next
+                    Log.info.println("Trying to write file " + outFile + " but the file already exists (perhaps use the -overwrite flag?).");
+                    if (System.getProperty("beast.useWindow") != null) {
+                    	// we are using the BEAST console, so no input is possible
+                    	throw new IllegalArgumentException();
+					}
+                    Log.info.println("Overwrite (Y=yes/N=no/A=overwrite all)?:");
+                    Log.info.flush();
+                    final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	                        
+                    final String msg = stdin.readLine();
+                    if (msg.toLowerCase().equals("a")) {
+                    	Logger.FILE_MODE = LogFileMode.overwrite;
+                    } else if (!msg.toLowerCase().equals("y")) {
+                    	Log.info.println("Exiting now.");
+                        System.exit(0);
+                    }
+                }
+		        FileWriter outfile = new FileWriter(outFile);
+		        outfile.write(xml);
+		        outfile.close();
+        	}
+        } catch (IOException e) {
+        	// ignore
+    		Log.warning("Something went wroting outputting merged file: " + e.getMessage());
+        }
+    }
+
+	/**
      * extract all elements (runnable or not) from an XML fragment.
      * Useful for retrieving all non-runnable elements when a template
      * is instantiated by Beauti 
