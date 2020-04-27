@@ -352,7 +352,7 @@ public class XMLParser {
         	if (parserDefinitions != null && parserDefinitions.size() > 1) {
 	    		Log.warning("Outputting merged file to " + outFile);
                 File file2 = new File(outFile);
-                if (file2.exists()) {
+                if (file2.exists() && Logger.FILE_MODE != LogFileMode.overwrite) {
                     if (Logger.FILE_MODE == LogFileMode.only_new_or_exit) {
                         Log.err.println("Trying to write file " + outFile + " but the file already exists. Exiting now.");
                         throw new RuntimeException("Use overwrite or resume option, or remove the file");
