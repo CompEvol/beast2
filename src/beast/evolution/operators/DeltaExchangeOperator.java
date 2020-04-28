@@ -354,8 +354,11 @@ public class DeltaExchangeOperator extends Operator {
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        final double newDelta = delta * ratio;
-
+        double newDelta = delta * ratio;
+        if (isIntegerOperator) {
+        	newDelta = (int) newDelta;
+        }
+        
         final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
             return "Try setting delta to about " + formatter.format(newDelta);
