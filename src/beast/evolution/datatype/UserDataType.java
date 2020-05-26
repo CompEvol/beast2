@@ -107,4 +107,12 @@ public class UserDataType extends Base {
         return "user defined";
     }
 
+    @Override
+    public boolean hasConstantCodeLength() {
+    	if (codeLength < 0) {
+    		return false;
+    	}
+    	return true;
+    }
+
 }

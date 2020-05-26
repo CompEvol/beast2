@@ -147,6 +147,18 @@ public interface DataType {
 	public String getCode(int code);
 
 	public String getCharacter(int code);
+	
+
+	/**
+	 * Usually, alignments have codes with constant lengths,
+	 * but occasionally (like for integer values, or user defined data types) they don't.
+	 * This information can be useful for sanity checks.  
+	 * @return true if code length is constant
+	 */
+	default public boolean hasConstantCodeLength() {
+		return true;
+	}
+
 
 	@Description(value = "Basic data type implementation, with methods for decoding and encoding sequence strings", isInheritable = false)
 	public abstract class Base extends BEASTObject implements DataType {
@@ -407,4 +419,5 @@ public interface DataType {
 
 	} // class Base
 
+	
 } // class DataType

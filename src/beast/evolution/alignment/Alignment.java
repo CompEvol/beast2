@@ -327,7 +327,7 @@ public class Alignment extends Map<String> {
     protected void sanityCheckCalcPatternsSetUpAscertainment(boolean log) {
         // Sanity check: make sure sequences are of same length
         int length = counts.get(0).size();
-        if (!(m_dataType instanceof StandardData) && !(m_dataType instanceof UserDataType)) {
+        if (m_dataType.hasConstantCodeLength()) { // instanceof StandardData) && !(m_dataType instanceof UserDataType)) {
             for (List<Integer> seq : counts) {
                 if (seq.size() != length) {
                     throw new RuntimeException("Two sequences with different length found: " + length + " != " + seq.size());

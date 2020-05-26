@@ -177,4 +177,9 @@ public class StandardData extends DataType.Base {
 //        }
 //
 //    }
+    
+    @Override
+    public boolean hasConstantCodeLength() {
+    	return false;
+    }
 }
