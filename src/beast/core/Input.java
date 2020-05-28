@@ -431,8 +431,8 @@ public class Input<T> {
                 }
             } else if (value instanceof List<?> && ((List<?>) value).size() == 0) {
                 // https://github.com/CompEvol/beast2/issues/773
-                throw new RuntimeException("Input 105: invalid input value for \"" + getName() + "\" in \"" +
-                        beastObject + "\", the empty list and causes IndexOutOfBoundsException");
+            	// list is empty, so no further values to add to input.
+            	return;
             } else if (value instanceof List<?> && theClass.isAssignableFrom(((List<?>) value).get(0).getClass())) {
                 // add all elements in given list to input list.
                 @SuppressWarnings("rawtypes")
