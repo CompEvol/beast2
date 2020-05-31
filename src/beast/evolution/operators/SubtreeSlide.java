@@ -100,6 +100,11 @@ public class SubtreeSlide extends TreeOperator {
         final boolean markClades = markCladesInput.get();
         // 1. choose a random node avoiding root
         final int nodeCount = tree.getNodeCount();
+        if (nodeCount == 1) {
+        	// test for degenerate case (https://github.com/CompEvol/beast2/issues/887)
+        	return Double.NEGATIVE_INFINITY;
+        }
+        
         do {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
