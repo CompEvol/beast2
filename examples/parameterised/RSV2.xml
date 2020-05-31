@@ -28,7 +28,7 @@ $(sequences)
 <map name="OneOnX" >beast.math.distributions.OneOnX</map>
 
 
-<run id="mcmc" spec="MCMC" chainLength="$(chainLength)">
+<run id="mcmc" spec="MCMC" chainLength="$(chainLength=1000000)">
     <state id="state" spec="State" storeEvery="5000">
         <tree id="Tree.t:RSV2" spec="beast.evolution.tree.Tree" name="stateNode">
             <trait id="dateTrait.t:RSV2" spec="beast.evolution.tree.TraitSet" traitname="date" value="$(dates)">
@@ -38,7 +38,7 @@ $(sequences)
             </trait>
             <taxonset idref="TaxonSet.RSV2"/>
         </tree>
-        <parameter id="clockRate.c:RSV2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="clockRate.c:RSV2" spec="parameter.RealParameter" name="stateNode">$(clockrate=0.5)</parameter>
         <parameter id="kappa.s:RSV2" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
         <parameter id="gammaShape.s:RSV2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
         <parameter id="popSize.t:RSV2" spec="parameter.RealParameter" name="stateNode">0.3</parameter>

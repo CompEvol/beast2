@@ -298,6 +298,7 @@ public class XMLParser {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         //factory.setValidating(true);
         String xml = BeautiDoc.load(file);
+        xml = processDefaultValues(xml);
         for (String key: parserDefinitions.keySet()) {
         	xml = xml.replaceAll("\\$\\(" + key + "\\)", parserDefinitions.get(key));
         }
@@ -347,7 +348,60 @@ public class XMLParser {
         }
     } // parseFile
 
-    private void outputXML(String xml) {
+    /**
+     * Gather all user defined variable default values. These are defined in the XML 
+     * as $(name=default_value)
+     * @param xml
+     * @return xml with default values removed
+     */
+    private String processDefaultValues(String xml) {
+    	if (xml.indexOf("$(") == -1) {
+    		// no default values in the XML
+			return xml;
+		}
+    	// find parser definitions for default values
+    	Map<String,String> defaults = new HashMap<>();
+    	StringBuilder b = new StringBuilder();
+    	for (int i = 0; i < xml.length(); i++) {
+    		char c = xml.charAt(i);
+    		if (c == '$' && i < xml.length() - 1 && xml.charAt(i+1) == '(') {
+    			int j = i + 1;
+    			int k = -1;
+    			while (j < xml.length() && xml.charAt(j) != ')') {
+    				if (xml.charAt(j) == '=') {
+    					k = j;
+    				}
+    				j++;
+    			}
+    			if (k > 0) {
+    				// default found
+    				String name = xml.substring(i + 2, k);
+    				String value = xml.substring(k + 1, j);
+    				if (defaults.containsKey(name)) {
+    					throw new IllegalArgumentException("user defined parameter '" + name + "' has multiple default values defined");
+    				}
+    				defaults.put(name,  value);
+    				b.append("$(" + name + ")");
+    			} else {
+    				String name = xml.substring(i + 2, j);
+    				b.append("$(" + name + ")");
+    			}
+				i = j;
+    		} else {
+    			b.append(c);
+    		}
+    	}
+    	
+    	// update parserDefinitions
+    	for (String name : defaults.keySet()) {
+    		if (!parserDefinitions.containsKey(name)) {
+    			parserDefinitions.put(name, defaults.get(name));
+    		}
+    	}
+		return b.toString();
+	}
+
+	private void outputXML(String xml) {
         try {
         	if (parserDefinitions != null && parserDefinitions.size() > 1) {
 	    		Log.warning("Outputting merged file to " + outFile);
@@ -535,6 +589,11 @@ public class XMLParser {
 
     public List<BEASTInterface> parseBareFragments(final String xml, final boolean initialise) throws XMLParserException, SAXException, IOException, ParserConfigurationException {
         needsInitialisation = initialise;
+
+        IDMap = new HashMap<>();
+        likelihoodMap = new HashMap<>();
+        IDNodeMap = new HashMap<>();
+
         // parse the XML fragment into a DOM document
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         doc = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
