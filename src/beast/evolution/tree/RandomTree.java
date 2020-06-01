@@ -26,9 +26,9 @@
 package beast.evolution.tree;
 
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -110,17 +110,29 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     @Override
     public void initAndValidate() {
-
+    	// check whether a date-forward trait is involved
+    	List<TraitSet> traits = new ArrayList<>();
+    	traits.addAll(m_traitList.get());
+    	if (m_initial.get() != null) {
+    		traits.addAll(m_initial.get().m_traitList.get());
+        }
+    	for (TraitSet trait : traits) {
+			if (trait.getTraitName().equals(TraitSet.DATE_TRAIT) || trait.getTraitName().equals(TraitSet.DATE_FORWARD_TRAIT)) {
+				timeTraitSet = trait;
+				break;
+    		}
+    	}
+    	
         taxa = new LinkedHashSet<>();
         if (taxaInput.get() != null) {
             taxa.addAll(taxaInput.get().getTaxaNames());
         } else {
             taxa.addAll(m_taxonset.get().asStringList());
         }
-
         nrOfTaxa = taxa.size();
 
         initStateNodes();
+
         super.initAndValidate();
     }
 
@@ -222,8 +234,16 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	        			beastObjects.get(i).initAndValidate();
 	        		}
 	                try {
-						bounds.lower = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
-		                bounds.upper = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();
+	                	double tLow = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
+	                	double tHi = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();
+						bounds.lower = getDate(tLow);
+		                bounds.upper = getDate(tHi);
+		                if (bounds.lower > bounds.upper && tLow < tHi) {
+		                	// can happen with date-forward trait -- bounds need to be swapped
+		                	double tmp = bounds.lower;
+		                	bounds.lower = bounds.upper;
+		                	bounds.upper = tmp;
+		                }
 					} catch (MathException e) {
 						Log.warning.println("At RandomTree::initStateNodes, bound on MRCAPrior could not be set " + e.getMessage());
 					}
@@ -361,6 +381,15 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
             }
         }
     }
+    
+    
+    public double getDate(final double height) {
+        if (timeTraitSet != null) {
+            return timeTraitSet.getDate(height);
+        } else
+            return height;
+    }
+
 
     private int setNodesNrs(final Node node, int internalNodeCount, int[] n, Map<String,Integer> initial) {
         if( node.isLeaf() )  {
