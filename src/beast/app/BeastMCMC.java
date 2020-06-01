@@ -322,7 +322,7 @@ public class BeastMCMC {
             m_runnable = new JSONParser(parserDefinitions).parseFile(beastFile, sampleFromPrior);
         } else {        	
         	try {
-				m_runnable = new XMLParser(parserDefinitions, outFile).parseFile(beastFile, sampleFromPrior);
+				m_runnable = new XMLParser(parserDefinitions, outFile, hasDF).parseFile(beastFile, sampleFromPrior);
 			} catch (SAXException | ParserConfigurationException e) {
 				throw new IllegalArgumentException(e);
 			}

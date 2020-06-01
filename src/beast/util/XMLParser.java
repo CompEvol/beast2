@@ -247,6 +247,7 @@ public class XMLParser {
     List<BEASTInterface> beastObjectsWaitingToInit = new ArrayList<>();
     List<Node> nodesWaitingToInit = new ArrayList<>();
 	java.util.Map<String,String> parserDefinitions;
+	boolean hasParserDefinitionsFromFile = false;
 
     public HashMap<String, String> getElement2ClassMap() {
         return element2ClassMap;
@@ -272,7 +273,7 @@ public class XMLParser {
      * if outFile is not null, an XML file merged with parser definitions processed 
      * will be saved here
      */
-    String outFile;
+    String outFile = null;
     
 
     public XMLParser() {
@@ -283,9 +284,10 @@ public class XMLParser {
 		this.parserDefinitions = parserDefinitions;
 	}
 
-	public XMLParser(java.util.Map<String,String> parserDefinitions, String outFile) {
+	public XMLParser(java.util.Map<String,String> parserDefinitions, String outFile, boolean hasParserDefinitionsFromFile) {
 		this.parserDefinitions = parserDefinitions;
 		this.outFile = outFile;
+		this.hasParserDefinitionsFromFile = hasParserDefinitionsFromFile;
 	}
 
 
@@ -403,7 +405,7 @@ public class XMLParser {
 
 	private void outputXML(String xml) {
         try {
-        	if (parserDefinitions != null && parserDefinitions.size() > 1) {
+        	if (parserDefinitions != null && parserDefinitions.size() > 0 && (hasParserDefinitionsFromFile || outFile != null)) {
 	    		Log.warning("Outputting merged file to " + outFile);
                 File file2 = new File(outFile);
                 if (file2.exists() && Logger.FILE_MODE != LogFileMode.overwrite) {
