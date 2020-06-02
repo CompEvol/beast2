@@ -30,6 +30,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
     final public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
     final public Input<List<Parameter<?>>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
+    public Input<String> argNamesInput = new Input<>("argnames", "names of arguments used in expression (comma delimited)," +
+            " order as given by XML");
 
     private RPNexpressionCalculator[] expressions;
     private List<String> names;
@@ -46,24 +48,50 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
         int pdim;
 
-        for (final Parameter<?> p : parametersInput.get()) {
+        if (argNamesInput.get() != null) {
+        	String [] names_ = argNamesInput.get().split(",");
+        	if (names_.length != parametersInput.get().size()) {
+        		throw new IllegalArgumentException("number of argnames does not match number of parameters");
+        	}
+        	
+            variables = new HashMap<>();
+        	int k = 0;
+        	for (String name : names_) {
+        		names.add(name);
+        		Parameter<?> p = parametersInput.get().get(k);
+                expressions = new RPNexpressionCalculator[dim];
+	            pdim = p.getDimension();
+	        	
+	            if (pdim != dim && dim != 1 && pdim != 1) {
+	                throw new IllegalArgumentException("error: all parameters have to have same length or be of dimension 1.");
+	            }
+	            if (pdim > dim) dim = pdim;
+	
+	            expressions = new RPNexpressionCalculator[dim];
+	            names.add(p.toString());
 
-            pdim = p.getDimension();
-
-            if (pdim != dim && dim != 1 && pdim != 1) {
-                throw new IllegalArgumentException("error: all parameters have to have same length or be of dimension 1.");
-            }
-            if (pdim > dim) dim = pdim;
-
-            expressions = new RPNexpressionCalculator[dim];
-            names.add(p.toString());
-
-            for (int i = 0; i < pdim; i++) {
-
-                variables = new HashMap<>();
-
-                variables.put(p.getID(), p.getValues());
-            }
+	            variables.put(name, p.getValues());
+	
+	            k++;
+        	}
+        } else {
+	        for (final Parameter<?> p : parametersInput.get()) {
+	
+	            pdim = p.getDimension();
+	
+	            if (pdim != dim && dim != 1 && pdim != 1) {
+	                throw new IllegalArgumentException("error: all parameters have to have same length or be of dimension 1.");
+	            }
+	            if (pdim > dim) dim = pdim;
+	
+	            expressions = new RPNexpressionCalculator[dim];
+	            names.add(p.toString());
+	
+	            for (int i = 0; i < pdim; i++) {
+	                variables = new HashMap<>();
+	                variables.put(p.getID(), p.getValues());
+	            }
+	        }
         }
 
         vars = new RPNexpressionCalculator.GetVariable[dim];
