@@ -123,7 +123,7 @@ public class MCMC extends Runnable {
      */
     final protected int NR_OF_DEBUG_SAMPLES = 2000;
 
-    /**
+    /** 
      * Interval for storing state to disk, if negative the state will not be stored periodically *
      * Mirrors m_storeEvery input, or if this input is negative, the State.m_storeEvery input
      */
@@ -356,6 +356,9 @@ public class MCMC extends Runnable {
         }
 
         // initialises log so that log file headers are written, etc.
+        if (restoreFromFile) {
+        	makeSureLogFilesAreSameLength();
+        }
         for (final Logger log : loggers) {
             log.init();
         }
@@ -378,7 +381,32 @@ public class MCMC extends Runnable {
     } // run;
 
 
-    /**
+    protected void makeSureLogFilesAreSameLength() throws IOException {
+    	// make sure log files all end in the same state
+    	long min = -1;
+    	long [] lengths = new long[loggers.size()];
+    	for (int i = 0; i < loggers.size(); i++) {
+    		Logger logger = loggers.get(i);
+    		if (!logger.isLoggingToStdout()) {
+    			long offset = logger.getLogOffset();
+    			lengths[i] = offset;
+    			min = min == -1 ? offset : Math.min(min, offset); 
+    		}
+    	}
+    	if (min == 0) {
+    		// at least one log file is empty
+    		return;
+    	}
+    	for (int i = 0; i < loggers.size(); i++) {
+    		Logger logger = loggers.get(i);
+    		if (!logger.isLoggingToStdout() && min != lengths[i]) {
+    			logger.setLogOffset(min);
+    		}
+    	}
+	}
+
+
+	/**
      * main MCMC loop 
      * @throws IOException *
      */
@@ -421,7 +449,7 @@ public class MCMC extends Runnable {
                     }
                 } else {
                     if (isTooDifferent(logLikelihood, originalLogP)) {
-                        // halt due to incorrect posterior during intial debug period
+                        // halt due to incorrect posterior during initial debug period
                         state.storeToFile(sampleNr);
                         operatorSchedule.storeToFile();
                         System.exit(1);

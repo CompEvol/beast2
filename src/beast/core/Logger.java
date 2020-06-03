@@ -413,18 +413,7 @@ public class Logger extends BEASTObject {
                     if (file.exists()) {
                         if (mode == LOGMODE.compound) {
                             // first find the sample nr offset
-                            final BufferedReader fin = new BufferedReader(new FileReader(fileName));
-                            String str = null;
-                            while (fin.ready()) {
-                                str = fin.readLine();
-                            }
-                            fin.close();
-                            assert str != null;
-                            final long sampleOffset = Long.parseLong(str.split("\\s")[0]);
-                            if (Logger.sampleOffset > 0 && sampleOffset != Logger.sampleOffset) {
-                                throw new RuntimeException("Error 400: Cannot resume: log files do not end in same sample number");
-                            }
-                            Logger.sampleOffset = sampleOffset;
+                            Logger.sampleOffset = getLogOffset();
                             // open the file for appending
                             final FileOutputStream out2 = new FileOutputStream(fileName, true);
                             m_out = new PrintStream(out2);
@@ -492,6 +481,102 @@ public class Logger extends BEASTObject {
         }
     } // openLogFile
 
+	public long getLogOffset() throws IOException {
+	    final File file = new File(fileName);
+	    if (file.exists()) {
+            final BufferedReader fin = new BufferedReader(new FileReader(fileName));
+	        if (mode == LOGMODE.compound) {
+	            // first find the sample nr offset
+	            String str = null;
+	            while (fin.ready()) {
+	                str = fin.readLine();
+	            }
+	            fin.close();
+	            assert str != null;
+	            final long sampleOffset = Long.parseLong(str.split("\\s")[0]);
+	            return sampleOffset;
+	        } else {
+	            // it is a tree logger
+	            String strLast = null;
+	            while (fin.ready()) {
+	                final String str = fin.readLine();
+	                if (!str.equals("End;")) {
+	                    strLast = str;
+	                }
+	            }
+	            fin.close();
+	
+	            // determine number of the last sample
+	            if( strLast == null ) {
+	            	// empty log file
+	            	return 0;
+	            }
+	            final String str = strLast.split("\\s+")[1];
+	            final long sampleOffset = Long.parseLong(str.substring(6));
+	            return sampleOffset;
+	        }
+	    }
+	    return 0;
+	}
+
+	protected void setLogOffset(long offset) throws IOException {
+	    final File file = new File(fileName);
+	    if (file.exists()) {
+	    	// back up file in case something goes wrong (e.g. an out of memory error occurs)
+	        final File treeFileBackup = new File(fileName);
+	        
+	        //final boolean ok = treeFileBackup.renameTo(new File(fileName + ".bu"));    assert ok;
+	        Files.move(treeFileBackup.toPath(), new File(fileName+".bu").toPath(), StandardCopyOption.ATOMIC_MOVE);
+	        // open the file and write back all but the last line
+	        final BufferedReader fin = new BufferedReader(new FileReader(fileName+".bu"));
+	
+	        final PrintStream out2 = new PrintStream(fileName);
+
+	        if (mode == LOGMODE.compound) {
+	            // first find the sample nr offset
+	            String str = null;
+	            while (fin.ready()) {
+	                str = fin.readLine();
+	                out2.println(str);
+                	if (!str.startsWith("#")) {
+    	                try {
+	                		final long sampleOffset = Long.parseLong(str.split("\\s")[0]);
+	                		if (offset == sampleOffset) {
+	                			break;
+	                		}
+	                	} catch (NumberFormatException e) {
+		                	// ignore
+		                }
+                	}
+	            }
+	            fin.close();
+	        } else {
+	            // it is a tree logger
+	            String str = null;
+	            while (fin.ready()) {
+	                str = fin.readLine();
+	                out2.println(str);
+	                String [] strs = str.split("\\s+");
+	                if (strs.length > 1 && strs[1].length() > 6) {
+    	                try {
+		                	final long sampleOffset = Long.parseLong(strs[1].substring(6));
+		                	if (offset == sampleOffset) {
+		                		break;
+		                	}
+	                	} catch (NumberFormatException e) {
+		                	// ignore
+		                }
+	                }
+	            }
+	            fin.close();
+	        }
+	        
+            // it is safe to remove the backup file now
+            new File(fileName + ".bu").delete();
+	    }
+	}
+	
+	
     /**
      * log the state for given sample nr
      * *
