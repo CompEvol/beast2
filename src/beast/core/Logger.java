@@ -481,39 +481,88 @@ public class Logger extends BEASTObject {
         }
     } // openLogFile
 
-	public long getLogOffset() throws IOException {
+	/**
+	 * Determines the last state in a (trace or tree) log file
+	 * Tries to detect if last line is corrupted and fixes it by removing the last line if so.
+	 * Corruption is detected as follows:
+	 * For trace logs, the number of columns in the header should be the same as in the log lines.
+	 * For tree files, the last line (or one but last, if it ends with "End;") should end in a semi-column. 
+	 * @return last state of (corrected, if deemed corrupted) log file
+	 * @throws IOException
+	 */
+	protected long getLogOffset() throws IOException {
 	    final File file = new File(fileName);
 	    if (file.exists()) {
             final BufferedReader fin = new BufferedReader(new FileReader(fileName));
 	        if (mode == LOGMODE.compound) {
 	            // first find the sample nr offset
 	            String str = null;
+	            String prevStr = null;
+	            int columnCount = -1;
 	            while (fin.ready()) {
+	            	prevStr = str;
 	                str = fin.readLine();
-	            }
-	            fin.close();
-	            assert str != null;
-	            final long sampleOffset = Long.parseLong(str.split("\\s")[0]);
-	            return sampleOffset;
-	        } else {
-	            // it is a tree logger
-	            String strLast = null;
-	            while (fin.ready()) {
-	                final String str = fin.readLine();
-	                if (!str.equals("End;")) {
-	                    strLast = str;
+	                if (str.startsWith("Sample\t")) {
+	                	columnCount = str.split("\t").length;
 	                }
 	            }
 	            fin.close();
-	
-	            // determine number of the last sample
-	            if( strLast == null ) {
+	            assert str != null;
+	            if (columnCount > 0 && columnCount != str.split("\t").length) {
+	            	// last trace log line does not have the same number of columns as header, 
+	            	// so assume it was corrupted (e.g. disk full, or process aborted midway). 
+	            	// Revert to previous line and fix file
+	            	try {
+		            	long offset = Long.parseLong(prevStr.split("\\s")[0]);
+		            	setLogOffset(offset);
+		            	return offset;
+	            	} catch (NumberFormatException e){
+	            		return 0;
+	            	}
+	            }	            
+            	try {
+            		return Long.parseLong(str.split("\\s")[0]);
+            	} catch (NumberFormatException e){
+            		return 0;
+            	}
+	        } else {
+	            // it is a tree logger
+	            String str = null;
+	            String prevStr = null;
+	            while (fin.ready()) {
+	            	prevStr = str;
+	                str = fin.readLine();
+	            }
+	            fin.close();
+
+	            if( str == null ) {
 	            	// empty log file
 	            	return 0;
 	            }
-	            final String str = strLast.split("\\s+")[1];
-	            final long sampleOffset = Long.parseLong(str.substring(6));
-	            return sampleOffset;
+                if (str.equals("End;")) {
+                    str = prevStr;
+                }
+            	if (!str.endsWith(";")) {
+                	// file contains corrupted tree
+                	// revert to previous line and fix file
+    	            final String str2 = prevStr.split("\\s+")[1];
+                	try {
+                		long offset = Long.parseLong(str2.substring(6));
+                		setLogOffset(offset);
+                		return offset;
+                	} catch (NumberFormatException e){
+                		return 0;
+                	}
+                }
+	            
+	            // determine number of the last sample
+	            final String str2 = str.split("\\s+")[1];
+	            
+            	try {
+            		return Long.parseLong(str2.substring(6));
+            	} catch (NumberFormatException e){
+            		return 0;
+            	}
 	        }
 	    }
 	    return 0;
@@ -570,6 +619,7 @@ public class Logger extends BEASTObject {
 	            }
 	            fin.close();
 	        }
+	        out2.close();
 	        
             // it is safe to remove the backup file now
             new File(fileName + ".bu").delete();
