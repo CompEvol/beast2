@@ -68,7 +68,8 @@
 
         <!-- Compile the java code from ${src} into ${build} /bin -->
         <javac source="1.8"
-               target="1.8"
+		target="1.8"
+		bootclasspath='/opt/jdk1.8.0_131/jre/lib/rt.jar'
                srcdir="${src}"
                destdir="${build}"
                classpathref="classpath"
@@ -266,8 +267,8 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.6.2" />
-    <property name="version_number" value="2.6.2" />
+    <property name="version" value="2.6.3" />
+    <property name="version_number" value="2.6.3" />
     <property name="release_dir" value="release" />
     <property name="copyright" value="Beast 2 development team 2011-2020" />
 

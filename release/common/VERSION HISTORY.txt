@@ -1,10 +1,20 @@
                     BEAST v2.6.2 2020
                  Beast 2 development team 2011-2020
 Version History
-Last updated: February 2020
+Last updated: June 2020
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.3
+	Robustify resume`
+	RandomTree deals with calibrations in date-forward mode
+	BEAST new `-DF` and `-DFout` options
+	Default values for user defined values
+	LogAnalyser new `-tag` option
+	Let `Input.setValue()` ignore empty lists (instead of throwing exception) 
+	User data type lengths are not required to be equal any more
+	Robustify RPN calculator
+
 Version 2.6.2
 	Allow operator schedule changes in BEAUti
 	Fix quantile parameterisation of relaxed clocks
