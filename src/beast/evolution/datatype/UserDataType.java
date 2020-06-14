@@ -99,7 +99,11 @@ public class UserDataType extends Base {
 
     @Override
 	public String getCharacter(int code) {
-		return String.valueOf(codeMap.split(",")[code]);
+        if (codeLength > 0) {
+        	return codeMap.substring(code * codeLength, (code + 1) * codeLength);
+        } else {
+        	return String.valueOf(codeMap.split(",")[code]);
+		}
     }
 
     @Override
