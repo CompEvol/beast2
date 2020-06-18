@@ -253,8 +253,12 @@ public class TreeAnnotator {
 
         private void parseTreesBlock() throws IOException  {
             // read to first non-empty line within trees block
+        	fin.mark(1024*1024);
+        	int lineNr = this.lineNr;
             String str = readLine().trim();
             while (str.equals("")) {
+            	fin.mark(1024*1024);
+            	lineNr = this.lineNr;
                 str = readLine().trim();
             }
 
@@ -265,6 +269,9 @@ public class TreeAnnotator {
                 if (origin != -1) {
                     taxa = getIndexedTranslationMap(translationMap, origin);
                 }
+            } else {
+            	this.lineNr = lineNr;
+            	fin.reset();
             }
             // we got to the end of the translate block
             // read burninCount trees
