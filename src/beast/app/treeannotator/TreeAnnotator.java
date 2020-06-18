@@ -278,7 +278,7 @@ public class TreeAnnotator {
             current = 0;
             while (current < burninCount && fin.ready()) {
     			str = nextLine();
-                if (str.toLowerCase().startsWith("tree ")) {
+                if (str.trim().toLowerCase().startsWith("tree ")) {
                 	current++;
                 }
             }
@@ -370,7 +370,7 @@ public class TreeAnnotator {
     		}
     		
             // read trees from NEXUS file
-            if (str.toLowerCase().startsWith("tree ")) {
+            if (str.trim().toLowerCase().startsWith("tree ")) {
             	current++;
                 final int i = str.indexOf('(');
                 if (i > 0) {
@@ -550,7 +550,7 @@ public class TreeAnnotator {
                     
                     String tree = BeautiDoc.load(targetTreeFileName);
                     
-                    if (tree.startsWith("#NEXUS")) {
+                    if (tree.trim().startsWith("#NEXUS")) {
                     	NexusParser parser2 = new NexusParser();
                     	parser2.parseFile(new File(targetTreeFileName));
                     	targetTree = parser2.trees.get(0);
