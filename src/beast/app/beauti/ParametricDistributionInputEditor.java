@@ -1,6 +1,7 @@
 package beast.app.beauti;
 
 
+
 import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -109,7 +110,8 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             } else {
                 try {
                     m_distr.initAndValidate();
-                    drawGraph(m_distr, 50, g);
+                    int fsize = UIManager.getFont("Label.font").getSize();
+                    drawGraph(m_distr, fsize * 9/2, g);
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                     ex.printStackTrace();
@@ -121,8 +123,6 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
         }
 
         private void drawError(Graphics g) {
-            Font oldFont = g.getFont();
-            Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize());
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.BLACK);
@@ -237,6 +237,8 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
             int graphHeight = height - TOP_MARGIN - bottomMargin - labelOffset;
 
             // DRAW GRAPH PAPER
+            g.setColor(new Color(0xf0f0f0));
+            g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.WHITE);
             g.fillRect(leftMargin, TOP_MARGIN, graphWidth, graphHeight);
             g.setColor(Color.BLACK);
@@ -365,7 +367,7 @@ public class ParametricDistributionInputEditor extends BEASTObjectInputEditor {
         panel.setMinimumSize(size);
         Box box = Box.createHorizontalBox();
         box.setBorder(BorderFactory.createEmptyBorder());
-        box.add(panel);
+        box.add(panel);        
         return box;
     }
 
