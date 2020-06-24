@@ -104,7 +104,7 @@ public class SubtreeSlide extends TreeOperator {
         	// test for degenerate case (https://github.com/CompEvol/beast2/issues/887)
         	return Double.NEGATIVE_INFINITY;
         }
-        
+
         do {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         } while (i.isRoot());
@@ -232,6 +232,11 @@ public class SubtreeSlide extends TreeOperator {
 
     private int intersectingEdges(Node node, double height, List<Node> directChildren) {
         final Node parent = node.getParent();
+        
+        if (parent == null) {
+        	// can happen with non-standard non-mutable trees
+        	return 0;
+        }
 
         if (parent.getHeight() < height) return 0;
 
