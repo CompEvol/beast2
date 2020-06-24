@@ -1271,7 +1271,10 @@ public class XMLParser {
                 // resolve base class
                 String specClass = BEAST_INTERFACE_CLASS;
                 if (element2ClassMap.containsKey(element)) {
-                	specClass = element2ClassMap.get(element);
+                    final String idref = getAttribute(child, "idref");
+                    if (idref == null) {
+                    	specClass = element2ClassMap.get(element);
+                    }
                 }
                 final String spec = getAttribute(child, "spec");
                 if (spec != null) {

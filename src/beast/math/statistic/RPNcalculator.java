@@ -2,18 +2,19 @@ package beast.math.statistic;
 
 
 
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import beast.core.BEASTInterface;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Function;
 import beast.core.Input;
 import beast.core.Loggable;
-import beast.core.parameter.Parameter;
 
 
 /**
@@ -29,7 +30,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
 
     final public Input<String> strExpressionInput = new Input<>("expression", "Expressions needed for the calculations", Input.Validate.REQUIRED);
-    final public Input<List<Parameter<?>>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
+    final public Input<List<Function>> parametersInput = new Input<>("parameter", "Parameters needed for the calculations", new ArrayList<>());
     public Input<String> argNamesInput = new Input<>("argnames", "names of arguments used in expression (comma delimited)," +
             " order as given by XML");
 
@@ -58,7 +59,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
         	int k = 0;
         	for (String name : names_) {
         		names.add(name);
-        		Parameter<?> p = parametersInput.get().get(k);
+        		Function p = parametersInput.get().get(k);
                 expressions = new RPNexpressionCalculator[dim];
 	            pdim = p.getDimension();
 	        	
@@ -70,12 +71,12 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 	            expressions = new RPNexpressionCalculator[dim];
 	            names.add(p.toString());
 
-	            variables.put(name, p.getValues());
+	            variables.put(name, toObjectArray(p.getDoubleValues()));
 	
 	            k++;
         	}
         } else {
-	        for (final Parameter<?> p : parametersInput.get()) {
+	        for (final Function p : parametersInput.get()) {
 	
 	            pdim = p.getDimension();
 	
@@ -89,7 +90,7 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 	
 	            for (int i = 0; i < pdim; i++) {
 	                variables = new HashMap<>();
-	                variables.put(p.getID(), p.getValues());
+	                variables.put(((BEASTInterface) p).getID(), toObjectArray(p.getDoubleValues()));
 	            }
 	        }
         }
@@ -104,8 +105,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
                     final Object[] values = (variables.get(name));
                     if (values == null) {
                     	String ids = "";
-                        for (final Parameter<?> p : parametersInput.get()) {
-                    		ids += p.getID() +", ";
+                        for (final Function p : parametersInput.get()) {
+                    		ids += ((BEASTInterface) p).getID() +", ";
                     	}
                     	if (parametersInput.get().size() > 0) {
                     		ids = ids.substring(0, ids.length() - 2);
@@ -135,10 +136,18 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
         }
     }
 
-    private void updateValues() {
-        for (Parameter<?> p : parametersInput.get()) {
+    private Object[] toObjectArray(double[] doubleValues) {
+		Double [] o = new Double[doubleValues.length];
+		for (int i = 0; i < doubleValues.length; i++) {
+			o[i] = doubleValues[i];
+		}
+		return o;
+	}
+
+	private void updateValues() {
+        for (Function p : parametersInput.get()) {
             for (int i = 0; i < p.getDimension(); i++) {
-                variables.put(p.getID(), p.getValues());
+                variables.put(((BEASTInterface) p).getID(), toObjectArray(p.getDoubleValues()));
             }
         }
     }
@@ -195,8 +204,8 @@ public class RPNcalculator extends CalculationNode implements Loggable, Function
 
     public List<String> getArguments() {
         final List<String> arguments = new ArrayList<>();
-        for (final Parameter<?> par : parametersInput.get()) {
-            arguments.add(par.getID());
+        for (final Function p : parametersInput.get()) {
+            arguments.add(((BEASTInterface) p).getID());
         }
         return arguments;
     }
