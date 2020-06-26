@@ -34,6 +34,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -54,7 +55,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     
     public static enum Scaling {none, always, _default};
     final public Input<Scaling> scaling = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
-    
+
+    final public Input<Frequencies> rootFrequenciesInput =
+            new Input<>("rootFrequencies", "prior state frequencies at root, optional", Input.Validate.OPTIONAL);
 
     /**
      * calculation engine *
@@ -454,8 +457,6 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 if (node.isRoot()) {
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
-                    final double[] frequencies = //m_pFreqs.get().
-                            substitutionModel.getFrequencies();
 
                     final double[] proportions = m_siteModel.getCategoryProportions(node);
                     likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
@@ -468,7 +469,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                         }
                     }
 
-                    likelihoodCore.calculateLogLikelihoods(m_fRootPartials, frequencies, patternLogLikelihoods);
+                    double[] rootFrequencies = substitutionModel.getFrequencies();
+                    if (rootFrequenciesInput.get() != null) {
+                        rootFrequencies = rootFrequenciesInput.get().getFreqs();
+                    }
+                    likelihoodCore.calculateLogLikelihoods(m_fRootPartials, rootFrequencies, patternLogLikelihoods);
                 }
 
             }
