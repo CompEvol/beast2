@@ -405,7 +405,11 @@ public class XMLParser {
 
 	private void outputXML(String xml) {
         try {
-        	if (parserDefinitions != null && parserDefinitions.size() > 0 && (hasParserDefinitionsFromFile || outFile != null)) {
+        	if (parserDefinitions != null && parserDefinitions.size() > 0 && 
+        			// do not write file when resuming and no -DFout is specified
+        			!(Logger.FILE_MODE== LogFileMode.resume && outFile == null) &&
+        			// write file when -DF or -DFout option is used  
+        			(hasParserDefinitionsFromFile || outFile != null)) {
 	    		Log.warning("Outputting merged file to " + outFile);
                 File file2 = new File(outFile);
                 if (file2.exists() && Logger.FILE_MODE != LogFileMode.overwrite) {
@@ -424,7 +428,9 @@ public class XMLParser {
                     final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	                        
                     final String msg = stdin.readLine();
                     if (msg.toLowerCase().equals("a")) {
-                    	Logger.FILE_MODE = LogFileMode.overwrite;
+                    	if (Logger.FILE_MODE != LogFileMode.resume) {
+                    		Logger.FILE_MODE = LogFileMode.overwrite;
+                    	}
                     } else if (!msg.toLowerCase().equals("y")) {
                     	Log.info.println("Exiting now.");
                         System.exit(0);
