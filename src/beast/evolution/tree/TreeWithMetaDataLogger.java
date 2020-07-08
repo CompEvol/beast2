@@ -108,54 +108,64 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         } else {
             buf.append(node.labelNr + 1);
         }
-        if (someMetaDataNeedsLogging) {
-	        buf.append("[&");
-	        if (metadataList.size() > 0) {
-	        	for (Function metadata : metadataList) {
-		            buf.append(((BEASTObject)metadata).getID());
-		            buf.append('=');
-		            if (metadata instanceof Parameter<?>) {
-		            	Parameter<?> p = (Parameter<?>) metadata;
-		            	int dim = p.getMinorDimension1();
-		            	if (dim > 1) {
-			            	buf.append('{');
-			            	for (int i = 0; i < dim; i++) {
-						if (metadata instanceof RealParameter) {
-							RealParameter rp = (RealParameter) metadata;
-							appendDouble(buf, rp.getMatrixValue(node.labelNr, i));
+		StringBuffer buf2 = new StringBuffer();
+		if (someMetaDataNeedsLogging) {
+			buf2.append("[&");
+			if (metadataList.size() > 0) {
+				for (Function metadata : metadataList) {
+					if (metadata instanceof Parameter<?>) {
+						Parameter<?> p = (Parameter<?>) metadata;
+						int dim = p.getMinorDimension1();
+						if (p.getMinorDimension2() > node.getNr()) {
+							buf2.append(((BEASTObject) metadata).getID());
+							buf2.append('=');
+							if (dim > 1) {
+								buf2.append('{');
+								for (int i = 0; i < dim; i++) {
+									if (metadata instanceof RealParameter) {
+										RealParameter rp = (RealParameter) metadata;
+										appendDouble(buf2, rp.getMatrixValue(node.getNr(), i));
+									} else {
+										buf2.append(p.getMatrixValue(node.getNr(), i));
+									}
+									if (i < dim - 1) {
+										buf2.append(',');
+									}
+								}
+								buf2.append('}');
+							} else {
+								if (metadata instanceof RealParameter) {
+									RealParameter rp = (RealParameter) metadata;
+									appendDouble(buf2, rp.getArrayValue(node.getNr()));
+								} else {
+									buf2.append(metadata.getArrayValue(node.getNr()));
+								}
+							}
 						} else {
-							buf.append(p.getMatrixValue(node.labelNr, i));
+						
 						}
-				            	if (i < dim - 1) {
-					            	buf.append(',');
-				            	}
-			            	}
-			            	buf.append('}');
-		            	} else {
-					if (metadata instanceof RealParameter) {
-						RealParameter rp = (RealParameter) metadata;
-						appendDouble(buf, rp.getArrayValue(node.labelNr));
 					} else {
-						buf.append(metadata.getArrayValue(node.labelNr));
+						buf2.append(((BEASTObject) metadata).getID());
+						buf2.append('=');
+						buf2.append(metadata.getArrayValue(node.getNr()));
 					}
-		            	}
-		            } else {
-		            	buf.append(metadata.getArrayValue(node.labelNr));
-		            }
-		            if (metadataList.indexOf(metadata) < metadataList.size() - 1) {
-		            	buf.append(",");
-		            }
-	        	}
-	            if (branchRateModel != null) {
-	                buf.append(",");
-	            }
-	        }
-	        if (branchRateModel != null) {
-	            buf.append("rate=");
-                appendDouble(buf, branchRateModel.getRateForBranch(node));
-	        }
-	        buf.append(']');
-        }
+					if (metadataList.indexOf(metadata) < metadataList.size() - 1) {
+						buf2.append(",");
+					}
+				}
+				if (branchRateModel != null) {
+					buf2.append(",");
+				}
+			}
+			if (branchRateModel != null) {
+				buf2.append("rate=");
+				appendDouble(buf2, branchRateModel.getRateForBranch(node));
+			}
+			buf2.append(']');
+		}
+		if (buf2.length() > 3) {
+			buf.append(buf2.toString());
+		}
         buf.append(":");
         if (substitutions) {
             appendDouble(buf, node.getLength() * branchRateModel.getRateForBranch(node));
