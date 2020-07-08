@@ -145,15 +145,17 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 						
 						}
 					} else {
-						buf2.append(((BEASTObject) metadata).getID());
-						buf2.append('=');
-						buf2.append(metadata.getArrayValue(node.getNr()));
+						if (metadata.getDimension() > node.getNr()) {
+							buf2.append(((BEASTObject) metadata).getID());
+							buf2.append('=');
+							buf2.append(metadata.getArrayValue(node.getNr()));
+						}
 					}
-					if (metadataList.indexOf(metadata) < metadataList.size() - 1) {
+					if (buf2.length() > 2 && metadataList.indexOf(metadata) < metadataList.size() - 1) {
 						buf2.append(",");
 					}
 				}
-				if (branchRateModel != null) {
+				if (buf2.length() > 2 && branchRateModel != null) {
 					buf2.append(",");
 				}
 			}
