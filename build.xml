@@ -292,11 +292,16 @@
     <property name="Linux_package_dir" value="${Linux_dir}/${beast_name}" />
     <property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
+
+    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="../jsign-3.1.jar"/>
+
     <!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
     <!--depends="build_jar_all_BEAST_NoJUnitTest"-->
     <target name="windows"
             description="release Windows version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
+
+<input message="Keystore password : " addproperty="storepass"><!-- same as UoA password --></input>
 
         <delete dir="${Windows_package_dir}" />
         <!-- Create the release directory -->
@@ -360,6 +365,14 @@
     			  -->
          </launch4j>
 
+<jsign file="${Windows_package_dir}/${BEAUti_name}.exe"
+        name="BEAUti"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
         <!-- BEAST v?.?.?.exe -->
         <launch4j configFile="${Windows_dir}/BEAST_launch4j.xml"
                   jar="${dist}/launcher.jar"
@@ -368,6 +381,14 @@
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}" />
+
+<jsign file="${Windows_package_dir}/${BEAST_name}.exe"
+        name="BEAST"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 
         <!--<launch4j configFile="${Windows_dir}/TreeStat_launch4j.xml"
                               jar="${dist}/beast.jar"
@@ -394,6 +415,13 @@
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
 
+<jsign file="${Windows_package_dir}/${LogCombiner_name}.exe"
+        name="LogCombiner"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 
         <launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j.xml"
                   jar="${dist}/launcher.jar"
@@ -403,6 +431,14 @@
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
 
+<jsign file="${Windows_package_dir}/TreeAnnotator.exe"
+        name="TreeAnnotator"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
         <launch4j configFile="${tools_dir}/DensiTree_launch4j.xml"
                   jar="${tools_dir}/DensiTree.jar"
                   outfile="${Windows_package_dir}/DensiTree.exe"
@@ -411,6 +447,15 @@
                   productVersion="2.0.0.0"
                   txtProductVersion="2.0.0.0" />
 
+<jsign file="${Windows_package_dir}/DensiTree.exe"
+        name="DensiTree"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
+
         <launch4j configFile="${Windows_dir}/AppLauncher_launch4j.xml"
                   jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/AppLauncher.exe"
@@ -418,6 +463,14 @@
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
+
+<jsign file="${Windows_package_dir}/AppLauncher.exe"
+        name="AppLauncher"
+        url="http://beast2.org"
+        keystore="keystore.pfx"
+        alias="http://beast2.org"
+        storepass="${storepass}"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 
         <copy todir="${Windows_package_dir}/templates/">
             <fileset dir="templates/" />
@@ -439,6 +492,8 @@
     <!--depends="build_jar_all_BEAST_NoJUnitTest"-->
     <target name="windowsjre"
             description="release Windows version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
+
+<input message="Keystore password : " addproperty="storepass"><!-- same as UoA password --></input>
 
         <delete dir="${Windows_package_dir}" />
         <!-- Create the release directory -->
@@ -504,6 +559,14 @@
     			  -->
          </launch4j>
 
+	<jsign file="${Windows_package_dir}/${BEAUti_name}.exe"
+        	name="BEAUti"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
         <!-- BEAST v?.?.?.exe -->
         <launch4j configFile="${Windows_dir}/BEAST_launch4j_jre.xml"
                   jar="${dist}/launcher.jar"
@@ -512,6 +575,14 @@
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}" />
+
+	<jsign file="${Windows_package_dir}/${BEAST_name}.exe"
+        	name="BEAST"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 
         <!--<launch4j configFile="${Windows_dir}/TreeStat_launch4j.xml"
                               jar="${dist}/beast.jar"
@@ -538,6 +609,13 @@
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
 
+	<jsign file="${Windows_package_dir}/${LogCombiner_name}.exe"
+        	name="LogCombiner"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 
         <launch4j configFile="${Windows_dir}/TreeAnnotator_launch4j_jre.xml"
                   jar="${dist}/launcher.jar"
@@ -547,6 +625,14 @@
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
 
+	<jsign file="${Windows_package_dir}/TreeAnnotator.exe"
+        	name="TreeAnnotator"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
         <launch4j configFile="${tools_dir}/DensiTree_launch4j_jre.xml"
                   jar="${tools_dir}/DensiTree.jar"
                   outfile="${Windows_package_dir}/DensiTree.exe"
@@ -555,6 +641,14 @@
                   productVersion="2.0.0.0"
                   txtProductVersion="2.0.0.0" />
 
+	<jsign file="${Windows_package_dir}/DensiTree.exe"
+        	name="DensiTree"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
         <launch4j configFile="${Windows_dir}/AppLauncher_launch4j_jre.xml"
                   jar="${dist}/launcher.jar"
                   outfile="${Windows_package_dir}/AppLauncher.exe"
@@ -562,6 +656,15 @@
                   txtFileVersion="${version}"
                   productVersion="${version_number}.0"
                   txtProductVersion="${version}"/>
+
+	<jsign file="${Windows_package_dir}/AppLauncher.exe"
+        	name="AppLauncher"
+	        url="http://beast2.org"
+	        keystore="keystore.pfx"
+	        alias="http://beast2.org"
+	        storepass="${storepass}"
+	        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+
 
         <copy todir="${Windows_package_dir}/templates/">
             <fileset dir="templates/" />
