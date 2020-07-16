@@ -1,0 +1,12 @@
+Windows certification notes:
+
+Create certificate:
+
+"C:\Program Files\Java\jdk1.8.0_161\bin\keytool.exe" -genkey -dname "CN=RemcoBouckaert, L=Auckland, ST=ST, C=NZ, OU=, O=http://beast2/org" -alias http://beast2.org -keyalg RSA -destkeystore keystore.pfx -keysize 2048 -storetype pkcs12
+
+
+keystore password = UoA password
+
+Signing with ant: add jsign-3.1.jar from 
+
+<taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-3.1.jar"/>
