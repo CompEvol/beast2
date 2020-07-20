@@ -293,7 +293,7 @@
     <property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
 
-    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="../jsign-3.1.jar"/>
+    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="${lib}/jsign-3.1.jar"/>
 
     <!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
