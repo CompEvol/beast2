@@ -45,7 +45,7 @@ public class ScaleOperator extends Operator {
     public final Input<RealParameter> parameterInput = new Input<>("parameter", "if specified, this parameter is scaled",
             Input.Validate.XOR, treeInput);
 
-    public final Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public final Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: range from 0 to 1. Close to zero is very large jumps, close to 1.0 is very small jumps.", 0.75);
     public final Input<Boolean> scaleAllInput =
             new Input<>("scaleAll", "if true, all elements of a parameter (not beast.tree) are scaled, otherwise one is randomly selected",
                     false);
@@ -68,24 +68,24 @@ public class ScaleOperator extends Operator {
     /**
      * shadows input *
      */
-    private double m_fScaleFactor;
+    private double scaleFactor;
 
     private double upper, lower;
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
-    boolean m_bIsTreeScaler = true;
+    boolean isTreeScaler = true;
 
     @Override
     public void initAndValidate() {
-        m_fScaleFactor = scaleFactorInput.get();
-        m_bIsTreeScaler = (treeInput.get() != null);
+        scaleFactor = scaleFactorInput.get();
+        isTreeScaler = (treeInput.get() != null);
         upper = scaleUpperLimit.get();
         lower = scaleLowerLimit.get();
 
         final BooleanParameter indicators = indicatorInput.get();
         if (indicators != null) {
-            if (m_bIsTreeScaler) {
+            if (isTreeScaler) {
                 throw new IllegalArgumentException("indicator is specified which has no effect for scaling a tree");
             }
             final int dataDim = parameterInput.get().getDimension();
@@ -96,7 +96,6 @@ public class ScaleOperator extends Operator {
         }
     }
 
-
     protected boolean outsideBounds(final double value, final RealParameter param) {
         final Double l = param.getLower();
         final Double h = param.getUpper();
@@ -106,7 +105,7 @@ public class ScaleOperator extends Operator {
     }
 
     protected double getScaler() {
-        return (m_fScaleFactor + (Randomizer.nextDouble() * ((1.0 / m_fScaleFactor) - m_fScaleFactor)));
+        return (scaleFactor + (Randomizer.nextDouble() * ((1.0 / scaleFactor) - scaleFactor)));
     }
 
     /**
@@ -122,7 +121,7 @@ public class ScaleOperator extends Operator {
             double hastingsRatio;
             final double scale = getScaler();
 
-            if (m_bIsTreeScaler) {
+            if (isTreeScaler) {
 
                 final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
@@ -272,19 +271,19 @@ public class ScaleOperator extends Operator {
     public void optimize(final double logAlpha) {
         if (optimiseInput.get()) {
             double delta = calcDelta(logAlpha);
-            delta += Math.log(1.0 / m_fScaleFactor - 1.0);
+            delta += Math.log(1.0 / scaleFactor - 1.0);
             setCoercableParameterValue(1.0 / (Math.exp(delta) + 1.0));
         }
     }
 
     @Override
     public double getCoercableParameterValue() {
-        return m_fScaleFactor;
+        return scaleFactor;
     }
 
     @Override
     public void setCoercableParameterValue(final double value) {
-        m_fScaleFactor = Math.max(Math.min(value, upper), lower);
+        scaleFactor = Math.max(Math.min(value, upper), lower);
     }
 
     @Override
@@ -297,7 +296,7 @@ public class ScaleOperator extends Operator {
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        final double sf = Math.pow(m_fScaleFactor, ratio);
+        final double sf = Math.pow(scaleFactor, ratio);
 
         final DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10) {
