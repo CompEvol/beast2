@@ -74,7 +74,7 @@ public class ScaleOperator extends Operator {
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
-    boolean isTreeScaler = true;
+    private boolean isTreeScaler = true;
 
     @Override
     public void initAndValidate() {
@@ -94,6 +94,10 @@ public class ScaleOperator extends Operator {
                 throw new IllegalArgumentException("indicator dimension not compatible from parameter dimension");
             }
         }
+    }
+
+    protected boolean isTreeScaler() {
+        return isTreeScaler;
     }
 
     protected boolean outsideBounds(final double value, final RealParameter param) {
