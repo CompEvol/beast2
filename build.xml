@@ -825,7 +825,8 @@
     <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>
 
     <!--property name="AppleSigner" value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)" /-->
-    <property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />    
+    <!--<property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />-->
+    <property name="AppleSigner" value="Developer ID Application: Walter Xie (27V5YMX65C)" />
     
     <!-- Create the app bundle -->
     <target name="mac">
