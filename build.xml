@@ -894,6 +894,8 @@
 
         <exec executable="codesign">
             <arg value="--deep"/>
+            <arg value="--force"/>
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -922,6 +924,8 @@
 
         <exec executable="codesign">
             <arg value="--deep"/>
+            <arg value="--force"/>
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -948,6 +952,8 @@
 
         <exec executable="codesign">
             <arg value="--deep"/>
+            <arg value="--force"/>
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -974,6 +980,8 @@
 
         <exec executable="codesign">
             <arg value="--deep"/>
+            <arg value="--force"/>
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -998,6 +1006,7 @@
         </bundleapp>
 
         <exec executable="codesign">
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -1024,6 +1033,8 @@
 
         <exec executable="codesign">
             <arg value="--deep"/>
+            <arg value="--force"/>
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
@@ -1038,6 +1049,7 @@
         <exec executable='release/Mac/createdmg.sh'/>
 
         <exec executable="codesign">
+            <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
             <arg value="-v"/>
