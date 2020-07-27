@@ -28,7 +28,7 @@ import beast.math.distributions.MRCAPrior;
 @Description("Pure birth model (i.e. no deaths)")
 public class YuleModel extends SpeciesTreeDistribution {
     final public Input<RealParameter> birthDiffRateParameterInput =
-            new Input<>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model", Validate.REQUIRED);
+            new Input<>("birthDiffRate", "birth difference rate parameter, lambda - mu in birth/death model (diversification rate)", Validate.REQUIRED);
     final public Input<RealParameter> originHeightParameterInput =
             new Input<>("originHeight", "the height of the point of origin of the process");
     final public Input<Boolean> conditionalOnRootInput =
