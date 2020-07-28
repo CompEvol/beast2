@@ -17,7 +17,7 @@ import beast.core.parameter.RealParameter;
 public class Normal extends ParametricDistribution {
     final public Input<RealParameter> meanInput = new Input<>("mean", "mean of the normal distribution, defaults to 0");
     final public Input<RealParameter> sigmaInput = new Input<>("sigma", "standard deviation of the normal distribution, defaults to 1");
-    final public Input<RealParameter> tauInput = new Input<>("tau", "precission of the normal distribution, defaults to 1", Validate.XOR, sigmaInput);
+    final public Input<RealParameter> tauInput = new Input<>("tau", "precision of the normal distribution, defaults to 1", Validate.XOR, sigmaInput);
 
     org.apache.commons.math.distribution.NormalDistribution dist = new NormalDistributionImpl(0, 1);
 

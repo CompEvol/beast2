@@ -12,7 +12,7 @@ import beast.core.Input.Validate;
 import beast.core.Loggable;
 import beast.core.StateNode;
 import beast.core.parameter.Parameter;
-import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
+import beast.evolution.speciation.SpeciesTreePopFunction.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 

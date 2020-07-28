@@ -15,7 +15,7 @@ import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
-import beast.evolution.speciation.SpeciesTreePrior.TreePopSizeFunction;
+import beast.evolution.speciation.SpeciesTreePopFunction.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreeInterface;
@@ -35,7 +35,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //        new Input<>("ploidy", "ploidy for this gene (default X, Possible values: " + PLOIDY.values(), PLOIDY.X, PLOIDY.values());
 
     
-    final public Input<SpeciesTreePrior> speciesTreePriorInput =
+    final public Input<SpeciesTreePopFunction> speciesTreePriorInput =
             new Input<>("speciesTreePrior", "defines population function and its parameters", Validate.REQUIRED);
 
     final public Input<TreeTopFinder> treeTopFinderInput =
@@ -126,7 +126,7 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
 //            }
 //        }
 
-        final SpeciesTreePrior popInfo = speciesTreePriorInput.get();
+        final SpeciesTreePopFunction popInfo = speciesTreePriorInput.get();
         isConstantPopFunction = popInfo.popFunctionInput.get();
         popSizesBottom = popInfo.popSizesBottomInput.get();
         popSizesTop = popInfo.popSizesTopInput.get();

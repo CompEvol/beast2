@@ -34,7 +34,7 @@ public class TraitSet extends BEASTObject {
     }
 
     final public Input<String> traitNameInput = new Input<>("traitname", "name of the trait, used as meta data name for the tree. " +
-            "Special traitnames that are recognized are '" + DATE_TRAIT + "','" + DATE_FORWARD_TRAIT + "' and '" + DATE_BACKWARD_TRAIT + "'.", Validate.REQUIRED);
+            "Special traitnames that are recognized are '" + AGE_TRAIT + "','" + DATE_TRAIT + "','" + DATE_FORWARD_TRAIT + "' and '" + DATE_BACKWARD_TRAIT + "'.", Validate.REQUIRED);
     final public Input<Units> unitsInput = new Input<>("units", "name of the units in which values are posed, " +
             "used for conversion to a real value. This can be " + Arrays.toString(Units.values()) + " (default 'year')", Units.year, Units.values());
     final public Input<String> traitsInput = new Input<>("value", "traits encoded as taxon=value pairs separated by commas", Validate.REQUIRED);

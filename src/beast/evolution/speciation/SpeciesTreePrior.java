@@ -1,7 +1,6 @@
 package beast.evolution.speciation;
 
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -10,41 +9,15 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.TreeDistribution;
 import beast.math.distributions.Gamma;
 
-
-
 @Description("Species tree prior for *BEAST analysis")
-public class SpeciesTreePrior extends TreeDistribution {
-    //public Input<Tree> m_speciesTree = new Input<>("speciesTree", "species tree containing the associated gene tree", Validate.REQUIRED);
-
-    protected enum TreePopSizeFunction {constant, linear, linear_with_constant_root}
-
-    public final Input<TreePopSizeFunction> popFunctionInput = new Input<>("popFunction", "Population function. " +
-            "This can be " + Arrays.toString(TreePopSizeFunction.values()) + " (default 'constant')", TreePopSizeFunction.constant, TreePopSizeFunction.values());
-
-    public final Input<RealParameter> popSizesBottomInput = new Input<>("bottomPopSize", "population size parameter for populations at the bottom of a branch. " +
-            "For linear population function, this is the same at the top of the branch.", Validate.REQUIRED);
-    public final Input<RealParameter> popSizesTopInput = new Input<>("topPopSize", "population size parameter at the top of a branch. " +
-            "Ignored for constant population function, but required for linear population function.");
+public class SpeciesTreePrior extends SpeciesTreePopFunction {
 
     public final Input<RealParameter> gammaParameterInput = new Input<>("gammaParameter", "scale parameter of the gamma distribution over population sizes. "
     		+ "This makes this parameter half the expected population size on all branches for constant population function, "
     		+ "but a quarter of the expected population size for tip branches only for linear population functions.", Validate.REQUIRED);
-
-//	public Input<RealParameter> m_rootHeightParameter = new Input<>("rootBranchHeight","height of the node above the root, representing the root branch", Validate.REQUIRED);
-    /**
-     * m_taxonSet is used by GeneTreeForSpeciesTreeDistribution *
-     */
-    final public Input<TaxonSet> taxonSetInput = new Input<>("taxonset", "set of taxa mapping lineages to species", Validate.REQUIRED);
-
-
-    private TreePopSizeFunction popFunction;
-    private RealParameter popSizesBottom;
-    private RealParameter popSizesTop;
 
     private Gamma gamma2Prior;
     private Gamma gamma4Prior;
@@ -91,13 +64,6 @@ public class SpeciesTreePrior extends TreeDistribution {
         if (popFunction != TreePopSizeFunction.constant && gamma4Prior == null) {
             throw new IllegalArgumentException("Top prior must be specified when population function is not constant");
         }
-        // make sure the m_taxonSet is a set of taxonsets
-// HACK to make Beauti initialise: skip the check here
-//		for (Taxon taxon : m_taxonSet.get().m_taxonset.get()) {
-//			if (!(taxon instanceof TaxonSet)) {
-//				throw new IllegalArgumentException("taxonset should be sets of taxa only, not individual taxons");
-//			}
-//		}
     }
 
     @Override
