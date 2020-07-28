@@ -751,8 +751,6 @@ fi
 cd "${WorkingDirectory}" || exit 13
 stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 
-
-JAVACMD="jre1.8.0_262/bin/java"
 # execute Java and set
 # - classpath
 # - splash image
