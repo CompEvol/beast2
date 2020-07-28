@@ -834,7 +834,7 @@
     <property name="jvm_version" value="1.7+"/>
 
     <!-- Create the app bundle -->
-    <target name="bundle.codesign">
+    <target name="bundle">
         <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
@@ -873,16 +873,6 @@
 
         </jarbundler>
 
-        <!-- code signing -->
-        <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
-            <arg value="--options=runtime"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
-        </exec>
-
         <echo message="Creating BEAUti.app ..." />
 
         <jarbundler dir="${Mac_package_dir}"
@@ -905,16 +895,6 @@
             </jarfileset>
 
         </jarbundler>
-
-        <!-- code signing -->
-        <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
-            <arg value="--options=runtime"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
-        </exec>
 
         <echo message="Creating LogCombiner.app ..." />
 
@@ -939,16 +919,6 @@
 
         </jarbundler>
 
-        <!-- code signing -->
-        <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
-            <arg value="--options=runtime"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
-        </exec>
-
         <echo message="Creating TreeAnnotator.app ..." />
 
         <jarbundler dir="${Mac_package_dir}"
@@ -971,16 +941,6 @@
             </jarfileset>
 
         </jarbundler>
-
-        <!-- code signing -->
-        <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
-            <arg value="--options=runtime"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
-        </exec>
 
         <echo message="Creating AppLauncher_name.app ..." />
 
@@ -1005,16 +965,6 @@
 
         </jarbundler>
 
-        <!-- code signing -->
-        <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
-            <arg value="--options=runtime"/>
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_package_dir}/${AppLauncher_name}.app"/>
-        </exec>
-
         <echo message="Creating DensiTree.app ..." />
 
         <jarbundler dir="${Mac_package_dir}"
@@ -1038,9 +988,76 @@
 
         </jarbundler>
 
+    </target>
+
+    <!-- Split from app bundle, because macjre -->
+    <target name="codesign">
+
+        <echo message="codesign BEAST.app ..." />
+
         <!-- code signing -->
         <exec executable="codesign">
-            <!--            <arg value="&#45;&#45;deep"/>-->
+            <arg value="--deep"/>
+            <arg value="--options=runtime"/>
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${BEAST_name}.app"/>
+        </exec>
+
+        <echo message="codesign BEAUti.app ..." />
+
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="--options=runtime"/>
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${BEAUti_name}.app"/>
+        </exec>
+
+        <echo message="codesign LogCombiner.app ..." />
+
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="--options=runtime"/>
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${LogCombiner_name}.app"/>
+        </exec>
+
+        <echo message="codesign TreeAnnotator.app ..." />
+
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="--options=runtime"/>
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${TreeAnnotator_name}.app"/>
+        </exec>
+
+        <echo message="codesign AppLauncher_name.app ..." />
+
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
+            <arg value="--options=runtime"/>
+            <arg value="-s"/>
+            <arg value="${AppleSigner}"/>
+            <arg value="-v"/>
+            <arg value="${Mac_package_dir}/${AppLauncher_name}.app"/>
+        </exec>
+
+        <echo message="codesign DensiTree.app ..." />
+
+        <!-- code signing -->
+        <exec executable="codesign">
+            <arg value="--deep"/>
             <arg value="--options=runtime"/>
             <arg value="-s"/>
             <arg value="${AppleSigner}"/>
@@ -1073,6 +1090,8 @@
 
         <delete file="${Mac_dir}/pack.temp.dmg"/>
     </target>
+
+
 
     <!-- notarization without staple -->
     <target name="notarization">
@@ -1140,7 +1159,9 @@
         </copy>
 		-->
 
-        <antcall target="bundle.codesign"/>
+        <antcall target="bundle"/>
+
+        <antcall target="codesign"/>
 
         <antcall target="dmg"/>
 
@@ -1191,7 +1212,7 @@
         </copy>
 		-->
 
-        <antcall target="bundle.codesign"/>
+        <antcall target="bundle"/>
 
         <delete file="${Mac_package_dir}/BEAST.app/Contents/MacOS/JavaAppLauncher"/>
         <copy file="JavaAppLauncher" todir="${Mac_package_dir}/BEAST.app/Contents/MacOS/"/>
@@ -1211,6 +1232,8 @@
         <delete file="${Mac_package_dir}/DensiTree.app/Contents/MacOS/JavaAppLauncher"/>
         <copy file="JavaAppLauncher" todir="${Mac_package_dir}/DensiTree.app/Contents/MacOS/"/>
         <chmod dir="${Mac_package_dir}/DensiTree.app/Contents/MacOS/" perm="755" includes="JavaAppLauncher"/>
+
+        <antcall target="codesign"/>
 
         <antcall target="dmg"/>
 
