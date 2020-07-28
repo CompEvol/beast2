@@ -103,6 +103,19 @@ public class TaxonSet extends Taxon {
         return -1;
     }
 
+    /**
+     * return Taxon matching the given id
+     * @param id
+     * @return  null if not found
+     */
+    public Taxon getTaxon(String id) {
+        for (int i = 0; i < taxonList.size(); i++) {
+            Taxon taxon = taxonList.get(i);
+            if (taxon.getID().equals(id)) return taxon;
+        }
+        return null;
+    }
+
     //  convenience methods
 
     public boolean containsAny(final Collection<String> taxa) {
