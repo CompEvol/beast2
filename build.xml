@@ -831,7 +831,7 @@
     <!--<property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />-->
     <property name="AppleSigner" value="Developer ID Application: Walter Xie (27V5YMX65C)" />
 
-    <property name="jvm_version" value="1.7+"/>
+    <property name="jvm_version" value="1.8+"/>
 
     <!-- Create the app bundle -->
     <target name="bundle">
@@ -853,7 +853,7 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="${BEAST_name}"
                     mainclass="beast.app.beastapp.BeastLauncher"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/beast.icns"
                     jvmversion="${jvm_version}"
@@ -878,9 +878,9 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="${BEAUti_name}"
                     mainclass="beast.app.beauti.BeautiLauncher"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
-                    icon="${common_dir}/icons/beast.icns"
+                    icon="${common_dir}/icons/beauti.icns"
                     jvmversion="${jvm_version}"
                     vmoptions="-Xmx8g -Duser.language=en -Xdock:name=&quot;BEAUti&quot;"
                     arguments="-capture"
@@ -901,7 +901,7 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="${LogCombiner_name}"
                     mainclass="beast.app.tools.LogCombinerLauncher"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
                     jvmversion="${jvm_version}"
@@ -924,7 +924,7 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="${TreeAnnotator_name}"
                     mainclass="beast.app.treeannotator.TreeAnnotatorLauncher"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
                     jvmversion="${jvm_version}"
@@ -947,7 +947,7 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="${AppLauncher_name}"
                     mainclass="beast.app.tools.AppLauncherLauncher"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
                     jvmversion="${jvm_version}"
@@ -970,7 +970,7 @@
         <jarbundler dir="${Mac_package_dir}"
                     name="DensiTree"
                     mainclass="viz.DensiTree"
-                    stubfile="${Mac_dir}/universalJavaApplicationStub"
+                    stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${tools_dir}/DensiTree.icns"
                     jvmversion="${jvm_version}"
@@ -1159,7 +1159,9 @@
         </copy>
 		-->
 
-        <antcall target="bundle"/>
+        <antcall target="bundle">
+            <param name="stubfile" value="${Mac_dir}/universalJavaApplicationStub"/>
+        </antcall>
 
         <antcall target="codesign"/>
 
@@ -1212,7 +1214,9 @@
         </copy>
 		-->
 
-        <antcall target="bundle"/>
+        <antcall target="bundle">
+             <param name="stubfile" value="JavaAppLauncher"/>
+        </antcall>
 
         <delete file="${Mac_package_dir}/BEAST.app/Contents/MacOS/JavaAppLauncher"/>
         <copy file="JavaAppLauncher" todir="${Mac_package_dir}/BEAST.app/Contents/MacOS/"/>
