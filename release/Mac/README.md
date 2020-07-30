@@ -33,6 +33,11 @@ Note: this path is depend on the path of beast2 project, which is equivalent to 
 5. upload dmg to Github.
 
 
+## Workflow
+
+Refer to https://stackoverflow.com/questions/53112078/how-to-upload-dmg-file-for-notarization-in-xcode
+
+
 ## TODO
 
 1. the hard code of JRE path in `universalJavaApplicationJREStub` must match JRE path in the `build.xml`
