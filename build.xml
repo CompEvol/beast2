@@ -825,7 +825,7 @@
 
     <!-- Define the appbundler task -->
 <!--    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>-->
-    <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="${Mac_dir}/jarbundler-core-3.3.0.jar"/>
+    <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="../beast2/lib/bundler/jarbundler-core-3.3.0.jar"/>
 
     <!--property name="AppleSigner" value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)" /-->
     <!--<property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />-->
