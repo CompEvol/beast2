@@ -132,7 +132,7 @@ public interface BEASTInterface {
     /**
      * @return description from @Description annotation
      */
-	default public String getDescription() {
+	default String getDescription() {
         final Annotation[] classAnnotations = this.getClass().getAnnotations();
         for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Description) {
@@ -147,7 +147,7 @@ public interface BEASTInterface {
      * Deprecated: use getCitationList() instead to allow multiple citations, not just the first one
      */
 	@Deprecated
-    default public Citation getCitation() {
+    default Citation getCitation() {
         final Annotation[] classAnnotations = this.getClass().getAnnotations();
         for (final Annotation annotation : classAnnotations) {
             if (annotation instanceof Citation) {
@@ -165,7 +165,7 @@ public interface BEASTInterface {
      * @return array of @Citation annotations for this class
      * or empty list if there are no citations
      **/
-    default public List<Citation> getCitationList() {
+    default List<Citation> getCitationList() {
         final Annotation[] classAnnotations = this.getClass().getAnnotations();
         List<Citation> citations = new ArrayList<>();
         for (final Annotation annotation : classAnnotations) {
@@ -184,7 +184,7 @@ public interface BEASTInterface {
     /**
      * @return references for this plug in and all its inputs *
      */
-    default public String getCitations() {
+    default String getCitations() {
         return getCitations(new HashSet<>(), new HashSet<>());
     }
 
@@ -220,7 +220,7 @@ public interface BEASTInterface {
     /**
      * create list of inputs to this plug-in *
      */
-    default public List<Input<?>> listInputs() { 
+    default List<Input<?>> listInputs() {
         final List<Input<?>> inputs = new ArrayList<>();
         
         Map<String, Input> inputNames = new LinkedHashMap<>();
@@ -364,7 +364,7 @@ public interface BEASTInterface {
      * @return list of all active plug-ins
      * @throws IllegalAccessException
      */
-    default public List<BEASTInterface> listActiveBEASTObjects() {
+    default List<BEASTInterface> listActiveBEASTObjects() {
         final List<BEASTInterface> beastObjects = new ArrayList<>();
 
         for (Input<?> input : getInputs().values()) {
@@ -385,7 +385,7 @@ public interface BEASTInterface {
     }
 
     @Deprecated /** use listActiveBEASTObjects instead **/
-    default public List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
+    default List<BEASTInterface> listActivePlugins() throws IllegalArgumentException, IllegalAccessException {
     	return listActiveBEASTObjects();
     } // listActivePlugins
 
@@ -395,7 +395,7 @@ public interface BEASTInterface {
      * @param name of the input
      * @return description of input
      */
-    default public String getTipText(final String name) throws IllegalArgumentException, IllegalAccessException {
+    default String getTipText(final String name) throws IllegalArgumentException, IllegalAccessException {
 		try {
 	    	Input<?> input = getInput(name);
 	    	if (input != null) {
@@ -412,7 +412,7 @@ public interface BEASTInterface {
     /**
      * check whether the input is an Integer, Double, Boolean or String *
      */
-    default public boolean isPrimitive(final String name) {
+    default boolean isPrimitive(final String name) {
         final Input<?> input = getInput(name);
         final Class<?> inputType = input.getType();
 
@@ -432,7 +432,7 @@ public interface BEASTInterface {
     /**
      * get value of an input by input name *
      */
-    default public Object getInputValue(final String name) {
+    default Object getInputValue(final String name) {
         final Input<?> input = getInput(name);
         return input.get();
     } // getInputValue
@@ -440,7 +440,7 @@ public interface BEASTInterface {
     /**
      * set value of an input by input name *
      */
-    default public void setInputValue(final String name, final Object value) {
+    default void setInputValue(final String name, final Object value) {
         final Input<?> input = getInput(name);
         if (!input.canSetValue(value, this)) {
             throw new RuntimeException("Cannot set input value of " + name);
@@ -451,7 +451,7 @@ public interface BEASTInterface {
     /**
      * get input by input name *
      */
-    default public Input<?> getInput(final String name) {
+    default Input<?> getInput(final String name) {
     	
     	Map<String, Input<?>> inputs = getInputs();
     	if (inputs.containsKey(name)) {
@@ -472,7 +472,7 @@ public interface BEASTInterface {
      * 
      * @throws IllegalArgumentException when validation fails
      */
-    default public void validateInputs() {
+    default void validateInputs() {
         try {
             for (final Input<?> input : listInputs()) {
                 input.validate();
@@ -493,7 +493,7 @@ public interface BEASTInterface {
      *                     (but x need not necessarily be a predecesor of y)
      */
 
-    default public void getPredecessors(final List<BEASTInterface> predecessors) {
+    default void getPredecessors(final List<BEASTInterface> predecessors) {
         predecessors.add(this);
         for (final BEASTInterface beastObject2 : listActiveBEASTObjects()) {
             if (!predecessors.contains(beastObject2)) {
@@ -506,7 +506,7 @@ public interface BEASTInterface {
     /** Determine class of all of the inputs of this object 
      * if that has not already happened
      */
-    default public void determindClassOfInputs() {
+    default void determindClassOfInputs() {
     	for (Input<?> input : listInputs()) {
     		if (input.getType() == null) {
     			input.determineClass(this);
@@ -520,7 +520,7 @@ public interface BEASTInterface {
      * unwanted duplication of shared objects by the partition cloning
      * operation.
      */
-    default public boolean notCloneable() {
+    default boolean notCloneable() {
         return false;
     }
     

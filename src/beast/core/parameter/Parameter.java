@@ -2,9 +2,7 @@ package beast.core.parameter;
 
 import java.io.PrintStream;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,31 +16,65 @@ import beast.core.StateNode;
 
 public interface Parameter<T> extends Function {
 
-    public T getValue(int i);
+    T getValue(int i);
 
-    public T getValue();
+    T getValue();
 
-    public void setValue(int i, T value);
+    void setValue(int i, T value);
     
-    public void setValue(T value);
+    void setValue(T value);
 
-    public T getLower();
+    T getLower();
 
-    public void setLower(final T lower);
+    void setLower(final T lower);
 
-    public T getUpper();
+    T getUpper();
 
-    public void setUpper(final T upper);
+    void setUpper(final T upper);
 
-    public T[] getValues();
+    T[] getValues();
 
-    public String getID();
+    String getID();
 
-    public int getMinorDimension1();
+    int getMinorDimension1();
 
-    public int getMinorDimension2();
+    int getMinorDimension2();
 
-    public T getMatrixValue(int i, int j);
+    T getMatrixValue(int i, int j);
+
+    /**
+     * @param i index
+     * @return the unique key for the i'th value.
+     */
+    default String getKey(int i) {
+        if (getDimension() == 1) return "0";
+        else if (i < getDimension()) return "" + i;
+        throw new IllegalArgumentException("Invalid index " + i);
+    }
+
+    /**
+     * @param key unique key for a value
+     * @return the value associated with that key, or null
+     */
+    default T getValue(String key) {
+        try {
+            int index = Integer.parseInt(key);
+            return getValue(index);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
+    }
+
+    /**
+     * @return the array of keys (a unique string for each dimension) that parallels the parameter index.
+     */
+    default String[] getKeys() {
+        String[] keys = new String[getDimension()];
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = getKey(i);
+        }
+        return keys;
+    }
 
     /**
      * swap values of element i and j
@@ -50,11 +82,10 @@ public interface Parameter<T> extends Function {
      * @param i
      * @param j
      */
-    public void swap(int i, int j);
+    void swap(int i, int j);
 
-    @Description("A parameter represents a value in the state space that can be changed "
-            + "by operators.")
-    public abstract class Base<T> extends StateNode implements Parameter<T> {
+    @Description("A parameter represents a value in the state space that can be changed by operators.")
+    abstract class Base<T> extends StateNode implements Parameter<T> {
 
         /**
          * value is a required input since it is very hard to ensure any
@@ -66,6 +97,8 @@ public interface Parameter<T> extends Function {
         public final Input<java.lang.Integer> dimensionInput =
                 new Input<>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
         public final Input<Integer> minorDimensionInput = new Input<>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
+
+        public final Input<String> keysInput = new Input<>("keys", "the keys (unique dimension names) for the dimensions of this parameter", (String)null);
 
         /**
          * constructors *
@@ -104,7 +137,30 @@ public interface Parameter<T> extends Function {
                 throw new IllegalArgumentException("Dimension must be divisible by stride");
             }
             this.storedValues = values.clone();
+
+            if (keysInput.get() != null) {
+                String[] keys = keysInput.get().split(" ");
+                if (keys.length != dimension) {
+                    throw new IllegalArgumentException("Keys must be the same length as dimension. Dimension is " + dimension + ". keys.length = " + keys.length);
+                }
+                initKeys(keys);
+            }
         }
+
+        private void initKeys(String[] keys) {
+            this.keys = keys;
+            if (keys != null) {
+                keyToIndexMap = new TreeMap<>();
+                for (int i = 0; i < keys.length; i++) {
+                    keyToIndexMap.put(keys[i],i);
+                }
+                if (keyToIndexMap.keySet().size() != keys.length) {
+                    throw new IllegalArgumentException("All keys must be unique! Found " + keyToIndexMap.keySet().size() + " unique keys for " + getDimension() + " dimensions.");
+                }
+            }
+        }
+
+
         /**
          * upper & lower bound These are located before the inputs (instead of
          * after the inputs, as usual) so that valuesInput can determines the
@@ -133,6 +189,37 @@ public interface Parameter<T> extends Function {
          * last element to be changed *
          */
         protected int m_nLastDirty;
+
+        private String[] keys = null;
+        private java.util.Map<String, Integer> keyToIndexMap = null;
+
+        /**
+         * @param i index
+         * @return the unique key for the i'th value.
+         */
+        public String getKey(int i) {
+            if (keys != null) return keys[i];
+            return Parameter.super.getKey(i);
+        }
+
+        /**
+         * @param key unique key for a value
+         * @return the value associated with that key, or null
+         */
+        public T getValue(String key) {
+            if (keys != null) {
+                return getValue(keyToIndexMap.get(key));
+            }
+            return Parameter.super.getValue(key);
+        }
+
+        /**
+         * @return a sorted set of valid keys for this parameter.
+         */
+        public String[] getKeys() {
+            if (keys != null) return Arrays.copyOf(keys, keys.length);
+            return Parameter.super.getKeys();
+        }
 
         /**
          * @param index dimension to check
@@ -359,7 +446,7 @@ public interface Parameter<T> extends Function {
                 out.print(getID() + "\t");
             } else {
                 for (int value = 0; value < valueCount; value++) {
-                    out.print(getID() + (value + 1) + "\t");
+                    out.print(getID() + "." + getKey(value) + "\t");
                 }
             }
         }

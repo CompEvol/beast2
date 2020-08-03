@@ -12,14 +12,14 @@ public interface Function {
     /**
      * @return dimension of the Function *
      */
-    public int getDimension();
+    int getDimension();
 
     /**
      * @return main value. For a 1 dimensional Function, this is the only
      *         value, but for a Tree this can be the root height, while the individual
      *         values obtained from getValue(dim) return the node heights.
      */
-    default public double getArrayValue() {
+    default double getArrayValue() {
     	return getArrayValue(0);
     }
 
@@ -27,7 +27,7 @@ public interface Function {
      * @param dim requested dimension
      * @return dim'th value (if any)
      */
-    public double getArrayValue(int dim);
+    double getArrayValue(int dim);
 
     /**
      * @return all values as a double[]
@@ -41,7 +41,7 @@ public interface Function {
     }
 
     @Description("Function that does not change over time")
-    public class Constant extends BEASTObject implements Function {
+	class Constant extends BEASTObject implements Function {
     	private double [] values;
     	private String[] names;
     	
@@ -81,21 +81,5 @@ public interface Function {
 		@Override
 		public void initAndValidate() {
 		}
-		
-		
-//		@Override
-//		public String getDimensionName(int dim) {
-//			if (names != null && names.length > dim) {
-//				return names[dim];
-//			}
-//			return Function.super.getDimensionName(dim);
-//		}
-//		
-//		@Override
-//		public void setDimensionNames(String[] names) {
-//			this.names = names.clone();
-//			
-//		}
-    	
     }
 }
