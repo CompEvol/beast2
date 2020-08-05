@@ -1041,6 +1041,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private int[] operationCount;
 
     protected BufferIndexHelper partialBufferHelper;
+    public BufferIndexHelper getPartialBufferHelper() {return partialBufferHelper;}
+    
     private /*final*/ BufferIndexHelper eigenBufferHelper;
     protected BufferIndexHelper matrixBufferHelper;
     protected BufferIndexHelper scaleBufferHelper;
@@ -1073,6 +1075,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      * the BEAGLE library instance
      */
     protected Beagle beagle;
+    
+    public Beagle getBeagle() {return beagle;}
 
     /**
      * Flag to specify that the substitution model has changed
@@ -1092,7 +1096,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 
     private boolean ascertainedSitePatterns = false;
 
-    protected class BufferIndexHelper {
+    public class BufferIndexHelper {
         /**
          * @param maxIndexValue the number of possible input values for the index
          * @param minIndexValue the minimum index value to have the mirrored buffers
@@ -1116,7 +1120,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             } // else do nothing
         }
 
-        int getOffsetIndex(int i) {
+        public int getOffsetIndex(int i) {
             if (i < minIndexValue) {
                 return i;
             }

@@ -63,6 +63,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * calculation engine *
      */
     protected LikelihoodCore likelihoodCore;
+    public LikelihoodCore getLikelihoodCore() {return likelihoodCore;}
     protected BeagleTreeLikelihood beagle;
 
     /**
@@ -73,6 +74,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     protected SiteModel.Base m_siteModel;
     protected BranchRateModel.Base branchRateModel;
 
+    public SubstitutionModel getSubstitutionModel() {return substitutionModel;}
     /**
      * flag to indicate the
      * // when CLEAN=0, nothing needs to be recalculated for the node
@@ -117,7 +119,12 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * dealing with proportion of site being invariant *
      */
     double proportionInvariant = 0;
-    List<Integer> constantPattern = null;
+    public double getProportionInvariant() {return proportionInvariant;}
+	public void setProportionInvariant(double proportionInvariant) {this.proportionInvariant = proportionInvariant;
+	}
+	List<Integer> constantPattern = null;
+	public List<Integer> getConstantPattern() {return constantPattern;}
+    public void setConstantPattern(List<Integer> constantPattern) {this.constantPattern = constantPattern;}
 
     @Override
     public void initAndValidate() {
@@ -202,7 +209,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      * // taking ambiguities in account, there is a contribution of 1 from
      * // the 'site invariant' category.
      */
-    void calcConstantPatternIndices(final int patterns, final int stateCount) {
+    protected void calcConstantPatternIndices(final int patterns, final int stateCount) {
         constantPattern = new ArrayList<>();
         for (int i = 0; i < patterns; i++) {
             final int[] pattern = dataInput.get().getPattern(i);
@@ -401,7 +408,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     }
 
     /* Assumes there IS a branch rate model as opposed to traverse() */
-    int traverse(final Node node) {
+    protected int traverse(final Node node) {
 
         int update = (node.isDirty() | hasDirt);
 
