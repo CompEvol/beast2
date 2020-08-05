@@ -30,12 +30,16 @@ public class MarkovChainDistribution extends Distribution {
     final public Input<Double> shapeInput = new Input<>("shape", "shape parameter of the Gamma distribution (default 1.0 = exponential distribution) " +
     		" or precision parameter if the log normal is used.", 1.0);
     final public Input<Function> parameterInput = new Input<>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
+
+    final public Input<Function> initialMeanInput = new Input<>("initialMean", "the mean of the prior distribution on the first element. This is an alternative boundary condition to Jeffrey's on the first value.", Validate.XOR, isJeffreysInput);
+
     final public Input<Boolean> useLogNormalInput = new Input<>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
 
     // **************************************************************
     // Private instance variables
     // **************************************************************
     private Function chainParameter = null;
+    private Function initialMean = null;
     private boolean jeffreys = false;
     private boolean reverse = false;
     private boolean uselog = false;
@@ -51,6 +55,7 @@ public class MarkovChainDistribution extends Distribution {
         uselog = useLogInput.get();
         shape = shapeInput.get();
         chainParameter = parameterInput.get();
+        initialMean = initialMeanInput.get();
         useLogNormal = useLogNormalInput.get();
         gamma = new GammaDistributionImpl(shape, 1);
         logNormal = new LogNormalDistributionModel().new LogNormalImpl(1, 1);
@@ -70,7 +75,10 @@ public class MarkovChainDistribution extends Distribution {
         if (jeffreys) {
             logP += -Math.log(getChainValue(0));
         }
-        for (int i = 1; i < chainParameter.getDimension(); i++) {
+        int first = 1;
+        if (initialMean != null) first = 0;
+
+        for (int i = first; i < chainParameter.getDimension(); i++) {
             final double mean = getChainValue(i - 1);
             final double x = getChainValue(i);
 
@@ -90,6 +98,14 @@ public class MarkovChainDistribution extends Distribution {
     }
 
     private double getChainValue(int i) {
+        if (i == -1) {
+            if (initialMean != null){
+                return initialMean.getArrayValue();
+            } else {
+                throw new IllegalArgumentException("index must be non-negative unless intial value provided.");
+            }
+        }
+
         if (uselog) {
             return Math.log(chainParameter.getArrayValue(index(i)));
         } else {
