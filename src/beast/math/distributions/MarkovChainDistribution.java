@@ -31,7 +31,7 @@ public class MarkovChainDistribution extends Distribution {
     		" or precision parameter if the log normal is used.", 1.0);
     final public Input<Function> parameterInput = new Input<>("parameter", "chain parameter to calculate distribution over", Validate.REQUIRED);
 
-    final public Input<Function> initialMeanInput = new Input<>("initialMean", "the mean of the prior distribution on the first element. This is an alternative boundary condition to Jeffrey's on the first value.", Validate.XOR, isJeffreysInput);
+    final public Input<Function> initialMeanInput = new Input<>("initialMean", "the mean of the prior distribution on the first element. This is an alternative boundary condition to Jeffrey's on the first value.", Validate.OPTIONAL);
 
     final public Input<Boolean> useLogNormalInput = new Input<>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
 
@@ -59,6 +59,10 @@ public class MarkovChainDistribution extends Distribution {
         useLogNormal = useLogNormalInput.get();
         gamma = new GammaDistributionImpl(shape, 1);
         logNormal = new LogNormalDistributionModel().new LogNormalImpl(1, 1);
+
+        if (jeffreys && initialMean != null) {
+            throw new RuntimeException("Must specify either Jeffrey's prior or an initial mean, but not both");
+        }
     }
 
 
