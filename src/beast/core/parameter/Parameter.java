@@ -47,8 +47,8 @@ public interface Parameter<T> extends Function {
      * @return the unique key for the i'th value.
      */
     default String getKey(int i) {
-        if (getDimension() == 1) return "0";
-        else if (i < getDimension()) return "" + i;
+        if (getDimension() == 1) return "1";
+        else if (i < getDimension()) return "" + (i + 1);
         throw new IllegalArgumentException("Invalid index " + i);
     }
 
