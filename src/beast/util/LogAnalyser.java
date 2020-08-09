@@ -50,7 +50,83 @@ public class LogAnalyser {
      */
     Double[] m_fMean, m_fStdError, m_fStdDev, m_fMedian, m_f95HPDup, m_f95HPDlow, m_fESS, m_fACT, m_fGeometricMean;
 
-    /**
+    public Double[] getMean() {
+        return m_fMean;
+    }
+
+    public void setMean(Double[] m_fMean) {
+        this.m_fMean = m_fMean;
+    }
+
+    public Double[] getStdError() {
+        return m_fStdError;
+    }
+
+    public void setStdError(Double[] m_fStdError) {
+        this.m_fStdError = m_fStdError;
+    }
+
+    public Double[] getStdDev() {
+        return m_fStdDev;
+    }
+
+    public void setStdDev(Double[] m_fStdDev) {
+        this.m_fStdDev = m_fStdDev;
+    }
+
+    public Double[] getMedian() {
+        return m_fMedian;
+    }
+
+    public void setMedian(Double[] m_fMedian) {
+        this.m_fMedian = m_fMedian;
+    }
+
+    public Double[] getESS() {
+        return m_fESS;
+    }
+
+    public void setESS(Double[] m_fESS) {
+        this.m_fESS = m_fESS;
+    }
+
+    public Double[] getACT() {
+        return m_fACT;
+    }
+
+    public void setACT(Double[] m_fACT) {
+        this.m_fACT = m_fACT;
+    }
+
+    public Double[] getGeometricMean() {
+        return m_fGeometricMean;
+    }
+
+    public void setGeometricMean(Double[] m_fGeometricMean) {
+        this.m_fGeometricMean = m_fGeometricMean;
+    }
+
+	public Double[] get95HPDup() {
+		return m_f95HPDup;
+	}
+
+	public void set95HPDup(Double[] m_f95HPDup) {
+		this.m_f95HPDup = m_f95HPDup;
+	}
+
+	public Double[] get95HPDlow() {
+		return m_f95HPDlow;
+	}
+
+	public void set95HPDlow(Double[] m_f95HPDlow) {
+		this.m_f95HPDlow = m_f95HPDlow;
+	}
+
+	public Double[][] getTraces() {
+		return m_fTraces;
+	}
+
+	/**
      * used for storing comments before the actual log file commences *
      */
     protected String m_sPreAmble;

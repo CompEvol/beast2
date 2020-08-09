@@ -165,6 +165,15 @@ public abstract class Distribution extends CalculationNode implements Loggable, 
         return logP;
     }
 
+    /**
+     * get result from previous known calculation, useful for debugging
+     *
+     * @return log probability
+     */
+    public double getStoredLogP() {
+        return storedLogP;
+    }
+    
     @Override
     public void initAndValidate() {
         // nothing to do

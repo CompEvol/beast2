@@ -55,12 +55,36 @@ public class OperatorSchedule extends BEASTObject {
      */
     double[] cumulativeProbs;
 
-    /**
+	/**
      * The normalized weights of all operators. sums to 1.0 +/- numerical error
      */
     double[] normalizedWeights;
 
-    /**
+    public double[] getNormalizedWeights() {
+		return normalizedWeights;
+	}
+
+	public void setNormalizedWeights(double[] normalizedWeights) {
+		this.normalizedWeights = normalizedWeights;
+	}
+
+	public double[] getCumulativeProbs() {
+		return cumulativeProbs;
+	}
+
+	public void setCumulativeProbs(double[] cumulativeProbs) {
+		this.cumulativeProbs = cumulativeProbs;
+	}
+
+	public boolean isAutoOptimise() {
+		return autoOptimise;
+	}
+
+	public void setAutoOptimise(boolean autoOptimise) {
+		this.autoOptimise = autoOptimise;
+	}
+
+	/**
      * name of the file to store operator related info *
      */
     String stateFileName;
