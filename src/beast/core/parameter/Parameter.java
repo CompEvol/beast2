@@ -44,11 +44,11 @@ public interface Parameter<T> extends Function {
 
     /**
      * @param i index
-     * @return the unique key for the i'th value.
+     * @return the unique key for the i'th value. Default implementation will return a string representing the zero-based index, (i.e. a string representation of the argument).
      */
     default String getKey(int i) {
-        if (getDimension() == 1) return "1";
-        else if (i < getDimension()) return "" + (i + 1);
+        if (getDimension() == 1) return "0";
+        else if (i < getDimension()) return "" + i;
         throw new IllegalArgumentException("Invalid index " + i);
     }
 
