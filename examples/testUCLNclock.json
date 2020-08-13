@@ -81,7 +81,7 @@ beast: [
 		  ]
 		},
 	 operator: [
-		 {id: "YuleBirthRateScaler.t:dna", spec: "ScaleOperator", parameter: "@birthRate.t:dna", scaleFactor: 0.75, weight: 3.0 },
+		 {id: "YuleBirthRateScaler.t:dna", spec: "ScaleOperator", parameter: "@birthRate.t:dna", weight: 3.0 },
 		 {id: "YuleModelTreeScaler.t:dna", spec: "ScaleOperator", tree: "@Tree.t:dna", scaleFactor: 0.5, weight: 3.0 },
 		 {id: "YuleModelTreeRootScaler.t:dna", spec: "ScaleOperator", tree: "@Tree.t:dna", scaleFactor: 0.5, rootOnly: true, weight: 3.0 },
 		 {id: "YuleModelUniformOperator.t:dna", spec: "Uniform", tree: "@Tree.t:dna", weight: 30.0 },
