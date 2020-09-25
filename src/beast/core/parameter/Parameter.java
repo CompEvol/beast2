@@ -21,7 +21,7 @@ public interface Parameter<T> extends Function {
     T getValue();
 
     void setValue(int i, T value);
-    
+
     void setValue(T value);
 
     T getLower();
@@ -36,11 +36,58 @@ public interface Parameter<T> extends Function {
 
     String getID();
 
+    /**
+     * @return the number of columns
+     */
     int getMinorDimension1();
 
+    /**
+     * @return the number of rows
+     */
     int getMinorDimension2();
 
-    T getMatrixValue(int i, int j);
+    default int getColumnCount() {
+        return getMinorDimension1();
+    }
+
+    default int getRowCount() {
+        return getMinorDimension2();
+    }
+
+    /**
+     * Interprets the parameter as a two dimensional matrix, with minorDimension1 column width.
+     *
+     * @param row zero-based row index
+     * @param column zero-based column index
+     * @return
+     */
+    default T getMatrixValue(int row, int column) {
+        return getValue(row * getColumnCount() + column);
+    }
+
+    default T[] getRowValues(String key) {
+        String[] keys = getKeys();
+        if (keys.length == getRowCount()) {
+            for (int row = 0; row < keys.length; row++) {
+                if (keys[row].equals(key)) {
+                    return getRowValues(row);
+                }
+            }
+        }
+        return null;
+    }
+
+    default T[] getRowValues(int row) {
+
+        T firstVal = getMatrixValue(row,0);
+
+        T[] values = (T[])Array.newInstance(firstVal.getClass(), getColumnCount());
+        values[0] = firstVal;
+        for (int column = 1; column < getColumnCount(); column++) {
+            values[column] = getMatrixValue(row, column);
+        }
+        return values;
+    }
 
     /**
      * @param i index
@@ -98,7 +145,7 @@ public interface Parameter<T> extends Function {
                 new Input<>("dimension", "dimension of the parameter (default 1, i.e scalar)", 1);
         public final Input<Integer> minorDimensionInput = new Input<>("minordimension", "minor-dimension when the parameter is interpreted as a matrix (default 1)", 1);
 
-        public final Input<String> keysInput = new Input<>("keys", "the keys (unique dimension names) for the dimensions of this parameter", (String)null);
+        public final Input<String> keysInput = new Input<>("keys", "the keys (unique dimension names) for the dimensions of this parameter", (String) null);
 
         /**
          * constructors *
@@ -113,12 +160,12 @@ public interface Parameter<T> extends Function {
             m_fLower = getMin();
             m_bIsDirty = new boolean[values.length];
             for (T value : values) {
-            	valuesInput.get().add(value);
+                valuesInput.get().add(value);
             }
         }
 
         @SuppressWarnings("unchecked")
-		@Override
+        @Override
         public void initAndValidate() {
             T[] valuesString = valuesInput.get().toArray((T[]) Array.newInstance(getMax().getClass(), 0));
 
@@ -152,7 +199,7 @@ public interface Parameter<T> extends Function {
             if (keys != null) {
                 keyToIndexMap = new TreeMap<>();
                 for (int i = 0; i < keys.length; i++) {
-                    keyToIndexMap.put(keys[i],i);
+                    keyToIndexMap.put(keys[i], i);
                 }
                 if (keyToIndexMap.keySet().size() != keys.length) {
                     throw new IllegalArgumentException("All keys must be unique! Found " + keyToIndexMap.keySet().size() + " unique keys for " + getDimension() + " dimensions.");
@@ -172,6 +219,7 @@ public interface Parameter<T> extends Function {
         abstract T getMax();
 
         abstract T getMin();
+
         /**
          * the actual values of this parameter
          */
@@ -320,7 +368,7 @@ public interface Parameter<T> extends Function {
         public T getStoredValue(final int param) {
             return storedValues[param];
         }
-        
+
         @Override
         public T[] getValues() {
             return Arrays.copyOf(values, values.length);
@@ -328,6 +376,7 @@ public interface Parameter<T> extends Function {
 
         /**
          * Copies this parameters values to the given array
+         *
          * @param copyTo
          */
         public void getValues(T[] copyTo) {
@@ -390,8 +439,7 @@ public interface Parameter<T> extends Function {
         @Override
         public Base<T> copy() {
             try {
-                @SuppressWarnings("unchecked")
-                final Parameter.Base<T> copy = (Parameter.Base<T>) this.clone();
+                @SuppressWarnings("unchecked") final Parameter.Base<T> copy = (Parameter.Base<T>) this.clone();
                 copy.values = values.clone();//new Boolean[values.length];
                 copy.m_bIsDirty = new boolean[values.length];
                 return copy;
@@ -403,8 +451,7 @@ public interface Parameter<T> extends Function {
 
         @Override
         public void assignTo(final StateNode other) {
-            @SuppressWarnings("unchecked")
-            final Parameter.Base<T> copy = (Parameter.Base<T>) other;
+            @SuppressWarnings("unchecked") final Parameter.Base<T> copy = (Parameter.Base<T>) other;
             copy.setID(getID());
             copy.index = index;
             copy.values = values.clone();
@@ -416,8 +463,7 @@ public interface Parameter<T> extends Function {
 
         @Override
         public void assignFrom(final StateNode other) {
-            @SuppressWarnings("unchecked")
-            final Parameter.Base<T> source = (Parameter.Base<T>) other;
+            @SuppressWarnings("unchecked") final Parameter.Base<T> source = (Parameter.Base<T>) other;
             setID(source.getID());
             values = source.values.clone();
             storedValues = source.storedValues.clone();
@@ -429,8 +475,7 @@ public interface Parameter<T> extends Function {
 
         @Override
         public void assignFromFragile(final StateNode other) {
-            @SuppressWarnings("unchecked")
-            final Parameter.Base<T> source = (Parameter.Base<T>) other;
+            @SuppressWarnings("unchecked") final Parameter.Base<T> source = (Parameter.Base<T>) other;
             System.arraycopy(source.values, 0, values, 0, Math.min(values.length, source.getDimension()));
             Arrays.fill(m_bIsDirty, false);
         }
@@ -498,9 +543,9 @@ public interface Parameter<T> extends Function {
          * a template method since it requires creation of an array of T...
          *
          * @param dimension parameter dimension
-         * @param lower lower bound
-         * @param upper upper bound
-         * @param values values
+         * @param lower     lower bound
+         * @param upper     upper bound
+         * @param values    values
          */
         abstract void fromXML(int dimension, String lower, String upper, String[] values);
 
