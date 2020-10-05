@@ -47,6 +47,7 @@ public class TaxonSet extends Taxon {
 
     @Override
     public void initAndValidate() {
+
         taxonList = taxonsetInput.get();
         if (alignmentInput.get() != null) {
             if (taxonList.size() > 0) {
