@@ -25,7 +25,7 @@ public class ESS extends BEASTObject implements Loggable {
      */
     protected List<Double> trace;
     /**
-     * sum of trace, excluding burn-in *
+     * sum of trace, excluding burn-in  *
      */
     protected double sum = 0;
     /**
