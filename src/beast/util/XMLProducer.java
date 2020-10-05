@@ -783,6 +783,31 @@ public class XMLProducer extends XMLParser {
             "\n" +
             "</xsl:stylesheet>\n";
 
+    
+    
+    /**
+     * Gives the object a unique id if it does not already have an id
+     * @param beastObject
+     */
+    protected void setIDOfElement(Object beastObject) {
+        if (BEASTObjectStore.getId(beastObject) == null) {
+        	String id = BEASTObjectStore.getClassName(beastObject);
+        	if (id.contains(".")) {
+        		id = id.substring(id.lastIndexOf('.') + 1);
+        	}
+            if (IDs.contains(id)) {
+                int k = 1;
+                while (IDs.contains(id + k)) {
+                    k++;
+                }
+                id = id + k;
+            }
+            BEASTObjectStore.setId(beastObject, id);
+        }
+
+    	
+    }
+    
     /**
      * produce elements for a beast object with name name, putting results in buf.
      * It tries to create XML conforming to the XML transformation rules (see XMLParser)
@@ -837,21 +862,10 @@ public class XMLProducer extends XMLParser {
         // open element
         buf.append("<").append(elementName);
         
-        if (BEASTObjectStore.getId(beastObject) == null) {
-        	String id = BEASTObjectStore.getClassName(beastObject);
-        	if (id.contains(".")) {
-        		id = id.substring(id.lastIndexOf('.') + 1);
-        	}
-            if (IDs.contains(id)) {
-                int k = 1;
-                while (IDs.contains(id + k)) {
-                    k++;
-                }
-                id = id + k;
-            }
-            BEASTObjectStore.setId(beastObject, id);
-        }
-
+        // give it a unique id if it does not have one
+        this.setIDOfElement(beastObject);
+        
+        
         boolean skipInputs = false;
         BEASTInterface beastObject2 = BEASTObjectStore.INSTANCE.getBEASTObject(beastObject);
         // isDone.contains(beastObject) fails when BEASTObjects override equals(), so use a stream with == instead
