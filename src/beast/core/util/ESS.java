@@ -23,15 +23,15 @@ public class ESS extends BEASTObject implements Loggable {
     /**
      * values from which the ESS is calculated *
      */
-    List<Double> trace;
+    protected List<Double> trace;
     /**
-     * sum of trace, excluding burn-in *
+     * sum of trace, excluding burn-in  *
      */
-    double sum = 0;
+    protected double sum = 0;
     /**
      * keep track of sums of trace(i)*trace(i_+ lag) for all lags, excluding burn-in  *
      */
-    List<Double> squareLaggedSums;
+    protected List<Double> squareLaggedSums;
 
     @Override
     public void initAndValidate() {

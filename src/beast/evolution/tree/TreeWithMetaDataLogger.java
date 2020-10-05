@@ -25,12 +25,14 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
     final public Input<BranchRateModel.Base> clockModelInput = new Input<>("branchratemodel", "rate to be logged with branches of the tree");
     final public Input<Boolean> substitutionsInput = new Input<>("substitutions", "report branch lengths as substitutions (branch length times clock rate for the branch)", false);
     final public Input<Integer> decimalPlacesInput = new Input<>("dp", "the number of decimal places to use writing branch lengths, rates and real-valued metadata, use -1 for full precision (default = full precision)", -1);
+    final public Input<Boolean> sortTreeInput = new Input<>("sort", "whether to sort the tree before logging.", true);
 
-    
+
     boolean someMetaDataNeedsLogging;
     boolean substitutions = false;
 
     private DecimalFormat df;
+    private boolean sortTree;
 
     @Override
     public void initAndValidate() {
@@ -53,6 +55,9 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         if (clockModelInput.get() != null) {
         	substitutions = substitutionsInput.get();
         }
+
+        // default is to sort the tree
+        sortTree = sortTreeInput.get();
     }
 
     @Override
@@ -73,7 +78,11 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
         BranchRateModel.Base branchRateModel = clockModelInput.get();
         // write out the log tree with meta data
         out.print("tree STATE_" + sample + " = ");
-        tree.getRoot().sort();
+
+        if (sortTree) {
+            tree.getRoot().sort();
+        }
+
         out.print(toNewick(tree.getRoot(), metadata, branchRateModel));
         //out.print(tree.getRoot().toShortNewick(false));
         out.print(";");
