@@ -1,6 +1,8 @@
 package beast.core;
 
+
 import java.io.PrintStream;
+import java.util.List;
 
 import org.w3c.dom.Node;
 
@@ -255,4 +257,42 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
     @Override
 	abstract public void restore();
 
+    
+    
+    /** 
+     * Check whether this StateNode is estimated 
+     * assuming it is part of an MCMC analysis.
+     * @return true iff the "estimate" input is true AND 
+     * an operator can be found that operates on this StateNode
+     */
+    public boolean isEstimated() {
+    	if (!isEstimatedInput.get()) {
+    		return false;
+    	}
+    	
+    	// is there an operator in the outputs that operates on this StateNode?
+    	OperatorSchedule schedule = null;
+    	for (BEASTInterface o : getOutputs()) {
+    		if (o instanceof Operator) {
+    			Operator operator = (Operator) o;
+    			schedule = operator.operatorSchedule;
+    			List<StateNode> stateNodes = operator.listStateNodes();
+    			if (stateNodes.contains(this)) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	// is there another operator in the schedule that operates on this StateNode?
+    	if (schedule != null) {
+    		for (Operator operator : schedule.operators) {
+    			List<StateNode> stateNodes = operator.listStateNodes();
+    			if (stateNodes.contains(this)) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
 } // class StateNode
