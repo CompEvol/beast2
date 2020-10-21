@@ -26,6 +26,7 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.Citation;
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
@@ -39,7 +40,7 @@ import beast.evolution.tree.Node;
                 "  molecular clock of mitochondrial DNA. Journal of Molecular Evolution\n" +
                 "  22:160-174.", DOI = "10.1007/BF02101694", year = 1985, firstAuthorSurname = "hasegawa")
 public class HKY extends SubstitutionModel.NucleotideBase {
-    final public Input<RealParameter> kappaInput = new Input<>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
+    final public Input<Function> kappaInput = new Input<>("kappa", "kappa parameter in HKY model", Validate.REQUIRED);
 
     /**
      * applies to nucleotides only *
@@ -64,7 +65,10 @@ public class HKY extends SubstitutionModel.NucleotideBase {
     @Override
     public void initAndValidate() {
         super.initAndValidate();
-        kappaInput.get().setBounds(Math.max(0.0, kappaInput.get().getLower()), kappaInput.get().getUpper());
+        if (kappaInput.get() instanceof RealParameter) {
+        	RealParameter kappa = (RealParameter) kappaInput.get(); 
+            kappa.setBounds(Math.max(0.0, kappa.getLower()), kappa.getUpper());
+        }
 
         nrOfStates = STATE_COUNT;
     }
@@ -171,7 +175,7 @@ public class HKY extends SubstitutionModel.NucleotideBase {
 
             // eigenvectors
             double[] eval = eigenDecomposition.getEigenValues();
-            final double k = kappaInput.get().getValue();
+            final double k = kappaInput.get().getArrayValue();
 
             final double beta = -1.0 / (2.0 * (piR * piY + k * (pi[0] * pi[2] + pi[1] * pi[3])));
             final double A_R = 1.0 + piR * (k - 1);
@@ -225,7 +229,7 @@ public class HKY extends SubstitutionModel.NucleotideBase {
         tab3T = tab2C;            // 1 - tab3C;  // freqT/freqY;
         tab2T = tab3C;            // 1 - tab3T; // (freqY-freqT)/freqY; //assert tab2T + tab3T == 1.0 ;
 
-        final double k = kappaInput.get().getValue();
+        final double k = kappaInput.get().getArrayValue();
         beta = -1.0 / (2.0 * (freqR * freqY + k * (freqA * freqG + freqC * freqT)));
 
         A_R = 1.0 + freqR * (k - 1);
