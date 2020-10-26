@@ -2,6 +2,7 @@ package beast.evolution.operators;
 
 
 
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.StateNode;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.core.util.Log;
@@ -366,5 +368,22 @@ public class DeltaExchangeOperator extends Operator {
             return "Try setting delta to about " + formatter.format(newDelta);
         } else return "";
     }
+
     
+    @Override
+    public List<StateNode> listStateNodes() {
+        final List<StateNode> list = new ArrayList<>();
+        for (RealParameter p : parameterInput.get()) {
+	        if (p.isEstimatedInput.get()) {
+	            list.add(p);
+	        }
+        }
+        for (IntegerParameter p : intparameterInput.get()) {
+	        if (p.isEstimatedInput.get()) {
+	            list.add(p);
+	        }
+        }
+        return list;
+    }
+
 }
