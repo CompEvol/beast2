@@ -186,13 +186,18 @@ public class FilteredAlignment extends Alignment {
         
         // convert data to transposed int array
         int[][] data = new int[nrOfSites][nrOfTaxa];
+        String missingChar = Character.toString(DataType.MISSING_CHAR);
+        String gapChar = Character.toString(DataType.GAP_CHAR);
         for (int i = 0; i < nrOfTaxa; i++) {
             List<Integer> sites = counts.get(i);
             for (int j = 0; j < nrOfSites; j++) {
                 data[j][i] = sites.get(filter[j]);
                 if (convertDataType) {
                 	try {
-            			String code = baseType.isAmbiguousCode(data[j][i]) ?
+                		boolean needsBrackets = baseType.isAmbiguousCode(data[j][i]) && 
+                				! baseType.getCharacter(data[j][i]).equals(missingChar) &&
+                				! baseType.getCharacter(data[j][i]).equals(gapChar);
+            			String code = needsBrackets ?
             					"{"+baseType.getCharacter(data[j][i]) + "}" :
             						baseType.getCharacter(data[j][i]);
             			data[j][i] = m_dataType.stringToEncoding(code).get(0);
@@ -303,7 +308,10 @@ public class FilteredAlignment extends Alignment {
                 sites[j] = counts.get(j).get(filter[i]);
                 if (convertDataType) {
                 	try {
-            			String code = baseType.isAmbiguousCode(sites[j]) ?
+                		boolean needsBrackets = baseType.isAmbiguousCode(sites[j]) && 
+                				! baseType.getCharacter(sites[j]).equals(missingChar) &&
+                				! baseType.getCharacter(sites[j]).equals(gapChar);                		
+            			String code = needsBrackets ?
             					"{"+baseType.getCharacter(sites[j]) + "}" :
             						baseType.getCharacter(sites[j]);
             			sites[j] = m_dataType.stringToEncoding(code).get(0);
