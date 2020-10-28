@@ -118,6 +118,8 @@ abstract public class LikelihoodCore {
      * likelihood calculation. Scaling can help in dealing with
      * numeric issues (underflow).
      */
+    @Deprecated // use useScaling from BeerLikelihoodCore instead
+                // TODO: move useScaling from BeerLikelihoodCore to here
     boolean m_bUseScaling = false;
 
     abstract public void setUseScaling(double scale);

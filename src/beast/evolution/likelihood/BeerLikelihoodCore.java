@@ -902,4 +902,10 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //	
 //	//    @Override
 ////    LikelihoodCore feelsGood() {return null;}
+    
+    @Override
+    public boolean getUseScaling() {
+        return useScaling;
+    }
+
 } // class BeerLikelihoodCore
