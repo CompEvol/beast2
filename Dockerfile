@@ -10,7 +10,7 @@
 #   docker run -it -p 5900:5900 beast_testing /bin/bash
 # This will give you a shell in the container. From this
 # shell, run
-#   vncserver $DISPLAY -geometry 1920x1080; ant travis
+#   vncserver $DISPLAY -geometry 1920x1080; ant -f build-testing.xml
 #
 # The previous command exposes the VNC session, so while the
 # BEAUti test suite is running you can run a VNC viewer and
@@ -24,8 +24,6 @@ RUN apt-get update && apt-get install -y ant
 
 # Install and configure VNC server
 RUN apt-get update && apt-get install -y tightvncserver twm
-ENV DISPLAY :0
-ENV USER root
 RUN mkdir /root/.vnc
 RUN echo password | vncpasswd -f > /root/.vnc/passwd
 RUN chmod 600 /root/.vnc/passwd
@@ -37,10 +35,10 @@ RUN cd /root && git clone --branch v3.0.1 --depth=1 https://github.com/beagle-de
 RUN cd /root/beagle-lib && ./autogen.sh && ./configure --prefix=/usr/local && make install
 RUN ldconfig
 
-# Ant build fails if the repo dir isn't named beast2
-RUN mkdir /root/beast2
-WORKDIR /root/beast2
-
 ADD . ./
 
-CMD vncserver $DISPLAY -geometry 1920x1080; ant travis
+CMD export HOME=/root; \
+        export USER=root; \
+        export DISPLAY=:1; \
+        vncserver $DISPLAY -geometry 1920x1080; \
+        ant -f build-testing.xml
