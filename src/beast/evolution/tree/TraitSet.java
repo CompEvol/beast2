@@ -192,6 +192,7 @@ public class TraitSet extends BEASTObject {
         } catch (NumberFormatException e) {
             // does not look like a number
             if (traitNameInput.get().equals(DATE_TRAIT) ||
+            		traitNameInput.get().equals(AGE_TRAIT) ||
                     traitNameInput.get().equals(DATE_FORWARD_TRAIT) ||
                     traitNameInput.get().equals(DATE_BACKWARD_TRAIT)) {
 

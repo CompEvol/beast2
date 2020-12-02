@@ -729,6 +729,7 @@ public class Node extends BEASTObject {
     public void setMetaData(final String pattern, final Object value) {
         startEditing();
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
+        		pattern.equals(TraitSet.AGE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             height = (Double) value;
@@ -766,6 +767,7 @@ public class Node extends BEASTObject {
      */
     public Object getMetaData(final String pattern) {
         if (pattern.equals(TraitSet.DATE_TRAIT) ||
+        		pattern.equals(TraitSet.AGE_TRAIT) ||
                 pattern.equals(TraitSet.DATE_FORWARD_TRAIT) ||
                 pattern.equals(TraitSet.DATE_BACKWARD_TRAIT)) {
             return height;
