@@ -1,7 +1,7 @@
 BEAST 2
 =======
 
-[![Build Status](https://github.com/CompEvol/beast2/workflows/Unit%2Fintegration%20tests/badge.svg)](https://github.com/CompEvol/beast2/actions?query=workflow%3A%22Unit%2Fintegration+tests%22)
+[![Build Status](https://github.com/CompEvol/beast2/workflows/Core%20tests/badge.svg)](https://github.com/CompEvol/beast2/actions?query=workflow%3A%22Core+tests%22)
 
 BEAST is a cross-platform program for Bayesian inference using MCMC of
 molecular sequences. It is entirely orientated towards rooted,

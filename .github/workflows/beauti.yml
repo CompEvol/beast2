@@ -1,0 +1,10 @@
+name: BEAUti tests
+on: [ workflow_dispatch ]
+
+jobs:
+  test-beauti:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t beast2-test .
+      - run: docker run beast2-test test-beauti

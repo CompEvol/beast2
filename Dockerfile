@@ -37,8 +37,13 @@ RUN ldconfig
 
 ADD . ./
 
-CMD export HOME=/root; \
-        export USER=root; \
-        export DISPLAY=:1; \
-        vncserver $DISPLAY -geometry 1920x1080; \
-        ant -f build-testing.xml
+RUN echo "#!/bin/bash\n" \
+        "export USER=root\n" \
+        "export DISPLAY=:1\n" \
+        "vncserver :1 -geometry 1920x1080\n" \
+        "ant -f build-testing.xml \$1\n" > entrypoint.sh
+RUN chmod a+x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["test-all"]

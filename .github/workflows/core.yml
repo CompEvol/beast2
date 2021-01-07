@@ -1,0 +1,10 @@
+name: Core tests
+on: [ push, pull_request, workflow_dispatch ]
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker build -t beast2-test .
+      - run: docker run beast2-test test-core

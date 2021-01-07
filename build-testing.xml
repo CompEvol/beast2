@@ -1,4 +1,4 @@
-<project basedir="." default="test" name="BEAST 2 Unit Tests"
+<project basedir="." default="test-all" name="BEAST 2 Unit Tests"
 	xmlns:fx="javafx:com.sun.javafx.tools.ant">
     <description>
         Simplified build script for running unit tests only.
@@ -144,10 +144,20 @@
         <echo message="JUnit test finished." />
     </target>
 
-    <!-- Target for Travis-CI with non-zero exit status on test failure. -->
-    <target name="test" depends="clean, compile-all, junit, junitb">
+    <!-- Target for CI testing with non-zero exit status on test failure. -->
+
+    <target name="test-all" depends="clean, compile-all, junit, junitb">
         <fail if="junitfailed" message="One or more CORE BEAST tests failed."/>
         <fail if="junitbfailed" message="One or more BEAUTI tests failed."/>
     </target>
+
+    <target name="test-core" depends="clean, compile-all, junit">
+        <fail if="junitfailed" message="One or more CORE BEAST tests failed."/>
+    </target>
+
+    <target name="test-beauti" depends="clean, compile-all, junitb">
+        <fail if="junitbfailed" message="One or more BEAUTI tests failed."/>
+    </target>
+
 
   </project>
