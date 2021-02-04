@@ -1,10 +1,13 @@
-                    BEAST v2.6.2 2020
-                 Beast 2 development team 2011-2020
+                    BEAST v2.6.4 2021
+                 Beast 2 development team 2011-2021
 Version History
-Last updated: June 2020
+Last updated: Mar 2021
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.4
+	...
+
 Version 2.6.3
 	Robustify resume`
 	RandomTree deals with calibrations in date-forward mode

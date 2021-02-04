@@ -269,10 +269,10 @@
 
 
     <!-- Release -->
-    <property name="version" value="2.6.3" />
-    <property name="version_number" value="2.6.3" />
+    <property name="version" value="2.6.4" />
+    <property name="version_number" value="2.6.4" />
     <property name="release_dir" value="release" />
-    <property name="copyright" value="Beast 2 development team 2011-2020" />
+    <property name="copyright" value="Beast 2 development team 2011-2021" />
 
     <property name="BEAST_name" value="BEAST" />
     <property name="beast_name" value="beast" />
@@ -764,7 +764,7 @@
         </copy>
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
         <exec executable="cp">
-             <arg line="-R ../jdk8u212-b04-jre ${Linux_package_dir}/jre1.8.0_212"/>
+             <arg line="-R ../jdk8u282-b08-jre ${Linux_package_dir}/jre1.8.0_282"/>
 	</exec>
 
         <!--<copy todir="${Linux_package_dir}/doc">

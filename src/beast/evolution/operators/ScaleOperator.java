@@ -74,18 +74,18 @@ public class ScaleOperator extends Operator {
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
-    private boolean isTreeScaler = true;
+    boolean m_bIsTreeScaler = true;
 
     @Override
     public void initAndValidate() {
         scaleFactor = scaleFactorInput.get();
-        isTreeScaler = (treeInput.get() != null);
+        m_bIsTreeScaler = (treeInput.get() != null);
         upper = scaleUpperLimit.get();
         lower = scaleLowerLimit.get();
 
         final BooleanParameter indicators = indicatorInput.get();
         if (indicators != null) {
-            if (isTreeScaler) {
+            if (m_bIsTreeScaler) {
                 throw new IllegalArgumentException("indicator is specified which has no effect for scaling a tree");
             }
             final int dataDim = parameterInput.get().getDimension();
@@ -96,8 +96,8 @@ public class ScaleOperator extends Operator {
         }
     }
 
-    protected boolean isTreeScaler() {
-        return isTreeScaler;
+    protected boolean m_bIsTreeScaler() {
+        return m_bIsTreeScaler;
     }
 
     protected boolean outsideBounds(final double value, final RealParameter param) {
@@ -125,7 +125,7 @@ public class ScaleOperator extends Operator {
             double hastingsRatio;
             final double scale = getScaler();
 
-            if (isTreeScaler) {
+            if (m_bIsTreeScaler) {
 
                 final Tree tree = treeInput.get(this);
                 if (rootOnlyInput.get()) {
