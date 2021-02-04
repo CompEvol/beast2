@@ -156,9 +156,6 @@ public class PackageManager {
      * @throws java.net.MalformedURLException
      */
     public static List<URL> getRepositoryURLs() throws MalformedURLException {
-        // Java 7 introduced SNI support which is enabled by default.
-        // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
-        System.setProperty("jsse.enableSNIExtension", "false");
 
         List<URL> URLs = new ArrayList<URL>();
         URLs.add(new URL(PACKAGES_XML));
