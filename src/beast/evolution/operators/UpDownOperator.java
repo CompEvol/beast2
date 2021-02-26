@@ -29,6 +29,7 @@ public class UpDownOperator extends Operator {
             "zero or more items to scale downwards", new ArrayList<>());
     final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
     final public Input<Boolean> elementWiseInput = new Input<>("elementWise", "flag to indicate that the scaling is applied to a random index in multivariate parameters (default false)", false);
+    final public Input<Boolean> differentRandomIndexInput = new Input<>("differentRandomIndex", "flag to indicate if a different random index should be chosen for each parameter (default false); only applicable if elementWise is set to true", false);
 
     final public Input<Double> scaleUpperLimit = new Input<>("upper", "Upper Limit of scale factor", 1.0);
     final public Input<Double> scaleLowerLimit = new Input<>("lower", "Lower limit of scale factor", 0.0);
@@ -91,6 +92,9 @@ public class UpDownOperator extends Operator {
                 if (outsideBounds(up)) {
                     return Double.NEGATIVE_INFINITY;
                 }
+                if (differentRandomIndexInput.get()){
+                    index = Randomizer.nextInt(size);
+                }
             }
 
             for (StateNode down : downInput.get()) {
@@ -100,6 +104,9 @@ public class UpDownOperator extends Operator {
                 }
                 if (outsideBounds(down)) {
                     return Double.NEGATIVE_INFINITY;
+                }
+                if (differentRandomIndexInput.get()){
+                    index = Randomizer.nextInt(size);
                 }
             }
         } else {
