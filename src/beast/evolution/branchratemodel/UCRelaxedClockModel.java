@@ -6,8 +6,10 @@ import java.util.Arrays;
 
 import org.apache.commons.math.MathException;
 
+import beast.core.CalculationNode;
 import beast.core.Citation;
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -54,7 +56,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
 
     ParametricDistribution distribution; //the distribution of the rates
 
-    RealParameter meanRate;
+    Function meanRate;
     Tree tree;
     private int branchCount;//the number of branches of the tree
     private boolean normalize = false;//
@@ -212,7 +214,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             }
             renormalize = false;
         }
-        return getRawRate(node) * scaleFactor * meanRate.getValue();
+        return getRawRate(node) * scaleFactor * meanRate.getArrayValue();
     }
 
     /**
@@ -365,11 +367,14 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (rateInput.get() != null && rateInput.get().somethingIsDirty()) {
             return true;
         }
-        if (meanRate.somethingIsDirty()) {
-            return true;
+        
+        if (meanRate instanceof RealParameter) {
+        	return ((RealParameter) meanRate).somethingIsDirty() || recompute;
+        } else if (meanRate instanceof CalculationNode) {
+        	return ((CalculationNode) meanRate).isDirtyCalculation() || recompute;
+        } else {
+        	return recompute;
         }
-
-        return recompute;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package beast.evolution.branchratemodel;
 
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 
@@ -11,41 +12,47 @@ import beast.evolution.tree.Node;
 @Description("Defines a mean rate for each branch in the beast.tree.")
 public class StrictClockModel extends BranchRateModel.Base {
 
-    //public Input<RealParameter> muParameterInput = new Input<>("clock.rate", "the clock rate (defaults to 1.0)");
+	// public Input<RealParameter> muParameterInput = new Input<>("clock.rate", "the
+	// clock rate (defaults to 1.0)");
 
-    RealParameter muParameter;
+	protected Function muSource;
+	private double mu = 1.0;
 
-    @Override
-    public void initAndValidate() {
-        muParameter = meanRateInput.get();
-        if (muParameter != null) {
-            muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
-            mu = muParameter.getValue();
-        }
-    }
+	@Override
+	public void initAndValidate() {
+		if (meanRateInput.get() != null) {
+			muSource = meanRateInput.get();
+			try {
+				RealParameter muParameter = (RealParameter) muSource;
+				muParameter.setBounds(Math.max(0.0, muParameter.getLower()), muParameter.getUpper());
+			} catch (ClassCastException t) {
+				// Nothing
+			}
+			mu = muSource.getArrayValue();
+		}
+	}
 
-    @Override
-    public double getRateForBranch(final Node node) {
-        return mu;
-    }
+	@Override
+	public double getRateForBranch(final Node node) {
+		return mu;
+	}
 
-    @Override
-    public boolean requiresRecalculation() {
-        mu = muParameter.getValue();
-        return true;
-    }
+	@Override
+	public boolean requiresRecalculation() {
+		mu = muSource.getArrayValue();
+		return true;
+	}
 
-    @Override
-    protected void restore() {
-        mu = muParameter.getValue();
-        super.restore();
-    }
+	@Override
+	protected void restore() {
+		mu = muSource.getArrayValue();
+		super.restore();
+	}
 
-    @Override
-    protected void store() {
-        mu = muParameter.getValue();
-        super.store();
-    }
+	@Override
+	protected void store() {
+		mu = muSource.getArrayValue();
+		super.store();
+	}
 
-    private double mu = 1.0;
 }
