@@ -1360,15 +1360,18 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                         }
                     }
                     BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
-                    if (model != null) {
-                        RealParameter clockRate = model.meanRateInput.get();
-                        clockRate.isEstimatedInput.setValue(needsEstimation, clockRate);
-                        if (firstClock == null) {
-                            firstClock = clockRate;
-                        }
-                    }
-                    i++;
-                }
+					if (model != null) {
+						if (model.meanRateInput.get() instanceof RealParameter) {
+							RealParameter clockRate = (RealParameter) model.meanRateInput.get();
+
+							clockRate.isEstimatedInput.setValue(needsEstimation, clockRate);
+							if (firstClock == null) {
+								firstClock = clockRate;
+							}
+						}
+					}
+					i++;
+				}
             }
         }
     }
