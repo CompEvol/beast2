@@ -52,6 +52,7 @@ import beast.core.BEASTInterface;
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Distribution;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.MCMC;
