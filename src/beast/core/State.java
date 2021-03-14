@@ -536,7 +536,7 @@ public class State extends BEASTObject {
     /**
      * return current set of calculation nodes based on the set of StateNodes that have changed *
      */
-    private List<CalculationNode> getCurrentCalculationNodes() {
+    public List<CalculationNode> getCurrentCalculationNodes() {
         List<CalculationNode> calcNodes = trie.get(nrOfChangedStateNodes);
         if (calcNodes != null) {
             // the list is pre-calculated

@@ -126,4 +126,37 @@ public abstract class CalculationNode extends BEASTObject {
      */
     private boolean isDirty = false;
 
+    /**
+     * Compute a checksum of this calculation node. Checksums are used for validity checks, to ensure
+     * that state nodes and fat calculation nodes are correctly restored. The base implementation will
+     * never trigger the validity checks and must be overwritten to make use of them. Lean calculation
+     * nodes should NOT overwrite this method, as they do not need to be restored and hence checksum
+     * comparisons could lead to false alarms.
+     *
+     * @return checksum of the calculation node
+     */
+    protected int getChecksum() {
+        return 0;
+    }
+
+    /**
+     * The checksum of the calculation node, evaluated and stored before an operator proposes an MCMC step.
+     */
+    protected int preOperatorChecksum;
+
+    /**
+     * Store the current checksum as the ´preOperatorChecksum´.
+     */
+    public void storeChecksum() {
+        preOperatorChecksum = getChecksum();
+    }
+
+    /**
+     * Check whether the current checksum matches the ´preOperatorChecksum´.
+     * @return true iff the checksums match
+     */
+    public boolean matchesOldChecksum() {
+        return preOperatorChecksum == getChecksum();
+    }
+
 } // class CalculationNode

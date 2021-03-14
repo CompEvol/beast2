@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -522,6 +523,15 @@ public class MCMC extends Runnable {
                 }
             };
         }
+
+        if (debugFlag) {
+            // Store a checksum of each calculation node to ensure that the initial
+            // state is restored when a step is rejected (see validateReject).
+            for (CalculationNode node : listAllCalcNodes()) {
+                node.storeChecksum();
+            }
+        }
+
         final double logHastingsRatio = operator.proposal(evaluator);
 
         if (logHastingsRatio != Double.NEGATIVE_INFINITY) {
@@ -553,6 +563,9 @@ public class MCMC extends Runnable {
                 state.restore();
                 state.restoreCalculationNodes();
                 if (printDebugInfo) System.err.print(" reject");
+                if (debugFlag) {
+                    validateReject(operator);
+                }
             }
             state.setEverythingDirty(false);
         } else {
@@ -566,9 +579,60 @@ public class MCMC extends Runnable {
                 state.restoreCalculationNodes();
             }
             if (printDebugInfo) System.err.print(" direct reject");
+            if (debugFlag) {
+                validateReject(operator);
+            }
         }
         log(sampleNr);
         return operator;
+    }
+
+    /**
+     * Test whether state nodes and fat calculation nodes have been correctly
+     * restored (according to their checksums) after the operator was rejected.
+     * Caching an incorrect state could lead to undetected errors, here we
+     * explicitly throw an exception if something went wrong.
+     *
+     * @param operator: the operator applied in the current MCMC step.
+     */
+    private void validateReject(Operator operator) throws RuntimeException {
+        List<CalculationNode> affectedNodes = new ArrayList<>();
+        // Relevant nodes: all calculation nodes that have changed in this step
+        affectedNodes.addAll(state.getCurrentCalculationNodes());
+        // ...and all state nodes that are affected by the operator.
+        affectedNodes.addAll(operator.listStateNodes());
+
+        for (CalculationNode node : affectedNodes) {
+            if (!node.matchesOldChecksum()) {
+                throw new RuntimeException("Node " + node.getID() + " was incorrectly restored after rejecting "
+                        + "operator " + operator.getID() + " (according to calculatioNode checksum).");
+            }
+        }
+    }
+
+    /**
+     * Recursively iterate over all inputs of the BEASTInterface o and
+     * add the calculationNodes to allNodes.
+     * @param o the BEASTInterface object at which the recursive search is started
+     * @param allNodes the list where the calculationNodes are collected.
+     **/
+    protected void collectCalcNodes(BEASTInterface o, Set<CalculationNode> allNodes) {
+        if (o instanceof CalculationNode) {
+            allNodes.add((CalculationNode) o);
+        }
+        for (BEASTInterface o2 : o.listActiveBEASTObjects()) {
+            collectCalcNodes(o2, allNodes);
+        }
+    }
+
+    /**
+     * Collect all calculation nodes used in the posterior in a list.
+     * @return The list of all calculation nodes.
+     */
+    protected Set<CalculationNode> listAllCalcNodes() {
+        Set<CalculationNode> allNodes = new HashSet<>();
+        collectCalcNodes(posterior, allNodes);
+        return allNodes;
     }
 
     private boolean isTooDifferent(double logLikelihood, double originalLogP) {
