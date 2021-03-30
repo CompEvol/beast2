@@ -503,7 +503,7 @@ public class PackageManager {
             // grab file from URL
             String zipFile = dirName + "/" + thisPkg.getName() + ".zip";
             FileOutputStream fos = new FileOutputStream(zipFile);
-            fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+            fos.getChannel().transferFrom(rbc, 0, 1 << 26);
 
             // unzip archive
             doUnzip(zipFile, dirName);
