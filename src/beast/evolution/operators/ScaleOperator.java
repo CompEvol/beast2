@@ -78,6 +78,7 @@ public class ScaleOperator extends Operator {
 
     @Override
     public void initAndValidate() {
+
         scaleFactor = scaleFactorInput.get();
         m_bIsTreeScaler = (treeInput.get() != null);
         upper = scaleUpperLimit.get();
@@ -96,7 +97,7 @@ public class ScaleOperator extends Operator {
         }
     }
 
-    protected boolean m_bIsTreeScaler() {
+    protected boolean isTreeScaler() {
         return m_bIsTreeScaler;
     }
 
