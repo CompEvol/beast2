@@ -28,7 +28,7 @@ public class TipDatesRandomWalker extends TreeOperator {
      */
     int[] taxonIndices;
 
-    double windowSize = 1;
+    protected double windowSize = 1;
     boolean useGaussian;
 
     /**
