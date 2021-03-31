@@ -74,7 +74,7 @@ public class ScaleOperator extends Operator {
     /**
      * flag to indicate this scales trees as opposed to scaling a parameter *
      */
-    boolean m_bIsTreeScaler = true;
+    protected boolean m_bIsTreeScaler = true;
 
     @Override
     public void initAndValidate() {
