@@ -354,7 +354,7 @@ public class BeastMain {
         boolean beagleShowInfo = arguments.hasOption("beagle_info");
 
         
-        boolean useSSE = true;
+        boolean useSSE = !useJava;
         if (arguments.hasOption("beagle_CPU")) {
             beagleFlags |= BeagleFlag.PROCESSOR_CPU.getMask();
             useSSE = false;
