@@ -26,10 +26,10 @@ public class TipDatesRandomWalker extends TreeOperator {
     /**
      * node indices of taxa to choose from *
      */
-    int[] taxonIndices;
+    protected int[] taxonIndices;
 
     protected double windowSize = 1;
-    boolean useGaussian;
+    protected boolean useGaussian;
 
     /**
      * whether to reflect random values from boundaries or absorb *

@@ -81,7 +81,7 @@ public class Logger extends BEASTObject {
     /**
      * list of loggers, if any
      */
-    List<Loggable> loggerList;
+    protected List<Loggable> loggerList;
     public enum LogFileMode {
     	only_new, overwrite, resume, only_new_or_exit
     }
