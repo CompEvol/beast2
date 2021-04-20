@@ -86,12 +86,12 @@
 
         <echo message="Ant running on Java version ${ant.java.version}"/>
 
-        <!-- compile the launcher apps against Java 6-->
+        <!-- compile the launcher apps against Java 8-->
         <delete file="${build}/beast/app/beauti/BeautiLauncher.class" />
         <delete file="${build}/beast/app/tools/AppLauncherLauncher.class" />
         <delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
         <delete file="${build}/beast/app/treeannotator/TreeAnnotatorLauncher.class" />
-        <delete file="${build}/beast/app/util/Utils6.class" />
+        <delete file="${build}/beast/app/util/Utils8.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
         <delete file="${build}/beast/util/BEASTClassLoader.class" />
         <delete>
@@ -101,9 +101,9 @@
 	      <fileset dir="${build}/beast/util/" includes="Package*.class"/>
     	</delete>
         <delete file="${build}/beast/app/util/Version.class" />
-        <javac source="1.6"
-               target="1.6"
-               bootclasspath='/opt/jdk1.6.0_45/jre/lib/rt.jar'
+        <javac source="1.8"
+               target="1.8"
+               bootclasspath='/opt/jdk1.8.0_45/jre/lib/rt.jar'
                srcdir="${src}"
                destdir="${build}"
                classpathref="classpath"
@@ -112,7 +112,7 @@
                memorymaximumsize="1024m"
                includeAntRuntime='false'>
             <include name="beast/**/*Launcher.java" />
-            <include name="beast/**/Utils6.java" />
+            <include name="beast/**/Utils8.java" />
             <include name="beast/**/BEASTVersion.java" />
             <include name="beast/**/Version.java" />
             <include name="beast/util/Package*.java" />
@@ -160,7 +160,7 @@
                 <include name="beast/**/*Launcher*.class" />
                 <exclude name="beast/app/tools/AppLauncher.class"/>
                 <exclude name="beast/app/tools/AppLauncher$*.class"/>
-                <include name="beast/**/Utils6*.class" />
+                <include name="beast/**/Utils8*.class" />
                 <include name="beast/**/BEASTVersion.class" />
                 <include name="beast/**/Version.class" />
 		    	<include name="beast/app/util/Arguments*.class" />
