@@ -95,7 +95,7 @@ public interface Parameter<T> extends Function {
      */
     default String getKey(int i) {
         if (getDimension() == 1) return "0";
-        else if (i < getDimension()) return "" + i;
+        else if (i < getDimension()) return "" + (i+1);
         throw new IllegalArgumentException("Invalid index " + i);
     }
 
