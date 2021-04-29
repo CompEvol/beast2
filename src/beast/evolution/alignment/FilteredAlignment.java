@@ -342,7 +342,14 @@ public class FilteredAlignment extends Alignment {
         //for (int i = 0; i < m_sTaxaNames.size(); i++) {
         //    System.err.println(m_sTaxaNames.get(i) + ": " + m_counts.get(i).size() + " " + m_nStateCounts.get(i));
         //}
-        Log.info.println("Filter " + filterInput.get());
+        
+        String filterText = filterInput.get();
+        if (filterText.length() <= 200) {
+        	Log.info.println("Filter " + filterInput.get());
+        } else {
+        	Log.info.println("Filter " + filterInput.get().substring(0,200) + "...");        	
+        }
+        Log.debug.println("Filter " + filterInput.get());
         Log.info.println(getTaxonCount() + " taxa");
         if (constantSiteWeightsInput.get() != null) {
         	Integer [] constantWeights = constantSiteWeightsInput.get().getValues();

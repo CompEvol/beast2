@@ -141,8 +141,14 @@ public class TraitSet extends BEASTObject {
             }
         }
 
-        for (int i = 0; i < labels.size(); i++) {
+        for (int i = 0; i < labels.size() && i < 10; i++) {
             Log.info.println(labels.get(i) + " = " + taxonValues[i] + " (" + (values[i]) + ")");
+        }
+        if (labels.size() > 10) {
+        	Log.info.println((labels.size()-10) + " more..."); 
+        }
+        for (int i = 10; i < labels.size(); i++) {
+            Log.debug.println(labels.get(i) + " = " + taxonValues[i] + " (" + (values[i]) + ")");
         }
     } // initAndValidate
 
@@ -185,6 +191,7 @@ public class TraitSet extends BEASTObject {
     /**
      * see if we can convert the string to a double value *
      */
+    private int warningCount = 0;
     public double convertValueToDouble(String str) {
         // default, try to interpret the string as a number
         try {
@@ -209,9 +216,18 @@ public class TraitSet extends BEASTObject {
                 } else {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimeFormatInput.get());
                     LocalDate date = LocalDate.parse(str, formatter);
-
-                    Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
-                            "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
+                    
+                    warningCount++;
+                    if (warningCount <= 10) {
+                        Log.warning.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
+                                "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
+                    } else if (warningCount > 10) {
+                        if (warningCount == 11) {
+                        	Log.warning("(more warnings visible with loglevel=debug )...");
+                        }
+                        Log.debug.println("Using format '" + dateTimeFormatInput.get() + "' to parse '" + str +
+                                "' as: " + (date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0)));
+                    }
 
                     year = date.getYear() + (date.getDayOfYear()-1.0) / (date.isLeapYear() ? 366.0 : 365.0);
                 }
