@@ -27,7 +27,7 @@ public class LogCombiner extends LogAnalyser {
     List<String> m_sLogFileName = new ArrayList<>();
     String m_sParticleDir;
     int m_nParticles = -1;
-    String m_sFileOut;
+    String m_sFileOut = "output.log";
     PrintStream m_out = System.out;
     int m_nBurninPercentage = 10;
 
@@ -491,7 +491,7 @@ public class LogCombiner extends LogAnalyser {
                 "combines multiple (trace or tree) log files into a single log file.\n" +
                 "options:\n" +
                 "-log <file>      specify the name of the log file, each log file must be specified with separate -log option\n" +
-                "-o <output.log>  specify log file to write into (default output is stdout)\n" +
+                "-o <output.log>  specify log file to write into (default output is \"output.log\")\n" +
                 "-b <burnin>      specify the number PERCENTAGE of lines in the log file considered to be burnin (default 10)\n" +
                 "-dir <directory> specify particle directory -- used for particle filtering in BEASTLabs only -- if defined only one log must be specified and the -n option specified\n" +
                 "-n <int>         specify the number of particles, ignored if -dir is not defined\n" +
