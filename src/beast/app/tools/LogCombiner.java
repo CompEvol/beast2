@@ -236,13 +236,10 @@ public class LogCombiner extends LogAnalyser {
 
     private void combineLogs(String[] logs, int[] burbIns) throws IOException {
     	preAmpleIsPrinted = false;
-        log("Writing to file " + m_sFileOut);
-        try {
-            m_out = new PrintStream(new File(m_sFileOut));
-        } catch (FileNotFoundException e) {
-            log("Could not open file " + m_sFileOut + " for writing: " + e.getMessage());
-            return;
-        }
+    	if (m_sFileOut == null)
+    	    log("Writing to standard output.");
+    	else
+    	    log("Writing to file " + m_sFileOut);
 
         m_fCombinedTraces = null;
         // process logs
