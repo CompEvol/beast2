@@ -167,11 +167,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
         int stateCount = dataInput.get().getMaxStateCount();
         int patterns = dataInput.get().getPatternCount();
-        if (stateCount == 4) {
-            likelihoodCore = new BeerLikelihoodCore4();
-        } else {
-            likelihoodCore = new BeerLikelihoodCore(stateCount);
-        }
+        likelihoodCore = createLikelihoodCore(stateCount);
 
         String className = getClass().getSimpleName();
 
@@ -198,6 +194,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         if (dataInput.get().isAscertained) {
             useAscertainedSitePatterns = true;
         }
+    }
+
+    protected LikelihoodCore createLikelihoodCore(int stateCount) {
+		if (stateCount == 4) {
+			return new BeerLikelihoodCore4();
+		} else {
+			return new BeerLikelihoodCore(stateCount);
+		}
     }
 
 

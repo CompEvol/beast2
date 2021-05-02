@@ -48,7 +48,7 @@ public class MergeDataWith extends BEASTObject {
 		XMLParser parser = new XMLParser();
 		BEASTInterface b = parser.parseBareFragment(templateXML, false);
 
-		// repalce alignment
+		// replace alignment
 		Alignment a = getAlignment(b);
 		List<Sequence> sequences = a.sequenceInput.get();
 		sequences.clear();
