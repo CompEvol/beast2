@@ -1,15 +1,24 @@
                     BEAST v2.6.4 2021
                  Beast 2 development team 2011-2021
 Version History
-Last updated: Mar 2021
+Last updated: May 2021
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
 Version 2.6.4
-	...
+	Applauncher picks up BEAGLE
+	Less clutter on screen output
+	Bayesian skyline plot has a proper prior alternative for the first element of the popSizes parameter
+	Fix DensiTree launcher for Windows
+	LogCombiner can now write to stdout
+	FilteredAlignment can deal with missing and ambiguous values
+	Node now recognises age trait
+	Allow packages to be released in github release area again
+	Add differentRandomIndex to UpDownOperator
+	Checksum support for developers chasing incorrectly calculated likelihoods
 
 Version 2.6.3
-	Robustify resume`
+	Robustify resume
 	RandomTree deals with calibrations in date-forward mode
 	BEAST new `-DF` and `-DFout` options
 	Default values for user defined values

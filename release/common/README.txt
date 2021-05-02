@@ -1,7 +1,7 @@
-                    BEAST v2.6.2 2020
-                 Beast 2 development team 2011-2020
+                    BEAST v2.6.4 2021
+                 Beast 2 development team 2011-2021
 
-Last updated: February 2020
+Last updated: May 2021
 
 Contents:
 1) INTRODUCTION
@@ -124,6 +124,9 @@ BEAST arguments:
     -version Print version and stop
     -strictversions Use only package versions as specified in the 'required' attribute
     -D attribute-value pairs to be replaced in the XML, e.g., -D "arg1=10,arg2=20"
+    -DF as -D, but attribute-value pairs defined in file in JSON format
+    -DFout BEAST XML file written when -DF option is used
+    -sampleFromPrior samples from prior for MCMC analysis (by adding sampleFromPrior="true" in the first run element)
     
 For example:
 
