@@ -257,7 +257,8 @@
         <!-- Coalescent for Bayesian skyline -->
         <subtemplate id='CoalescentBayesianSkyline' class='beast.evolution.tree.coalescent.Coalescent'
                      mainid='BayesianSkyline.t:$(n)'
-                     suppressInputs='beast.math.distributions.MarkovChainDistribution.parameter'>
+                     suppressInputs='beast.math.distributions.MarkovChainDistribution.parameter,
+                     beast.math.distributions.MarkovChainDistribution.initialMean'>
             <![CDATA[
             <distribution spec="BayesianSkyline" id='BayesianSkyline.t:$(n)'>
                 <parameter name='popSizes' id='bPopSizes.t:$(n)' dimension="5" value="380.0" lower="0.0" estimate='true'/>
