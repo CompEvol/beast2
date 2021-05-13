@@ -593,6 +593,8 @@ public class LogCombiner extends LogAnalyser {
 
                 if (combiner.m_sFileOut == null) {
                 	Log.warning.println("No output file specified");
+                } else {
+                    combiner.m_out = new PrintStream(combiner.m_sFileOut);
                 }
 
                 try {
