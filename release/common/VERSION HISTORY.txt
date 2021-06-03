@@ -1,10 +1,13 @@
-                    BEAST v2.6.4 2021
+                    BEAST v2.6.5 2021
                  Beast 2 development team 2011-2021
 Version History
-Last updated: May 2021
+Last updated: June 2021
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.5
+	The GUI version of logcombiner produces output again
+
 Version 2.6.4
 	Applauncher picks up BEAGLE
 	Less clutter on screen output
