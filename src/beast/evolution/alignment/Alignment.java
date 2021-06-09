@@ -30,8 +30,6 @@ import beast.core.Input.Validate;
 import beast.core.parameter.Map;
 import beast.core.util.Log;
 import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.StandardData;
-import beast.evolution.datatype.UserDataType;
 import beast.util.BEASTClassLoader;
 import beast.util.PackageManager;
 
@@ -58,7 +56,7 @@ public class Alignment extends Map<String> {
     /**
      * list of data type descriptions, obtained from DataType classes *
      */
-    static List<String> types = new ArrayList<>();
+    static TreeMap<String, DataType> types = new TreeMap<>();
 
     static {
         findDataTypes();
@@ -72,14 +70,20 @@ public class Alignment extends Map<String> {
                 DataType dataType = (DataType) BEASTClassLoader.forName(dataTypeName).newInstance();
                 if (dataType.isStandard()) {
                     String description = dataType.getTypeDescription();
-                    if (!types.contains(description)) {
-                        types.add(description);
-                    }
+                    types.putIfAbsent(description, dataType);
                 }
             } catch (Exception e) {
                 // TODO: handle exception
             }
         }
+    }
+
+    /**
+     * @param name the name of the data type
+     * @return a datatype with the given type name, or null if none was found.
+     */
+    static public DataType getDataTypeByName(String name) {
+        return types.get(name);
     }
 
     final public Input<List<Sequence>> sequenceInput =
@@ -89,7 +93,7 @@ public class Alignment extends Map<String> {
             new Input<>("taxa", "An optional taxon-set used only to sort the sequences into the same order as they appear in the taxon-set.", new TaxonSet(), Validate.OPTIONAL);
 
     final public Input<Integer> stateCountInput = new Input<>("statecount", "maximum number of states in all sequences");
-    final public Input<String> dataTypeInput = new Input<>("dataType", "data type, one of " + types, NUCLEOTIDE, types.toArray(new String[0]));
+    final public Input<String> dataTypeInput = new Input<>("dataType", "data type, one of " + types, NUCLEOTIDE, types.keySet().toArray(new String[0]));
     final public Input<DataType.Base> userDataTypeInput = new Input<>("userDataType", "non-standard, user specified data type, if specified 'dataType' is ignored");
     final public Input<Boolean> stripInvariantSitesInput = new Input<>("strip", "sets weight to zero for sites that are invariant (e.g. all 1, all A or all unkown)", false);
     final public Input<String> siteWeightsInput = new Input<>("weights", "comma separated list of weights, one for each site in the sequences. If not specified, each site has weight 1");
@@ -258,9 +262,9 @@ public class Alignment extends Map<String> {
      * {@link PackageManager#find(Class, String[]) PackageManager.find}
      */
     protected void initDataType() {
-        if (types.indexOf(dataTypeInput.get()) < 0) {
+        if (types.get(dataTypeInput.get()) == null) {
             throw new IllegalArgumentException("data type + '" + dataTypeInput.get() + "' cannot be found. " +
-                    "Choose one of " + Arrays.toString(types.toArray(new String[0])));
+                    "Choose one of " + Arrays.toString(types.keySet().toArray(new String[0])));
         }
         // seems to spend forever in there??
         List<String> dataTypes = PackageManager.find(DataType.class, IMPLEMENTATION_DIR);

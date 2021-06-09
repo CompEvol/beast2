@@ -699,7 +699,6 @@ public class NexusParser {
         return traitSet;
     } // parseCalibrations
 
-
     /**
      * parse data block and create Alignment *
      */
@@ -757,20 +756,18 @@ public class NexusParser {
                 } else if (dataTypeName.toLowerCase().equals("standard")) {
                     alignment.dataTypeInput.setValue("standard", alignment);
                     totalCount = symbols.length();
-//                    if (symbols == null || symbols.equals("01")) {
-//                        alignment.dataTypeInput.setValue("binary", alignment);
-//                        totalCount = 2;
-//                    }  else {
-//                        alignment.dataTypeInput.setValue("standard", alignment);
-//                        totalCount = symbols.length();
-//                    }
-                } else if (dataTypeName.toLowerCase().equals("binary")) {
-                    alignment.dataTypeInput.setValue("binary", alignment);
-                    totalCount = 2;
                 } else {
-                    alignment.dataTypeInput.setValue("integer", alignment);
-                    if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
-                        totalCount = symbols.length();
+                    // generic data type look up if nothing else works
+                    DataType dataType = Alignment.getDataTypeByName(dataTypeName);
+                    if (dataType != null) {
+                        alignment.dataTypeInput.setValue(dataTypeName, alignment);
+                        totalCount = dataType.getStateCount();
+                    }  else {
+                        // set to integer as last resort
+                        alignment.dataTypeInput.setValue("integer", alignment);
+                        if (symbols != null && (symbols.equals("01") || symbols.equals("012"))) {
+                            totalCount = symbols.length();
+                        }
                     }
                 }
                 final String missingChar = getAttValue("missing", str);
@@ -803,78 +800,6 @@ public class NexusParser {
             ArrayList<String> tokens = readInCharstatelablesTokens(fin);
             ArrayList<UserDataType> charDescriptions = processCharstatelabelsTokens(tokens, maxNumberOfStates);
 
-//            while (true) {
-//                str = nextLine(fin);
-//                if (str.contains(";")) {
-//                    break;
-//                }
-//                String[] strSplit = str.split("/");
-//                ArrayList<String> states = new ArrayList<>();
-//
-//                if (strSplit.length < 2) {
-//                    charDescriptions.add(new UserDataType(strSplit[0], states));
-//                    continue;
-//                }
-//
-//                String stateStr = strSplit[1];
-//
-//                //add a comma at the end of the string if the last non-whitespace character is not a comma or all the
-//                // characters are whitespaces in the string. Also remove whitespaces at the end of the string.
-//                for (int i=stateStr.length()-1; i>=0; i--) {
-//                    if (!Character.isWhitespace(stateStr.charAt(i))) {
-//                        if (stateStr.charAt(i-1) != ',') {
-//                            stateStr = stateStr.substring(0, i)+",";
-//                            break;
-//                        }
-//                    }
-//                    if (i==0) {
-//                        stateStr = stateStr.substring(0, i)+",";
-//                    }
-//                }
-//                if (stateStr.isEmpty()) {
-//                    stateStr = stateStr+",";
-//                }
-//
-//                final int WAITING=0, WORD=1, PHRASE_IN_QUOTES=2;
-//                int mode =WAITING; //0 waiting for non-space letter, 1 reading a word; 2 reading a phrase in quotes
-//                int begin =0, end;
-//
-//                for (int i=0; i< stateStr.length(); i++) {
-//                    switch (mode) {
-//                        case WAITING:
-//                            while (stateStr.charAt(i) == ' ') {
-//                                i++;
-//                            }
-//                            mode = stateStr.charAt(i) == '\'' ? PHRASE_IN_QUOTES : WORD;
-//                            begin = i;
-//                            break;
-//                        case WORD:
-//                            end = stateStr.indexOf(" ", begin) != -1 ? stateStr.indexOf(" ", begin) : stateStr.indexOf(",", begin);
-//                            states.add(stateStr.substring(begin, end));
-//                            i=end;
-//                            mode = WAITING;
-//                            break;
-//                        case PHRASE_IN_QUOTES:
-//                            end = begin;
-//                            do {
-//                                end = stateStr.indexOf("'", end+2);
-//                            } while (stateStr.charAt(end+1) == '\'' || end == -1);
-//                            if (end == -1) {
-//                                Log.info.println("Incorrect description in charstatelabels. Single quote found in line ");
-//                            }
-//                            end++;
-//                            states.add(stateStr.substring(begin, end));
-//                            i=end;
-//                            mode=WAITING;
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                }
-//                // oldTODO make strSplit[0] look nicer (remove whitespaces and may be numbers at the beginning)
-//                charDescriptions.add(new UserDataType(strSplit[0], states));
-//                maxNumberOfStates = Math.max(maxNumberOfStates, states.size());
-//            }
             standardDataType.setInputValue("charstatelabels", charDescriptions);
             standardDataType.setInputValue("nrOfStates", Math.max(maxNumberOfStates[0], totalCount));
             standardDataType.initAndValidate();
