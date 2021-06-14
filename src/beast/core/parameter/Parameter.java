@@ -1,18 +1,17 @@
 package beast.core.parameter;
 
+import beast.core.Description;
+import beast.core.Function;
+import beast.core.Input;
+import beast.core.StateNode;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.StateNode;
 
 public interface Parameter<T> extends Function {
 
@@ -66,10 +65,10 @@ public interface Parameter<T> extends Function {
     }
 
     default T[] getRowValues(String key) {
-        String[] keys = getKeys();
-        if (keys.length == getRowCount()) {
-            for (int row = 0; row < keys.length; row++) {
-                if (keys[row].equals(key)) {
+        List<String> keys = getKeysList();
+        if (keys.size() == getRowCount()) {
+            for (int row = 0; row < keys.size(); row++) {
+                if (keys.get(row).equals(key)) {
                     return getRowValues(row);
                 }
             }
@@ -91,7 +90,9 @@ public interface Parameter<T> extends Function {
 
     /**
      * @param i index
-     * @return the unique key for the i'th value. Default implementation will return a string representing the zero-based index, (i.e. a string representation of the argument).
+     * @return the unique key for the i'th value.
+     *         Default implementation will return a string representing the zero-based index,
+     *         (i.e. a string representation of the argument).
      */
     default String getKey(int i) {
         if (getDimension() == 1) return "0";
@@ -113,14 +114,16 @@ public interface Parameter<T> extends Function {
     }
 
     /**
-     * @return the array of keys (a unique string for each dimension) that parallels the parameter index.
+     * @return the unmodifiable list of keys (a unique string for each dimension)
+     *         that parallels the parameter index.
+     *         It will throw UnsupportedOperationException if attempting to modify.
      */
-    default String[] getKeys() {
-        String[] keys = new String[getDimension()];
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = getKey(i);
+    default List<String> getKeysList() {
+        List<String> keys = new ArrayList<>();
+        for (int i = 0; i < getDimension(); i++) {
+            keys.add(getKey(i));
         }
-        return keys;
+        return Collections.unmodifiableList(keys);
     }
 
     /**
@@ -186,23 +189,37 @@ public interface Parameter<T> extends Function {
             this.storedValues = values.clone();
 
             if (keysInput.get() != null) {
-                String[] keys = keysInput.get().split(" ");
-                if (keys.length != dimension) {
-                    throw new IllegalArgumentException("Keys must be the same length as dimension. Dimension is " + dimension + ". keys.length = " + keys.length);
+                String[] keysArr = keysInput.get().split(" ");
+                // unmodifiable list : UnsupportedOperationException if attempting to modify
+                List<String> keys = Collections.unmodifiableList(Arrays.asList(keysArr));
+
+                // getRowCount() = getDimension() / minorDimension, getColumnCount() = minorDimension
+                if (getColumnCount() > 1) { // 2-D matrix
+                    if (! (keys.size() == getDimension() || keys.size() == getRowCount()) )
+                        throw new IllegalArgumentException("For 2D matrix, keys must either have the same length " +
+                                "as dimension or the number of rows ! Number of rows = " +
+                                getRowCount() + ", but keys.size() = " + keys.size());
+                } else { // 1-D array
+                    if (keys.size() != getDimension())
+                        throw new IllegalArgumentException("For 1D array, keys must have the same length as dimension ! " +
+                                "Dimension = " + getDimension() + ", but keys.size() = " + keys.size());
                 }
+
                 initKeys(keys);
             }
         }
 
-        private void initKeys(String[] keys) {
+        private void initKeys(List<String> keys) {
             this.keys = keys;
+
             if (keys != null) {
                 keyToIndexMap = new TreeMap<>();
-                for (int i = 0; i < keys.length; i++) {
-                    keyToIndexMap.put(keys[i], i);
+                for (int i = 0; i < keys.size(); i++) {
+                    keyToIndexMap.put(keys.get(i), i);
                 }
-                if (keyToIndexMap.keySet().size() != keys.length) {
-                    throw new IllegalArgumentException("All keys must be unique! Found " + keyToIndexMap.keySet().size() + " unique keys for " + getDimension() + " dimensions.");
+                if (keyToIndexMap.keySet().size() != keys.size()) {
+                    throw new IllegalArgumentException("All keys must be unique! Found " +
+                            keyToIndexMap.keySet().size() + " unique keys for " + getDimension() + " dimensions.");
                 }
             }
         }
@@ -238,7 +255,7 @@ public interface Parameter<T> extends Function {
          */
         protected int m_nLastDirty;
 
-        private String[] keys = null;
+        private List<String> keys = null; // unmodifiableList
         private java.util.Map<String, Integer> keyToIndexMap = null;
 
         /**
@@ -246,7 +263,7 @@ public interface Parameter<T> extends Function {
          * @return the unique key for the i'th value.
          */
         public String getKey(int i) {
-            if (keys != null) return keys[i];
+            if (keys != null) return keys.get(i);
             return Parameter.super.getKey(i);
         }
 
@@ -262,11 +279,23 @@ public interface Parameter<T> extends Function {
         }
 
         /**
+         * Please use {@link #getKeysList}
          * @return a sorted set of valid keys for this parameter.
          */
+        @Deprecated
         public String[] getKeys() {
-            if (keys != null) return Arrays.copyOf(keys, keys.length);
-            return Parameter.super.getKeys();
+            if (keys != null) return keys.toArray(new String[0]);
+            return Parameter.super.getKeysList().toArray(new String[0]);
+        }
+
+        /**
+         * @return the unmodifiable list of keys (a unique string for each dimension)
+         *         that parallels the parameter index.
+         *         It will throw UnsupportedOperationException if attempting to modify
+         */
+        public List<String> getKeysList() {
+            if (keys != null) return keys; // unmodifiable list
+            return Parameter.super.getKeysList();
         }
 
         /**
