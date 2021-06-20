@@ -1699,6 +1699,43 @@ public class PackageManager {
         return result;
     }
 
+    /**
+     * @param parent          The parent class that can be an interface.
+     * @param includeParent   if true, then return the parent class itself
+     * @return    a list of classes inherited from the parent class (interface).
+     *            If those classes cannot be found in the class path,
+     *            they will be ignored (ClassNotFoundException handled inside the method).
+     */
+    public static List<Class<?>> find(Class<?> parent, boolean includeParent) {
+
+        if (all_classes == null) {
+            loadAllClasses();
+        }
+
+        List<Class<?>> result = new ArrayList<>();
+        for (int i = all_classes.size() - 1; i >= 0; i--) {
+            String className = all_classes.get(i);
+            if (className.indexOf('/') >= 0) {
+                className = className.replaceAll("/", ".");
+            }
+            //Log.debug.println(className);
+            try {
+                Class<?> cls = BEASTClassLoader.forName(className);
+
+                if (parent.isAssignableFrom(cls)) {
+                    if (includeParent || !cls.equals(parent)) {
+                        result.add(cls);
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                Log.debug.println("Cannot find class: " + className);
+//                    e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
 
     /*
      * Command-line interface code
