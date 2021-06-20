@@ -1712,7 +1712,7 @@ public class PackageManager {
             loadAllClasses();
         }
 
-        List<Class<?>> result = new ArrayList<>();
+        List<Class<?>> result = new ArrayList<Class<?>>();
         for (int i = all_classes.size() - 1; i >= 0; i--) {
             String className = all_classes.get(i);
             if (className.indexOf('/') >= 0) {
