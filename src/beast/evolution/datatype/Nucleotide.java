@@ -35,6 +35,13 @@ public class Nucleotide extends Base {
     }
 
     @Override
+    public boolean isAmbiguousCode(int code) {
+        int[] states = getStatesForCode(code);
+        boolean isAmbiguous = states.length > 1;
+        return isAmbiguous;
+    }
+
+    @Override
     public String getTypeDescription() {
         return "nucleotide";
     }
