@@ -208,11 +208,12 @@ plotEBSP <- function(fileName, burnin=0.1, isLinear=TRUE, useHPD=TRUE, showLegen
 
         legend('topright', inset=0.05, c("Median", CIlabel), lty=c(2, 1), lwd=c(2, 1))
     }
+    return(data.frame(Time=res$allTimes, Median=res$Nmedian, HPDlow=res$NlowerHPD, HPDupper=res$NupperHPD))
 }
 
 plotEBSPTimesHist <- function(fileName, burnin=0.1, alpha=0.95, ...) {
 
-    df <- removeBurnin(read.table(fileName, header=T, sep='\t', as.is=T), burnin)
+    df <- removeBurnin(read.table(fileName, header=T, sep='\t', colClasses="character"), burnin)
     times <- getTimes(df)
 
     xmax <- quantile(times, alpha)
