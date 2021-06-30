@@ -373,7 +373,9 @@ public interface DataType {
 
 		@Override
 		public boolean isAmbiguousCode(int code) {
-			return (code < 0 || code >= stateCount);
+			int[] states = getStatesForCode(code);
+			boolean isAmbiguous = states.length > 1;
+			return isAmbiguous;
 		}
 
 		@Override
