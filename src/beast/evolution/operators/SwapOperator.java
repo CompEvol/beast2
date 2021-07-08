@@ -8,9 +8,8 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Operator;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
+import beast.core.StateNode;
+import beast.core.parameter.*;
 import beast.util.Randomizer;
 
 
@@ -20,10 +19,11 @@ public class SwapOperator extends Operator {
     final public Input<RealParameter> parameterInput = new Input<>("parameter", "a real parameter to swap individual values for");
     final public Input<IntegerParameter> intparameterInput = new Input<>("intparameter", "an integer parameter to swap individual values for", Validate.XOR, parameterInput);
     final public Input<Integer> howManyInput = new Input<>("howMany", "number of items to swap, default 1, must be less than half the dimension of the parameter", 1);
-
+    final public Input<IntegerParameter> parameterWeightsInput = new Input<>("weightvector", "weights on a vector parameter", Validate.OPTIONAL);
 
     int howMany;
     Parameter<?> parameter;
+    IntegerParameter weights;
     private List<Integer> masterList = null;
 
     @Override
@@ -36,12 +36,23 @@ public class SwapOperator extends Operator {
 
         howMany = howManyInput.get();
         if (howMany * 2 > parameter.getDimension()) {
-            throw new IllegalArgumentException("howMany it too large: must be less than half the dimension of the parameter");
+            throw new IllegalArgumentException("howMany too large: must be less than half the parameter dimension");
+        }
+
+        weights = parameterWeightsInput.get();
+        if (weights != null) {
+            weights.initAndValidate();
+            if (weights.getDimension() != parameter.getDimension())
+                throw new IllegalArgumentException("Weights vector should have the same length as parameter");
         }
 
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < parameter.getDimension(); i++) {
-            list.add(i);
+            if (weights == null) {
+                list.add(i);
+            } else if (weights.getValue(i) != 0) {
+                list.add(i);
+            }
         }
         masterList = Collections.unmodifiableList(list);
     }
@@ -58,6 +69,19 @@ public class SwapOperator extends Operator {
         }
 
         return 0.0;
+    }
+
+    @Override
+    public List<StateNode> listStateNodes() {
+        final List<StateNode> list = new ArrayList<>();
+        if (parameter instanceof RealParameter) {
+            RealParameter r = (RealParameter) parameter;
+            list.add(r);
+        } else if (parameter instanceof IntegerParameter) {
+            IntegerParameter i = (IntegerParameter) parameter;
+            list.add(i);
+        }
+        return list;
     }
 
 }
