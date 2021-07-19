@@ -320,15 +320,11 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     /**
-     * Sets root without recalculating nodeCount or ensuring that root is the last node in the internal array.
      * Currently only used by sampled ancestor tree operators. Use carefully!
-     *
-     * @param root the new root node
      */
+    @Deprecated
     public void setRootOnly(final Node root) {
-        //TODO should we flag this with startEditing since it is an operator call?
-
-        this.root = root;
+    	setRoot(root);
     }
 
     @Override
