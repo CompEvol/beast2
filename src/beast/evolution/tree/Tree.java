@@ -307,7 +307,6 @@ public class Tree extends StateNode implements TreeInterface {
 
     public void setRoot(final Node root) {
         this.root = root;
-        nodeCount = this.root.getNodeCount();
         // ensure root is the last node
         if (m_nodes != null && root.labelNr != m_nodes.length - 1) {
             final int rootPos = m_nodes.length - 1;
@@ -317,6 +316,7 @@ public class Tree extends StateNode implements TreeInterface {
             tmp.labelNr = root.labelNr;
             m_nodes[rootPos].labelNr = rootPos;
         }
+        nodeCount = -1;
     }
 
     /**
@@ -441,7 +441,7 @@ public class Tree extends StateNode implements TreeInterface {
         }
     }
 
-
+    
     /**
      * convert tree to array representation *
      */
