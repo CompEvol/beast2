@@ -153,12 +153,12 @@ public class Exchange extends TreeOperator {
         Node i = tree.getRoot();
 
         while (i.isRoot()) {
-            i = tree.getNode(Randomizer.nextInt(nodeCount));
+            i = tree.getNode(Randomizer.nextInt(nodeCount - 1));
         }
 
         Node j = i;
         while (j.getNr() == i.getNr() || j.isRoot()) {
-            j = tree.getNode(Randomizer.nextInt(nodeCount));
+            j = tree.getNode(Randomizer.nextInt(nodeCount - 1));
         }
 
         final Node p = i.getParent();
