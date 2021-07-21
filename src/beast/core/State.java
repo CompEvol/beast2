@@ -137,6 +137,13 @@ public class State extends BEASTObject {
      * the set of calculation nodes that is potentially affected by an operation *
      */
     Trie trie;
+    /** keeps track of number of leafs in trie **/
+    private long trieSize = 0;
+    /** upper limit on the size of the trie. If the limit is reached, 
+     * no further leafs are added and every *new* calculation node 
+     * path is recalculated from scratch 
+     */
+    private final static long TRIE_SIZE_LIMIT = 1000; 
 
     /**
      * class for quickly finding which calculation nodes need to be updated
@@ -211,6 +218,7 @@ public class State extends BEASTObject {
         //Arrays.fill(changeStateNodes, -1);
         nrOfChangedStateNodes = 0;
         trie = new Trie();
+        trieSize = 0;
         // add the empty list for the case none of the StateNodes have changed
         trie.list = new ArrayList<>();
     } // initAndValidate
@@ -550,11 +558,18 @@ public class State extends BEASTObject {
             System.exit(1);
         }
 
-        trie.set(calcNodes, nrOfChangedStateNodes);
-
-//    	System.err.print(Arrays.toString(changeStateNodes) + ":");
+        if (trieSize < TRIE_SIZE_LIMIT) {
+        	trie.set(calcNodes, nrOfChangedStateNodes);
+        	trieSize++;
+        } else {
+        	if (trieSize == TRIE_SIZE_LIMIT) {
+        		Log.debug("Trie size limit reached");
+        		trieSize++;
+        	}
+        }
+//    	System.err.print(java.util.Arrays.toString(changeStateNodes) + ":");
 //    	for (CalculationNode node : calcNodes) {
-//    		Log.warning.print(node.m_sID + " ");
+//    		Log.warning.print(node.getID() + " ");
 //    	}
 //    	System.err.println();
 
