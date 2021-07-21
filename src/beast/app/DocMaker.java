@@ -116,7 +116,7 @@ public class DocMaker {
                 if (beastObject instanceof Loggable) {
                     m_sLoggables.add(beastObjectName);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 Log.err.println(beastObjectName + " is not documented (or abstract class) :" + e.getMessage());
                 rmFailedPageOfBeastObject(beastObjectName, iter);
             }
@@ -375,7 +375,7 @@ public class DocMaker {
         PrintStream out = new PrintStream(m_sDir + "/" + beastObjectName + ".html");
         try {
             out.print(getHTML(beastObjectName, true));
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	Log.warning.println("Page creation failed for " + beastObjectName + ": " + e.getMessage());
         }
         out.close();
@@ -439,16 +439,21 @@ public class DocMaker {
         // show short list its inputs
         buf.append("<h2>Inputs:</h2>\n");
         buf.append("<p>");
-        List<Input<?>> inputs = beastObject.listInputs();
-        // list its inputs
-        if (inputs.size() == 0) {
-            buf.append("&lt;none&gt;");
-        } else {
-            for (Input<?> input : inputs) {
-                buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
+        List<Input<?>> inputs = null;
+        try {
+        	inputs = beastObject.listInputs();
+            if (inputs.size() == 0) {
+                buf.append("&lt;none&gt;");
+            } else {
+                for (Input<?> input : inputs) {
+                    buf.append("<a href='#" + input.getName()+"'>" + input.getName() + "</a>, ");
+                }
+                buf.delete(buf.length() - 3, buf.length()-1);
             }
-            buf.delete(buf.length() - 3, buf.length()-1);
+        } catch (Throwable e) {
+            buf.append("could not determine inputs:" + e.getMessage());
         }
+        // list its inputs
         buf.append("</p>\n");
 
         for (Input<?> input : inputs) {
@@ -508,29 +513,37 @@ public class DocMaker {
                         }
                         if (input.get() != null && input.get() instanceof List<?>) {
                             Type[] genericTypes2 = ((ParameterizedType) genericTypes[0]).getActualTypeArguments();
-                            Class<?> _class = (Class<?>) genericTypes2[0];
-                            Object o = null;
                             try {
-                                o = BEASTClassLoader.forName(_class.getName()).newInstance();
-                            } catch (Exception e) {
-                            }
-                            if (o != null && o instanceof BEASTObject) {
-                                return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "***</a>";
-                            } else {
-                                return _class.getName() + "***";
+	                            Class<?> _class = (Class<?>) genericTypes2[0];
+	                            Object o = null;
+	                            try {
+	                                o = BEASTClassLoader.forName(_class.getName()).newInstance();
+	                            } catch (Throwable e) {
+	                            }
+	                            if (o != null && o instanceof BEASTObject) {
+	                                return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "***</a>";
+	                            } else {
+	                                return _class.getName() + "***";
+	                            }
+                            } catch (Throwable e) {
+                                return "Unknown list type***";
                             }
                         } else {
                             Class<?> genericType = (Class<?>) genericTypes[0];
-                            Class<?> _class = genericType;
-                            Object o = null;
                             try {
-                                o = BEASTClassLoader.forName(_class.getName()).newInstance();
-                            } catch (Exception e) {
-                            }
-                            if (o != null && o instanceof BEASTObject) {
-                                return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "</a>";
-                            } else {
-                                return _class.getName();
+	                            Class<?> _class = genericType;
+	                            Object o = null;
+	                            try {
+	                                o = BEASTClassLoader.forName(_class.getName()).newInstance();
+	                            } catch (Throwable e) {
+	                            }
+	                            if (o != null && o instanceof BEASTObject) {
+	                                return "<a href='" + _class.getName() + ".html'>" + _class.getName() + "</a>";
+	                            } else {
+	                                return _class.getName();
+	                            }
+                            } catch (Throwable e) {
+                                return "Unknown type";
                             }
                         }
                     }
