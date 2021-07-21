@@ -794,20 +794,7 @@ public class Tree extends StateNode implements TreeInterface {
      */
     @Override
     protected void store() {
-
-        // this condition can only be true for sampled ancestor trees
-        if (m_storedNodes.length != nodeCount) {
-            final Node[] tmp = new Node[nodeCount];
-            System.arraycopy(m_storedNodes, 0, tmp, 0, m_storedNodes.length - 1);
-            if (nodeCount > m_storedNodes.length) {
-                tmp[m_storedNodes.length - 1] = m_storedNodes[m_storedNodes.length - 1];
-                tmp[nodeCount - 1] = newNode();
-                tmp[nodeCount - 1].setNr(nodeCount - 1);
-            }
-            m_storedNodes = tmp;
-        }
-
-        storeNodes(0, nodeCount);
+        storeNodes(0, getNodeCount());
         storedRoot = m_storedNodes[root.getNr()];
     }
 
