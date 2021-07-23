@@ -316,7 +316,7 @@ public class Tree extends StateNode implements TreeInterface {
             tmp.labelNr = root.labelNr;
             m_nodes[rootPos].labelNr = rootPos;
         }
-        nodeCount = -1;
+        nodeCount = getNodeCount();
     }
 
     /**
