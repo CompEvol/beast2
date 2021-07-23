@@ -98,7 +98,7 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 
     List<Integer>[] children;
 
-    Set<String> taxa;
+    protected Set<String> taxa;
 
     // number of the next internal node, used when creating new internal nodes
     int nextNodeNr;
