@@ -48,7 +48,7 @@ public class RateStatistic extends BEASTObject implements Loggable, Function {
 	
     final public Input<GenericTreeLikelihood> likelihoodInput = new Input<>("treeLikelihood", "TreeLikelihood containing branch rate model that provides rates for a tree");
     final public Input<BranchRateModel> branchRateModelInput = new Input<>("branchratemodel", "model that provides rates for a tree", Validate.XOR, likelihoodInput);
-    final public Input<Tree> treeInput = new Input<>("tree", "tree for which the rates apply");
+    final public Input<Tree> treeInput = new Input<>("tree", "tree for which the rates apply", Validate.REQUIRED);
     final public Input<Boolean> internalInput = new Input<>("internal", "consider internal nodes, default true", true);
     final public Input<Boolean> externalInput = new Input<>("external", "consider external nodes, default true", true);
 
