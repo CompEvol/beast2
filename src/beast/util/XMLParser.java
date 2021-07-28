@@ -370,7 +370,7 @@ public class XMLParser {
     			int j = i + 1;
     			int k = -1;
     			while (j < xml.length() && xml.charAt(j) != ')') {
-    				if (xml.charAt(j) == '=') {
+    				if (xml.charAt(j) == '=' && k > 0) {
     					k = j;
     				}
     				j++;
