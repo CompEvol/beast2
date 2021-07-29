@@ -20,7 +20,7 @@ public abstract class Runnable extends BEASTObject {
     		stateFileName = System.getProperty("state.file.name");
     	} else {
             if (System.getProperty("file.name.prefix") != null) {
-            	stateFileName = System.getProperty("file.name.prefix") + "/" + fileName;
+            	stateFileName = System.getProperty("file.name.prefix") + fileName;
             } else {
             	stateFileName = fileName;
             }
