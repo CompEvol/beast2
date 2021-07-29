@@ -1564,7 +1564,7 @@ public class TreeAnnotator {
         cladeSystem.getTreeCladeCodes(targetTree, ctarget);
 
         // temp collecting heights inside loop allocated once
-        double[][] hs = new double[clades][treeSet.totalTrees];
+        double[][] hs = new double[clades][treeSet.totalTrees - treeSet.burninCount];
 
         // heights total sum from posterior trees
         double[] ths = new double[clades];
