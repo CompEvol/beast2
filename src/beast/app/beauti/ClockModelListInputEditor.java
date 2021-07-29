@@ -12,6 +12,7 @@ import javax.swing.JTextField;
 import beast.app.draw.ListInputEditor;
 import beast.app.draw.SmallLabel;
 import beast.core.BEASTInterface;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.MCMC;
 import beast.core.Operator;
@@ -120,20 +121,22 @@ public class ClockModelListInputEditor extends ListInputEditor {
 	    		Alignment data = doc.alignments.get(i); 
 	    		int weight = data.getSiteCount();
 	    		BranchRateModel.Base clockModel = (BranchRateModel.Base) doc.clockModels.get(i);
-	    		RealParameter clockRate = clockModel.meanRateInput.get();
-	    		//clockRate.m_bIsEstimated.setValue(true, clockRate);
-	    		if (clockRate.isEstimatedInput.get()) {
-	    			if (commonClockRate < 0) {
-	    				commonClockRate = clockRate.valuesInput.get().get(0);
-	    			} else {
-	    				if (Math.abs(commonClockRate - clockRate.valuesInput.get().get(0)) > 1e-10) {
-	    					isAllClocksAreEqual = false;
-	    				}
-	    			}
-    				weights += weight + " ";
-	    			parameters.add(clockRate);
-	    		}
-	    		//doc.autoSetClockRate = false;
+				if (clockModel.meanRateInput.get() instanceof RealParameter) {
+					RealParameter clockRate = (RealParameter) clockModel.meanRateInput.get();
+					// clockRate.m_bIsEstimated.setValue(true, clockRate);
+					if (clockRate.isEstimatedInput.get()) {
+						if (commonClockRate < 0) {
+							commonClockRate = clockRate.valuesInput.get().get(0);
+						} else {
+							if (Math.abs(commonClockRate - clockRate.valuesInput.get().get(0)) > 1e-10) {
+								isAllClocksAreEqual = false;
+							}
+						}
+						weights += weight + " ";
+						parameters.add(clockRate);
+					}
+					// doc.autoSetClockRate = false;
+				}
 	    	}
 	    	if (!fixMeanRatesCheckBox.isSelected()) {
 	    		fixMeanRatesValidateLabel.setVisible(false);
