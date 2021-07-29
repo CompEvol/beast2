@@ -19,11 +19,11 @@ public class SwapOperator extends Operator {
     final public Input<RealParameter> parameterInput = new Input<>("parameter", "a real parameter to swap individual values for");
     final public Input<IntegerParameter> intparameterInput = new Input<>("intparameter", "an integer parameter to swap individual values for", Validate.XOR, parameterInput);
     final public Input<Integer> howManyInput = new Input<>("howMany", "number of items to swap, default 1, must be less than half the dimension of the parameter", 1);
-    final public Input<IntegerParameter> parameterWeightsInput = new Input<>("weightvector", "weights on a vector parameter", Validate.OPTIONAL);
+    final public Input<BooleanParameter> parameterFilterInput = new Input<>("filter", "filter to specify a subset of the parameter to operate on", Validate.OPTIONAL);
 
     int howMany;
     Parameter<?> parameter;
-    IntegerParameter weights;
+    BooleanParameter filter;
     private List<Integer> masterList = null;
 
     @Override
@@ -39,18 +39,18 @@ public class SwapOperator extends Operator {
             throw new IllegalArgumentException("howMany too large: must be less than half the parameter dimension");
         }
 
-        weights = parameterWeightsInput.get();
-        if (weights != null) {
-            weights.initAndValidate();
-            if (weights.getDimension() != parameter.getDimension())
-                throw new IllegalArgumentException("Weights vector should have the same length as parameter");
+        filter = parameterFilterInput.get();
+        if (filter != null) {
+            filter.initAndValidate();
+            if (filter.getDimension() != parameter.getDimension())
+                throw new IllegalArgumentException("Filter vector should have the same length as parameter");
         }
 
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < parameter.getDimension(); i++) {
-            if (weights == null) {
+            if (filter == null) {
                 list.add(i);
-            } else if (weights.getValue(i) != 0) {
+            } else if (filter.getValue(i) == true) {
                 list.add(i);
             }
         }
