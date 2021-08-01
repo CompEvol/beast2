@@ -129,9 +129,18 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     @Override
     public void initAndValidate() {
         // sanity check: alignment should have same #taxa as tree
-        if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
-            throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
-        }
+		
+		if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
+			String leaves = "?";
+			if (treeInput.get() instanceof Tree) {
+				leaves = String.join(", ", ((Tree) treeInput.get()).getTaxaNames());
+			}
+			throw new IllegalArgumentException(String.format(
+					"The number of leaves in the tree (%d) does not match the number of sequences (%d). "
+							+ "The tree has leaves [%s], while the data refers to taxa [%s].",
+					treeInput.get().getLeafNodeCount(), dataInput.get().getTaxonCount(),
+					leaves, String.join(", ", dataInput.get().getTaxaNames())));
+		}
         beagle = null;
         beagle = new BeagleTreeLikelihood();
         try {
