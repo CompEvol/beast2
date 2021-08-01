@@ -164,7 +164,7 @@ public class PackageCitations {
     private Map<String, CitedClass> getAllCitedClasses(File libFile) throws IOException {
         // find all *.class in the jar
         JarFile jarFile = new JarFile(libFile);
-        Enumeration allEntries = jarFile.entries();
+        Enumeration<?> allEntries = jarFile.entries();
 
         Map<String, CitedClass> citedClassMap = new TreeMap<>();
         while (allEntries.hasMoreElements()) {
@@ -181,7 +181,7 @@ public class PackageCitations {
 
                 // making own child classloader
                 // https://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime/60775#60775
-                URLClassLoader child = new URLClassLoader(new URL[]{libFile.toURL()},
+                URLClassLoader child = new URLClassLoader(new URL[]{libFile.toURI().toURL()},
                         PackageCitations.class.getClassLoader());
                 Class<?> beastClass = null;
                 try {
@@ -212,6 +212,7 @@ public class PackageCitations {
                 }
             }
         }
+        jarFile.close();
         return citedClassMap;
     }
 
