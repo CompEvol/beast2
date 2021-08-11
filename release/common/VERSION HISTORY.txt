@@ -1,10 +1,22 @@
-                    BEAST v2.6.5 2021
+                    BEAST v2.6.6 2021
                  Beast 2 development team 2011-2021
 Version History
-Last updated: June 2021
+Last updated: August 2021
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.6
+	Fix so that when not using ambiguities, the nucleotide 'U' base pair is correctly interpreted
+	Fix tree annotator for lower bound on common ancestor heights
+	Make the -prefix option work when not using a directory
+	Allow '=' signs in options passsed with -D
+	Add filter input to SwapOperator
+	Fix so DocMaker works again
+	Update for R script to create EBSP plots
+	Limit size of Trie to prevent memory leaks for some models
+	More robust Nexus parser
+	Improved error messages
+
 Version 2.6.5
 	The GUI version of logcombiner produces output again
 
