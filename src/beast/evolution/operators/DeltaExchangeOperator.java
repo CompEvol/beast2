@@ -39,11 +39,13 @@ public class DeltaExchangeOperator extends Operator {
             new Input<>("autoOptimize", "if true, window size will be adjusted during the MCMC run to improve mixing.", true);
     public final Input<Boolean> integerOperatorInput = new Input<>("integer", "if true, changes are all integers.", false);
     public final Input<IntegerParameter> parameterWeightsInput = new Input<>("weightvector", "weights on a vector parameter");
+    public final Input<Double> upperOptimizeInput = new Input<>("upper", "Upper limit for optimizing delta", Double.MAX_VALUE);
 
     private boolean autoOptimize;
     private double delta;
     private boolean isIntegerOperator;
     private CompoundParameterHelper compoundParameter = null;
+    private double upper;
     // because CompoundParameter cannot derive from parameter due to framework, the code complexity is doubled
 
 	private int[] weights() {
@@ -89,6 +91,7 @@ public class DeltaExchangeOperator extends Operator {
         autoOptimize = autoOptimizeiInput.get();
         delta = deltaInput.get();
         isIntegerOperator = integerOperatorInput.get();
+        upper = upperOptimizeInput.get();
 
         if (parameterInput.get().isEmpty()) {
             if (intparameterInput.get().size() > 1) {
@@ -341,6 +344,8 @@ public class DeltaExchangeOperator extends Operator {
             	// Randomizer.nextInt((int) Math.round(delta)) becomes
             	// Randomizer.nextInt(0) which results in an exception
             	delta = Math.max(0.5000000001, delta);
+            } else if (parameterInput.get() != null) {
+                delta = Math.min(upper, delta);
             }
         }
 
