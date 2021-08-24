@@ -88,7 +88,8 @@ public class XMLParserUtils {
                         vals.add(valueString);
                 	}
                 } else {
-                    vals.add(valueString);
+                	if (!valueString.trim().isEmpty())
+						vals.add(valueString);
                 }
             }
 
