@@ -84,7 +84,12 @@ public class TipDatesRandomWalker extends TreeOperator {
 
         if (newValue > node.getParent().getHeight()) { // || newValue < 0.0) {
             if (reflectValue) {
-                newValue = reflectValue(newValue, 0.0, node.getParent().getHeight());
+            	double h = node.getParent().getHeight();
+            	// tips heights may become less than 0, so their parents can have height < 0 as well
+            	// https://github.com/CompEvol/beast2/issues/995
+            	// so the range (0, h) may become empty
+            	// therefore, set lower bound on range to min(0.0, node height) 
+                newValue = reflectValue(newValue, Math.min(0.0, node.getHeight()), h);
             } else {
                 return Double.NEGATIVE_INFINITY;
             }
