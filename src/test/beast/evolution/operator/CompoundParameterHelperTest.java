@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
-import beast.evolution.operators.CompoundParameterHelper;
+import beast.inference.operator.CompoundParameterHelper;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 
 public class CompoundParameterHelperTest extends TestCase {

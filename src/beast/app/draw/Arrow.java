@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Node;
 
-import beast.core.util.Log;
+import beast.base.Log;
 
 public class Arrow extends Shape {
     String m_sHeadID;

@@ -12,13 +12,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.StyledEditorKit.FontSizeAction;
 
-import beast.app.draw.BEASTObjectDialog;
-import beast.app.draw.InputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.math.distributions.Prior;
+import beast.app.inputeditor.BEASTObjectDialog;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.BeautiSubTemplate;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.InputEditor.Base;
+import beast.app.inputeditor.InputEditor.ExpandOption;
+import beast.base.BEASTInterface;
+import beast.base.Input;
+import beast.inference.distribution.Prior;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
+import beast.parser.PartitionContext;
 
 public class PriorInputEditor extends InputEditor.Base {
 	private static final long serialVersionUID = 1L;

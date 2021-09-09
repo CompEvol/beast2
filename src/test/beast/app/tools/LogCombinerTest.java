@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.app.beauti.BeautiDoc;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.tools.LogAnalyser;
 import beast.app.tools.LogCombiner;
 import beast.evolution.tree.Tree;
-import beast.util.LogAnalyser;
-import beast.util.NexusParser;
+import beast.parser.NexusParser;
 import beast.util.Randomizer;
 import junit.framework.TestCase;
 

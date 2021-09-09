@@ -1,9 +1,9 @@
 package test.beast.evolution.substmodel;
 
-import beast.core.Description;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.HKY;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 
 /**

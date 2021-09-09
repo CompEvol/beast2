@@ -2,12 +2,12 @@ package test.beast.evolution.operator;
 
 import org.junit.Test;
 
-import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.operators.Exchange;
+import beast.evolution.operator.Exchange;
+import beast.evolution.tree.TreeParser;
+import beast.inference.State;
 import beast.util.Randomizer;
-import beast.util.TreeParser;
 import junit.framework.TestCase;
 
 public class ExchangeOperatorTest extends TestCase {

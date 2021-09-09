@@ -1,15 +1,16 @@
 package beast.evolution.tree;
 
-import beast.core.*;
-import beast.core.util.Log;
-import beast.evolution.alignment.TaxonSet;
-import beast.util.BEASTClassLoader;
-import beast.util.TreeParser;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.evolution.alignment.TaxonSet;
+import beast.inference.*;
+import beast.pkgmgmt.BEASTClassLoader;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"
@@ -88,9 +89,9 @@ public class Tree extends StateNode implements TreeInterface {
             } else {
                 // make dummy tree with a single root node
                 root = newNode();
-                root.labelNr = 0;
-                root.height = 0;
-                root.m_tree = this;
+                root.setNr(0);
+                root.setHeight(0);
+                root.setTree(this);
                 nodeCount = 1;
                 internalNodeCount = 0;
                 leafNodeCount = 1;
@@ -124,20 +125,20 @@ public class Tree extends StateNode implements TreeInterface {
         // make a caterpillar
         final List<String> taxa = m_taxonset.get().asStringList();
         Node left = newNode();
-        left.labelNr = 0;
-        left.height = 0;
+        left.setNr(0);
+        left.setHeight(0);
         left.setID(taxa.get(0));
         for (int i = 1; i < taxa.size(); i++) {
             final Node right = newNode();
-            right.labelNr = i;
-            right.height = 0;
+            right.setNr(i);
+            right.setHeight(0);
             right.setID(taxa.get(i));
             final Node parent = newNode();
-            parent.labelNr = taxa.size() + i - 1;
-            parent.height = minInternalHeight + i * step;
-            left.parent = parent;
+            parent.setNr(taxa.size() + i - 1);
+            parent.setHeight(minInternalHeight + i * step);
+            left.setParent( parent);
             parent.setLeft(left);
-            right.parent = parent;
+            right.setParent(parent);
             parent.setRight(right);
             left = parent;
         }
@@ -186,7 +187,7 @@ public class Tree extends StateNode implements TreeInterface {
         //return new NodeData();
     }
 
-    protected void initArrays() {
+    public void initArrays() {
         // initialise tree-as-array representation + its stored variant
         m_nodes = new Node[nodeCount];
         listNodes(root, m_nodes);
@@ -234,8 +235,8 @@ public class Tree extends StateNode implements TreeInterface {
             }
             for (final Node child : node.getChildren()) {
                 final double minHeight = child.getHeight() + EPSILON;
-                if (node.height < minHeight) {
-                    node.height = minHeight;
+                if (node.getHeight() < minHeight) {
+                    node.setHeight(minHeight);
                 }
             }
         }
@@ -309,13 +310,13 @@ public class Tree extends StateNode implements TreeInterface {
         this.root = root;
         nodeCount = this.root.getNodeCount();
         // ensure root is the last node
-        if (m_nodes != null && root.labelNr != m_nodes.length - 1) {
+        if (m_nodes != null && root.getNr() != m_nodes.length - 1) {
             final int rootPos = m_nodes.length - 1;
             Node tmp = m_nodes[rootPos];
             m_nodes[rootPos] = root;
-            m_nodes[root.labelNr] = tmp;
-            tmp.labelNr = root.labelNr;
-            m_nodes[rootPos].labelNr = rootPos;
+            m_nodes[root.getNr()] = tmp;
+            tmp.setNr(root.getNr());
+            m_nodes[rootPos].setNr(rootPos);
         }
     }
 
@@ -451,7 +452,7 @@ public class Tree extends StateNode implements TreeInterface {
      */
     void listNodes(final Node node, final Node[] nodes) {
         nodes[node.getNr()] = node;
-        node.m_tree = this;  //(JH) I don't understand this code
+        node.setTree(this);  //(JH) I don't understand this code
 
         // (JH) why not  node.children, we don't keep it around??
         for (final Node child : node.getChildren()) {
@@ -555,7 +556,7 @@ public class Tree extends StateNode implements TreeInterface {
         //index = tree.index;
         root = nodes[tree.root.getNr()];
         root.assignFrom(nodes, tree.root);
-        root.parent = null;
+        root.setParent(null);
         nodeCount = tree.nodeCount;
         internalNodeCount = tree.internalNodeCount;
         leafNodeCount = tree.leafNodeCount;
@@ -746,7 +747,7 @@ public class Tree extends StateNode implements TreeInterface {
     }
 
     /**
-     * @see beast.core.Loggable *
+     * @see beast.base.Loggable *
      */
     @Override
 	public void close(PrintStream out) {

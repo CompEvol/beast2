@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import org.junit.Test;
 
 import beast.app.beauti.Beauti;
-import beast.app.beauti.BeautiDoc;
+import beast.app.inputeditor.BeautiDoc;
 import junit.framework.TestCase;
 import test.beast.integration.ExampleXmlParsingTest;
 

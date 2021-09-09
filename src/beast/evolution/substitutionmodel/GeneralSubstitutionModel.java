@@ -27,16 +27,16 @@
 package beast.evolution.substitutionmodel;
 
 
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.evolution.datatype.DataType;
-import beast.evolution.tree.Node;
-import beast.util.BEASTClassLoader;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.evolution.datatype.DataType;
+import beast.evolution.tree.Node;
+import beast.pkgmgmt.BEASTClassLoader;
 
 
 

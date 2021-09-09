@@ -38,18 +38,17 @@ import java.util.TreeSet;
 
 import org.apache.commons.math.MathException;
 
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.util.Log;
+import beast.base.BEASTInterface;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.ParametricDistribution;
+import beast.inference.StateNode;
+import beast.inference.StateNodeInitialiser;
+import beast.inference.distribution.ParametricDistribution;
 import beast.util.HeapSort;
 import beast.util.Randomizer;
 
@@ -412,20 +411,20 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
     private void scaleToFit(double scale, Node node) {
         if (!node.isLeaf()) {
 	    	double oldHeight = node.getHeight();
-	    	node.height *= scale;
+	    	node.setHeight(node.getHeight() * scale);
 	        final Integer constraint = getDistrConstraint(node);
 	        if (constraint != null) {
-	            if (node.height < m_bounds.get(constraint).lower || node.height > m_bounds.get(constraint).upper) {
+	            if (node.getHeight() < m_bounds.get(constraint).lower || node.getHeight() > m_bounds.get(constraint).upper) {
 	            	//revert scaling
-	            	node.height = oldHeight;
+	            	node.setHeight(oldHeight);
 	            	return;
 	            }
 	        }
 	        scaleToFit(scale, node.getLeft());
 	        scaleToFit(scale, node.getRight());
-	        if (node.height < Math.max(node.getLeft().getHeight(), node.getRight().getHeight())) {
+	        if (node.getHeight() < Math.max(node.getLeft().getHeight(), node.getRight().getHeight())) {
 	        	// this can happen if a child node is constrained and the default tree is higher than desired
-	        	node.height = 1.0000001 * Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
+	        	node.setHeight(1.0000001 * Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
 	        }
         }
 	}

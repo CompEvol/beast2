@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
+import beast.base.Description;
+import beast.base.Input;
 
 @Description("Integer data type to describe discrete morphological characters with polymorphisms")
 public class StandardData extends DataType.Base {

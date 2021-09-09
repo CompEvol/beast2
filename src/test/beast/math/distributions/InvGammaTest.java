@@ -2,7 +2,7 @@ package test.beast.math.distributions;
 
 import org.apache.commons.math.MathException;
 
-import beast.math.distributions.InverseGamma;
+import beast.inference.distribution.InverseGamma;
 import junit.framework.TestCase;
 
 /**

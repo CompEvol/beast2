@@ -2,9 +2,9 @@ package test.beast.evolution.substmodel;
 
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
 import beast.evolution.substitutionmodel.BinaryCovarion;
 import beast.evolution.substitutionmodel.Frequencies;
+import beast.inference.parameter.RealParameter;
 import beast.util.Randomizer;
 import cern.colt.Arrays;
 import junit.framework.TestCase;

@@ -1,17 +1,22 @@
 package beast.evolution.tree.coalescent;
 
 
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.parameter.IntegerParameter;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeDistribution;
-import beast.math.Binomial;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import beast.base.BEASTObject;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeDistribution;
+import beast.inference.*;
+import beast.inference.parameter.IntegerParameter;
+import beast.util.Binomial;
 
 
 

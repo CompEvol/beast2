@@ -77,13 +77,17 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import beast.app.inputeditor.BEASTObjectDialog;
+import beast.app.inputeditor.BEASTObjectPanel;
+import beast.app.util.ExtensionFileFilter;
+import beast.app.util.MyAction;
 import beast.app.util.Utils;
-import beast.core.BEASTInterface;
+import beast.base.BEASTInterface;
 import beast.evolution.alignment.Sequence;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
+import beast.parser.XMLProducer;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
 import beast.util.Randomizer;
-import beast.util.XMLProducer;
 
 /**
  * program for drawing BEAST 2.0 models *
@@ -105,7 +109,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
     /**
      * contains the Panel
      */
-    JScrollPane m_jScrollPane;
+    protected JScrollPane m_jScrollPane;
     public DrawPanel g_panel;
 
     final static int MODE_SELECT = 0;
@@ -235,7 +239,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         }
     } // class ClipBoard
 
-    Selection m_Selection = new Selection();
+    protected Selection m_Selection = new Selection();
 
 
     ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
@@ -1288,7 +1292,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         g_panel.setPreferredSize(getSize());
     }
 
-    void makeToolbar() {
+    protected void makeToolbar() {
         m_jTbTools = new JToolBar();
         m_jTbTools.setFloatable(false);
         // m_jTbTools.setLayout(new GridBagLayout());
@@ -1340,16 +1344,16 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         if (beastObject == null) {
             return true;
         }
-        if (!m_bViewOperators && beastObject instanceof beast.core.Operator) {
+        if (!m_bViewOperators && beastObject instanceof beast.inference.Operator) {
             return false;
         }
-        if (!m_bViewLoggers && beastObject instanceof beast.core.Logger) {
+        if (!m_bViewLoggers && beastObject instanceof beast.inference.Logger) {
             return false;
         }
         if (!m_bViewSequences && beastObject instanceof Sequence) {
             return false;
         }
-        if (!m_bViewState && beastObject instanceof beast.core.State) {
+        if (!m_bViewState && beastObject instanceof beast.inference.State) {
             return false;
         }
         return true;
@@ -1400,7 +1404,7 @@ public class ModelBuilder extends JPanel implements ComponentListener {
         }
     }
 
-    class DrawPanel extends JPanel implements Printable {
+    public class DrawPanel extends JPanel implements Printable {
         /**
          * for serialisation
          */

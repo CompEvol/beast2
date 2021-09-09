@@ -2,8 +2,12 @@ package test.beast.core;
 
 import org.junit.Test;
 
-import beast.core.*;
-import beast.core.Input.Validate;
+import beast.base.BEASTObject;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.inference.*;
 import junit.framework.TestCase;
 
 public class InputTest extends TestCase {

@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.List;
 
 import beagle.BeagleFlag;
-import beast.core.Logger;
+import beast.inference.Logger;
+import beast.parser.XMLParser;
 import beast.util.Randomizer;
-import beast.util.XMLParser;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import test.beast.beast2vs1.trace.Expectation;
@@ -51,7 +51,7 @@ public abstract class TestFramework extends TestCase {
 
         System.out.println("Processing " + fileName);
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runable = parser.parseFile(new File(fileName));
+        beast.inference.Runnable runable = parser.parseFile(new File(fileName));
         runable.setStateFile("tmp.state", false);
 //		   runable.setInputValue("preBurnin", 0);
 //		   runable.setInputValue("chainLength", 1000);

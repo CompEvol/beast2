@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import beast.core.Operator;
-import beast.core.State;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
-import beast.core.parameter.RealParameterList;
+import beast.inference.Operator;
+import beast.inference.State;
+import beast.inference.parameter.Parameter;
+import beast.inference.parameter.RealParameter;
+import beast.inference.parameter.RealParameterList;
 
 /**
  * Unit tests for ParameterList class.

@@ -1,20 +1,22 @@
 package beast.app.util;
 
 
-import beast.app.beauti.BeautiPanel;
-import beast.app.beauti.BeautiPanelConfig;
-import beast.core.util.Log;
+
+import jam.framework.Application;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import beast.base.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.util.BEASTClassLoader;
-import beast.util.TreeParser;
-import jam.framework.Application;
+import beast.evolution.tree.TreeParser;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.Utils6;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -306,13 +308,14 @@ public class Utils {
         reader.close();
         return out.toString();
     }
-	public static ImageIcon getIcon(int panelIndex, BeautiPanelConfig config) {
-	    String iconLocation = BeautiPanel.ICONPATH + panelIndex + ".png";
-	    if (config != null) {
-	        iconLocation = BeautiPanel.ICONPATH + config.getIcon();
-	    }
-	    return Utils.getIcon(iconLocation);
-	}
+    
+//	public static ImageIcon getIcon(int panelIndex, BeautiPanelConfig config) {
+//	    String iconLocation = BeautiPanel.ICONPATH + panelIndex + ".png";
+//	    if (config != null) {
+//	        iconLocation = BeautiPanel.ICONPATH + config.getIcon();
+//	    }
+//	    return Utils.getIcon(iconLocation);
+//	}
 
     /**
      * Retrieve icon.
@@ -338,7 +341,7 @@ public class Utils {
 
     /**
      * Used to detect whether CUDA with BEAGLE is installed on OS X in {@link Utils6#testCudaStatusOnMac()},
-     * which is used by {@link beast.app.beastapp.BeastLauncher#main(String[])}.
+     * which is used by {@link beast.app.util.BeastLauncher#main(String[])}.
      * @see <a href="https://github.com/CompEvol/beast2/issues/500">issues 500</a>.
      */
     public static void main(String[] args) {

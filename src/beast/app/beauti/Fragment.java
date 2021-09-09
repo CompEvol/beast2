@@ -3,9 +3,10 @@ package beast.app.beauti;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
+import beast.app.inputeditor.BeautiConnector;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
 
 @Description("Dummy container for representing template fragment")
 public class Fragment extends BEASTObject {

@@ -7,17 +7,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import beast.app.beauti.BeautiDoc;
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.base.BEASTInterface;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.util.XMLParser;
-import beast.util.XMLParserException;
-import beast.util.XMLProducer;
+import beast.parser.XMLParser;
+import beast.parser.XMLParserException;
+import beast.parser.XMLProducer;
+import beast.util.FileUtils;
 
 @Description("Helper for Sequence Simulator, allows specifying template input file and destination output file")
 public class MergeDataWith extends BEASTObject {
@@ -43,7 +43,7 @@ public class MergeDataWith extends BEASTObject {
 	
 	void process(Alignment data, int iteration) throws IOException, XMLParserException, IllegalArgumentException, IllegalAccessException {
 		// read template
-		String templateXML = BeautiDoc.load(templateFile);
+		String templateXML = FileUtils.load(templateFile);
 		templateXML = templateXML.replaceAll("\\$\\(n\\)", iteration+"");
 		XMLParser parser = new XMLParser();
 		BEASTInterface b = parser.parseBareFragment(templateXML, false);

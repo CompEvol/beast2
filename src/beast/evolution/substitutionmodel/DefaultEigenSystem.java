@@ -1,8 +1,9 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.util.Log;
-import beast.math.MachineAccuracy;
 import java.util.Arrays;
+
+import beast.base.Log;
+import beast.util.MachineAccuracy;
 
 /**
  * A default Eigen decomposition system

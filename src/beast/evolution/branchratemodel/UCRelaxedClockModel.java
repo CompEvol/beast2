@@ -6,15 +6,15 @@ import java.util.Arrays;
 
 import org.apache.commons.math.MathException;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
-import beast.math.distributions.ParametricDistribution;
+import beast.inference.distribution.ParametricDistribution;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
 import beast.util.Randomizer;
 
 /**
@@ -47,14 +47,17 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     // either categories or quantiles or rateParameter is used
     RealParameter rateParameter; //when mode=rates
     IntegerParameter categories; //when mode=categories
+    public IntegerParameter getCategories() {return categories;}
     RealParameter quantiles; // when mode=quantiles
 
     // if using categories, then it is set to be true; otherwise, it is set to be false.
     //boolean usingcategories;
 
     ParametricDistribution distribution; //the distribution of the rates
+    public ParametricDistribution getDistribution() {return distribution;}
 
-    RealParameter meanRate;
+    private RealParameter meanRate;
+    public RealParameter getMeanRate() {return meanRate;}
     Tree tree;
     private int branchCount;//the number of branches of the tree
     private boolean normalize = false;//

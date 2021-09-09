@@ -2,10 +2,10 @@ package beast.evolution.substitutionmodel;
 
 import java.lang.reflect.InvocationTargetException;
 
-import beast.core.Description;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input.Validate;
 import beast.evolution.tree.Node;
+import beast.inference.parameter.RealParameter;
 
 @Description("A substitution model where the rates and frequencies are obtained from " +
         "empirical evidence. Especially, amino acid models like WAG.")
@@ -98,12 +98,12 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     /**
      * return rate matrix (ie two dimensional array) in upper diagonal form *
      */
-    abstract double[][] getEmpiricalRates();
+    public abstract double[][] getEmpiricalRates();
 
     /**
      * return empirical frequencies *
      */
-    abstract double[] getEmpiricalFrequencies();
+    public abstract double[] getEmpiricalFrequencies();
 
     /**
      * return character order for getEmpricialRates and getEmpriricalFrequencies
@@ -113,7 +113,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
      * // ACDEFGHIKLMNPQRSTVWY
      * // This method returns the proper order
      */
-    abstract int[] getEncodingOrder();
+    public abstract int[] getEncodingOrder();
 
     @Override
     public double[] getRateMatrix(Node node) {

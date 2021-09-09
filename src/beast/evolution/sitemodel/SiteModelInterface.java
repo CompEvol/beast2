@@ -3,15 +3,15 @@ package beast.evolution.sitemodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.StateNode;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
+import beast.inference.CalculationNode;
+import beast.inference.StateNode;
 
 
 

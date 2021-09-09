@@ -62,10 +62,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-import beast.app.beauti.Beauti;
 import beast.app.util.FileDrop;
 import beast.app.util.Utils;
 import beast.app.util.WholeNumberField;
+import beast.base.ProgramStatus;
 
 //import dr.app.gui.FileDrop;
 
@@ -165,7 +165,7 @@ public class LogCombinerDialog {
         ActionListener buttonListener = new ActionListener() {
             @Override
 			public void actionPerformed(ActionEvent ae) {
-                File file = Utils.getSaveFile("Select output file...", new File(Beauti.g_sDir), "Beast log and tree files", "log", "trees");
+                File file = Utils.getSaveFile("Select output file...", new File(ProgramStatus.g_sDir), "Beast log and tree files", "log", "trees");
                 if (file == null) {
                     // the dialog was cancelled...
                     return;
@@ -173,7 +173,7 @@ public class LogCombinerDialog {
                 outputFile = file;
                 String fileName = file.getAbsolutePath();
                 if (fileName.lastIndexOf(File.separator) > 0) {
-                    Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
+                	ProgramStatus.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
                 }
                 fileNameText.setText(outputFile.getName());
 
@@ -287,7 +287,7 @@ public class LogCombinerDialog {
 
             String fileName = file.getAbsolutePath();
             if (fileName.lastIndexOf(File.separator) > 0) {
-                Beauti.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
+            	ProgramStatus.setCurrentDir(fileName.substring(0, fileName.lastIndexOf(File.separator)));
             }
         }
 
@@ -307,7 +307,7 @@ public class LogCombinerDialog {
 
         @Override
 		public void actionPerformed(ActionEvent ae) {
-            File[] files = Utils.getLoadFiles("Select log file", new File(Beauti.g_sDir), "Trace or tree log files", "log", "trees");
+            File[] files = Utils.getLoadFiles("Select log file", new File(ProgramStatus.g_sDir), "Trace or tree log files", "log", "trees");
             if (files != null) {
                 addFiles(files);
             }

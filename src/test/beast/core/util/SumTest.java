@@ -2,10 +2,10 @@ package test.beast.core.util;
 
 import org.junit.Test;
 
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Sum;
+import beast.evolution.Sum;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 
 public class SumTest extends TestCase {

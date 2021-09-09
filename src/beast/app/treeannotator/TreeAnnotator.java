@@ -30,26 +30,21 @@ import java.util.*;
 
 import javax.swing.JFrame;
 
-import beast.app.BEASTVersion;
-import beast.app.beauti.BeautiDoc;
-import beast.app.tools.LogCombiner;
-import beast.app.util.Arguments;
 import beast.app.util.Utils;
-import beast.core.util.Log;
+import beast.base.Log;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeParser;
 import beast.evolution.tree.TreeUtils;
-import beast.math.statistic.DiscreteStatistics;
+import beast.parser.NexusParser;
+import beast.pkgmgmt.Arguments;
+import beast.pkgmgmt.BEASTVersion;
 import beast.util.CollectionUtils;
+import beast.util.DiscreteStatistics;
+import beast.util.FileUtils;
 import beast.util.HeapSort;
-import beast.util.NexusParser;
-import beast.util.TreeParser;
 import jam.console.ConsoleApplication;
-
-//import org.rosuda.JRI.REXP;
-//import org.rosuda.JRI.RVector;
-//import org.rosuda.JRI.Rengine;
 
 /**
  * @author Alexei Drummond
@@ -548,7 +543,7 @@ public class TreeAnnotator {
                 if (targetTreeFileName != null) {
                     progressStream.println("Reading user specified target tree, " + targetTreeFileName);
                     
-                    String tree = BeautiDoc.load(targetTreeFileName);
+                    String tree = FileUtils.load(targetTreeFileName);
                     
                     if (tree.trim().startsWith("#NEXUS")) {
                     	NexusParser parser2 = new NexusParser();
@@ -1302,7 +1297,7 @@ public class TreeAnnotator {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.showGrowBox", "true");
 
-            java.net.URL url = LogCombiner.class.getResource("/images/utility.png");
+            java.net.URL url = TreeAnnotator.class.getResource("../tools/images/utility.png");
             javax.swing.Icon icon = null;
 
             if (url != null) {

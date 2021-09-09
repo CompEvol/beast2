@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
 import junit.framework.TestCase;
 
 
@@ -28,7 +28,7 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testDescriptions() {
-        final List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
+        final List<String> pluginNames = PackageManager.find(beast.base.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         final List<String> undocumentedPlugins = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {
@@ -59,7 +59,7 @@ public class DocumentationTest extends TestCase {
      */
     @Test
     public void testInputTipText() {
-        final List<String> pluginNames = PackageManager.find(beast.core.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
+        final List<String> pluginNames = PackageManager.find(beast.base.BEASTObject.class, PackageManager.IMPLEMENTATION_DIR);
         final List<String> undocumentedInputs = new ArrayList<String>();
         for (final String beastObjectName : pluginNames) {
             try {

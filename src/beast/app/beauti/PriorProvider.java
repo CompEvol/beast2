@@ -2,7 +2,8 @@ package beast.app.beauti;
 
 import java.util.List;
 
-import beast.core.Distribution;
+import beast.app.inputeditor.BeautiDoc;
+import beast.inference.Distribution;
 
 /** packages can implement a PriorProvider. The PrioListInputEditor will
  * pick up these PriorProviders by introspection. When a user selects the +

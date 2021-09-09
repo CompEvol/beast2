@@ -2,12 +2,12 @@ package beast.evolution.substitutionmodel;
 
 import java.lang.reflect.InvocationTargetException;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
+import beast.inference.parameter.RealParameter;
 
 @Description("Transition model of nucleotide evolution (variable transition rates, two transversion rates). " +
         "Rates that are not specified are assumed to be 1.")

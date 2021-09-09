@@ -26,10 +26,11 @@
 
 package beast.evolution.likelihood;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.util.Log;
+import java.util.*;
+
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -39,8 +40,7 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
-
-import java.util.*;
+import beast.inference.State;
 
 @Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
@@ -118,7 +118,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     /**
      * dealing with proportion of site being invariant *
      */
-    double proportionInvariant = 0;
+    protected double proportionInvariant = 0;
     public double getProportionInvariant() {return proportionInvariant;}
 	public void setProportionInvariant(double proportionInvariant) {this.proportionInvariant = proportionInvariant;
 	}
@@ -406,7 +406,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         return logP;
     }
 
-    void calcLogP() {
+    protected void calcLogP() {
         logP = 0.0;
         if (useAscertainedSitePatterns) {
             final double ascertainmentCorrection = dataInput.get().getAscertainmentCorrection(patternLogLikelihoods);

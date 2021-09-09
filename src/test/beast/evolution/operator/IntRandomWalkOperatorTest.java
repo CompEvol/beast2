@@ -5,9 +5,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import beast.core.State;
-import beast.core.parameter.IntegerParameter;
-import beast.evolution.operators.IntRandomWalkOperator;
+import beast.inference.State;
+import beast.inference.operator.IntRandomWalkOperator;
+import beast.inference.parameter.IntegerParameter;
 import junit.framework.TestCase;
 
 public class IntRandomWalkOperatorTest extends TestCase {

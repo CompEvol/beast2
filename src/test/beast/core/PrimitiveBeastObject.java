@@ -1,7 +1,11 @@
 package test.beast.core;
 
 
-import beast.core.*;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Param;
+import beast.inference.*;
 
 @Description("Class to test the behaviour of primitive inputs")
 public class PrimitiveBeastObject extends BEASTObject {

@@ -2,12 +2,12 @@ package test.beast.statistic;
 
 import org.junit.Test;
 
-import beast.core.BEASTInterface;
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.RealParameter;
-import beast.math.statistic.RPNcalculator;
-import beast.util.XMLParser;
-import beast.util.XMLParserException;
+import beast.base.BEASTInterface;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.RealParameter;
+import beast.inference.util.RPNcalculator;
+import beast.parser.XMLParser;
+import beast.parser.XMLParserException;
 import junit.framework.TestCase;
 
 public class RPNCalculatorTest extends TestCase {
@@ -115,9 +115,9 @@ public class RPNCalculatorTest extends TestCase {
 	public void testRPNXMLParser() throws XMLParserException {
 		XMLParser parser = new XMLParser();
 		String xml = 
-				"<parameter id='p1' spec='beast.core.parameter.BooleanParameter' value='0 1 0 1'/>\n" +
+				"<parameter id='p1' spec='beast.evolution.parameter.BooleanParameter' value='0 1 0 1'/>\n" +
 			    "<parameter id='p2' value='5. 6. 7. 8.'/>\n" +
-			    "<calculator id='calculator' spec='beast.math.statistic.RPNcalculator' expression='p1 p2 *'>\n" +
+			    "<calculator id='calculator' spec='beast.inference.util.RPNcalculator' expression='p1 p2 *'>\n" +
 			    "    <parameter idref='p1'/>\n" +
 			    "    <parameter idref='p2'/>\n" +
 			    "</calculator>"

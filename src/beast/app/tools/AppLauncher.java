@@ -42,12 +42,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import beast.app.beastapp.BeastLauncher;
+import beast.app.util.BeastLauncher;
 import beast.app.util.Utils;
-import beast.app.util.Utils6;
-import beast.core.util.Log;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
+import beast.base.Log;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
+import beast.pkgmgmt.Utils6;
 
 
 /**

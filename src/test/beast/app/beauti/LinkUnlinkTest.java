@@ -18,12 +18,12 @@ import org.fest.swing.fixture.JTableFixture;
 import org.junit.Test;
 
 import beast.app.util.Utils;
-import beast.core.BEASTInterface;
-import beast.core.Distribution;
-import beast.core.Function;
-import beast.core.parameter.Parameter;
-import beast.core.util.CompoundDistribution;
-import beast.math.distributions.Prior;
+import beast.base.BEASTInterface;
+import beast.base.Function;
+import beast.inference.Distribution;
+import beast.inference.distribution.Prior;
+import beast.inference.parameter.Parameter;
+import beast.inference.util.CompoundDistribution;
 
 public class LinkUnlinkTest extends BeautiBase {
 

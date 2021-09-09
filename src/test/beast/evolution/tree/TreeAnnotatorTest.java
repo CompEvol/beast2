@@ -10,11 +10,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import beast.app.beauti.BeautiDoc;
+import beast.app.inputeditor.BeautiDoc;
 import beast.app.treeannotator.CladeSystem;
 import beast.app.treeannotator.TreeAnnotator;
 import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 
 /**
  * @author Walter Xie

@@ -4,9 +4,9 @@ package beast.evolution.datatype;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType.Base;
 
 

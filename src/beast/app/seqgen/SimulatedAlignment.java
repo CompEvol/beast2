@@ -3,9 +3,9 @@ package beast.app.seqgen;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.branchratemodel.BranchRateModel;
@@ -13,8 +13,8 @@ import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.parser.XMLProducer;
 import beast.util.Randomizer;
-import beast.util.XMLProducer;
 
 
 /**

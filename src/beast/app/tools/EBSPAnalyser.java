@@ -23,13 +23,13 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import beast.app.BEASTVersion2;
 import beast.app.util.Utils;
 import beast.app.util.WholeNumberField;
-import beast.core.util.Log;
+import beast.base.BEASTVersion2;
+import beast.base.Log;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction;
 import beast.evolution.tree.coalescent.CompoundPopulationFunction.Type;
-import beast.math.statistic.DiscreteStatistics;
+import beast.util.DiscreteStatistics;
 import beast.util.HeapSort;
 import jam.console.ConsoleApplication;
 import jam.panels.OptionsPanel;

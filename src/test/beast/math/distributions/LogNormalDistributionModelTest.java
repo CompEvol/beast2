@@ -4,10 +4,10 @@ package test.beast.math.distributions;
 import org.apache.commons.math.MathException;
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
-import beast.math.distributions.LogNormalDistributionModel;
+import beast.inference.distribution.LogNormalDistributionModel;
+import beast.inference.parameter.RealParameter;
+import beast.parser.XMLParser;
 import beast.util.Randomizer;
-import beast.util.XMLParser;
 import junit.framework.TestCase;
 
 public class LogNormalDistributionModelTest extends TestCase {

@@ -24,16 +24,16 @@
 */
 package beast.evolution.alignment;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.Map;
-import beast.core.util.Log;
-import beast.evolution.datatype.DataType;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
-
 import java.util.*;
+
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
+import beast.evolution.datatype.DataType;
+import beast.inference.parameter.Map;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
 
 @Description("Class representing alignment data")
 public class Alignment extends Map<String> {
@@ -51,12 +51,12 @@ public class Alignment extends Map<String> {
     /**
      * directory to pick up data types from *
      */
-    final static String[] IMPLEMENTATION_DIR = {"beast.evolution.datatype"};
+    protected final static String[] IMPLEMENTATION_DIR = {"beast.evolution.datatype"};
 
     /**
      * list of data type descriptions, obtained from DataType classes *
      */
-    static TreeMap<String, DataType> types = new TreeMap<>();
+    protected static TreeMap<String, DataType> types = new TreeMap<>();
 
     static {
         findDataTypes();
@@ -363,7 +363,7 @@ public class Alignment extends Map<String> {
         initializeWithSequenceList(sortedSeqs, false);
     }
 
-    void setupAscertainment() {
+    protected void setupAscertainment() {
         isAscertained = isAscertainedInput.get();
 
         if (isAscertained) {

@@ -1,11 +1,12 @@
 package test.beast.core.parameter;
 
-import beast.core.parameter.RealParameter;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import beast.inference.parameter.RealParameter;
 
 import java.util.Arrays;
 import java.util.List;

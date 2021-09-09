@@ -1,18 +1,21 @@
 package beast.app.beauti;
 
 
-import beast.app.util.Utils;
-import beast.core.Description;
-import beast.util.PackageManager;
-import beast.util.Package;
-import beast.util.PackageVersion;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import beast.app.util.Utils;
+import beast.base.Description;
+import beast.pkgmgmt.Package;
+import beast.pkgmgmt.PackageManager;
+import beast.pkgmgmt.PackageVersion;
+
+import static beast.pkgmgmt.PackageManager.*;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,8 +26,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static beast.util.PackageManager.*;
 
 /**
  * dialog for managing Package.

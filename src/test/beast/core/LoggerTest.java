@@ -1,8 +1,9 @@
 package test.beast.core;
 
-import beast.core.Logger;
-import beast.core.parameter.RealParameter;
 import org.junit.*;
+
+import beast.inference.Logger;
+import beast.inference.parameter.RealParameter;
 
 import java.io.*;
 import java.util.Random;

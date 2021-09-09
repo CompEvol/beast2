@@ -8,7 +8,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.util.ClusterTree;
+import beast.evolution.tree.ClusterTree;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 

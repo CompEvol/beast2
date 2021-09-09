@@ -3,10 +3,10 @@ package test.beast.core;
 
 import org.junit.Test;
 
-import beast.core.OperatorSchedule;
-import beast.core.parameter.RealParameter;
-import beast.evolution.operators.DeltaExchangeOperator;
-import beast.evolution.operators.ScaleOperator;
+import beast.evolution.operator.ScaleOperator;
+import beast.inference.OperatorSchedule;
+import beast.inference.operator.DeltaExchangeOperator;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 
 public class OperatorScheduleTest extends TestCase {

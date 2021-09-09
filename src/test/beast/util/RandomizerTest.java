@@ -1,8 +1,9 @@
 package test.beast.util;
 
-import beast.math.statistic.DiscreteStatistics;
-import beast.util.Randomizer;
 import org.junit.Test;
+
+import beast.util.DiscreteStatistics;
+import beast.util.Randomizer;
 
 import static org.junit.Assert.assertEquals;
 

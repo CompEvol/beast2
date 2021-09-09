@@ -12,10 +12,10 @@ import org.junit.runners.Parameterized;
 
 import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.Binary;
-import beast.evolution.datatype.DataType.Base;
 import beast.evolution.datatype.IntegerData;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.datatype.TwoStateCovarion;
+import beast.evolution.datatype.DataType.Base;
 
 @RunWith(Parameterized.class)
 public class DataTypeDeEncodeTest {

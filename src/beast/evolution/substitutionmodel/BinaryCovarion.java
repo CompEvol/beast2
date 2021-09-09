@@ -2,13 +2,13 @@ package beast.evolution.substitutionmodel;
 
 import java.lang.reflect.InvocationTargetException;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.TwoStateCovarion;
+import beast.inference.parameter.RealParameter;
 
 
 /**

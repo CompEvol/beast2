@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Input;
-import beast.core.Param;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
+import beast.base.BEASTInterface;
+import beast.base.BEASTObject;
+import beast.base.Input;
+import beast.base.Param;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
 import junit.framework.TestCase;
 
 public class InputTypeTest extends TestCase {
@@ -31,7 +31,7 @@ public class InputTypeTest extends TestCase {
 	 */
 	@Test
 	public void testInputTypeCanBeSet() throws Exception {
-		List<String> beastObjectNames = PackageManager.find(beast.core.BEASTObject.class,
+		List<String> beastObjectNames = PackageManager.find(beast.base.BEASTObject.class,
 				PackageManager.IMPLEMENTATION_DIR);
 		List<String> failingInputs = new ArrayList<String>();
 		for (String beastObjectName : beastObjectNames) {

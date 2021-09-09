@@ -9,7 +9,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 import junit.framework.TestCase;
 
 public class UncertainAlignmentTest extends TestCase {

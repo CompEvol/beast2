@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.State;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.speciation.SpeciesTreePopFunction.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreeInterface;
+import beast.inference.State;
+import beast.inference.parameter.RealParameter;
 
 
 

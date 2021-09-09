@@ -52,10 +52,6 @@ package beast.util;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
-import beast.math.GammaFunction;
-import beast.math.statistic.DiscreteStatistics;
-
-
 
 /**
  * MersenneTwisterFast:

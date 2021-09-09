@@ -31,11 +31,11 @@ import java.util.List;
 
 import org.apache.commons.math.MathException;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
+import beast.base.Description;
+import beast.base.Input;
 import beast.evolution.tree.Tree;
+import beast.inference.StateNode;
+import beast.inference.StateNodeInitialiser;
 
 /**
 * @author Joseph Heled

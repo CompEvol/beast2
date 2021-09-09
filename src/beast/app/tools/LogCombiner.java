@@ -1,14 +1,15 @@
 package beast.app.tools;
 
 
-import beast.app.BEASTVersion2;
-import beast.app.util.Utils;
-import beast.core.util.Log;
-import beast.util.LogAnalyser;
 import jam.console.ConsoleApplication;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
+
+import beast.app.util.Utils;
+import beast.base.BEASTVersion2;
+import beast.base.Log;
+
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

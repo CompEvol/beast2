@@ -6,12 +6,15 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
+import beast.app.inputeditor.BEASTObjectInputEditor;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.InputEditor.ExpandOption;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.substitutionmodel.Frequencies;
+import beast.inference.parameter.RealParameter;
 
 
 

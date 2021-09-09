@@ -1,13 +1,13 @@
 package beast.evolution.branchratemodel;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.RealParameter;
 
 /**
  * @author Alexei Drummond

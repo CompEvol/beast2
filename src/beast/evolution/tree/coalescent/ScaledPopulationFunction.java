@@ -3,11 +3,11 @@ package beast.evolution.tree.coalescent;
 
 import java.util.List;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.inference.CalculationNode;
+import beast.inference.parameter.RealParameter;
 
 
 /**

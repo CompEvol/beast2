@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.Param;
-import beast.core.Runnable;
+import beast.base.BEASTInterface;
+import beast.base.Description;
+import beast.base.Param;
 import beast.evolution.alignment.Taxon;
+import beast.inference.Runnable;
 
 @Description("Used for testing purposed only")
 public class AnnotatedRunnableTestClass extends Runnable {

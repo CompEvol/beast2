@@ -16,21 +16,24 @@
  */
 package test.beast.evolution.operator;
 
-import beast.core.*;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.operators.WilsonBalding;
-import beast.evolution.tree.RandomTree;
-import beast.evolution.tree.Tree;
-import beast.evolution.tree.TreeTraceAnalysis;
-import beast.evolution.tree.coalescent.Coalescent;
-import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.TreeIntervals;
-import beast.util.Randomizer;
 import junit.framework.JUnit4TestAdapter;
 import org.junit.Assert;
 import org.junit.Test;
+
+import beast.app.tools.TreeTraceAnalysis;
+import beast.base.BEASTObject;
+import beast.base.Input;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
+import beast.evolution.operator.WilsonBalding;
+import beast.evolution.tree.RandomTree;
+import beast.evolution.tree.Tree;
+import beast.evolution.tree.coalescent.Coalescent;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.evolution.tree.coalescent.TreeIntervals;
+import beast.inference.*;
+import beast.inference.parameter.RealParameter;
+import beast.util.Randomizer;
 
 import java.util.ArrayList;
 import java.util.List;

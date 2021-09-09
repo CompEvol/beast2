@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Loggable;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.RealParameter;
 
 
 /**

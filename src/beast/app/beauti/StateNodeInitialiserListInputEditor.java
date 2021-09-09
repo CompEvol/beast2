@@ -12,15 +12,18 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import beast.app.draw.InputEditor;
-import beast.app.draw.ListInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.State;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.BeautiSubTemplate;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.ListInputEditor;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.tree.Tree;
+import beast.inference.MCMC;
+import beast.inference.State;
+import beast.inference.StateNode;
+import beast.inference.StateNodeInitialiser;
+import beast.parser.PartitionContext;
 
 public class StateNodeInitialiserListInputEditor extends ListInputEditor {
 	private static final long serialVersionUID = 1L;

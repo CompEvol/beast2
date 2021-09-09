@@ -2,26 +2,32 @@ package beast.app.beauti;
 
 
 
-import beast.app.BEASTVersion2;
-import beast.app.beauti.BeautiDoc.ActionOnExit;
-import beast.app.beauti.BeautiDoc.DOC_STATUS;
-import beast.app.draw.BEASTObjectPanel;
-import beast.app.draw.HelpBrowser;
-import beast.app.draw.ModelBuilder;
-import beast.app.draw.MyAction;
-import beast.app.tools.AppLauncher;
-import beast.app.util.Utils;
-import beast.app.util.Utils6;
-import beast.core.BEASTInterface;
-import beast.core.util.Log;
-import beast.evolution.alignment.Alignment;
-import beast.math.distributions.MRCAPrior;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
 import jam.framework.DocumentFrame;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import beast.app.inputeditor.BEASTObjectPanel;
+import beast.app.inputeditor.BeautiAlignmentProvider;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.BeautiDocListener;
+import beast.app.inputeditor.BeautiPanelConfig;
+import beast.app.inputeditor.BeautiDoc.ActionOnExit;
+import beast.app.inputeditor.BeautiDoc.DOC_STATUS;
+import beast.app.tools.AppLauncher;
+import beast.app.tools.HelpBrowser;
+import beast.app.tools.ModelBuilder;
+import beast.app.util.MyAction;
+import beast.app.util.Utils;
+import beast.base.BEASTInterface;
+import beast.base.BEASTVersion2;
+import beast.base.Log;
+import beast.base.ProgramStatus;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.tree.MRCAPrior;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
+import beast.pkgmgmt.Utils6;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -48,7 +54,7 @@ import java.util.*;
 import java.util.List;
 
 
-public class Beauti extends JTabbedPane implements BeautiDocListener {
+public class Beauti extends beast.app.inputeditor.Beauti implements BeautiDocListener {
     private static final long serialVersionUID = 1L;
     static final String BEAUTI_ICON = "beast/app/draw/icons/beauti.png";
 
@@ -56,16 +62,6 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     // ExtensionFileFilter ef1 = new ExtensionFileFilter(".xml", "BEAST files");
 
     /**
-     * current directory for opening files *
-     */
-    public static String g_sDir = System.getProperty("user.dir");
-    
-    public static void setCurrentDir(String currentDir) {
-    	g_sDir = currentDir;
-    	Utils.saveBeautiProperty("currentDir", currentDir);
-    }
-
-	/**
      * File extension for Beast specifications
      */
     static public final String FILE_EXT = ".xml";
@@ -242,7 +238,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         if (fileSep.equals("\\")) {
             fileSep = "\\\\";
         }
-        String defaultFile = g_sDir + (doc.getFileName().equals("") ? "" : fileSep + new File(doc.getFileName()).getName());
+        String defaultFile = ProgramStatus.g_sDir + (doc.getFileName().equals("") ? "" : fileSep + new File(doc.getFileName()).getName());
         File file = beast.app.util.Utils.getSaveFile("Save Model As", new File(
                 defaultFile), null, FILE_EXT, FILE_EXT2);
         if (file != null) {
@@ -258,7 +254,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
             // f.getAbsoluteFile().toString()+"\"");
             doc.setFileName(file.getAbsolutePath());// fc.getSelectedFile().toString();
             if (doc.getFileName().lastIndexOf(File.separator) > 0) {
-                setCurrentDir(doc.getFileName().substring(0,
+            	ProgramStatus.setCurrentDir(doc.getFileName().substring(0,
                         doc.getFileName().lastIndexOf(File.separator)));
             }
             if (!doc.getFileName().toLowerCase().endsWith(FILE_EXT) && !doc.getFileName().toLowerCase().endsWith(FILE_EXT2))
@@ -315,7 +311,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         @Override
 		public void actionPerformed(ActionEvent ae) {
             File file = beast.app.util.Utils.getLoadFile("Load Beast XML File",
-                    new File(g_sDir), "Beast XML files", "xml");//, "BEAST json file", "json");
+                    new File(ProgramStatus.g_sDir), "Beast XML files", "xml");//, "BEAST json file", "json");
             // JFileChooser fileChooser = new JFileChooser(g_sDir);
             // fileChooser.addChoosableFileFilter(ef1);
             // fileChooser.setDialogTitle("Load Beast XML File");
@@ -327,7 +323,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
                 doc.newAnalysis();
                 doc.setFileName(file.getAbsolutePath());
                 if (doc.getFileName().lastIndexOf(File.separator) > 0) {
-                    setCurrentDir(doc.getFileName().substring(0,
+                	ProgramStatus.setCurrentDir(doc.getFileName().substring(0,
                             doc.getFileName().lastIndexOf(File.separator)));
                 }
                 try {
@@ -1083,7 +1079,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
 	
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							setCurrentDir(dir);
+							ProgramStatus.setCurrentDir(dir);
 						}
 	
 		            };
@@ -1176,7 +1172,8 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
      */
     static int BEAUtiIntances = 0;
     static public boolean isInBeauti() {
-    	return BEAUtiIntances > 0;
+    	return ProgramStatus.name.equals("BEAUti");
+    	// return BEAUtiIntances > 0;
     }
 
     private static String usage() {
@@ -1201,7 +1198,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     	// retrieve previously stored working directory
     	String currentDir = Utils.getBeautiProperty("currentDir");
     	if (currentDir != null && currentDir.length() > 1) {
-    		g_sDir = currentDir;
+    		ProgramStatus.g_sDir = currentDir;
     	}
     	
         try {
@@ -1456,6 +1453,7 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
     } // main2
 
     public static void main(String[] args) {
+    	ProgramStatus.name = "BEAUti";
         main2(args);
 
         // check for new packages in the background
@@ -1470,6 +1468,21 @@ public class Beauti extends JTabbedPane implements BeautiDocListener {
         	};
         }.start();
     }
+
+	@Override
+	public void autoSetClockRate(boolean flag) {
+		autoSetClockRate.setSelected(flag);
+	}
+
+	@Override
+	public void allowLinking(boolean flag) {
+		allowLinking.setSelected(flag);		
+	}
+
+	@Override
+	public void autoUpdateFixMeanSubstRate(boolean flag) {
+		autoUpdateFixMeanSubstRate.setSelected(flag);		
+	}
 
 } // class Beauti
 

@@ -2,7 +2,7 @@ package test.beast.math.distributions;
 
 import org.apache.commons.math.MathException;
 
-import beast.math.distributions.Normal;
+import beast.inference.distribution.Normal;
 import beast.util.Randomizer;
 import junit.framework.TestCase;
 

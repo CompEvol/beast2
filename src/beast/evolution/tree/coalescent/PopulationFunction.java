@@ -7,9 +7,9 @@ import org.apache.commons.math.MaxIterationsExceededException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.analysis.integration.RombergIntegrator;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.math.Binomial;
+import beast.base.Description;
+import beast.inference.CalculationNode;
+import beast.util.Binomial;
 import beast.util.Randomizer;
 
 

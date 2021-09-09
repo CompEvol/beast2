@@ -9,18 +9,22 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
-import beast.app.draw.ListInputEditor;
-import beast.app.draw.SmallLabel;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.Operator;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.ListInputEditor;
+import beast.app.inputeditor.SmallLabel;
+import beast.app.inputeditor.InputEditor.ButtonStatus;
+import beast.app.inputeditor.InputEditor.ExpandOption;
+import beast.base.BEASTInterface;
+import beast.base.Input;
+import beast.base.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.operators.DeltaExchangeOperator;
+import beast.inference.MCMC;
+import beast.inference.Operator;
+import beast.inference.operator.DeltaExchangeOperator;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
 
 
 

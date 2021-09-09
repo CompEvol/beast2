@@ -8,7 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import beast.util.BEASTClassLoader;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.Utils6;
 
 /**
  * Since Oracle Java 9, Mac OS specific <code>com.apple.eawt</code> was replaced

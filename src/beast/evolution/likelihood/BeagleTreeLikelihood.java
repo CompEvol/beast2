@@ -34,15 +34,15 @@ import beagle.BeagleFlag;
 import beagle.BeagleInfo;
 import beagle.InstanceDetails;
 import beagle.ResourceDetails;
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.util.Log;
+import beast.base.Description;
+import beast.base.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.inference.CalculationNode;
 
 
 /**
@@ -1045,6 +1045,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     
     private /*final*/ BufferIndexHelper eigenBufferHelper;
     protected BufferIndexHelper matrixBufferHelper;
+    public BufferIndexHelper getMatrixBufferHelper() {return matrixBufferHelper;}
     protected BufferIndexHelper scaleBufferHelper;
 
     protected /*final*/ int tipCount;

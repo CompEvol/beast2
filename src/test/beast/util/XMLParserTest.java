@@ -7,9 +7,9 @@ import java.nio.file.Files;
 
 import org.junit.Test;
 
-import beast.app.BEASTVersion;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.util.XMLParser;
+import beast.parser.XMLParser;
+import beast.pkgmgmt.BEASTVersion;
 import junit.framework.TestCase;
 
 public class XMLParserTest extends TestCase {

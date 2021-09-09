@@ -11,11 +11,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import beast.core.Operator;
-import beast.core.State;
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.BooleanParameterList;
-import beast.core.parameter.Parameter;
+import beast.inference.Operator;
+import beast.inference.State;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.BooleanParameterList;
+import beast.inference.parameter.Parameter;
 
 /**
  * Unit tests for ParameterList class.

@@ -2,10 +2,10 @@ package test.beast.evolution.operator;
 
 import java.util.Arrays;
 
-import beast.core.State;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.evolution.operators.UniformOperator;
+import beast.inference.State;
+import beast.inference.operator.UniformOperator;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

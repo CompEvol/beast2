@@ -3,9 +3,9 @@ package test.beast.core;
 import org.junit.Test;
 
 import beast.evolution.alignment.Alignment;
+import beast.evolution.tree.ClusterTree;
 import beast.evolution.tree.Tree;
-import beast.util.ClusterTree;
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 

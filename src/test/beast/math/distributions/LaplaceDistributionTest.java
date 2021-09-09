@@ -1,10 +1,11 @@
 package test.beast.math.distributions;
 
-import beast.math.distributions.LaplaceDistribution;
-import beast.util.Randomizer;
 import junit.framework.TestCase;
 import org.apache.commons.math.MathException;
 import org.junit.Test;
+
+import beast.inference.distribution.LaplaceDistribution;
+import beast.util.Randomizer;
 import test.beast.BEASTTestCase;
 
 

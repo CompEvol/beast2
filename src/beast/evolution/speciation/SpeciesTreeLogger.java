@@ -4,17 +4,17 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Loggable;
-import beast.core.StateNode;
-import beast.core.parameter.Parameter;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Loggable;
+import beast.base.Input.Validate;
 import beast.evolution.speciation.SpeciesTreePopFunction.TreePopSizeFunction;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.inference.StateNode;
+import beast.inference.parameter.Parameter;
 
 
 

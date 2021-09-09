@@ -24,16 +24,16 @@
 */
 package beast.evolution.substitutionmodel;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import java.util.Arrays;
+
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.datatype.DataType;
-
-import java.util.Arrays;
+import beast.inference.CalculationNode;
+import beast.inference.parameter.RealParameter;
 
 
 

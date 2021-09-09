@@ -4,13 +4,13 @@ package beast.evolution.tree;
 
 import java.io.PrintStream;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.util.Log;
-import beast.core.Loggable;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Loggable;
+import beast.base.Input.Validate;
+import beast.inference.CalculationNode;
 
 
 @Description("Logger to report statistics of a tree")

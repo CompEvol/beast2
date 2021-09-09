@@ -1,16 +1,5 @@
 package beast.app.packagemanager;
 
-import beast.app.util.Arguments;
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.util.Log;
-import beast.util.Package;
-import beast.util.PackageDependency;
-import beast.util.PackageManager;
-import beast.util.PackageVersion;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -21,6 +10,17 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import beast.base.BEASTInterface;
+import beast.base.BEASTObject;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Log;
+import beast.pkgmgmt.Arguments;
+import beast.pkgmgmt.Package;
+import beast.pkgmgmt.PackageDependency;
+import beast.pkgmgmt.PackageManager;
+import beast.pkgmgmt.PackageVersion;
 
 /**
  * Print the citation annotated in a class inherited from BEASTObject.

@@ -26,6 +26,7 @@
         <fileset dir="${lib}" includes="fest.jar"/>
         <fileset dir="${lib}" includes="junit-4.8.2.jar"/>
         <fileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
+        <fileset dir="${lib}" includes="commons-math3-3.6.1.jar" />
     </path>
 
     <!--
@@ -94,12 +95,15 @@
         <delete file="${build}/beast/app/util/Utils6.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
         <delete file="${build}/beast/util/BEASTClassLoader.class" />
+        <!--
         <delete>
 	      <fileset dir="${build}/beast/core/util/" includes="Log*.class" />
     	  <fileset dir="${build}/beast/app/beastapp/" includes="BeastLauncher*.class" />
 	      <fileset dir="${build}/beast/app/util/" includes="Arguments*.class"/>
 	      <fileset dir="${build}/beast/util/" includes="Package*.class"/>
     	</delete>
+    	-->
+    	
         <delete file="${build}/beast/app/util/Version.class" />
         <javac source="1.6"
                target="1.6"
@@ -147,7 +151,7 @@
             <zipgroupfileset dir="${lib}" includes="jam.jar" />
             <zipgroupfileset dir="${lib}" includes="beagle.jar" />
             <zipgroupfileset dir="${lib}" includes="colt.jar" />
-            <zipgroupfileset dir="${lib}" includes="commons-math3-3.1.1.jar" />
+            <zipgroupfileset dir="${lib}" includes="commons-math3-3.6.1.jar" />
             <zipgroupfileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
         </jar>
         

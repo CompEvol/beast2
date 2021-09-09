@@ -14,20 +14,24 @@ import java.util.Set;
 
 import org.apache.commons.math.MathException;
 
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.BEASTInterface;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
-import beast.evolution.alignment.distance.Distance;
-import beast.evolution.alignment.distance.JukesCantorDistance;
+import beast.evolution.distance.Distance;
+import beast.evolution.distance.JukesCantorDistance;
+import beast.evolution.tree.ClusterTree;
+import beast.evolution.tree.MRCAPrior;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.RandomTree;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.math.distributions.MRCAPrior;
-import beast.util.ClusterTree;
+import beast.inference.*;
+import beast.inference.parameter.RealParameter;
 
 /**
 * @author Joseph Heled
@@ -191,7 +195,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
         //for( final Alignment alignment : alignments)  {
         for (final Tree gtree : geneTrees) {
             //final Tree gtree = new Tree();
-            final Alignment alignment = gtree.m_taxonset.get().alignmentInput.get();
+            final Alignment alignment = ((beast.evolution.alignment.TaxonSet)gtree.m_taxonset.get()).alignmentInput.get();
 
             final ClusterTree ctree = new ClusterTree();
             ctree.initByName("initial", gtree, "clusterType", "upgma", "taxa", alignment);
@@ -282,7 +286,7 @@ public class StarBeastStartState extends Tree implements StateNodeInitialiser {
             if( ! compatible ) {
                 final Tree gtree = geneTrees.get(ng);
                 final TaxonSet gtreeTaxa = gtree.m_taxonset.get();
-                final Alignment alignment = gtreeTaxa.alignmentInput.get();
+                final Alignment alignment = ((beast.evolution.alignment.TaxonSet)gtreeTaxa).alignmentInput.get();
                 final List<String> taxaNames = alignment.getTaxaNames();
                 final int taxonCount =  taxaNames.size();
                 // speedup

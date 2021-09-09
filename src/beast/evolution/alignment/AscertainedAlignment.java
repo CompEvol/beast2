@@ -1,6 +1,6 @@
 package beast.evolution.alignment;
 
-import beast.core.Description;
+import beast.base.Description;
 
 
 @Description("Alignemnt that allows ascertainment correction")

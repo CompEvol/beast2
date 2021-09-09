@@ -1,9 +1,9 @@
 package test.beast.core;
 
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Param;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Param;
 
 @Description("PrimitiveInterface is used for testing inner class inside interface")
 public interface PrimitiveInterface {

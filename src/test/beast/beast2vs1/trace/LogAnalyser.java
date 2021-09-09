@@ -31,12 +31,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.MCMC;
-import beast.core.Runnable;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.inference.MCMC;
+import beast.inference.Runnable;
 
 
 @Description("Log Analyser: analyse BEAST log and provide statistics result including mean, min, max, median, standard deviation, " +

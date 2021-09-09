@@ -3,7 +3,7 @@ package test.beast.evolution.tree;
 import org.junit.Test;
 
 import beast.evolution.tree.Node;
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 import junit.framework.TestCase;
 
 public class TreeTest extends TestCase {

@@ -1,9 +1,10 @@
 package test.beast.evolution.tree;
 
-import beast.evolution.tree.TreeUtils;
-import beast.util.TreeParser;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import beast.evolution.tree.TreeParser;
+import beast.evolution.tree.TreeUtils;
 
 /**
  * Test class for TreeUtils methods

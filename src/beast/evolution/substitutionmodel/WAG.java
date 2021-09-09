@@ -1,9 +1,9 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.Description;
+import beast.base.Description;
 import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.DataType;
-import beast.math.statistic.DiscreteStatistics;
+import beast.util.DiscreteStatistics;
 
 @Description("WAG model of amino acid evolution by " +
         "S. Whelan and N. Goldman. 2001. Molecular biology and evolution 18.5 (2001): 691-699 ")
@@ -11,6 +11,7 @@ import beast.math.statistic.DiscreteStatistics;
 public class WAG extends EmpiricalSubstitutionModel {
 
     @Override
+	public
     double[][] getEmpiricalRates() {
         double[][] rate = new double[20][20];
 

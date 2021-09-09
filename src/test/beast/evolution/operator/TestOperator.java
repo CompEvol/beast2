@@ -6,10 +6,9 @@ package test.beast.evolution.operator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-import beast.core.Operator;
-import beast.core.State;
-import beast.core.StateNode;
+import beast.inference.Operator;
+import beast.inference.State;
+import beast.inference.StateNode;
 import junit.framework.TestCase;
 
 /**

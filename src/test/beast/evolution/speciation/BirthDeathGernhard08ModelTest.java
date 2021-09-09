@@ -2,10 +2,10 @@ package test.beast.evolution.speciation;
 
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.speciation.BirthDeathGernhard08Model;
 import beast.evolution.tree.Tree;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 

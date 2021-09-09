@@ -1,12 +1,13 @@
 package test.beast.util;
 
-import beast.core.BEASTInterface;
-import beast.evolution.alignment.Taxon;
-import beast.util.XMLParser;
-import beast.util.XMLParserUtils;
-import beast.util.XMLProducer;
 import junit.framework.TestCase;
 import org.junit.Test;
+
+import beast.base.BEASTInterface;
+import beast.evolution.alignment.Taxon;
+import beast.parser.XMLParser;
+import beast.parser.XMLParserUtils;
+import beast.parser.XMLProducer;
 
 import java.io.File;
 import java.io.FileWriter;

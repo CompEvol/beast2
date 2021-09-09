@@ -8,8 +8,8 @@ import org.apache.commons.math.analysis.integration.RombergIntegrator;
 import org.apache.commons.math.analysis.integration.UnivariateRealIntegrator;
 import org.junit.Test;
 
-import beast.math.GammaFunction;
-import beast.math.distributions.Gamma;
+import beast.inference.distribution.Gamma;
+import beast.util.GammaFunction;
 import beast.util.Randomizer;
 import junit.framework.TestCase;
 

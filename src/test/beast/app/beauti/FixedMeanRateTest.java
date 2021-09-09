@@ -8,7 +8,7 @@ import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.JTabbedPaneFixture;
 import org.junit.Test;
 
-import beast.evolution.operators.DeltaExchangeOperator;
+import beast.inference.operator.DeltaExchangeOperator;
 import junit.framework.Assert;
 
 /** test how the FixedMeanRate flag interact with link/unlink **/

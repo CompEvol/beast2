@@ -1,11 +1,13 @@
 package test.beast.evolution.speciation;
 
 import junit.framework.TestCase;
-import beast.core.parameter.RealParameter;
+
+import org.junit.Test;
+
 import beast.evolution.speciation.YuleModel;
 import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
-import org.junit.Test;
+import beast.evolution.tree.TreeParser;
+import beast.inference.parameter.RealParameter;
 
 /**
  * Created by Denise on 16.11.16.

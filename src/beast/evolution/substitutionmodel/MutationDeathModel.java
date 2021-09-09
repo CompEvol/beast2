@@ -1,11 +1,11 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
+import beast.inference.parameter.RealParameter;
 
 @Description("Mutation Death substitution model, can be used as Stochastic Dollo model.")
 public class MutationDeathModel extends SubstitutionModel.Base {

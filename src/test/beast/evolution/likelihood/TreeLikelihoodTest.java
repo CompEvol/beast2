@@ -1,13 +1,12 @@
 package test.beast.evolution.likelihood;
 
 
-import beast.evolution.likelihood.BeagleTreeLikelihood;
 import org.junit.Test;
 
-import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.UserDataType;
+import beast.evolution.likelihood.BeagleTreeLikelihood;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.BinaryCovarion;
@@ -25,6 +24,7 @@ import beast.evolution.substitutionmodel.MutationDeathModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.substitutionmodel.WAG;
 import beast.evolution.tree.Tree;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 import test.beast.evolution.alignment.UncertainAlignmentTest;

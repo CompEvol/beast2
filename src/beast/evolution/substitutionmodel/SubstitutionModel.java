@@ -25,12 +25,12 @@
 package beast.evolution.substitutionmodel;
 
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.tree.Node;
+import beast.inference.CalculationNode;
 
 
 @Description("Specifies substitution model from which a transition probability matrix for a given " +

@@ -1,10 +1,10 @@
 package beast.evolution.branchratemodel;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Input;
 import beast.evolution.tree.Node;
+import beast.inference.CalculationNode;
+import beast.inference.parameter.RealParameter;
 
 /**
  * @author Alexei Drummond

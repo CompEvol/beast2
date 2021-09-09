@@ -133,7 +133,7 @@ public interface IntervalList {
             for (int j = 0; j < n; j++) { // move from tips to root
 
                 double transInt = intervals.getInterval(j) *
-                        beast.math.Binomial.choose2(intervals.getLineageCount(j)); // coalescent version
+                        beast.util.Binomial.choose2(intervals.getLineageCount(j)); // coalescent version
                 //intLenCopy[j] = getInterval(j)*getLineageCount(j); // birth-death version
 
                 // don't include the last interval so put this before...

@@ -2,13 +2,13 @@ package beast.evolution.substitutionmodel;
 
 import java.lang.reflect.InvocationTargetException;
 
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
+import beast.inference.parameter.RealParameter;
 
 @Description("General Time Reversible model of nucleotide evolution. " +
         "Rates that are not specified are assumed to be 1. ")

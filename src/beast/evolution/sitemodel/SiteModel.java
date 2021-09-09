@@ -30,12 +30,12 @@ package beast.evolution.sitemodel;
 import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
+import beast.inference.parameter.RealParameter;
 
 
 

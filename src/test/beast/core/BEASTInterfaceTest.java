@@ -9,11 +9,11 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import beast.core.BEASTInterface;
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
+import beast.base.BEASTInterface;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import junit.framework.TestCase;
 
 public class BEASTInterfaceTest extends TestCase {

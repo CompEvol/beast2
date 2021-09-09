@@ -1,11 +1,12 @@
 package beast.evolution.tree.coalescent;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.RealParameter;
-import beast.math.distributions.ParametricDistribution;
+import beast.base.Description;
+import beast.base.Input;
+import beast.inference.Operator;
+import beast.inference.distribution.ParametricDistribution;
+import beast.inference.parameter.BooleanParameter;
+import beast.inference.parameter.RealParameter;
+import beast.inference.util.InputUtil;
 import beast.util.Randomizer;
 
 /**
@@ -30,8 +31,8 @@ public class SampleOffValues extends Operator {
 
     @Override
     public double proposal() {
-        final BooleanParameter indicators = indicatorsInput.get(this);
-        final RealParameter data = valuesInput.get(this);
+        final BooleanParameter indicators = (BooleanParameter) InputUtil.get(indicatorsInput, this);
+        final RealParameter data = (RealParameter) InputUtil.get(valuesInput, this);
         final ParametricDistribution distribution = distInput.get();
 
         final int idim = indicators.getDimension();

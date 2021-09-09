@@ -3,10 +3,10 @@ package beast.app.draw;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
+import beast.base.BEASTInterface;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
 
 
 

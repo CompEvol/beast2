@@ -41,17 +41,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
-import beast.app.BeastMCMC;
 import beast.app.beauti.Beauti;
-import beast.core.BEASTInterface;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.util.Log;
+import beast.base.BEASTInterface;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.ProgramStatus;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.FilteredAlignment;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.inference.State;
 
 
 @Description("Calculates the likelihood of sequence data on a beast.tree given a site and substitution model using " +
@@ -78,7 +78,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     @Override
     public List<Input<?>> listInputs() {
     	List<Input<?>> list =  super.listInputs();
-    	if (!Beauti.isInBeauti() && System.getProperty("beast.is.junit.testing") == null) {
+    	if (!ProgramStatus.name.equals("BEAUti") && System.getProperty("beast.is.junit.testing") == null) {
     		// do not expose internal likelihoods to BEAUti or junit tests
     		list.add(likelihoodsInput);
     	}
@@ -103,10 +103,10 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 	
     @Override
     public void initAndValidate() {
-		threadCount = BeastMCMC.m_nThreads;
+		threadCount = ProgramStatus.m_nThreads;
 
 		if (maxNrOfThreadsInput.get() > 0) {
-			threadCount = Math.min(maxNrOfThreadsInput.get(), BeastMCMC.m_nThreads);
+			threadCount = Math.min(maxNrOfThreadsInput.get(), ProgramStatus.m_nThreads);
 		}
         String instanceCount = System.getProperty("beast.instance.count");
         if (instanceCount != null && instanceCount.length() > 0) {

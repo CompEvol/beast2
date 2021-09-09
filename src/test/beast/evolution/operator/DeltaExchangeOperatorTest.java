@@ -5,10 +5,10 @@ package test.beast.evolution.operator;
 
 import org.junit.Test;
 
-import beast.core.State;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.evolution.operators.DeltaExchangeOperator;
+import beast.inference.State;
+import beast.inference.operator.DeltaExchangeOperator;
+import beast.inference.parameter.IntegerParameter;
+import beast.inference.parameter.RealParameter;
 
 /**
  * @author gereon

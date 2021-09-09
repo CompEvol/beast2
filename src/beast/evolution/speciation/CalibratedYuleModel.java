@@ -8,21 +8,21 @@ import java.util.List;
 
 import org.apache.commons.math.MathException;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.core.util.CompoundDistribution;
-import beast.core.util.Log;
+import beast.base.Citation;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.MRCAPrior;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
-import beast.math.distributions.MRCAPrior;
-import beast.math.distributions.ParametricDistribution;
-import beast.math.statistic.RPNcalculator;
+import beast.inference.Distribution;
+import beast.inference.distribution.ParametricDistribution;
+import beast.inference.parameter.RealParameter;
+import beast.inference.util.CompoundDistribution;
+import beast.inference.util.RPNcalculator;
 
 /**
  * @author Joseph Heled

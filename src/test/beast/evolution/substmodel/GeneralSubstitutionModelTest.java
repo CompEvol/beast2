@@ -1,11 +1,12 @@
 package test.beast.evolution.substmodel;
 
-import beast.core.parameter.RealParameter;
+import org.junit.Before;
+import org.junit.Test;
+
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.GeneralSubstitutionModel;
 import beast.evolution.tree.Node;
-import org.junit.Before;
-import org.junit.Test;
+import beast.inference.parameter.RealParameter;
 
 import java.util.Arrays;
 import java.util.stream.DoubleStream;

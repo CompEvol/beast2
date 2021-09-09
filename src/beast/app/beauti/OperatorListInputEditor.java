@@ -12,14 +12,16 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.app.draw.InputEditor;
-import beast.app.draw.InputEditorFactory;
-import beast.app.draw.ListInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
+import beast.app.inputeditor.BEASTObjectInputEditor;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.ListInputEditor;
+import beast.app.inputeditor.InputEditor.ButtonStatus;
+import beast.app.inputeditor.InputEditor.ExpandOption;
+import beast.base.BEASTInterface;
+import beast.base.Input;
+import beast.inference.Operator;
+import beast.inference.StateNode;
 
 
 

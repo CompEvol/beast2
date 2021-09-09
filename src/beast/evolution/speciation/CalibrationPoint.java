@@ -1,10 +1,10 @@
 package beast.evolution.speciation;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
 import beast.evolution.alignment.TaxonSet;
-import beast.math.distributions.ParametricDistribution;
+import beast.inference.distribution.ParametricDistribution;
 
 /**
 * @author Joseph Heled

@@ -9,9 +9,9 @@ import org.junit.Test;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
-import beast.math.distributions.Exponential;
-import beast.math.distributions.MRCAPrior;
-import beast.util.TreeParser;
+import beast.evolution.tree.MRCAPrior;
+import beast.evolution.tree.TreeParser;
+import beast.inference.distribution.Exponential;
 import junit.framework.TestCase;
 import test.beast.BEASTTestCase;
 

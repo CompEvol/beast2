@@ -30,10 +30,10 @@ package beast.evolution.speciation;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.Description;
-import beast.core.State;
+import beast.base.Description;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.TreeInterface;
+import beast.inference.State;
 
 
 /**

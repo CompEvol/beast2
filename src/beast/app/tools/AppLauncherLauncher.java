@@ -3,7 +3,7 @@ package beast.app.tools;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import beast.app.beastapp.BeastLauncher;
+import beast.app.util.BeastLauncher;
 
 public class AppLauncherLauncher extends BeastLauncher {
 	/**

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 
-import beast.util.BEASTClassLoader;
+import beast.pkgmgmt.BEASTClassLoader;
 
 /**
  * This class makes it easy to drag and drop files from the operating

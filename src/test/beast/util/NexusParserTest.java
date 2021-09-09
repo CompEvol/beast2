@@ -11,7 +11,7 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
-import beast.util.NexusParser;
+import beast.parser.NexusParser;
 import junit.framework.TestCase;
 
 public class NexusParserTest extends TestCase {

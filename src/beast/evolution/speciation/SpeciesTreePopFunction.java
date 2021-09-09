@@ -1,19 +1,19 @@
 package beast.evolution.speciation;
 
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.State;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.TreeDistribution;
-import beast.math.distributions.Gamma;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
+import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.TreeDistribution;
+import beast.inference.State;
+import beast.inference.distribution.Gamma;
+import beast.inference.parameter.RealParameter;
 
 @Description("Species tree prior for *BEAST analysis")
 public class SpeciesTreePopFunction extends TreeDistribution {

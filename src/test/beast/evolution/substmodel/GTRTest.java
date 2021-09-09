@@ -1,10 +1,10 @@
 package test.beast.evolution.substmodel;
 
 
-import beast.core.Description;
-import beast.core.parameter.RealParameter;
+import beast.base.Description;
 import beast.evolution.substitutionmodel.Frequencies;
 import beast.evolution.substitutionmodel.GTR;
+import beast.inference.parameter.RealParameter;
 import junit.framework.TestCase;
 
 /**

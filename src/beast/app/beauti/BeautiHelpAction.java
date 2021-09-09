@@ -2,7 +2,7 @@ package beast.app.beauti;
 
 import java.awt.event.ActionEvent;
 
-import beast.app.draw.MyAction;
+import beast.app.util.MyAction;
 
 /** Sub-classes of this class in packages will get
  * a menu item in the Help menu in BEAUti

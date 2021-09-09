@@ -2,9 +2,10 @@ package beast.app.beauti;
 
 import java.lang.reflect.InvocationTargetException;
 
-import beast.app.draw.InputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.InputEditor;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 
 public class ConstantPopulationInputEditor extends InputEditor.Base {

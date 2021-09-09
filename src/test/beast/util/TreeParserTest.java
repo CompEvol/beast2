@@ -3,7 +3,7 @@ package test.beast.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 
 public class TreeParserTest {
 

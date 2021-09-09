@@ -13,10 +13,10 @@ import org.fest.swing.security.ExitException;
 import org.junit.Test;
 
 import beast.app.beastapp.BeastMain;
-import beast.core.Logger;
-import beast.core.MCMC;
+import beast.inference.Logger;
+import beast.inference.MCMC;
+import beast.parser.XMLParser;
 import beast.util.Randomizer;
-import beast.util.XMLParser;
 import junit.framework.TestCase;
 
 /**
@@ -106,7 +106,7 @@ public class ExampleXmlParsingTest extends TestCase {
                 System.out.println("Processing " + fileName);
                 XMLParser parser = new XMLParser();
                 try {
-                    beast.core.Runnable runable = parser.parseFile(new File(dir + "/" + fileName));
+                    beast.inference.Runnable runable = parser.parseFile(new File(dir + "/" + fileName));
                     if (runable instanceof MCMC) {
                         MCMC mcmc = (MCMC) runable;
                         mcmc.setInputValue("preBurnin", 0);

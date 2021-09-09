@@ -29,21 +29,21 @@ import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.junit.testcase.FestSwingJUnitTestCase;
 
 import beast.app.beauti.Beauti;
-import beast.app.beauti.BeautiDoc;
+import beast.app.inputeditor.BeautiDoc;
 import beast.app.util.Utils;
-import beast.core.BEASTInterface;
-import beast.core.BEASTObject;
-import beast.core.Distribution;
-import beast.core.Function;
-import beast.core.Logger;
-import beast.core.MCMC;
-import beast.core.Operator;
-import beast.core.State;
-import beast.core.StateNode;
-import beast.core.parameter.Parameter;
-import beast.core.util.CompoundDistribution;
-import beast.math.distributions.Prior;
-import beast.util.XMLParser;
+import beast.base.BEASTInterface;
+import beast.base.BEASTObject;
+import beast.base.Function;
+import beast.inference.Distribution;
+import beast.inference.Logger;
+import beast.inference.MCMC;
+import beast.inference.Operator;
+import beast.inference.State;
+import beast.inference.StateNode;
+import beast.inference.distribution.Prior;
+import beast.inference.parameter.Parameter;
+import beast.inference.util.CompoundDistribution;
+import beast.parser.XMLParser;
 
 
 

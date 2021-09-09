@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -22,25 +23,29 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import beast.app.beauti.BeautiPanelConfig.Partition;
-import beast.app.draw.InputEditor;
-import beast.app.draw.InputEditor.ExpandOption;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.BeautiDocProvider;
+import beast.app.inputeditor.BeautiPanelConfig;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.BeautiPanelConfig.Partition;
+import beast.app.inputeditor.InputEditor.ExpandOption;
 import beast.app.util.Utils;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.MCMC;
-import beast.core.util.CompoundDistribution;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.tree.TreeInterface;
+import beast.inference.MCMC;
+import beast.inference.util.CompoundDistribution;
+import beast.parser.PartitionContext;
 
 /**
  * panel making up each of the tabs in Beauti *
  */
-public class BeautiPanel extends JPanel implements ListSelectionListener {
+public class BeautiPanel extends JPanel implements ListSelectionListener, BeautiDocProvider {
 
     private static final long serialVersionUID = 1L;
     public final static String ICONPATH = "beast/app/beauti/";
@@ -54,10 +59,21 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
      */
     BeautiDoc doc;
 
+    @Override
     public BeautiDoc getDoc() {
         return doc;
     }
-
+    
+    @Override
+    public BeautiPanelConfig getConfig() {
+    	return config;
+    }
+    
+    @Override
+    public int getPartitionIndex() {
+    	return partitionIndex;    			
+    }
+    
     /**
      * configuration for this panel *
      */
@@ -125,13 +141,22 @@ public class BeautiPanel extends JPanel implements ListSelectionListener {
             return;
         }
         box.add(Box.createVerticalGlue());
-        box.add(new JLabel(Utils.getIcon(panelIndex, config)));
+        box.add(new JLabel(getIcon(panelIndex, config)));
 
         splitPane.add(box, JSplitPane.LEFT);
         if (listOfPartitions != null) {
             listOfPartitions.setSelectedIndex(partitionIndex);
         }
     }
+    
+	private ImageIcon getIcon(int panelIndex, BeautiPanelConfig config) {
+		String iconLocation = BeautiPanel.ICONPATH + panelIndex + ".png";
+		if (config != null) {
+			iconLocation = BeautiPanel.ICONPATH + config.getIcon();
+		}
+		return Utils.getIcon(iconLocation);
+	}
+
 
     /**
      * Create a list of partitions and return as a JComponent;

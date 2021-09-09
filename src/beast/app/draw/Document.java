@@ -46,13 +46,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.Runnable;
-import beast.core.util.Log;
-import beast.util.PackageManager;
-import beast.util.XMLParser;
-import beast.util.XMLProducer;
+import beast.app.inputeditor.BEASTObjectPanel;
+import beast.base.BEASTInterface;
+import beast.base.Input;
+import beast.base.Log;
+import beast.inference.Runnable;
+import beast.parser.XMLParser;
+import beast.parser.XMLProducer;
+import beast.pkgmgmt.*;
 
 /**
  * The Document class is the Document part in the doc-view pattern of
@@ -104,7 +105,7 @@ public class Document {
 
     public Document() {
         // load all parsers
-        List<String> plugInNames = PackageManager.find(beast.core.BEASTInterface.class, PackageManager.IMPLEMENTATION_DIR);
+        List<String> plugInNames = PackageManager.find(beast.base.BEASTInterface.class, PackageManager.IMPLEMENTATION_DIR);
         m_sPlugInNames = plugInNames.toArray(new String[0]);
         tabulist = new HashSet<>();
         Properties properties = new Properties();

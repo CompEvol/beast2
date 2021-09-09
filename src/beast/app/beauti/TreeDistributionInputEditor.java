@@ -11,12 +11,17 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import beast.app.draw.InputEditor;
-import beast.app.draw.SmallLabel;
-import beast.core.BEASTInterface;
-import beast.core.Input;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.BeautiSubTemplate;
+import beast.app.inputeditor.InputEditor;
+import beast.app.inputeditor.SmallLabel;
+import beast.app.inputeditor.InputEditor.Base;
+import beast.app.inputeditor.InputEditor.ExpandOption;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeDistribution;
+import beast.parser.PartitionContext;
 
 //import beast.evolution.speciation.BirthDeathGernhard08Model;
 //import beast.evolution.speciation.YuleModel;

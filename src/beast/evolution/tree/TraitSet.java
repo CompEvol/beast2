@@ -1,16 +1,16 @@
 package beast.evolution.tree;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.util.Log;
-import beast.evolution.alignment.TaxonSet;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
+import beast.evolution.alignment.TaxonSet;
 
 
 @Description("A trait set represent a collection of properties of taxons, for the use of initializing a tree. " +

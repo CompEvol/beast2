@@ -1,9 +1,9 @@
 package beast.app.packagemanager;
 
-import beast.core.Citation;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import beast.base.Citation;
 
 /**
  * @author Walter Xie

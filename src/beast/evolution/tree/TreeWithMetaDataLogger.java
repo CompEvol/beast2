@@ -6,16 +6,16 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Loggable;
-import beast.core.StateNode;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
+import beast.base.BEASTObject;
+import beast.base.Description;
+import beast.base.Function;
+import beast.base.Input;
+import beast.base.Loggable;
+import beast.base.Input.Validate;
 import beast.evolution.branchratemodel.BranchRateModel;
+import beast.inference.StateNode;
+import beast.inference.parameter.Parameter;
+import beast.inference.parameter.RealParameter;
 
 @Description("Logs tree annotated with metadata and/or rates")
 public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
@@ -115,7 +115,7 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
             }
             buf.append(")");
         } else {
-            buf.append(node.labelNr + 1);
+            buf.append(node.getNr() + 1);
         }
 		StringBuffer buf2 = new StringBuffer();
 		if (someMetaDataNeedsLogging) {

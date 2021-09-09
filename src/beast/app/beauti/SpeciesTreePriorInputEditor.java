@@ -3,9 +3,10 @@ package beast.app.beauti;
 import javax.swing.Box;
 import javax.swing.JComponent;
 
-import beast.app.draw.BEASTObjectInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
+import beast.app.inputeditor.BEASTObjectInputEditor;
+import beast.app.inputeditor.BeautiDoc;
+import beast.base.BEASTInterface;
+import beast.base.Input;
 import beast.evolution.speciation.SpeciesTreePrior;
 
 

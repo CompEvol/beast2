@@ -2,10 +2,11 @@ package beast.app.beauti;
 
 import java.util.List;
 
-import beast.app.draw.ListInputEditor;
-import beast.core.BEASTInterface;
-import beast.core.Input;
-import beast.core.StateNode;
+import beast.app.inputeditor.BeautiDoc;
+import beast.app.inputeditor.ListInputEditor;
+import beast.base.BEASTInterface;
+import beast.base.Input;
+import beast.inference.StateNode;
 
 
 

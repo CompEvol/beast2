@@ -1,6 +1,6 @@
 package beast.evolution.substitutionmodel;
 
-import beast.core.Description;
+import beast.base.Description;
 import beast.evolution.datatype.Aminoacid;
 import beast.evolution.datatype.DataType;
 
@@ -10,6 +10,7 @@ public class Blosum62 extends EmpiricalSubstitutionModel {
 
 
     @Override
+	public
     double[][] getEmpiricalRates() {
         double[][] rate = new double[20][20];
 

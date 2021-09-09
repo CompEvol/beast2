@@ -11,8 +11,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import beast.app.beauti.guiutil.S11InitialSelection;
-
 
 public class ClonePartitionPanel extends JPanel {
     private static final long serialVersionUID = 1L;

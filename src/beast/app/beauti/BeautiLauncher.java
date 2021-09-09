@@ -4,8 +4,8 @@ package beast.app.beauti;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import beast.app.beastapp.BeastLauncher;
-import beast.app.util.Utils6;
+import beast.app.util.BeastLauncher;
+import beast.pkgmgmt.Utils6;
 
 /** 
  * Loads beast.jar and launches BEAUti through the Beauti class

@@ -3,13 +3,14 @@ package test.beast.app.beauti;
 
 
 
-import beast.app.util.Utils;
 import org.fest.swing.data.Index;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.*;
 import org.fest.swing.image.ScreenshotTaker;
 import org.junit.Test;
+
+import beast.app.util.Utils;
 
 import javax.swing.*;
 import java.awt.*;

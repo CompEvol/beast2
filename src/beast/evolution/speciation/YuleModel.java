@@ -6,15 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.*;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
+import beast.base.BEASTInterface;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Log;
+import beast.base.Input.Validate;
+import beast.evolution.tree.MRCAPrior;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.TreeInterface;
 import beast.evolution.tree.TreeUtils;
-import beast.math.distributions.MRCAPrior;
+import beast.inference.*;
+import beast.inference.parameter.RealParameter;
 
 
 

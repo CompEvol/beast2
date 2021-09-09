@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import beast.core.CalculationNode;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.State;
+import beast.base.Description;
+import beast.base.Input;
+import beast.base.Input.Validate;
 import beast.evolution.tree.TreeDistribution;
-import beast.math.Binomial;
+import beast.inference.CalculationNode;
+import beast.inference.State;
+import beast.util.Binomial;
 
 
 /**

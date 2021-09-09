@@ -2,9 +2,9 @@ package test.beast.evolution.operator;
 
 import org.junit.Test;
 
-import beast.evolution.operators.ScaleOperator;
+import beast.evolution.operator.ScaleOperator;
 import beast.evolution.tree.Node;
-import beast.util.TreeParser;
+import beast.evolution.tree.TreeParser;
 import junit.framework.TestCase;
 
 public class ScaleOperatorTest extends TestCase {

@@ -2,7 +2,7 @@ package beast.app.treeannotator;
 
 import java.util.Arrays;
 
-import beast.math.statistic.DiscreteStatistics;
+import beast.util.DiscreteStatistics;
 import cern.colt.list.DoubleArrayList;
 import cern.jet.stat.Descriptive;
 

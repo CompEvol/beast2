@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
+import beast.base.BEASTObject;
+import beast.base.Description;
 
 
 @Description("For identifying a single taxon")
@@ -30,7 +30,7 @@ public class Taxon extends BEASTObject {
 
     }
 
-    protected String toString(final String indent) {
+    public String toString(final String indent) {
     	return indent + getID() + "\n";
     }
 
