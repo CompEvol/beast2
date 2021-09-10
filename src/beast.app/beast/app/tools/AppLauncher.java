@@ -8,13 +8,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,10 +40,8 @@ import org.w3c.dom.NodeList;
 
 import beast.app.util.BeastLauncher;
 import beast.app.util.Utils;
-import beast.base.core.Log;
 import beast.pkgmgmt.BEASTClassLoader;
 import beast.pkgmgmt.PackageManager;
-import beast.pkgmgmt.Utils6;
 
 
 /**

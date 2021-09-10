@@ -9,12 +9,13 @@
     </description>
 
     <!-- set global properties for this build -->
-    <property name="src" location="../beast2/src" />
-    <property name="build" location="../beast2/build" />
-    <property name="lib" location="../beast2/lib" />
-    <property name="doc" location="../beast2/doc" />
-    <property name="dist" location="../beast2/build/dist" />
-    <property name="test" location="../beast2/test" />
+    <!--property name="beast2" location="beast2.7"/-->
+    <property name="src" location="../beast2.7/src"/>
+    <property name="build" location="../beast2.7/build" />
+    <property name="lib" location="../beast2.7/lib" />
+    <property name="doc" location="../beast2.7/doc" />
+    <property name="dist" location="../beast2.7/build/dist" />
+    <property name="test" location="../beast2.7/test" />
 
     <property name="main_class_BEASTLauncher" value="beast.app.beastapp.BeastLauncher" />
     <property name="report" value="build/junitreport" />
@@ -131,6 +132,68 @@
         <echo message="Successfully compiled." />
     </target>
 
+    <target name="json" depends="init">
+        <echo>Building json library for BEAST 2</echo>
+        <mkdir dir="${build}" />
+
+        <!-- Compile the java code from ${src} into ${build} /bin -->
+        <javac 
+               srcdir="${src}"
+               destdir="${build}"
+               classpathref="classpath"
+               fork="true"
+               memoryinitialsize="256m"
+               memorymaximumsize="1024m"
+               includeAntRuntime='false'>
+            <!-- apache commons math -->
+            <include name="org/json/*.java" />
+        </javac>
+
+        <echo message="Ant running on Java version ${ant.java.version}"/>
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}" />
+        <jar jarfile="${dist}/json.jar">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+            </manifest>
+            <fileset dir="${build}">
+                <include name="org/json/*.class" />
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="commons-math" depends="init">
+        <echo>Building commons-math library for BEAST 2</echo>
+        <mkdir dir="${build}" />
+
+        <!-- Compile the java code from ${src} into ${build} /bin -->
+        <javac 
+               srcdir="${src}"
+               destdir="${build}"
+               classpathref="classpath"
+               fork="true"
+               memoryinitialsize="256m"
+               memorymaximumsize="1024m"
+               includeAntRuntime='false'>
+            <!-- apache commons math -->
+            <include name="org/apache/**/**" />
+        </javac>
+
+        <echo message="Ant running on Java version ${ant.java.version}"/>
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}" />
+        <jar jarfile="${dist}/commons-math.jar">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+            </manifest>
+            <zipgroupfileset dir="${lib}" includes="commons-math3-3.6.1.jar" />
+            <fileset dir="${build}">
+                <include name="org/apache/**/*.class" />
+            </fileset>
+        </jar>
+    </target>
+    
+    
     <!-- make the beast.jar -->
     <target name="dist_all_BEAST" depends="compile-all" description="create BEAST jar">
         <!-- Create the distribution directory -->
@@ -191,7 +254,7 @@
         <mkdir dir="${release_dir}/package/lib" />
         <copy file="${dist}/beast.src.jar" todir="${release_dir}/package/"/>
         <copy file="${dist}/beast.jar" todir="${release_dir}/package/lib/"/>
-        <copy file="../beast2/version.xml" todir="${release_dir}/package/"/>
+        <copy file="../beast2.7/version.xml" todir="${release_dir}/package/"/>
 
         <jar jarfile="${release_dir}/package/BEAST.package.v${version}.zip">
             <fileset dir="${release_dir}/package">
@@ -299,7 +362,7 @@
     <property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
 
-    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="${lib}/jsign-3.1.jar"/>
+    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="./lib/jsign-3.1.jar"/>
 
     <!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
@@ -828,8 +891,8 @@
     </target>
 
     <!-- Define the appbundler task -->
-<!--    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2/lib/bundler/appbundler-1.0.jar"/>-->
-    <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="../beast2/lib/bundler/jarbundler-core-3.3.0.jar"/>
+<!--    <taskdef name="bundleapp" classname="com.oracle.appbundler.AppBundlerTask" classpath="../beast2.7/lib/bundler/appbundler-1.0.jar"/>-->
+    <taskdef name="jarbundler" classname="com.ultramixer.jarbundler.JarBundler" classpath="./lib/bundler/jarbundler-core-3.3.0.jar"/>
 
     <!--property name="AppleSigner" value="Developer ID Application: Alexei Drummond (6M6Y6L7RUP)" /-->
     <!--<property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />-->

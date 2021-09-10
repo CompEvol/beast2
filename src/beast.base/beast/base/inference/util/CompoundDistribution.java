@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
-import beast.app.beastapp.BeastMCMC;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Description;
 import beast.base.core.Input;
