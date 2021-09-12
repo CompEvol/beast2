@@ -64,11 +64,11 @@
     </target>
 
     <!-- compile Java source code -->
-    <target name="compile-all" depends="init">
+    <target name="compile-all" depends="init,json,commons-math,beast.pkgmgmt,beast.base,beast.app,test.beast">
         <echo>Building BEAST 2</echo>
+        <!--
         <mkdir dir="${build}" />
 
-        <!-- Compile the java code from ${src} into ${build} /bin -->
         <javac source="1.8"
 		target="1.8"
 		bootclasspath='/opt/jdk1.8.0_131/jre/lib/rt.jar'
@@ -80,15 +80,12 @@
                memorymaximumsize="1024m"
                includeAntRuntime='false'>
             <include name="beast/**/**" />
-            <!-- apache commons math -->
             <include name="org/**/**" />
-            <!-- compile JUnit test classes -->
             <include name="test/beast/**" />
         </javac>
 
         <echo message="Ant running on Java version ${ant.java.version}"/>
 
-        <!-- compile the launcher apps against Java 6-->
         <delete file="${build}/beast/app/beauti/BeautiLauncher.class" />
         <delete file="${build}/beast/app/tools/AppLauncherLauncher.class" />
         <delete file="${build}/beast/app/tools/LogCombinerLauncher.class" />
@@ -96,14 +93,6 @@
         <delete file="${build}/beast/app/util/Utils6.class" />
         <delete file="${build}/beast/app/BEASTVersion.class" />
         <delete file="${build}/beast/util/BEASTClassLoader.class" />
-        <!--
-        <delete>
-	      <fileset dir="${build}/beast/core/util/" includes="Log*.class" />
-    	  <fileset dir="${build}/beast/app/beastapp/" includes="BeastLauncher*.class" />
-	      <fileset dir="${build}/beast/app/util/" includes="Arguments*.class"/>
-	      <fileset dir="${build}/beast/util/" includes="Package*.class"/>
-    	</delete>
-    	-->
     	
         <delete file="${build}/beast/app/util/Version.class" />
         <javac source="1.6"
@@ -129,9 +118,94 @@
             <fileset dir="${src}" includes="**/*.properties" />
             <fileset dir="${src}" includes="**/*.png" />
         </copy>
+        -->
         <echo message="Successfully compiled." />
     </target>
+    
+    <target name="beast.pkgmgmt" depends="init">
+		<exec executable="javac" dir="${basedir}">
+            <arg value="-d"/>
+            <arg value="build"/>
+            <arg value="--module-source-path"/>
+            <arg value="src"/>
+            <arg value="--module"/>
+            <arg value="beast.pkgmgmt"/>
+        </exec>
+                
+        <exec executable="jar" dir="${basedir}">
+            <arg value="-c"/>
+            <arg value="--file=./build/dist/beast.pkgmgmt.jar"/>
+            <arg value="-C"/>
+            <arg value="build/beast.pkgmgmt"/>
+            <arg value="."/>
+        </exec>
+    </target>
 
+
+    <target name="beast.base" depends="beast.pkgmgmt">
+		<exec executable="javac" dir="${basedir}">
+            <arg value="-d"/>
+            <arg value="build"/>
+            <arg value="--module-path"/>
+            <arg value="build/dist/commons-math.jar:build/dist/json.jar:build/dist/beast.pkgmgmt.jar:lib/beagle.jar:lib/colt.jar:lib/antlr-runtime-4.7.jar"/>
+            <arg value="--module-source-path"/>
+            <arg value="src"/>
+            <arg value="--module"/>
+            <arg value="beast.base"/>
+        </exec>
+                
+        <exec executable="jar" dir="${basedir}">
+            <arg value="-c"/>
+            <arg value="--file=./build/dist/beast.base.jar"/>
+            <arg value="-C"/>
+            <arg value="build/beast.base"/>
+            <arg value="."/>
+        </exec>
+    </target>
+
+    <target name="beast.app" depends="beast.base">
+		<exec executable="javac" dir="${basedir}">
+            <arg value="-d"/>
+            <arg value="build"/>
+            <arg value="--module-path"/>
+            <arg value="build/dist/commons-math.jar:build/dist/json.jar:build/dist/beast.pkgmgmt.jar:build/dist/beast.base.jar:lib/beagle.jar:lib/colt.jar:lib/antlr-runtime-4.7.jar:lib/jam.jar"/>
+            <arg value="--module-source-path"/>
+            <arg value="src"/>
+            <arg value="--module"/>
+            <arg value="beast.app"/>
+        </exec>
+                
+        <exec executable="jar" dir="${basedir}">
+            <arg value="-c"/>
+            <arg value="--file=./build/dist/beast.app.jar"/>
+            <arg value="-C"/>
+            <arg value="build/beast.app"/>
+            <arg value="."/>
+        </exec>
+    </target>
+    
+    <target name="test.beast" depends="beast.app">
+		<exec executable="javac" dir="${basedir}">
+            <arg value="-d"/>
+            <arg value="build"/>
+            <arg value="--module-path"/>
+            <arg value="build/dist/commons-math.jar:build/dist/json.jar:build/dist/beast.pkgmgmt.jar:build/dist/beast.base.jar:build/dist/beast.app.jar:lib/beagle.jar:lib/colt.jar:lib/antlr-runtime-4.7.jar:lib/jam.jar:lib/fest.jar:lib/junit-4.8.2.jar"/>
+            <arg value="--module-source-path"/>
+            <arg value="src"/>
+            <arg value="--module"/>
+            <arg value="test.beast"/>
+        </exec>
+                
+        <exec executable="jar" dir="${basedir}">
+            <arg value="-c"/>
+            <arg value="--file=./build/dist/test.beast.jar"/>
+            <arg value="-C"/>
+            <arg value="build/test.beast"/>
+            <arg value="."/>
+        </exec>
+    </target>
+    
+    
     <target name="json" depends="init">
         <echo>Building json library for BEAST 2</echo>
         <mkdir dir="${build}" />
@@ -232,7 +306,7 @@
                 <include name="beast/**/Version.class" />
 		    	<include name="beast/app/util/Arguments*.class" />
                 <include name="beast/util/Package*.class" />
-		<include name="beast/util/BEASTClassLoader.class" />
+				<include name="beast/util/BEASTClassLoader.class" />
                 <include name="beast/app/draw/icons/beauti.png"/>
                 <include name="beast/core/util/Log*.class" />
            </fileset>
@@ -282,14 +356,33 @@
         <junit printsummary="yes" failureproperty="junitfailed">
             <!--showoutput='yes'-->
             <classpath>
-                <path refid="classpath" />
-                <path location="${build}" />
+                <path id="classpath">
+        			<fileset dir="${lib}" includes="beagle.jar"/>
+			        <fileset dir="${lib}" includes="jam.jar"/>
+			        <fileset dir="${lib}" includes="colt.jar"/>
+			        <fileset dir="${lib}" includes="fest.jar"/>
+			        <fileset dir="${lib}" includes="junit-4.8.2.jar"/>
+			        <fileset dir="${lib}" includes="antlr-runtime-4.7.jar"/>
+			        <fileset dir="build/dist" includes="json.jar" />
+			        <fileset dir="build/dist" includes="commons-math.jar" />
+			        <fileset dir="build/dist" includes="beast.base.jar" />
+			        <fileset dir="build/dist" includes="beast.app.jar" />
+			        <fileset dir="build/dist" includes="beast.pkgmgmt.jar" />
+			        <fileset dir="build/dist" includes="test.beast.jar" />
+			    </path>			    
+			    <path location="build/test.beast"/>
             </classpath>
-
+            <!--
+            <classpath>
+            	<path>
+			        <fileset dir="${lib}" includes="junit-4.8.2.jar"/>
+            	</path>
+            </classpath>
+-->
             <formatter type="xml" />
 
             <batchtest fork="yes" todir="${report}">
-                <fileset dir="${src}">
+                <fileset dir="src/test.beast">
                     <include name="test/**/*Test.java" />
                     <exclude name="test/beast/beast2vs1/**/*Test.java"/>
                     <exclude name="test/beast/app/beauti/**/*Test.java"/>

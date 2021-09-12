@@ -1,8 +1,9 @@
-module beast.app {
+module test.beast {
 	
 	// module depends on beast.pkgmgmt and beast.base
 	requires beast.pkgmgmt;
 	requires beast.base;
+	requires beast.app;
 	
 	// standard module dependencies
 	requires java.base;
@@ -15,19 +16,10 @@ module beast.app {
 	requires antlr.runtime;
 	requires colt;
 	requires jam;
+	requires junit;
 	
 	// libraries customised for BEAST 2 from build/dist folder
 	requires json;
 	requires commons.math;
-
-	exports beast.app.inputeditor;
-	exports beast.app.beastapp;
-	exports beast.app.tools;
-	exports beast.app.util;
-	exports beast.app.packagemanager;
-	exports beast.app.treeannotator;
-	exports beast.app.seqgen;
-	exports beast.app.draw;
-	exports beast.app.beauti;
 
 }
