@@ -233,8 +233,8 @@ public class RandomTree extends Tree implements StateNodeInitialiser {
 	        			beastObjects.get(i).initAndValidate();
 	        		}
 	                try {
-	                	double tLow = distr.inverseCumulativeProbability(0.0) + distr.offsetInput.get();
-	                	double tHi = distr.inverseCumulativeProbability(1.0) + distr.offsetInput.get();
+	                	double tLow = distr.inverseCumulativeProbability(0.0);
+	                	double tHi = distr.inverseCumulativeProbability(1.0);
 						bounds.lower = getDate(tLow);
 		                bounds.upper = getDate(tHi);
 		                if (bounds.lower > bounds.upper && tLow < tHi) {
