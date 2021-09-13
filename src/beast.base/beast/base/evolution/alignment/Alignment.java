@@ -63,16 +63,21 @@ public class Alignment extends Map<String> {
     }
 
     static public void findDataTypes() {
+    	
+    	Iterable<DataType> dataTypes = ServiceLoader.load(DataType.class);
+    	
         // build up list of data types
-        List<String> m_sDataTypes = PackageManager.find(beast.base.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
-        for (String dataTypeName : m_sDataTypes) {
+        // List<String> m_sDataTypes = PackageManager.find(beast.base.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
+        for (DataType d : dataTypes) {
             try {
-                DataType dataType = (DataType) BEASTClassLoader.forName(dataTypeName).newInstance();
+                DataType dataType = (DataType) BEASTClassLoader.forName(d.getClass().getName()).newInstance();
                 if (dataType.isStandard()) {
                     String description = dataType.getTypeDescription();
                     types.putIfAbsent(description, dataType);
+                    Log.warning("Discovered " + d.getClass().getName());
                 }
             } catch (Exception e) {
+                Log.warning("Failed to discover " + d.getClass().getName() + " " + e.getMessage());
                 // TODO: handle exception
             }
         }
@@ -266,20 +271,24 @@ public class Alignment extends Map<String> {
             throw new IllegalArgumentException("data type + '" + dataTypeInput.get() + "' cannot be found. " +
                     "Choose one of " + Arrays.toString(types.keySet().toArray(new String[0])));
         }
+        
+        m_dataType = types.get(dataTypeInput.get());
+        
+        
         // seems to spend forever in there??
-        List<String> dataTypes = PackageManager.find(DataType.class, IMPLEMENTATION_DIR);
-        for (String dataTypeName : dataTypes) {
-            DataType dataType;
-            try {
-                dataType = (DataType) BEASTClassLoader.forName(dataTypeName).newInstance();
-                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
-                    m_dataType = dataType;
-                    break;
-                }
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        }
+//        List<String> dataTypes = PackageManager.find(DataType.class, IMPLEMENTATION_DIR);
+//        for (String dataTypeName : dataTypes) {
+//            DataType dataType;
+//            try {
+//                dataType = (DataType) BEASTClassLoader.forName(dataTypeName).newInstance();
+//                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
+//                    m_dataType = dataType;
+//                    break;
+//                }
+//            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+//                throw new IllegalArgumentException(e.getMessage());
+//            }
+//        }
     }
 
     /**

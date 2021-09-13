@@ -21,5 +21,7 @@ module test.beast {
 	// libraries customised for BEAST 2 from build/dist folder
 	requires json;
 	requires commons.math;
+	
+	exports test.beast.core;
 
 }

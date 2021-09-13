@@ -8,6 +8,18 @@ module beast.base {
 	requires java.desktop;
 
 	
+	uses beast.base.evolution.datatype.DataType;
+	
+	provides beast.base.evolution.datatype.DataType with 
+		beast.base.evolution.datatype.Aminoacid,
+		beast.base.evolution.datatype.Nucleotide,
+		beast.base.evolution.datatype.TwoStateCovarion,
+		beast.base.evolution.datatype.Binary,
+		beast.base.evolution.datatype.IntegerData,
+		beast.base.evolution.datatype.StandardData,
+		beast.base.evolution.datatype.UserDataType;
+
+	
 	// external libraries from lib folder
 	requires beagle;
 	requires antlr.runtime;
@@ -21,7 +33,13 @@ module beast.base {
 	exports beast.base.parser;
 	exports beast.base.math.matrixalgebra;
 	exports beast.base.math;
-	// exports beast.base.evolution.tree.treeparser;
+	exports beast.base.inference.util;
+	exports beast.base.inference.distribution;
+	exports beast.base.inference.parameter;
+	exports beast.base.inference.operator.kernel;
+	exports beast.base.inference.operator;
+	exports beast.base.inference;
+	// exports beast.base.evolution.tree.treeparser; no need to export this
 	exports beast.base.evolution.tree.coalescent;
 	exports beast.base.evolution.tree;
 	exports beast.base.evolution.likelihood;
@@ -35,10 +53,4 @@ module beast.base {
 	exports beast.base.evolution.operator;
 	exports beast.base.evolution.substitutionmodel;
 	exports beast.base.evolution;
-	exports beast.base.inference.util;
-	exports beast.base.inference.distribution;
-	exports beast.base.inference.parameter;
-	exports beast.base.inference.operator.kernel;
-	exports beast.base.inference.operator;
-	exports beast.base.inference;
 }
