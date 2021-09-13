@@ -58,7 +58,7 @@ public class LogNormalDistributionModelTest extends TestCase {
     @Test
     public void testCalcLogP2() throws Exception {
         // does the same as testCalcLogP(), but with by constructing object through XML
-        String xml = "<input spec='beast.math.distributions.LogNormalDistributionModel' " +
+        String xml = "<input spec='beast.base.inference.distributions.LogNormalDistributionModel' " +
                 "offset='1200' " +
                 "M='2000' " +
                 "S='0.6' " +

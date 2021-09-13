@@ -64,8 +64,10 @@ public class Alignment extends Map<String> {
 
     static public void findDataTypes() {
     	
+    	//Iterable<DataType> dataTypes = (Iterable<DataType>) BEASTClassLoader.load(DataType.class);
     	Iterable<DataType> dataTypes = ServiceLoader.load(DataType.class);
     	
+        Log.warning("findDataTypes called");
         // build up list of data types
         // List<String> m_sDataTypes = PackageManager.find(beast.base.evolution.datatype.DataType.class, IMPLEMENTATION_DIR);
         for (DataType d : dataTypes) {
@@ -186,6 +188,9 @@ public class Alignment extends Map<String> {
     public boolean isAscertained;
 
     public Alignment() {
+    	if (types.size() == 0) {
+    		findDataTypes();    		
+    	}
     }
 
     /**
@@ -213,6 +218,9 @@ public class Alignment extends Map<String> {
             sequenceInput.setValue(sequence, this);
         }
         dataTypeInput.setValue(dataType, this);
+    	if (types.size() == 0) {
+    		findDataTypes();    		
+    	}
         initAndValidate();
     }
 

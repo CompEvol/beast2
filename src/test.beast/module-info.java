@@ -22,6 +22,9 @@ module test.beast {
 	requires json;
 	requires commons.math;
 	
-	exports test.beast.core;
+	// exports required to run tests inside Ecplipse
+	exports test.beast.core;	
+	exports test.beast.util;	
+	exports test.beast.evolution.operator;
 
 }

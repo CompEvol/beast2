@@ -6,6 +6,10 @@
 
 # Eclipse ignores
 /.classpath
+/build
+/src/beast.pkgmgmt/build
+/src/beast.base/build
+/src/beast.app/build
 
 # OS X ignores
 .DS_Store

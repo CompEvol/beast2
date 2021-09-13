@@ -30,14 +30,14 @@ public class XMLParserTest extends TestCase {
     	// create new version.xml
     	PrintStream out = new PrintStream(new File("version.xml"));
     	out.println("<package name='BEAST' version='" + new BEASTVersion().getVersion() + "'>");
-    	out.println("<map from='beast.evolution.substitutionmodel.JoMamma' to='beast.evolution.substitutionmodel.JukesCantor'/>");
+    	out.println("<map from='beast.evolution.substitutionmodel.JoMamma' to='beast.base.evolution.substitutionmodel.JukesCantor'/>");
     	out.println("</package>");
     	out.close();
     	
     	// parse XML containing entry in map
     	Object o = null;
     	try {
-	    	String xml = "<beast namespace=\"beast.evolution.substitutionmodel:beast.evolution.likelihood\" version=\"2.6\">"
+	    	String xml = "<beast namespace=\"beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood\" version=\"2.6\">"
 	    			+ "<input spec='JoMamma'/>"
 	    			+ "</beast>";
 	    

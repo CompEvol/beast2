@@ -3,6 +3,7 @@ package beast.pkgmgmt;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -124,7 +125,9 @@ public class Utils6 {
     */
     public static void startSplashScreen()
     {
-        Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
+    	
+    	ImageIcon icon = getIcon("beast/pkgmgmt/icons/beauti.png");
+        Image img = icon == null ? new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB): icon.getImage();
         int width=2 * img.getWidth(null), height=img.getHeight(null);
         Window win=new Window( new Frame() );
         win.pack();
@@ -369,7 +372,8 @@ public class Utils6 {
     public static void logToSplashScreen(String msg) {
     	if (Utils6.splashScreen != null) {
     		try {
-	            Image img = getIcon("beast/app/draw/icons/beauti.png").getImage();
+    	    	ImageIcon icon = getIcon("beast/pkgmgmt/icons/beauti.png");
+    	        Image img = icon == null ? new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB): icon.getImage();
 	            Graphics gr = Utils6.can.getBufferedGraphics();
 	            gr.drawImage(img, Utils6.can.getWidth() / 4, 0, Utils6.can);
 	            gr.drawString(msg, 1, Utils6.can.getHeight() - 3);

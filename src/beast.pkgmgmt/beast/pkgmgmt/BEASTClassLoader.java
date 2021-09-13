@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -95,5 +96,12 @@ public class BEASTClassLoader extends URLClassLoader {
 		} catch (NoClassDefFoundError e2) {
 			throw new ClassNotFoundException(e2.getMessage());
 		}
+	}
+
+	/** 
+	 * load service like DataType from all available modules 
+	 * **/	
+	public static Iterable<?> load(Class<?> clazz) {
+		return ServiceLoader.load(clazz);
 	}
 }
