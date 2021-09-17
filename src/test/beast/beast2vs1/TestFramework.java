@@ -1,8 +1,5 @@
 package test.beast.beast2vs1;
 
-import java.io.File;
-import java.util.List;
-
 import beagle.BeagleFlag;
 import beast.core.Logger;
 import beast.util.Randomizer;
@@ -11,9 +8,13 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
+import test.beast.beast2vs1.trace.TraceStatistics;
+
+import java.io.File;
+import java.util.List;
 
 public abstract class TestFramework extends TestCase {
-    protected static long SEED = 128;
+    protected long SEED = 128;
     private String[] xmls;
 
     protected abstract List<Expectation> giveExpectations(int index_XML) throws Exception;
@@ -29,23 +30,25 @@ public abstract class TestFramework extends TestCase {
     	logDir = System.getProperty("user.dir");
     }
     
-    protected void setUp(String[] xmls) { // throws Exception {
+    protected void setUp(String[] xmls) throws InterruptedException { // throws Exception {
         this.xmls = new String[xmls.length];
         for (int i = 0; i < xmls.length; i++) {
             this.xmls[i] = xmls[i];
         }
+        Thread.sleep(1000); // ensure log file is processed between test suits
     }
 //    protected abstract void analyse() throws Exception;
 
     public void analyse(int index_XML) throws Exception {
 //        for (int i = 0; i < xmls.length; i++) {
 //            if (giveExpectations(i).size() > 0) {
+        // quick fix to ensure log file names are different
+        SEED = SEED + index_XML;
         Randomizer.setSeed(SEED);
         Logger.FILE_MODE = Logger.LogFileMode.overwrite;
         
         long beagleFlags = BeagleFlag.PROCESSOR_CPU.getMask() | BeagleFlag.VECTOR_SSE.getMask();
         System.setProperty("beagle.preferred.flags", Long.toString(beagleFlags));
-
 
         String fileName = dirName + xmls[index_XML];
 
@@ -62,14 +65,22 @@ public abstract class TestFramework extends TestCase {
         LogAnalyser logAnalyser = new LogAnalyser(logFile, giveExpectations(index_XML)); // burnIn = 0.1 * maxState
 
         for (Expectation expectation : logAnalyser.m_pExpectations.get()) {
-            Assert.assertTrue(xmls[index_XML] + ": Expected " + expectation.traceName.get() + " delta mean: "
-                    + expectation.expValue.get() + " - " + expectation.getTraceStatistics().getMean()
-                    + " <= delta stdErr: 2*(" + expectation.getStdError() + " + "
-                    + expectation.getTraceStatistics().getStdErrorOfMean() + ")", expectation.isPassed());
+            TraceStatistics stats = expectation.getTraceStatistics();
+            if (stats == null) {
+                System.err.println("Null trace at " + expectation.traceName.get()
+                        + "\nPlease check log for " + xmls[index_XML] );
+            } else {
+                double m = stats.getMean();
+                double stderr = stats.getStdErrorOfMean();
 
-            if (checkESS)
-            	Assert.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
-                    + expectation.getTraceStatistics().getESS(), expectation.isValid());
+                Assert.assertTrue(xmls[index_XML] + ": Expected " + expectation.traceName.get() + " delta mean: "
+                        + expectation.expValue.get() + " - " + m + " <= delta stdErr: 2*(" + expectation.getStdError()
+                        + " + " + stderr + ")", expectation.isPassed());
+
+                if (checkESS)
+                    Assert.assertTrue(xmls[index_XML] + ":  has very low effective sample sizes (ESS) "
+                            + stats.getESS(), expectation.isValid());
+            }
         }
 
         System.out.println("\nSucceed " + fileName);

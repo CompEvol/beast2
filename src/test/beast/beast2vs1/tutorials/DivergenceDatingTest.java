@@ -13,7 +13,7 @@ public class DivergenceDatingTest {
     @Test
     public void DivergenceDatingTutorial() throws Exception {
         DivergenceDatingRunner runner = new DivergenceDatingRunner(org.fest.util.Files.temporaryFolder());
-        runner.analyse(0);
+        runner.analyse(0); // SEED = SEED + index_XML;
     }
 
     // This is for debugging the test only
@@ -28,7 +28,7 @@ public class DivergenceDatingTest {
 
     class DivergenceDatingRunner extends TestFramework {
 
-        DivergenceDatingRunner(File file) {
+        DivergenceDatingRunner(File file) throws InterruptedException {
             super();
             setUp(new String[]{"/x.xml"});
             dirName = file.getPath();

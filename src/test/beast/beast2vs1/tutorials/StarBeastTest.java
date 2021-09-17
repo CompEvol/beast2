@@ -28,7 +28,7 @@ public class StarBeastTest {
 
     class StarBEASTRunner extends TestFramework {
 
-        StarBEASTRunner(File file) {
+        StarBEASTRunner(File file) throws InterruptedException {
             super();
             setUp(new String[]{"/x.xml"});
             dirName = file.getPath();
