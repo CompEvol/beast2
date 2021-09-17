@@ -1,10 +1,10 @@
 package test.beast.beast2vs1;
 
 
+import test.beast.beast2vs1.trace.Expectation;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import test.beast.beast2vs1.trace.Expectation;
 
 /**
  * @author Walter Xie
@@ -67,15 +67,15 @@ public class SubstitutionModelTest extends TestFramework {
                 addExpIntoList(expList, "prior", -8.24, 1.1349E-2);
                 addExpIntoList(expList, "TreeHeight.firsthalf", 0.2523, 1.2987E-4);
                 addExpIntoList(expList, "kappa.firsthalf", 4.8401, 1.184E-2);
-                addExpIntoList(expList, "freqParameter.firsthalf1", 0.289, 6.1115E-4);
-                addExpIntoList(expList, "freqParameter.firsthalf2", 0.3204, 6.8116E-4);
-                addExpIntoList(expList, "freqParameter.firsthalf3", 0.1081, 3.8843E-4);
-                addExpIntoList(expList, "freqParameter.firsthalf4", 0.2825, 5.1796E-4);
+                addExpIntoList(expList, "freqParameter.firsthalf.1", 0.289, 6.1115E-4);
+                addExpIntoList(expList, "freqParameter.firsthalf.2", 0.3204, 6.8116E-4);
+                addExpIntoList(expList, "freqParameter.firsthalf.3", 0.1081, 3.8843E-4);
+                addExpIntoList(expList, "freqParameter.firsthalf.4", 0.2825, 5.1796E-4);
                 addExpIntoList(expList, "kappa.secondhalf", 5.22, 1.121E-2);
-                addExpIntoList(expList, "freqParameter.secondhalf1", 0.3368, 6.3272E-4);
-                addExpIntoList(expList, "freqParameter.secondhalf2", 0.2646, 4.8458E-4);
-                addExpIntoList(expList, "freqParameter.secondhalf3", 0.1018, 2.8896E-4);
-                addExpIntoList(expList, "freqParameter.secondhalf4", 0.2968, 5.2109E-4);
+                addExpIntoList(expList, "freqParameter.secondhalf.1", 0.3368, 6.3272E-4);
+                addExpIntoList(expList, "freqParameter.secondhalf.2", 0.2646, 4.8458E-4);
+                addExpIntoList(expList, "freqParameter.secondhalf.3", 0.1018, 2.8896E-4);
+                addExpIntoList(expList, "freqParameter.secondhalf.4", 0.2968, 5.2109E-4);
                 addExpIntoList(expList, "likelihood", -5993.68, 8.1194E-2);
                 addExpIntoList(expList, "treeLikelihood.firsthalf", -3049.7192, 6.5715E-2);
                 addExpIntoList(expList, "treeLikelihood.secondhalf", -2943.9608, 5.2473E-2);
@@ -88,15 +88,15 @@ public class SubstitutionModelTest extends TestFramework {
                 addExpIntoList(expList, "prior", 0.8416, 0.2033);
                 addExpIntoList(expList, "tree.height", 9.8986E-2, 3.709E-4);
                 addExpIntoList(expList, "CP12.hky.kappa", 25.0699, 0.2541);
-                addExpIntoList(expList, "CP12.frequencies1", 0.3444, 8.2165E-4);
-                addExpIntoList(expList, "CP12.frequencies2", 0.2447, 6.885E-4);
-                addExpIntoList(expList, "CP12.frequencies3", 0.1444, 5.3526E-4);
-                addExpIntoList(expList, "CP12.frequencies4", 0.2666, 6.174E-4);
+                addExpIntoList(expList, "CP12.frequencies.1", 0.3444, 8.2165E-4);
+                addExpIntoList(expList, "CP12.frequencies.2", 0.2447, 6.885E-4);
+                addExpIntoList(expList, "CP12.frequencies.3", 0.1444, 5.3526E-4);
+                addExpIntoList(expList, "CP12.frequencies.4", 0.2666, 6.174E-4);
                 addExpIntoList(expList, "CP3.hky.kappa", 82.9907, 1.9773);
-                addExpIntoList(expList, "CP3.frequencies1", 0.3197, 1.1763E-3);
-                addExpIntoList(expList, "CP3.frequencies2", 0.264, 9.0478E-4);
-                addExpIntoList(expList, "CP3.frequencies3", 0.1675, 8.6506E-4);
-                addExpIntoList(expList, "CP3.frequencies4", 0.2488, 1.059E-3);
+                addExpIntoList(expList, "CP3.frequencies.1", 0.3197, 1.1763E-3);
+                addExpIntoList(expList, "CP3.frequencies.2", 0.264, 9.0478E-4);
+                addExpIntoList(expList, "CP3.frequencies.3", 0.1675, 8.6506E-4);
+                addExpIntoList(expList, "CP3.frequencies.4", 0.2488, 1.059E-3);
                 addExpIntoList(expList, "CP12.gammaShape", 6.4322E-2, 4.8796E-3);
                 addExpIntoList(expList, "CP3.gammaShape", 8.5652E-2, 6.9946E-3);
                 addExpIntoList(expList, "CP12.mutationRate", 0.9437, 1.195E-3);
