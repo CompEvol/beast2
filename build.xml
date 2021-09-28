@@ -1210,9 +1210,11 @@
                 <exclude name="benchmark/**" />
             </fileset>
         </copy>
+        <!-- /usr/libexec/java_home -V-->
+        <!--  brew upgrade adoptopenjdk/openjdk/adoptopenjdk8 -->
         <property name="openjre" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre"/>
         <exec executable="cp">
-		    <arg line="-R ${openjre} ${Mac_package_dir}/jre1.8.0_262"/>
+		    <arg line="-R ${openjre} ${Mac_package_dir}/jre1.8.0_292"/>
 		</exec>
         <!-- Deprecated JavaAppLauncher -->
 <!--        <exec executable="gcc">-->
