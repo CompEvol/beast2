@@ -547,7 +547,7 @@ function is_valid_requirement_pattern() {
 ############################################
 
 # modified for BEAST 2 with JRE
-JAVACMD="${AppPackageFolder}/../jre1.8.0_262/bin/java"
+JAVACMD="${AppPackageFolder}/../jre1.8.0_292/bin/java"
 
 
 # log the Java Command and the extracted version number
