@@ -6,16 +6,21 @@
 # To run the tests, use
 #   docker run beast_testing
 #
+# To run just the core tests, use
+#   docker run beast_testing test-core
+#
 # To run the tests interactively, use
-#   docker run -it -p 5900:5900 beast_testing /bin/bash
+#   docker run --entrypoint /bin/bash -it -p 5900:5900 beast_testing
 # This will give you a shell in the container. From this
 # shell, run
-#   vncserver $DISPLAY -geometry 1920x1080; ant -f build-testing.xml
+#   ./entrypoint.sh
+# or
+#   ./entrypoint.sh test-core
 #
 # The previous command exposes the VNC session, so while the
-# BEAUti test suite is running you can run a VNC viewer and
-# connect it to localhost (password: password) to observe
-# the graphical output of these tests.
+# BEAUti test suite is running you should be able to run a
+# VNC viewer and connect it to localhost (password: password)
+# to observe the graphical output of these tests.
 
 FROM openjdk:8
 
