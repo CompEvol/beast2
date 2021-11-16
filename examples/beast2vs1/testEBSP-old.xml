@@ -190,7 +190,7 @@
     <input name="indicators" spec='BooleanParameter' id='indicators' value="false"/>
     <parameter id="populationMean" value="0.017" lower="0.0"/>
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+    <run spec="MCMC" id="mcmc" chainLength="20000000"> <!--autoOptimize="true"-->
         <state>
             <plate spec='Plate' var='n' range='.26,.29,.47'>
                 <stateNode idref='hky.kappa$(n)'/>
@@ -279,7 +279,7 @@
             <operator spec='UpDownOperator' scaleFactor="0.75" weight="3" down="@tree$(n)"/>
         </plate>
 
-        <logger logEvery="100000" mode="autodetect">
+        <logger logEvery="1000000" mode="autodetect">
             <log idref="posterior"/>
             <log idref="prior"/>
             <log idref="likelihood"/>
@@ -296,21 +296,26 @@
             <log idref="popSizes"/>
         </logger>
 
-        <logger fileName="test.$(seed).log" logEvery="1000" mode="autodetect" model="@posterior">
+        <logger fileName="test.$(seed).log" logEvery="5000" mode="autodetect" model="@posterior">
             <log idref="posterior"/>
             <log idref="prior"/>
             <log idref="likelihood"/>
-            <log idref="populationMean"/>
+            <plate spec='Plate' var='n' range='.26,.29,.47'>
+                <log spec='beast.evolution.tree.TreeStatLogger' tree='@tree$(n)' logLength="false"/>
+            </plate>
             <log spec="Sum" arg="@indicators"/>
+            <log idref="populationMean"/>
+            <log idref="popSizes"/>
             <log idref="indicators"/>
             <plate spec='Plate' var='n' range='.26,.29,.47'>
-                <log spec='beast.evolution.tree.TreeHeightLogger' tree='@tree$(n)'/>
                 <log idref="hky.kappa$(n)"/>
                 <log idref="hky.frequencies$(n)"/>
+            </plate>
+            <plate spec='Plate' var='n' range='.26,.29,.47'>
                 <log idref="treeLikelihood$(n)"/>
             </plate>
             <log idref="coalescent"/>
-            <log idref="popSizes"/>
+
         </logger>
     </run>
 

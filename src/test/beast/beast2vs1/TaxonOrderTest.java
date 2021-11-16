@@ -1,10 +1,10 @@
 package test.beast.beast2vs1;
 
 
+import test.beast.beast2vs1.trace.Expectation;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import test.beast.beast2vs1.trace.Expectation;
 
 public class TaxonOrderTest extends TestFramework {
 
@@ -20,6 +20,7 @@ public class TaxonOrderTest extends TestFramework {
         super.setUp(XML_FILES);
     }
 
+    // Note: some parameter names are hard-coded in XML, so no dot, e.g. "hky.kappa26"
     @Override
 	protected List<Expectation> giveExpectations(int index_XML) throws Exception {
         List<Expectation> expList = new ArrayList<Expectation>();
@@ -40,21 +41,21 @@ public class TaxonOrderTest extends TestFramework {
                 addExpIntoList(expList, "hky.kappa26",4.4936,0.0744);
                 addExpIntoList(expList, "hky.kappa29",4.0749,0.0588);
                 /*
-                addExpIntoList(expList, "popSize1",0.0040487,0.00027109);
-                addExpIntoList(expList, "popSize2",0.0062535,0.00026144);
-                addExpIntoList(expList, "popSize3",0.0023299,0.00015953);
-                addExpIntoList(expList, "popSize4",0.0029275,0.00023455);
-                addExpIntoList(expList, "popSize5",0.0021888,0.00022018);
-                addExpIntoList(expList, "popSize6",0.0042746,0.00018535);
-                addExpIntoList(expList, "popSize7",0.004097,0.00035926);
-                addExpIntoList(expList, "popSize8",0.0041803,0.00022475);
-                addExpIntoList(expList, "popSize9",0.0036424,0.00016521);
-                addExpIntoList(expList, "popSize10",0.0037575,0.00032465);
-                addExpIntoList(expList, "popSize11",0.0035904,0.00017545);
-                addExpIntoList(expList, "popSize12",0.0036104,0.00020949);
-                addExpIntoList(expList, "popSize13",0.0040485,0.00019889);
-                addExpIntoList(expList, "popSize14",0.0035229,0.00017978);
-                addExpIntoList(expList, "popSize15",0.005072,0.00017682);
+                addExpIntoList(expList, "popSize.1",0.0040487,0.00027109);
+                addExpIntoList(expList, "popSize.2",0.0062535,0.00026144);
+                addExpIntoList(expList, "popSize.3",0.0023299,0.00015953);
+                addExpIntoList(expList, "popSize.4",0.0029275,0.00023455);
+                addExpIntoList(expList, "popSize.5",0.0021888,0.00022018);
+                addExpIntoList(expList, "popSize.6",0.0042746,0.00018535);
+                addExpIntoList(expList, "popSize.7",0.004097,0.00035926);
+                addExpIntoList(expList, "popSize.8",0.0041803,0.00022475);
+                addExpIntoList(expList, "popSize.9",0.0036424,0.00016521);
+                addExpIntoList(expList, "popSize.10",0.0037575,0.00032465);
+                addExpIntoList(expList, "popSize.11",0.0035904,0.00017545);
+                addExpIntoList(expList, "popSize.12",0.0036104,0.00020949);
+                addExpIntoList(expList, "popSize.13",0.0040485,0.00019889);
+                addExpIntoList(expList, "popSize.14",0.0035229,0.00017978);
+                addExpIntoList(expList, "popSize.15",0.005072,0.00017682);
                 */
                 addExpIntoList(expList, "TreeHeightSP",0.0118,0.00025562);
                 addExpIntoList(expList, "TreeHeight26",0.0266,0.00010397);

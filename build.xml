@@ -847,7 +847,7 @@
         <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
         <copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
 
-        <echo message="Creating BEAST.app ..." />
+        <echo message="Creating BEAST.app using ${stubfile} ..." />
 
         <!-- create a jar bundle for the mac -->
         <jarbundler dir="${Mac_package_dir}"
@@ -1134,7 +1134,7 @@
     </target>
 
     <!-- no jre -->
-    <target name="mac">
+    <target name="mac" unless="file.exists">
         <delete dir="${Mac_package_dir}" />
         <!--<delete file="${Mac_dir}/pack.temp.dmg"/>-->
         <delete file="${Mac_dir}/${beast.dmg}"/>
@@ -1160,9 +1160,11 @@
             <fileset dir="${common_dir}/doc" />
         </copy>
 		-->
-
+<!--        <property name="stub" value="release/Mac/stub/3-0-3/universalJavaApplicationStub" />-->
+        <property name="stub" value="release/Mac/stub/3-2-0/universalJavaApplicationStub" />
+        <available property="file.exists" file="${stub}"/>
         <antcall target="bundle">
-            <param name="stubfile" value="${Mac_dir}/universalJavaApplicationStub"/>
+            <param name="stubfile" value="${stub}"/>
         </antcall>
 
         <antcall target="codesign"/>
@@ -1170,17 +1172,21 @@
         <antcall target="dmg"/>
 
         <property environment="env"/>
-        <property name="dmg.path" value="../../tmp/${BEAST_name}.v${version}.dmg" />
+        <property name="dmg.fn" value="${BEAST_name}.v${version}.dmg" />
+        <!-- name is fixed to BEAST v2.?.? in createdmg.sh -->
+        <!-- rename to BEAST.v2.?.? -->
+        <move file="${Mac_dir}/${beast.dmg}" tofile="${Mac_dir}/${dmg.fn}"/>
 
-        <copy file="${Mac_dir}/${beast.dmg}" tofile="${dmg.path}" />
+        <property name="dmg.path" value="${user.dir}/tmp" />
+        <copy file="${Mac_dir}/${dmg.fn}" todir="${dmg.path}" />
 
-        <echo message="Mac version release is finished." />
+        <echo message="Mac release is finished. ${dmg.path} is created." />
 
-        <echo message="Go to ~/tmp to make notarization" />
+        <echo message="Go to ${user.dir}/tmp to make notarization" />
 
-        <antcall target="notarization">
-             <param name="dmg.path" value="${dmg.path}"/>
-        </antcall>
+<!--        <antcall target="notarization">-->
+<!--             <param name="dmg.path" value="${dmg.path}"/>-->
+<!--        </antcall>-->
 
     </target>
 
@@ -1204,9 +1210,11 @@
                 <exclude name="benchmark/**" />
             </fileset>
         </copy>
+        <!-- /usr/libexec/java_home -V-->
+        <!--  brew upgrade adoptopenjdk/openjdk/adoptopenjdk8 -->
         <property name="openjre" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre"/>
         <exec executable="cp">
-		    <arg line="-R ${openjre} ${Mac_package_dir}/jre1.8.0_262"/>
+		    <arg line="-R ${openjre} ${Mac_package_dir}/jre1.8.0_292"/>
 		</exec>
         <!-- Deprecated JavaAppLauncher -->
 <!--        <exec executable="gcc">-->
@@ -1217,9 +1225,11 @@
             <fileset dir="${common_dir}/doc" />
         </copy>
 		-->
-
+        <!--        <property name="stub" value="release/Mac/stub/3-0-3/universalJavaApplicationJREStub" />-->
+        <property name="stub" value="release/Mac/stub/3-2-0/universalJavaApplicationJREStub" />
+        <available property="file.exists" file="${stub}"/>
         <antcall target="bundle">
-             <param name="stubfile" value="${Mac_dir}/universalJavaApplicationJREStub"/>
+            <param name="stubfile" value="${stub}"/>
         </antcall>
 
 <!--        <delete file="${Mac_package_dir}/BEAST.app/Contents/MacOS/JavaAppLauncher"/>-->
@@ -1246,17 +1256,20 @@
         <antcall target="dmg"/>
 
         <property environment="env"/>
-        <property name="dmg.path" value="../../tmp/${BEAST_name}_with_JRE.v${version}.dmg" />
+        <property name="dmg.fn" value="${BEAST_name}_with_JRE.v${version}.dmg" />
+        <!-- name is fixed to BEAST v2.?.? in createdmg.sh -->
+        <!-- rename to BEAST_with_JRE.v2.?.? -->
+        <move file="${Mac_dir}/${beast.dmg}" tofile="${Mac_dir}/${dmg.fn}"/>
+        <echo message="Mac release is finished. ${dmg.path} is created." />
 
-        <copy file="${Mac_dir}/${beast.dmg}" tofile="${dmg.path}" />
+        <property name="dmg.path" value="${user.dir}/tmp" />
+        <copy file="${Mac_dir}/${dmg.fn}" todir="${dmg.path}" />
 
-        <echo message="Mac with JRE version release is finished." />
+        <echo message="Go to ${user.dir}/tmp to make notarization" />
 
-        <echo message="Go to ~/tmp to make notarization" />
-
-        <antcall target="notarization">
-            <param name="dmg.path" value="${dmg.path}"/>
-        </antcall>
+<!--        <antcall target="notarization">-->
+<!--            <param name="dmg.path" value="${dmg.path}"/>-->
+<!--        </antcall>-->
 
     </target>
 
