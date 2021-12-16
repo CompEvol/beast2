@@ -29,6 +29,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Operator;
+import beast.evolution.tree.BinaryTreeExpectedException;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 
@@ -45,10 +46,13 @@ abstract public class TreeOperator extends Operator {
      * @return the other child of the given parent.
      */
     protected Node getOtherChild(final Node parent, final Node child) {
-        if (parent.getLeft().getNr() == child.getNr()) {
-            return parent.getRight();
+    	if (parent.getChildCount() != 2) {
+    		throw new BinaryTreeExpectedException("Tree operator " + this.getID() + " assumes binary trees.");
+    	}
+        if (parent.getChild(0).getNr() == child.getNr()) {
+            return parent.getChild(1);
         } else {
-            return parent.getLeft();
+            return parent.getChild(0);
         }
     }
 

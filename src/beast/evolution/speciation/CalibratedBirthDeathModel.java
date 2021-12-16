@@ -986,11 +986,9 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
      * @param node   subtree root
      * @return the number of leaves under this node.
      */
+    @Deprecated
     public static int getLeafCount(final Node node) {
-        if (node.isLeaf()) {
-            return 1;
-        }
-        return getLeafCount(node.getLeft()) + getLeafCount(node.getRight());
+    	return node.getLeafNodeCount();
     }
 
     // log likelihood and clades heights

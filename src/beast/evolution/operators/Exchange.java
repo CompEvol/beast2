@@ -51,6 +51,7 @@ package beast.evolution.operators;
 
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.tree.BinaryTreeExpectedException;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -91,7 +92,12 @@ public class Exchange extends TreeOperator {
     }
 
     private int isg(final Node n) {
-      return (n.getLeft().isLeaf() && n.getRight().isLeaf()) ? 0 : 1;
+    	for (Node child: n.getChildren()) {
+    		if (!child.isLeaf()) {
+    			return 1;
+    		}
+    	}
+    	return 0;
     }
 
     private int sisg(final Node n) {
@@ -109,15 +115,21 @@ public class Exchange extends TreeOperator {
         }
 
         Node grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
-        while (grandParent.getLeft().isLeaf() && grandParent.getRight().isLeaf()) {
+        if (grandParent.getChildCount() != 2) {
+        	throw new IndexOutOfBoundsException("Narrow exchange assumes strictly bifurcating trees");
+        }
+        while (grandParent.getChild(0).isLeaf() && grandParent.getChild(1).isLeaf()) {
             grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
+            if (grandParent.getChildCount() != 2) {
+            	throw new BinaryTreeExpectedException("Narrow exchange assumes strictly bifurcating trees");
+            }
         }
 
-        Node parentIndex = grandParent.getLeft();
-        Node uncle = grandParent.getRight();
+        Node parentIndex = grandParent.getChild(0);
+        Node uncle = grandParent.getChild(1);
         if (parentIndex.getHeight() < uncle.getHeight()) {
-            parentIndex = grandParent.getRight();
-            uncle = grandParent.getLeft();
+            parentIndex = grandParent.getChild(1);
+            uncle = grandParent.getChild(0);
         }
 
         if( parentIndex.isLeaf() ) {
@@ -134,7 +146,8 @@ public class Exchange extends TreeOperator {
 
         final int c2 = sisg(parentIndex) + sisg(uncle);
 
-        final Node i = (Randomizer.nextBoolean() ? parentIndex.getLeft() : parentIndex.getRight());
+        final Node i = parentIndex.getChild(Randomizer.nextInt(parentIndex.getChildCount()));
+
         exchangeNodes(i, uncle, parentIndex, grandParent);
 
         final int validGPafter = validGP - c2 + sisg(parentIndex) + sisg(uncle);

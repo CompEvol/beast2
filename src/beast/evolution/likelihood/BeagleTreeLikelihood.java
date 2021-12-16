@@ -956,19 +956,16 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         }
 
         // If the node is internal, update the partial likelihoods.
-        if (!node.isLeaf()) {
+		if (!node.isLeaf()) {
+			int updateChild = Tree.IS_CLEAN;
+			for (Node child : node.getChildren()) {
+				// Traverse down the two child nodes
+				final int[] op1 = { -1 };
+				updateChild |= traverse(child, op1, flip);
+			}
 
-            // Traverse down the two child nodes
-            Node child1 = node.getLeft();
-            final int[] op1 = {-1};
-            final int update1 = traverse(child1, op1, flip);
-
-            Node child2 = node.getRight();
-            final int[] op2 = {-1};
-            final int update2 = traverse(child2, op2, flip);
-
-            // If either child node was updated then update this node too
-            if (update1 != Tree.IS_CLEAN || update2 != Tree.IS_CLEAN) {
+			// If either child node was updated then update this node too
+			if (updateChild != Tree.IS_CLEAN) {
 
                 int x = operationCount[operationListCount] * Beagle.OPERATION_TUPLE_SIZE;
 
@@ -1009,14 +1006,17 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
                     operations[x + 2] = Beagle.NONE;
                 }
 
-                operations[x + 3] = partialBufferHelper.getOffsetIndex(child1.getNr()); // source node 1
-                operations[x + 4] = matrixBufferHelper.getOffsetIndex(child1.getNr()); // source matrix 1
-                operations[x + 5] = partialBufferHelper.getOffsetIndex(child2.getNr()); // source node 2
-                operations[x + 6] = matrixBufferHelper.getOffsetIndex(child2.getNr()); // source matrix 2
+                int x_offset = 3;
+				for (Node child : node.getChildren()) {
+					operations[x + x_offset] = partialBufferHelper.getOffsetIndex(child.getNr()); // source node
+					x_offset++;
+					operations[x + x_offset] = matrixBufferHelper.getOffsetIndex(child.getNr()); // source matrix 1
+					x_offset++;
+				}
 
                 operationCount[operationListCount]++;
 
-                update |= (update1 | update2);
+                update |= updateChild;
 
             }
         }

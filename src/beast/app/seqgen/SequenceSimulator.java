@@ -187,8 +187,8 @@ public class SequenceSimulator extends beast.core.Runnable {
      * @
      */
     void traverse(Node node, int[] parentSequence, int[] category, Alignment alignment)  {
-        for (int childIndex = 0; childIndex < 2; childIndex++) {
-            Node child = (childIndex == 0 ? node.getLeft() : node.getRight());
+        for (int childIndex = 0; childIndex < node.getChildCount(); childIndex++) {
+            Node child = node.getChild(childIndex);
             for (int i = 0; i < m_categoryCount; i++) {
                 getTransitionProbabilities(m_tree, child, i, m_probabilities[i]);
             }

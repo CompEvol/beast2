@@ -1,5 +1,7 @@
 package beast.evolution.likelihood;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * standard likelihood core, uses no caching *
@@ -155,6 +157,44 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     }
 
     /**
+     * Calculates partial likelihoods at a node where the children have partials.
+     */
+    protected void calculatePartialsPruning(List<double[]> partials, List<double[]> pmatrices,
+                                            List<int[]> states, List<double[]> smatrices,
+                                                    double[] partials3) {
+
+        int u = 0;
+        int v = 0;
+
+        for (int l = 0; l < nrOfMatrices; l++) {
+            for (int k = 0; k < nrOfPatterns; k++) {
+                int w = l * matrixSize;
+                for (int i = 0; i < nrOfStates; i++) {
+                    double[] sum = new double[partials.size() + states.size()];
+                    for (int c=0; c < states.size(); c++) {
+                        int state = states.get(c)[k];
+                        if (state<nrOfStates) {
+                            sum[c + partials.size()] = smatrices.get(c)[w + state];
+                        }
+                    }
+                    for (int j = 0; j < nrOfStates; j++) {
+                        for (int c=0; c < partials.size(); c++) {
+                            sum[c] += pmatrices.get(c)[w] * partials.get(c)[v + j];
+                        }
+                        w++;
+                    }
+                    partials3[u] = 1;
+                    for (int c=0; c < partials.size() + states.size(); c++) {
+                        partials3[u] *= sum[c];
+                    };
+                    u++;
+                }
+                v += nrOfStates;
+            }
+        }
+    }
+
+    /**
      * Calculates partial likelihoods at a node when both children have partials.
      */
     protected void calculatePartialsPartialsPruning(double[] partials1, double[] matrices1,
@@ -193,6 +233,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when both children have states.
      */
+    @Deprecated
     protected void calculateStatesStatesPruning(int[] stateIndex1, double[] matrices1,
                                                 int[] stateIndex2, double[] matrices2,
                                                 double[] partials3, int[] matrixMap) {
@@ -249,6 +290,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when one child has states and one has partials.
      */
+    @Deprecated
     protected void calculateStatesPartialsPruning(int[] stateIndex1, double[] matrices1,
                                                   double[] partials2, double[] matrices2,
                                                   double[] partials3, int[] matrixMap) {
@@ -304,6 +346,7 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Calculates partial likelihoods at a node when both children have partials.
      */
+    @Deprecated
     protected void calculatePartialsPartialsPruning(double[] partials1, double[] matrices1,
                                                     double[] partials2, double[] matrices2,
                                                     double[] partials3, int[] matrixMap) {
@@ -587,34 +630,27 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Calculates partial likelihoods at a node.
      *
-     * @param nodeIndex1 the 'child 1' node
-     * @param nodeIndex2 the 'child 2' node
+     * @param nodeIndices the array of child nodes
      * @param nodeIndex3 the 'parent' node
      */
     @Override
-	public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3) {
-        if (states[nodeIndex1] != null) {
-            if (states[nodeIndex2] != null) {
-                calculateStatesStatesPruning(
-                        states[nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        states[nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]);
-            } else {
-                calculateStatesPartialsPruning(states[nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex2]][nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]);
-            }
-        } else {
-            if (states[nodeIndex2] != null) {
-                calculateStatesPartialsPruning(states[nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex1]][nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]);
-            } else {
-                calculatePartialsPartialsPruning(partials[currentPartialsIndex[nodeIndex1]][nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex2]][nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]);
-            }
-        }
+	public void calculatePartials(int [] nodeIndices, int nodeIndex3) {
+    	List<int[]> states = new ArrayList<int[]>(nodeIndices.length);
+    	List<double[]> smatrices = new ArrayList<double[]>(nodeIndices.length);
+    	List<double[]> partials = new ArrayList<double[]>(nodeIndices.length);
+    	List<double[]> pmatrices = new ArrayList<double[]>(nodeIndices.length);
+    	
+    	for (int nodeIndex: nodeIndices) {
+        	if (this.states[nodeIndex] != null) {
+        		states.add(this.states[nodeIndex]);
+        		smatrices.add(matrices[currentMatrixIndex[nodeIndex]][nodeIndex]);
+        	}    
+        	else {
+        		partials.add(this.partials[currentPartialsIndex[nodeIndex]][nodeIndex]);
+        		pmatrices.add(matrices[currentMatrixIndex[nodeIndex]][nodeIndex]);
+        	}
+    	}
+    	calculatePartialsPruning(partials, pmatrices, states, smatrices, this.partials[currentPartialsIndex[nodeIndex3]][nodeIndex3]);
 
         if (useScaling) {
             scalePartials(nodeIndex3);
@@ -634,47 +670,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
 //            }
 //        }
     }
-
-    /**
-     * Calculates partial likelihoods at a node.
-     *
-     * @param nodeIndex1 the 'child 1' node
-     * @param nodeIndex2 the 'child 2' node
-     * @param nodeIndex3 the 'parent' node
-     * @param matrixMap  a map of which matrix to use for each pattern (can be null if integrating over categories)
-     */
-    public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3, int[] matrixMap) {
-        if (states[nodeIndex1] != null) {
-            if (states[nodeIndex2] != null) {
-                calculateStatesStatesPruning(
-                        states[nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        states[nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3], matrixMap);
-            } else {
-                calculateStatesPartialsPruning(
-                        states[nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex2]][nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3], matrixMap);
-            }
-        } else {
-            if (states[nodeIndex2] != null) {
-                calculateStatesPartialsPruning(
-                        states[nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex1]][nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3], matrixMap);
-            } else {
-                calculatePartialsPartialsPruning(
-                        partials[currentPartialsIndex[nodeIndex1]][nodeIndex1], matrices[currentMatrixIndex[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndex[nodeIndex2]][nodeIndex2], matrices[currentMatrixIndex[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndex[nodeIndex3]][nodeIndex3], matrixMap);
-            }
-        }
-
-        if (useScaling) {
-            scalePartials(nodeIndex3);
-        }
-    }
-
 
     @Override
 	public void integratePartials(int nodeIndex, double[] proportions, double[] outPartials) {

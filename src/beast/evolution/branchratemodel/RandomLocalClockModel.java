@@ -110,9 +110,8 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
         }
         unscaledBranchRates[nodeNumber] = rate;
 
-        if (!node.isLeaf()) {
-            calculateUnscaledBranchRates(node.getLeft(), rate, indicators, rates);
-            calculateUnscaledBranchRates(node.getRight(), rate, indicators, rates);
+        for (Node child: node.getChildren()) {
+            calculateUnscaledBranchRates(child, rate, indicators, rates);
         }
     }
 

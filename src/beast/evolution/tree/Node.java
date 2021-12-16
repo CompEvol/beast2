@@ -127,11 +127,8 @@ public class Node extends BEASTObject {
         startEditing();
         this.height = height;
         isDirty |= Tree.IS_DIRTY;
-        if (!isLeaf()) {
-            getLeft().isDirty |= Tree.IS_DIRTY;
-            if (getRight() != null) {
-                getRight().isDirty |= Tree.IS_DIRTY;
-            }
+        for (Node child: getChildren()) {
+        	child.isDirty |= Tree.IS_DIRTY;
         }
     }
 
@@ -173,11 +170,8 @@ public class Node extends BEASTObject {
 
     public void makeAllDirty(final int dirty) {
         isDirty = dirty;
-        if (!isLeaf()) {
-            getLeft().makeAllDirty(dirty);
-            if (getRight() != null) {
-                getRight().makeAllDirty(dirty);
-            }
+        for (Node child: getChildren()) {
+        	child.makeAllDirty(dirty);
         }
     }
 
@@ -643,10 +637,9 @@ public class Node extends BEASTObject {
         if (isLeaf()) {
             return labelIndex;
         } else {
-            labelIndex = getLeft().labelInternalNodes(labelIndex);
-            if (getRight() != null) {
-                labelIndex = getRight().labelInternalNodes(labelIndex);
-            }
+        	for (Node child: getChildren()) {
+                labelIndex = child.labelInternalNodes(labelIndex);        		
+        	}
             labelNr = labelIndex++;
         }
         return labelIndex;
@@ -685,15 +678,10 @@ public class Node extends BEASTObject {
         node.lengthMetaData = new TreeMap<>(lengthMetaData);
         node.parent = null;
         node.setID(getID());
-        if (getLeft() != null) {
-            node.setLeft(nodes[getLeft().getNr()]);
-            getLeft().assignTo(nodes);
-            node.getLeft().parent = node;
-            if (getRight() != null) {
-                node.setRight(nodes[getRight().getNr()]);
-                getRight().assignTo(nodes);
-                node.getRight().parent = node;
-            }
+        for (int c=0; c<getChildCount(); ++c) {
+            node.setChild(c, nodes[getChild(c).getNr()]);
+            getChild(c).assignTo(nodes);
+            node.getChild(c).parent = node;
         }
     }
 
@@ -709,15 +697,10 @@ public class Node extends BEASTObject {
         lengthMetaData = new TreeMap<>(node.lengthMetaData);
         parent = null;
         setID(node.getID());
-        if (node.getLeft() != null) {
-            setLeft(nodes[node.getLeft().getNr()]);
-            getLeft().assignFrom(nodes, node.getLeft());
-            getLeft().parent = this;
-            if (node.getRight() != null) {
-                setRight(nodes[node.getRight().getNr()]);
-                getRight().assignFrom(nodes, node.getRight());
-                getRight().parent = this;
-            }
+        for (int c=0; c<getChildCount(); ++c) {
+            setChild(c, nodes[node.getChild(c).getNr()]);
+            getChild(c).assignFrom(nodes, node.getChild(c));
+            getChild(c).parent = this;
         }
     }
 
@@ -806,15 +789,14 @@ public class Node extends BEASTObject {
             if (isRoot() || parent.getHeight() != getHeight())
                 dof += 1;
         }
-        if (!isLeaf()) {
-            dof += getLeft().scale(scale);
-            if (getRight() != null) {
-                dof += getRight().scale(scale);
-            }
-            if (height < getLeft().height || height < getRight().height) {
-                throw new IllegalArgumentException("Scale gives negative branch length");
-            }
-        }
+		if (!isLeaf()) {
+			for (Node child : getChildren()) {
+				dof += child.scale(scale);
+				if (height < child.height) {
+					throw new IllegalArgumentException("Scale gives negative branch length");
+				}
+			}
+		}
 
         return dof;
     }
@@ -893,6 +875,9 @@ public class Node extends BEASTObject {
         } else {
             children.set(0, leftChild);
         }
+    	if (getChildCount() > 2) {
+    		throw new BinaryTreeExpectedException("An operation called `setLeft` without guarding for binary trees.");
+    	}
     }
 
     /**
@@ -902,13 +887,20 @@ public class Node extends BEASTObject {
      * @return left child (zero'th child), or null if this node has no children.
      * @deprecated trees should not be assumed to be binary. One child and more than two are both valid in some models.
      */
-    @Deprecated
-    public Node getLeft() {
-        if (children.size() == 0) {
-            return null;
-        }
-        return children.get(0);
-    }
+	@Deprecated
+	public Node getLeft() {
+		switch (children.size()) {
+		case 0:
+			return null;
+		case 1:
+			return children.get(0);
+			// throw new BinaryTreeExpectedException("An operation called `getLeft` without guarding for binary trees.");
+		case 2:
+			return children.get(0);
+		default:
+			throw new BinaryTreeExpectedException("An operation called `getRight` without guarding for binary trees.");
+		}
+	}
 
     /**
      * This sets the second child (index 1, called right child in binary trees). If this node had no children then the left
@@ -926,6 +918,10 @@ public class Node extends BEASTObject {
                 children.add(rightChild);
                 break;
             default:
+            	if (getChildCount() > 2) {
+            		throw new BinaryTreeExpectedException("An operation called `setRight` without guarding for binary trees.");
+            	}
+
                 children.set(1, rightChild);
                 break;
         }
@@ -940,17 +936,22 @@ public class Node extends BEASTObject {
      */
     @Deprecated
     public Node getRight() {
-        if (children.size() <= 1) {
-            return null;
+        switch (children.size()) {
+        case 0:            return null;
+        case 1:
+        		throw new BinaryTreeExpectedException("An operation called `getRight` without guarding for binary trees.");
+        case 2:
+            return children.get(1);
+        default:
+    		throw new BinaryTreeExpectedException("An operation called `getRight` without guarding for binary trees.");
         }
-        return children.get(1);
     }
 
     public static Node connect(final Node left, final Node right, final double h) {
         final Node n = new Node();
         n.setHeight(h);
-        n.setLeft(left);
-        n.setRight(right);
+        n.children.set(0, left);
+        n.children.set(1, right);
         left.parent = n;
         right.parent = n;
         return n;
@@ -968,9 +969,12 @@ public class Node extends BEASTObject {
      * @return true if this is a "fake" internal node (i.e. one of its children is a direct ancestor)
      */
     public boolean isFake() {
-        if (this.isLeaf())
-            return false;
-        return ((this.getLeft()).isDirectAncestor() || (this.getRight() != null && (this.getRight()).isDirectAncestor()));
+    	for (Node child: getChildren()) {
+    		if (child.isDirectAncestor()) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     /**
@@ -980,13 +984,12 @@ public class Node extends BEASTObject {
      * @return node corresponding to the sampled ancestor
      */
     public Node getDirectAncestorChild() {
-        if (!this.isFake()) {
-            return null;
-        }
-        if (this.getLeft().isDirectAncestor()) {
-            return this.getLeft();
-        }
-        return this.getRight();
+    	for (Node child: getChildren()) {
+    		if (child.isDirectAncestor()) {
+    			return child;
+    		}
+    	}
+        return null;
     }
 
     /**
@@ -995,26 +998,26 @@ public class Node extends BEASTObject {
      * @return true child node
      */
     public Node getNonDirectAncestorChild(){
-        if (!this.isFake()) {
-            return null;
-        }
-        if ((this.getLeft()).isDirectAncestor()){
-            return getRight();
-        }
-        if  ((this.getRight()).isDirectAncestor()){
-            return getLeft();
-        }
+    	Node prevChild = null;
+    	for (Node child: getChildren()) {
+    		if (child.isDirectAncestor()) {
+    			if (prevChild != null) {
+        			return prevChild;    				
+    			} else {
+    				return getChild(getChildCount()-1);
+    			}
+    		}
+			prevChild = child;
+    	}
         return null;
     }
 
     public Node getFakeChild(){
-
-        if ((this.getLeft()).isFake()){
-            return getLeft();
-        }
-        if ((this.getRight()).isFake()){
-            return getRight();
-        }
+    	for (Node child: getChildren()) {
+            if (child.isFake()){
+                return child;
+            }    		
+    	}
         return null;
     }
 

@@ -183,9 +183,9 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      * @param node*
      */
     private void traverseSpeciesTree(final Node node) {
-        if (!node.isLeaf()) {
-            traverseSpeciesTree(node.getLeft());
-            traverseSpeciesTree(node.getRight());
+    	for (Node child: node.getChildren()) {
+            traverseSpeciesTree(child);
+            traverseSpeciesTree(child);
         }
         // calculate contribution of a branch in the species tree to the log probability
         final int nodeIndex = node.getNr();
@@ -226,7 +226,10 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
                 break;
             case linear_with_constant_root:
                 if (node.isRoot()) {
-                    final double popSize = getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr());
+                    double popSize = 0.0;
+                    for (Node child: node.getChildren()) {
+                    	popSize += getTopPopSize(child.getNr());
+                    }
                     calcConstantPopSizeContribution(lineagesBottom, popSize, times, k);
                 } else {
                     logP += calcLinearPopSizeContribution(lineagesBottom, nodeIndex, times, k, node);
@@ -255,12 +258,16 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     private double calcLinearPopSizeContribution(final int lineagesBottom, final int nodeIndex, final double[] times,
                                                  final int k, final Node node) {
         double lp = 0.0;
-        final double popSizeBottom;
+        double popSizeBottom;
         if (node.isLeaf()) {
             popSizeBottom = popSizesBottom.getValue(nodeIndex) * ploidy;
         } else {
             // use sum of left and right child branches for internal nodes
-            popSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr())) * ploidy;
+            popSizeBottom = 0.0;
+            for (Node child: node.getChildren()) {
+            	popSizeBottom += getTopPopSize(child.getNr());  
+            }
+            popSizeBottom *= ploidy;
         }
         final double popSizeTop = getTopPopSize(nodeIndex) * ploidy;
         final double a = (popSizeTop - popSizeBottom) / (times[k + 1] - times[0]);
@@ -286,12 +293,14 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
     private double calcLinearPopSizeContributionJH(final int lineagesBottom, final int nodeIndex, final double[] times,
                                                    final int k, final Node node) {
         double lp = 0.0;
-        double popSizeBottom;
+        double popSizeBottom = 0.0;
         if (node.isLeaf()) {
             popSizeBottom = popSizesBottom.getValue(nodeIndex);
         } else {
             // use sum of left and right child branches for internal nodes
-            popSizeBottom = (getTopPopSize(node.getLeft().getNr()) + getTopPopSize(node.getRight().getNr()));
+        	for (Node child: node.getChildren()) {
+        		popSizeBottom += getTopPopSize(child.getNr());
+        	}
         }
         popSizeBottom *= ploidy;
 
@@ -338,34 +347,34 @@ public class GeneTreeForSpeciesTreeDistribution extends TreeDistribution {
      * @param node
      * @return
      */
-    private int traverseLineageTree(final Node[] speciesNodes, final Node node) {
-        if (node.isLeaf()) {
-            final int species = nrOfLineageToSpeciesMap[node.getNr()];
-            nrOfLineages[species]++;
-            return species;
-        } else {
-            int speciesLeft = traverseLineageTree(speciesNodes, node.getLeft());
-            int speciesRight = traverseLineageTree(speciesNodes, node.getRight());
-            final double height = node.getHeight();
+	private int traverseLineageTree(final Node[] speciesNodes, final Node node) {
+		if (node.isLeaf()) {
+			final int species = nrOfLineageToSpeciesMap[node.getNr()];
+			nrOfLineages[species]++;
+			return species;
+		} else {
+			final double height = node.getHeight();
+			Integer species = null;
+			for (Node child : node.getChildren()) {
+				int speciesLeft = traverseLineageTree(speciesNodes, child);
 
-            while (!speciesNodes[speciesLeft].isRoot() && height > speciesNodes[speciesLeft].getParent().getHeight()) {
-                speciesLeft = speciesNodes[speciesLeft].getParent().getNr();
-                nrOfLineages[speciesLeft]++;
-            }
-            while (!speciesNodes[speciesRight].isRoot() && height > speciesNodes[speciesRight].getParent().getHeight()) {
-                speciesRight = speciesNodes[speciesRight].getParent().getNr();
-                nrOfLineages[speciesRight]++;
-            }
-            // validity check
-            if (speciesLeft != speciesRight) {
-                // if we got here, it means the gene tree does
-                // not fit in the species tree
-                logP = Double.NEGATIVE_INFINITY;
-            }
-            intervalsInput[speciesRight].add(height);
-            return speciesRight;
-        }
-    }
+				while (!speciesNodes[speciesLeft].isRoot()
+						&& height > speciesNodes[speciesLeft].getParent().getHeight()) {
+					speciesLeft = speciesNodes[speciesLeft].getParent().getNr();
+					if (species == null) {
+						species = speciesLeft;
+					} else if (species != speciesLeft) {
+						// if we got here, it means the gene tree does
+						// not fit in the species tree
+						logP = Double.NEGATIVE_INFINITY;
+					}
+				}
+				nrOfLineages[speciesLeft]++;
+			}
+			intervalsInput[species].add(height);
+			return species;
+		}
+	}
 
     /* return population size at top. For linear with constant root, there is no
       * entry for the root. An internal node can have the number equal to dimension

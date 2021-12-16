@@ -3,6 +3,7 @@ package beast.evolution.operators;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import beast.core.Input.Validate;
 import beast.core.util.Log;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
+import beast.evolution.tree.BinaryTreeExpectedException;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.Randomizer;
@@ -72,8 +74,9 @@ public class NodeReheight extends TreeOperator {
         if (node.isLeaf()) {
             map.put(node.getNr(), taxonMap.get(node.getID()));
         } else {
-            setupTaxaMap(node.getLeft(), map, taxonMap);
-            setupTaxaMap(node.getRight(), map, taxonMap);
+        	for (Node child: node.getChildren()) {
+                setupTaxaMap(child, map, taxonMap);        		
+        	}
         }
     }
 
@@ -114,10 +117,13 @@ public class NodeReheight extends TreeOperator {
             return false;
         }
         used[node.getNr()] = true;
-        if ( node.isLeaf() ) {
-            return true;
+
+        for (Node child: node.getChildren()) {
+        	if (!checkConsistency(child, used)) {
+        		return false;
+        	}
         }
-        return checkConsistency(node.getLeft(), used) && checkConsistency(node.getRight(), used);
+        return true;
     }
 
     /**
@@ -175,16 +181,21 @@ public class NodeReheight extends TreeOperator {
     /**
      * for every species in the left on the gene tree and for every species in the right
      * cap the maximum join height by the lowest place the two join in the gene tree
+     * 
+     * @throws BinaryTreeExpectedException 
      */
     private void findMaximaInGeneTree(final Node node, final boolean[] taxonSet, final Map<Integer, Integer> taxonMap, final double[][] maxHeight) {
         if (node.isLeaf()) {
             final int species = taxonMap.get(node.getNr());
             taxonSet[species] = true;
         } else {
+        	if (node.getChildCount() != 2) {
+        		throw new BinaryTreeExpectedException("NodeReheight assumes a binary tree");
+        	}
             final boolean[] isLeftTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getLeft(), isLeftTaxonSet, taxonMap, maxHeight);
+            findMaximaInGeneTree(node.getChild(0), isLeftTaxonSet, taxonMap, maxHeight);
             final boolean[] isRightTaxonSet = new boolean[nrOfSpecies];
-            findMaximaInGeneTree(node.getRight(), isRightTaxonSet, taxonMap, maxHeight);
+            findMaximaInGeneTree(node.getChild(1), isRightTaxonSet, taxonMap, maxHeight);
             for (int i = 0; i < nrOfSpecies; i++) {
                 if (isLeftTaxonSet[i]) {
                     for (int j = 0; j < nrOfSpecies; j++) {
@@ -240,14 +251,17 @@ public class NodeReheight extends TreeOperator {
             }
         }
 
-        node.setLeft(m_nodes[reverseOrder[left]]);
-        node.getLeft().setParent(node);
-        node.setRight(m_nodes[reverseOrder[right]]);
-        node.getRight().setParent(node);
-        if (node.getLeft().isLeaf()) {
+        if (node.getChildCount()!=2) {
+        	throw new BinaryTreeExpectedException("NodeReheight expects binary trees");
+        }
+        node.setChild(0, m_nodes[reverseOrder[left]]);
+        node.getChild(0).setParent(node);
+        if (node.getChild(0).isLeaf()) {
             heights[left] = Double.NEGATIVE_INFINITY;
         }
-        if (node.getRight().isLeaf()) {
+        node.setChild(1, m_nodes[reverseOrder[right]]);
+        node.getChild(1).setParent(node);
+        if (node.getChild(1).isLeaf()) {
             heights[right] = Double.NEGATIVE_INFINITY;
         }
         hasParent[left] = true;
@@ -282,11 +296,14 @@ public class NodeReheight extends TreeOperator {
             reverseOrder[current] = node.getNr();
             current++;
         } else {
-            current = collectHeights(node.getLeft(), heights, reverseOrder, current);
+        	if (node.getChildCount() != 2) {
+        		throw new BinaryTreeExpectedException("NodeReheight expects a binary tree");
+        	}
+            current = collectHeights(node.getChild(0), heights, reverseOrder, current);
             heights[current] = node.getHeight();
             reverseOrder[current] = node.getNr();
             current++;
-            current = collectHeights(node.getRight(), heights, reverseOrder, current);
+            current = collectHeights(node.getChild(0), heights, reverseOrder, current);
         }
         return current;
     }
@@ -295,14 +312,17 @@ public class NodeReheight extends TreeOperator {
      * randomly changes left and right children in every internal node *
      */
     private void reorder(final Node node) {
-        if (!node.isLeaf()) {
-            if (Randomizer.nextBoolean()) {
-                final Node tmp = node.getLeft();
-                node.setLeft(node.getRight());
-                node.setRight(tmp);
-            }
-            reorder(node.getLeft());
-            reorder(node.getRight());
+    	List<Node> nodes = new ArrayList<Node>(node.getChildren());
+    	int newChildIndex = 0;
+    	while (nodes.size() > 1) {
+    		int nextChildIndex = Randomizer.nextInt(nodes.size());
+    		Node nextChild = nodes.remove(nextChildIndex);
+    		reorder(nextChild);
+    		node.setChild(newChildIndex, nextChild);
+    		newChildIndex ++;
+    	}
+    	if (nodes.size() > 0) {
+    		node.setChild(newChildIndex, nodes.get(0));
         }
     }
 } // class NodeReheight

@@ -9,7 +9,9 @@ import beast.util.TreeParser;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Description("Tree (the T in BEAST) representing gene beast.tree, species"
@@ -136,9 +138,9 @@ public class Tree extends StateNode implements TreeInterface {
             parent.labelNr = taxa.size() + i - 1;
             parent.height = minInternalHeight + i * step;
             left.parent = parent;
-            parent.setLeft(left);
+            parent.setChild(0, left);
             right.parent = parent;
-            parent.setRight(right);
+            parent.setChild(0, right);
             left = parent;
         }
         root = left;
@@ -402,11 +404,8 @@ public class Tree extends StateNode implements TreeInterface {
     @Override
 	public void getMetaData(final Node node, final Double[] t, final String pattern) {
         t[Math.abs(node.getNr())] = (Double) node.getMetaData(pattern);
-        if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), t, pattern);
-            if (node.getRight() != null) {
-                getMetaData(node.getRight(), t, pattern);
-            }
+        for (Node child: node.getChildren()) {        	
+            getMetaData(child, t, pattern);
         }
     }
 
@@ -419,11 +418,8 @@ public class Tree extends StateNode implements TreeInterface {
      */
     public void getMetaData(final Node node, final Integer[] t, final String pattern) {
         t[Math.abs(node.getNr())] = (Integer) node.getMetaData(pattern);
-        if (!node.isLeaf()) {
-            getMetaData(node.getLeft(), t, pattern);
-            if (node.getRight() != null) {
-                getMetaData(node.getRight(), t, pattern);
-            }
+        for (Node child: node.getChildren()) {        	
+            getMetaData(child, t, pattern);
         }
     }
 
@@ -437,11 +433,8 @@ public class Tree extends StateNode implements TreeInterface {
     @Override
 	public void setMetaData(final Node node, final Double[] t, final String pattern) {
         node.setMetaData(pattern, t[Math.abs(node.getNr())]);
-        if (!node.isLeaf()) {
-            setMetaData(node.getLeft(), t, pattern);
-            if (node.getRight() != null) {
-                setMetaData(node.getRight(), t, pattern);
-            }
+        for (Node child: node.getChildren()) {        	
+            setMetaData(child, t, pattern);
         }
     }
 
@@ -580,15 +573,12 @@ public class Tree extends StateNode implements TreeInterface {
         assignFrom(0, rootNr, otherNodes);
         root.height = otherNodes[rootNr].height;
         root.parent = null;
-        if (otherNodes[rootNr].getLeft() != null) {
-            root.setLeft(m_nodes[otherNodes[rootNr].getLeft().getNr()]);
-        } else {
-            root.setLeft(null);
-        }
-        if (otherNodes[rootNr].getRight() != null) {
-            root.setRight(m_nodes[otherNodes[rootNr].getRight().getNr()]);
-        } else {
-            root.setRight(null);
+        for (int c=0; c<otherNodes[rootNr].getChildCount(); c++) {
+	        if (otherNodes[rootNr].getChild(c) != null) {
+	            root.setChild(c, m_nodes[otherNodes[rootNr].getChild(c).getNr()]);
+	        } else {
+	            root.setChild(c, null);
+	        }
         }
         assignFrom(rootNr + 1, nodeCount, otherNodes);
     }
@@ -602,13 +592,8 @@ public class Tree extends StateNode implements TreeInterface {
             Node src = otherNodes[i];
             sink.height = src.height;
             sink.parent = m_nodes[src.parent.getNr()];
-            if (src.getLeft() != null) {
-                sink.setLeft(m_nodes[src.getLeft().getNr()]);
-                if (src.getRight() != null) {
-                    sink.setRight(m_nodes[src.getRight().getNr()]);
-                } else {
-                    sink.setRight(null);
-                }
+            for (int c=0; c<src.getChildCount(); c++) {
+                sink.setChild(c, m_nodes[src.getChild(c).getNr()]);
             }
         }
     }
@@ -699,10 +684,9 @@ public class Tree extends StateNode implements TreeInterface {
             }
             translateLines.add(line);
         } else {
-            printTranslate(node.getLeft(), translateLines, nodeCount);
-            if (node.getRight() != null) {
-                printTranslate(node.getRight(), translateLines, nodeCount);
-            }
+        	for (Node child: node.getChildren()) {
+                printTranslate(child, translateLines, nodeCount);        		
+        	}
         }
     }
 
@@ -1033,19 +1017,21 @@ public class Tree extends StateNode implements TreeInterface {
     
     
     /** 
-     * Determine whether a child was replaced in a binary tree 
+     * Determine whether a child was replaced/moved in a tree 
      **/
-    public boolean childrenChanged(int nodeNr) {
-        Node node = m_nodes[nodeNr];
-        Node old = m_storedNodes[nodeNr];
-        if (node.getLeft().getNr() == old.getLeft().getNr() &&
-                node.getRight().getNr() == old.getRight().getNr()) {
-                return false;
-        }
-        if (node.getLeft().getNr() == old.getRight().getNr() &&
-                node.getRight().getNr() == old.getLeft().getNr()) {
-                return false;
-        }
-        return true;
-    }
+	public boolean childrenChanged(int nodeNr) {
+		Node node = m_nodes[nodeNr];
+		Node old = m_storedNodes[nodeNr];
+		HashSet<Integer> childNumbers = new HashSet<Integer>();
+		HashSet<Integer> oldChildNumbers = new HashSet<Integer>();
+		for (int c = 0; c < Math.max(node.getChildCount(), old.getChildCount()); c++) {
+			try {
+			childNumbers.add(node.getChild(c).getNr());
+			oldChildNumbers.add(old.getChild(c).getNr());
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return true;
+			}
+		}
+		return childNumbers != oldChildNumbers;
+	}
 } // class Tree

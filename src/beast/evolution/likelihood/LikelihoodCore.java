@@ -133,12 +133,6 @@ abstract public class LikelihoodCore {
      */
     abstract public double getLogScalingFactor(int patternIndex_);
 
-    /**
-     * Calculate partials for node node3, with children node1 and node2Index.
-     * NB Depending on whether the child nodes contain states or partials, the
-     * calculation differs-*
-     */
-    abstract public void calculatePartials(int node1, int node2Index, int node3);
     //abstract public void calculatePartials(int node1, int node2Index, int node3, int[] matrixMap);
 
     /**
@@ -181,4 +175,12 @@ abstract public class LikelihoodCore {
     abstract public void restore();
 //    /** do internal diagnosics, and suggest an alternative core if appropriate **/ 
 //    abstract LikelihoodCore feelsGood();
+
+	/**
+	 * Calculates partial likelihoods at a node.
+	 *
+	 * @param nodeIndices the array of child nodes
+	 * @param nodeIndex3  the 'parent' node
+	 */
+	abstract public void calculatePartials(int[] nodeIndices, int nodeIndex3);
 }

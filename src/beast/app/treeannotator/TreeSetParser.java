@@ -292,11 +292,8 @@ public class TreeSetParser {
 
 	/** move y-position of a tree with offset f **/
 	public void offsetHeight(Node node, double f) {
-		if (!node.isLeaf()) {
-			offsetHeight(node.getLeft(), f);
-			if (node.getRight() != null) {
-				offsetHeight(node.getRight(), f);
-			}
+		for (Node child: node.getChildren()) {
+			offsetHeight(child, f);
 		}
 		node.setHeight(node.getHeight() + f);
 	}
@@ -312,9 +309,8 @@ public class TreeSetParser {
 		} else {
 			double posY = offSet + node.getHeight();
 			double yMax = 0;
-			yMax = Math.max(yMax, lengthToHeight(node.getLeft(), posY));
-			if (node.getRight() != null) {
-				yMax = Math.max(yMax, lengthToHeight(node.getRight(), posY));
+			for (Node child: node.getChildren()) {
+				yMax = Math.max(yMax, lengthToHeight(child, posY));				
 			}
 			node.setHeight(-posY);
 			return yMax;
@@ -357,14 +353,14 @@ public class TreeSetParser {
 	}
 	
 
-	 double height(Node node) {
-		 if (node.isLeaf()) {
-			 return node.getLength();
-		 } else {
-			 return node.getLength() + Math.max(height(node.getLeft()), height(node.getRight()));
-		 }
-	 }
-	 
+	double height(Node node) {
+		double height = 0.0;
+		for (Node child : node.getChildren()) {
+			height = Math.max(height(child), height);
+		}
+		return node.getLength() + height;
+	}
+ 
 	 char [] m_chars;
 	 int m_iTokenStart;
 	 int m_iTokenEnd;
@@ -464,11 +460,10 @@ public class TreeSetParser {
 						isFirstChild.remove(isFirstChild.size()-1);
 						Node dummyparent = new Node();
 						dummyparent.setHeight(DEFAULT_LENGTH);
-						dummyparent.setLeft(left);
+						dummyparent.setChild(0, left);
 						left.setParent(dummyparent);
-						dummyparent.setRight(null);
 						Node parent = stack.lastElement();
-						parent.setLeft(left);
+						parent.setChild(0, left);
 						left.setParent(parent);
 						String metaData = metaDataString.remove(metaDataString.size() - 1);
 						left.metaDataString = metaData;
@@ -489,9 +484,9 @@ public class TreeSetParser {
 					isFirstChild.remove(isFirstChild.size()-1);
 					Node dummyparent = new Node();
 					dummyparent.setHeight(DEFAULT_LENGTH);
-					dummyparent.setLeft(left);
+					dummyparent.setChild(0, left);
 					left.setParent (dummyparent);
-					dummyparent.setRight(right);
+					dummyparent.setChild(1, right);
 					right.setParent(dummyparent);
 					stack.add(dummyparent);
 					isFirstChild.add(false);
@@ -512,9 +507,9 @@ public class TreeSetParser {
 				parseMetaData(left, metaData);
 
 				Node parent = stack.lastElement();
-				parent.setLeft(left);
+				parent.setChild(0, left);
 				left.setParent(parent);
-				parent.setRight(right);
+				parent.setChild(1, right);
 				right.setParent(parent);
 				metaData = metaDataString.lastElement();
 				parseMetaData(parent, metaData);
