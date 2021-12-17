@@ -159,12 +159,11 @@ public class BeerLikelihoodCore extends LikelihoodCore {
     /**
      * Calculates partial likelihoods at a node where the children have partials.
      */
-    protected void calculatePartialsPruning(List<double[]> partials, List<double[]> pmatrices,
-                                            List<int[]> states, List<double[]> smatrices,
-                                                    double[] partials3) {
+	protected void calculatePartialsPruning(List<double[]> partials, List<double[]> pmatrices, List<int[]> states,
+			List<double[]> smatrices, double[] partials3) {
 
-        int u = 0;
-        int v = 0;
+		int u = 0;
+		int v = 0;
 
         for (int l = 0; l < nrOfMatrices; l++) {
             for (int k = 0; k < nrOfPatterns; k++) {
@@ -517,7 +516,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
      */
     @Override
 	public void createNodePartials(int nodeIndex) {
-
         this.partials[0][nodeIndex] = new double[partialsSize];
         this.partials[1][nodeIndex] = new double[partialsSize];
     }
@@ -540,11 +538,6 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         } else {
             System.arraycopy(partials, 0, this.partials[0][nodeIndex], 0, partials.length);
         }
-    }
-
-    @Override
-    public void getNodePartials(int nodeIndex, double[] partialsOut) {
-        System.arraycopy(partials[currentPartialsIndex[nodeIndex]][nodeIndex], 0, partialsOut, 0, partialsOut.length);
     }
 
     /**
@@ -763,18 +756,27 @@ public class BeerLikelihoodCore extends LikelihoodCore {
         return logScalingFactor;
     }
 
+    @Deprecated
+    public void getPartials(int nodeIndex, double[] outPartials) {
+        getNodePartials(nodeIndex, outPartials);
+    }
+
     /**
      * Gets the partials for a particular node.
      *
      * @param nodeIndex   the node
      * @param outPartials an array into which the partials will go
      */
-    public void getPartials(int nodeIndex, double[] outPartials) {
-        double[] partials1 = partials[currentPartialsIndex[nodeIndex]][nodeIndex];
-
-        System.arraycopy(partials1, 0, outPartials, 0, partialsSize);
+    @Override
+    public void getNodePartials(int nodeIndex, double[] partialsOut) {
+        System.arraycopy(
+        		partials[currentPartialsIndex[nodeIndex]][nodeIndex],
+        		0,
+        		partialsOut,
+        		0,
+        		partialsOut.length);
     }
-
+    
     /**
      * Store current state
      */

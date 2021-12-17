@@ -253,8 +253,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
                 true, m_useAmbiguities.get()
         );
 
-        final int extNodeCount = nodeCount / 2 + 1;
-        final int intNodeCount = nodeCount / 2;
+        final int intNodeCount = treeInput.get().getInternalNodeCount();
+        final int extNodeCount = nodeCount - intNodeCount;
 
         if (m_useAmbiguities.get() || m_useTipLikelihoods.get()) {
             setPartials(treeInput.get().getRoot(), dataInput.get().getPatternCount());
