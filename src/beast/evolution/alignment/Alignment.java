@@ -56,7 +56,7 @@ public class Alignment extends Map<String> {
     /**
      * list of data type descriptions, obtained from DataType classes *
      */
-    static TreeMap<String, DataType> types = new TreeMap<>();
+    static TreeMap<String, DataType> types = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     static {
         findDataTypes();
@@ -272,7 +272,7 @@ public class Alignment extends Map<String> {
             DataType dataType;
             try {
                 dataType = (DataType) BEASTClassLoader.forName(dataTypeName).newInstance();
-                if (dataTypeInput.get().equals(dataType.getTypeDescription())) {
+                if (dataTypeInput.get().equalsIgnoreCase(dataType.getTypeDescription())) {
                     m_dataType = dataType;
                     break;
                 }
