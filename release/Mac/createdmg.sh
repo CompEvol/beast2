@@ -15,12 +15,13 @@ mv BEAST/* "BEAST/BEAST ${version}"
 
 cp install.png ${source}/${backgroundPictureName}
 
+echo "Creating image from folder ${source} at volume name ${title}"
 hdiutil create -srcfolder "${source}" -volname "${title}" -fs HFS+ \
       -fsargs "-c c=64,a=16,e=16" -format UDRW -size ${size}k pack.temp.dmg
 
 export device=$(hdiutil attach -readwrite -noverify -noautoopen "pack.temp.dmg" | \
          egrep '^/dev/' | sed 1q | awk '{print $1}')
-
+echo "Attach device : ${device}"
 
 echo '
    tell application "Finder"
@@ -54,5 +55,6 @@ chmod -Rf go-w /Volumes/"${title}"
 sync
 sync
 hdiutil detach ${device}
+echo "Detach device : ${device}"
 hdiutil convert "pack.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${finalDMGName}"
 rm -f /pack.temp.dmg 

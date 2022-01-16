@@ -374,6 +374,23 @@ public class Alignment extends Map<String> {
             excludedPatterns = new HashSet<>();
             for (int i = from; i < to; i += every) {
                 int patternIndex_ = patternIndex[i];
+                
+                if (patternWeight[patternIndex_] > 1) {
+                	// when the pattern weight is 2 or larger, perhaps a site that is ascertained for
+                	// accidentally made it into the alignment. Regardless, its contribution to the
+                	// likelihood will be ignored by setting the weight to zero in the line after this
+                	// sanity check, so warn the user about this possibility.
+                	if (to-from == 1) {
+                		int n = patternWeight[patternIndex_] - 1;
+                		Log.warning("WARNING: found " + (n==1?"a site": n+ " sites") + " in the alignment (" + getID() + ") "
+                			+ "that are equal to the ascertainment site. These sites will be ignored in the likelihood "
+                			+ "calculation.");
+                	} else {
+                    	Log.warning("WARNING: found multiple entries for a site that occurs multiple times and is ascertained "
+                    		+ "for. This may indicate some sites should be removed. Regardless, these sites will be ignored in "
+                    		+ "the likelihood calculation.");
+                	}
+                }
                 // reduce weight, so it does not confuse the tree likelihood
                 patternWeight[patternIndex_] = 0;
                 excludedPatterns.add(patternIndex_);

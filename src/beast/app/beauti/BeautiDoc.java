@@ -71,6 +71,7 @@ import beast.evolution.operators.TipDatesRandomWalker;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.TraitSet;
 import beast.evolution.tree.Tree;
+import beast.evolution.tree.TreeInterface;
 import beast.math.distributions.MRCAPrior;
 import beast.math.distributions.Normal;
 import beast.math.distributions.ParametricDistribution;
@@ -166,7 +167,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
     InputEditorFactory inputEditorFactory;
 
     /** used to capture Stdout and Stderr **/
-    static ByteArrayOutputStream baos = null;
+    static public ByteArrayOutputStream baos = null;
 
 
     public InputEditorFactory getInputEditorFactory() {
@@ -414,7 +415,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 //      fireDocHasChanged();
     }
 
-    void fireDocHasChanged()  {
+    public void fireDocHasChanged()  {
         for (BeautiDocListener listener : listeners) {
             try {
                 listener.docHasChanged();
@@ -976,7 +977,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
      *
      * @ *
      */
-    void connectModel()  {
+    public void connectModel()  {
         scrubAll(true, true);
     }
 
@@ -1331,16 +1332,18 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         }
 
         BEASTInterface likelihood = pluginmap.get("likelihood");
+        Set<TreeInterface> treesSeen = new HashSet<>();
         if (likelihood instanceof CompoundDistribution) {
             int i = 0;
             RealParameter firstClock = null;
             for (Distribution distr : ((CompoundDistribution) likelihood).pDistributions.get()) {
                 if (distr instanceof GenericTreeLikelihood) {
-                    GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;
+                    GenericTreeLikelihood treeLikelihood = (GenericTreeLikelihood) distr;                    
+                    TreeInterface currentTree = treeLikelihood.treeInput.get();
                     boolean needsEstimation = needsEstimationBySPTree;
                     if (i > 0) {
                         BranchRateModel.Base model = treeLikelihood.branchRateModelInput.get();
-                        needsEstimation = (model.meanRateInput.get() != firstClock) || firstClock.isEstimatedInput.get();
+                        needsEstimation = (model.meanRateInput.get() != firstClock && treesSeen.contains(currentTree)) || firstClock.isEstimatedInput.get();
                     } else {
                         // TODO: this might not be a valid type conversion from TreeInterface to Tree
                         Tree tree = (Tree) treeLikelihood.treeInput.get();
@@ -1366,6 +1369,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
                             firstClock = clockRate;
                         }
                     }
+                    treesSeen.add(currentTree);
                     i++;
                 }
             }
@@ -2021,7 +2025,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
         return deepCopy;
     } // deepCopyPlugin
 
-    private static BEASTInterface getCopyValue(BEASTInterface value, Map<String, BEASTInterface> copySet, PartitionContext oldContext, PartitionContext partitionContext, BeautiDoc doc) {
+    public static BEASTInterface getCopyValue(BEASTInterface value, Map<String, BEASTInterface> copySet, PartitionContext oldContext, PartitionContext partitionContext, BeautiDoc doc) {
         if (copySet.containsKey(value.getID())) {
             value = copySet.get(value.getID());
             return value;
@@ -2247,7 +2251,7 @@ public class BeautiDoc extends BEASTObject implements RequiredInputProvider {
 
 
     // methods for dealing with linking
-    void determineLinks() {
+    public void determineLinks() {
         if (!allowLinking) {
             return;
         }

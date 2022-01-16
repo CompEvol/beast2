@@ -1,10 +1,10 @@
 package test.beast.beast2vs1;
 
 
+import test.beast.beast2vs1.trace.Expectation;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import test.beast.beast2vs1.trace.Expectation;
 
 /**
  * Due to different naming, *BEAST 2 speciesCoalescent != *BEAST 1 species.coalescent
@@ -45,6 +45,7 @@ public class StarBEASTTest extends TestFramework {
         super.setUp(XML_FILES);
     }
 
+    // Note: some parameter names are hard-coded in XML, so no dot, e.g. "hky.kappa26"
     @Override
 	protected List<Expectation> giveExpectations(int index_XML) throws Exception {
         List<Expectation> expList = new ArrayList<Expectation>();

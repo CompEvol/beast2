@@ -1,10 +1,10 @@
 package test.beast.beast2vs1;
 
 
+import test.beast.beast2vs1.trace.Expectation;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import test.beast.beast2vs1.trace.Expectation;
 
 /**
  * @author Walter Xie
@@ -40,10 +40,10 @@ public class TreeTest extends TestFramework {
                 addExpIntoList(expList, "mrcatime(human,chimp)", 2.0326E-2, 3.5906E-5);
                 addExpIntoList(expList, "popSize", 9.7862E-2, 6.2387E-4);
                 addExpIntoList(expList, "hky.kappa", 25.8288, 0.1962);
-                addExpIntoList(expList, "hky.frequencies1", 0.3262, 5.9501E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.2569, 5.0647E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.1552, 4.4638E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.2617, 5.1085E-4);
+                addExpIntoList(expList, "hky.frequencies.1", 0.3262, 5.9501E-4);
+                addExpIntoList(expList, "hky.frequencies.2", 0.2569, 5.0647E-4);
+                addExpIntoList(expList, "hky.frequencies.3", 0.1552, 4.4638E-4);
+                addExpIntoList(expList, "hky.frequencies.4", 0.2617, 5.1085E-4);
                 addExpIntoList(expList, "likelihood", -1816.6943, 5.8444E-2);
                 addExpIntoList(expList, "coalescent", 7.2378, 9.1912E-3);
                 break;
@@ -56,10 +56,10 @@ public class TreeTest extends TestFramework {
                 addExpIntoList(expList, "mrcatime(human,chimp)", 1.7069E-2, 3.3455E-5);
                 addExpIntoList(expList, "popSize", 0.1049, 6.4588E-4);
                 addExpIntoList(expList, "hky.kappa", 26.7792, 0.1851);
-                addExpIntoList(expList, "hky.frequencies1", 0.328, 7.1121E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.2573, 5.4356E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.1548, 4.2604E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.2599, 6.0174E-4);
+                addExpIntoList(expList, "hky.frequencies.1", 0.328, 7.1121E-4);
+                addExpIntoList(expList, "hky.frequencies.2", 0.2573, 5.4356E-4);
+                addExpIntoList(expList, "hky.frequencies.3", 0.1548, 4.2604E-4);
+                addExpIntoList(expList, "hky.frequencies.4", 0.2599, 6.0174E-4);
                 addExpIntoList(expList, "likelihood", -1828.7667, 6.527E-2);
                 addExpIntoList(expList, "coalescent", 6.864, 9.7699E-3);
                 break;

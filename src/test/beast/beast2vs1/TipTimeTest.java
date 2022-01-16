@@ -1,10 +1,10 @@
 package test.beast.beast2vs1;
 
 
+import test.beast.beast2vs1.trace.Expectation;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import test.beast.beast2vs1.trace.Expectation;
 
 /**
  * @author Walter Xie
@@ -64,10 +64,10 @@ public class TipTimeTest extends TestFramework {
                 addExpIntoList(expList, "tree.height", 68.2541, 8.7152E-2);
                 addExpIntoList(expList, "popSize", 33.9172, 0.1266);
                 addExpIntoList(expList, "hky.kappa", 17.2562, 7.7984E-2);
-                addExpIntoList(expList, "hky.frequencies1", 0.2838, 4.3904E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.2116, 3.8223E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.2516, 4.0877E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.253, 4.1631E-4);
+                addExpIntoList(expList, "hky.frequencies.1", 0.2838, 4.3904E-4);
+                addExpIntoList(expList, "hky.frequencies.2", 0.2116, 3.8223E-4);
+                addExpIntoList(expList, "hky.frequencies.3", 0.2516, 4.0877E-4);
+                addExpIntoList(expList, "hky.frequencies.4", 0.253, 4.1631E-4);
                 addExpIntoList(expList, "clockRate", 8.1277E-4, 1.405E-6);
                 addExpIntoList(expList, "treeLikelihood", -3850.8083, 6.0429E-2);
                 addExpIntoList(expList, "coalescent", -71.6925, 3.5705E-2);
@@ -88,10 +88,10 @@ public class TipTimeTest extends TestFramework {
                 addExpIntoList(expList, "tree.height", 10.848, 5.6709E-2);
                 addExpIntoList(expList, "popSize", 9.4786, 0.1178);
                 addExpIntoList(expList, "hky.kappa", 8.906, 4.4495E-2);
-                addExpIntoList(expList, "hky.frequencies1", 0.3433, 4.5468E-4);
-                addExpIntoList(expList, "hky.frequencies2", 0.1857, 3.3512E-4);
-                addExpIntoList(expList, "hky.frequencies3", 0.2229, 4.1666E-4);
-                addExpIntoList(expList, "hky.frequencies4", 0.2481, 4.3418E-4);
+                addExpIntoList(expList, "hky.frequencies.1", 0.3433, 4.5468E-4);
+                addExpIntoList(expList, "hky.frequencies.2", 0.1857, 3.3512E-4);
+                addExpIntoList(expList, "hky.frequencies.3", 0.2229, 4.1666E-4);
+                addExpIntoList(expList, "hky.frequencies.4", 0.2481, 4.3418E-4);
                 addExpIntoList(expList, "clockRate", 3.6834E-3, 2.8931E-5);
 //                addExpIntoList(expList, "height(TREESPARROW_HENAN_1_2004)", 2005 - 1.502, 2.8594E-2);
                 addExpIntoList(expList, "height(CHICKEN_HONGKONG_915_1997)", 2005 - 8.1493, 1.0676E-2);
