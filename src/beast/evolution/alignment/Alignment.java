@@ -86,6 +86,10 @@ public class Alignment extends Map<String> {
         return types.get(name);
     }
 
+    static public TreeMap<String, DataType> getTypes() {
+        return types;
+    }
+
     final public Input<List<Sequence>> sequenceInput =
             new Input<>("sequence", "sequence and meta data for particular taxon", new ArrayList<>(), Validate.OPTIONAL);
 

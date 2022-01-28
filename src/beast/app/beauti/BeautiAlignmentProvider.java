@@ -9,14 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -558,16 +551,50 @@ public class BeautiAlignmentProvider extends BEASTObject {
 			        if (mayBeAminoacid) {
 			        	switch (this.datatype) {
 				        	case userdefined:
-				        		// make user choose 
-					        	JComboBox<String> jcb = new JComboBox<>(new String[]{"aminoacid", "nucleotide", "all are aminoacid", "all are nucleotide"});
-					        	jcb.setEditable(true);
+				        		// make user choose
+								TreeMap<String, DataType> allTypes = Alignment.getTypes();
+								String[] dataNames = new String[allTypes.keySet().size() + 2];
+								dataNames[0] = "aminoacid";
+								dataNames[1] = "nucleotide";
+								dataNames[2] = "all are aminoacid";
+								dataNames[3] = "all are nucleotide";
+								int i = 4;
+								for (String key: allTypes.keySet()) {
+									if (!key.equals("nucleotide") && !key.equals("aminoacid")) {
+										dataNames[i] = key;
+										i++;
+									}
+								}
+								JComboBox<String> jcb = new JComboBox<>(dataNames);
+								jcb.setEditable(true);
 					        	jcb.setSelectedItem(datatype);
 					        	JOptionPane.showMessageDialog(null, jcb, "Choose the datatype of alignment " + alignment.getID(), JOptionPane.QUESTION_MESSAGE);
-					        	switch ((String) jcb.getSelectedItem()) {
-						        	case "aminoacid": datatype = "aminoacid"; totalCount = 20; break;
-						        	case "nucleotide": datatype = "nucleotide"; totalCount = 4; break;
-						        	case "all are aminoacid": datatype = "aminoacid"; this.datatype = dtype.aminoacid; totalCount = 20; break;
-						        	case "all are nucleotide": datatype = "nucleotide"; this.datatype = dtype.nucleotide; totalCount = 4; break;
+					        	// match selected data type
+					        	String selectedType = (String) jcb.getSelectedItem();
+					        	switch (selectedType) {
+						        	case "aminoacid":
+						        		datatype = "aminoacid";
+						        		totalCount = 20;
+						        		break;
+						        	case "nucleotide":
+						        		datatype = "nucleotide";
+						        		totalCount = 4;
+						        		break;
+						        	case "all are aminoacid":
+						        		datatype = "aminoacid";
+						        		this.datatype = dtype.aminoacid;
+						        		totalCount = 20;
+						        		break;
+						        	case "all are nucleotide":
+						        		datatype = "nucleotide";
+						        		this.datatype = dtype.nucleotide;
+						        		totalCount = 4;
+						        		break;
+									default:
+										// catch all for other data types
+										datatype = selectedType;
+										totalCount = allTypes.get(selectedType).getStateCount();
+										break;
 					        	}
 					        	break;
 				        	case aminoacid:
