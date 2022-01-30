@@ -760,7 +760,9 @@ public class NexusParser {
                     // generic data type look up if nothing else works
                     DataType dataType = Alignment.getDataTypeByName(dataTypeName);
                     if (dataType != null) {
-                        alignment.dataTypeInput.setValue(dataTypeName, alignment);
+                        // robustly set data type for names with upper and lower case
+                        String dataTypeNameRobust = Alignment.getDataTypeByName(dataTypeName).getTypeDescription();
+                        alignment.dataTypeInput.setValue(dataTypeNameRobust, alignment);
                         totalCount = dataType.getStateCount();
                     }  else {
                         // set to integer as last resort
