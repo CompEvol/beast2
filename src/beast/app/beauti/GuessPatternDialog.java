@@ -571,8 +571,13 @@ public class GuessPatternDialog extends JDialog {
                 while (fin.ready()) {
                     String[] strArray = fin.readLine().trim().split("\t");
                     // only add entries that are non-empty
-                    if (strArray.length == 2) {
-                        traitMap.put(strArray[0], strArray[1]);
+                    if (strArray.length >= 2) {
+                    	String str = strArray[1];
+                    	int k = 2;
+                    	while (k < strArray.length) {
+                    		str += "\t" + strArray[k++];
+                    	}
+                        traitMap.put(strArray[0], str);
                     }
                 }
                 fin.close();
