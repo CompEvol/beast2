@@ -752,6 +752,7 @@
         <echo message="cp BEAST.v${version}.tgz ~/tmp"/>
     </target>
 
+    <property name="jre_ver" location="jre1.8.0_292" />
 <!--            depends="build_jar_all_BEAST_NoJUnitTest"-->
     <target name="linuxjre"
             description="release Linux/Unix version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
@@ -764,7 +765,7 @@
         </copy>
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
         <exec executable="cp">
-             <arg line="-R ../jdk8u282-b08-jre ${Linux_package_dir}/jre1.8.0_282"/>
+             <arg line="-R ../jdk8u282-b08-jre ${Linux_package_dir}/${jre_ver}"/>
 	</exec>
 
         <!--<copy todir="${Linux_package_dir}/doc">
@@ -1206,7 +1207,7 @@
         </copy>
         <property name="openjre" value="/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre"/>
         <exec executable="cp">
-		    <arg line="-R ${openjre} ${Mac_package_dir}/jre1.8.0_262"/>
+		    <arg line="-R ${openjre} ${Mac_package_dir}/${jre_ver}"/>
 		</exec>
         <!-- Deprecated JavaAppLauncher -->
 <!--        <exec executable="gcc">-->
