@@ -1,5 +1,5 @@
 #!/bin/sh
-export JAVA_HOME=$(dirname "$0")/../jre1.8.0_282
+export JAVA_HOME=$(dirname "$0")/../jre1.8.0_292
 
 if [ -z "$BEAST" ]; then
 	## resolve links - $0 may be a link to application
