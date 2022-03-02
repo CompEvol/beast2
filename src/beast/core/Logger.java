@@ -70,7 +70,9 @@ public class Logger extends BEASTObject {
     final public Input<LOGMODE> modeInput = new Input<>("mode", "logging mode, one of " + Arrays.toString(LOGMODE.values()), LOGMODE.autodetect, LOGMODE.values());
     final public Input<SORTMODE> sortModeInput = new Input<>("sort", "sort items to be logged, one of " + Arrays.toString(SORTMODE.values()), SORTMODE.none, SORTMODE.values());
     final public Input<Boolean> sanitiseHeadersInput = new Input<>("sanitiseHeaders", "whether to remove any clutter introduced by Beauti" , false);
+    final public Input<Boolean> convertToASCIIInput = new Input<>("ascii", "whether to convert the log output to ASCII" , true);
 
+    
     final public Input<List<BEASTObject>> loggersInput = new Input<>("log",
             "Element in a log. This can be any plug in that is Loggable.",
             new ArrayList<>(), Validate.REQUIRED, Loggable.class);
@@ -658,7 +660,11 @@ public class Logger extends BEASTObject {
         // Acquire log string and trim excess tab
         String logContent;
         try {
-            logContent = baos.toString("ASCII").trim();
+        	
+        	// Convert to ASCII?
+        	if (convertToASCIIInput.get()) logContent = baos.toString("ASCII").trim();
+        	else logContent = baos.toString().trim();
+        	
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("ASCII string encoding not supported: required for logging!");
         }
