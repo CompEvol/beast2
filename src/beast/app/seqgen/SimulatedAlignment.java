@@ -126,7 +126,24 @@ public class SimulatedAlignment extends Alignment {
 //    		}
 //			seq.append(seq[m_sequenceLength-1] + "");
 //    	}
-        String taxon = m_data.get().getTaxaNames().get(node.getNr());
+        //String taxon = m_data.get().getTaxaNames().get(node.getNr());
+        
+        
+        
+        // Find taxon with same name if tree is labelled
+        int taxonNum = node.getNr();
+        if (node.getID() != null && !node.getID().isEmpty()) {
+	        for (int i = 0; i < m_data.get().getTaxaNames().size(); i ++) {
+	        	if (m_data.get().getTaxaNames().get(i).equals(node.getID())) {
+	        		taxonNum=i;
+	        		break;
+	        	}
+	        }
+        }
+        
+        String taxon = m_data.get().getTaxaNames().get(taxonNum);
+        
+        
         return new Sequence(taxon, seqString);
     } // intArray2Sequence
 
