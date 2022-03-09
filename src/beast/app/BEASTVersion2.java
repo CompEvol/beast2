@@ -9,11 +9,11 @@ public class BEASTVersion2 extends BEASTVersion {
     /**
      * Version string: assumed to be in format x.x.x
      */
-    private static final String VERSION = "2.6.6";
+    private static final String VERSION = "2.6.7";
 
-    private static final String DATE_STRING = "2002-2021";
+    private static final String DATE_STRING = "2002-2022";
 
-    private static final boolean IS_PRERELEASE = false;
+    private static final boolean IS_PRERELEASE = true;
 //
 //    private static final String BEAST2_WEBPAGE = "http://beast2.org/";
 //    

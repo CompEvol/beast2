@@ -1,10 +1,13 @@
-                    BEAST v2.6.6 2021
-                 Beast 2 development team 2011-2021
+                    BEAST v2.6.7 2022
+                 Beast 2 development team 2011-2022
 Version History
-Last updated: August 2021
+Last updated: March 2022
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.6.7
+	xxx
+
 Version 2.6.6
 	Fix so that when not using ambiguities, the nucleotide 'U' base pair is correctly interpreted
 	Fix tree annotator for lower bound on common ancestor heights
