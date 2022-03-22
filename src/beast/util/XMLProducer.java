@@ -157,6 +157,25 @@ public class XMLProducer extends XMLParser {
             xml = dedupName(xml);
             xml = sortTags(xml);
             
+            // remove double newlines introduced by XSL transformation
+            StringBuilder b = new StringBuilder();
+            for (int i = 0; i < xml.length(); i++) {
+            	char c = xml.charAt(i);
+            	if (c == '\n') {
+            		int j = 0;
+            		while (i < xml.length()-1 && xml.charAt(i+1) == ' ') {
+            			i++;
+            			j++;
+            		}
+            		if (i < xml.length()-1 && xml.charAt(i+1) == '\n') {
+            			i++;
+            		} else {
+            			i = i - j;
+            		}
+            	}
+            	b.append(c);
+            }
+            xml = b.toString();
 
             //insert newlines in alignments
             int k = xml.indexOf("<data ");
