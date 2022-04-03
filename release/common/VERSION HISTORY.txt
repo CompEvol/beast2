@@ -6,7 +6,17 @@ Last updated: March 2022
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
 Version 2.6.7
-	xxx
+	SimulatedAlignment correctly links indices of tree to alignment
+        Option 'ascii' added to Logger to allow it to convert output to ascii or not
+        Loading two dimensional data into trait dialog robustified
+        Make NexusParser more robust and allow Fasta imports to select from all data types
+        Fix TreeAnnotator -heights processing issue
+        Make Prior.sample() obey parameter bounds
+        Fix auto-set clock rate in BEAUti when independent trees are involved
+        Fix TipDateRandomWalker to ensure heights are always >= 0
+        Add upper limit to delta exchange optimization 
+        Made tree input to RatesStatistic required to ensure appropriate behaviour
+        Remove superfluous new lines in XML produced by BEAUti
 
 Version 2.6.6
 	Fix so that when not using ambiguities, the nucleotide 'U' base pair is correctly interpreted
