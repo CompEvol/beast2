@@ -963,7 +963,7 @@ public class XMLParser {
 		} catch (InstantiationException e) {
 			// we only get here when the class exists, but cannot be
 			// created for instance because it is abstract
-            String msg = "Class " + clazzName + " exists but cannot to be instantiated.\n" +
+            String msg = "Class " + clazzName + " exists but cannot be instantiated.\n" +
                     "Please check if the class has the zero-argument constructor.";
 			throw new XMLParserException(node, msg, 1006);
 		} catch (ClassNotFoundException e) {
