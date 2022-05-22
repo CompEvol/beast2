@@ -1,13 +1,14 @@
 package beast.evolution.tree.coalescent;
 
 
-import java.util.Collections;
-import java.util.List;
-
+import beast.core.BEASTObject;
 import beast.core.Description;
+import beast.core.Function;
 import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+
+import java.util.ArrayList;
+import java.util.List;
 /*
  * ConstantPopulation.java
  *
@@ -41,7 +42,7 @@ import beast.core.parameter.RealParameter;
  */
 @Description("coalescent intervals for a constant population")
 public class ConstantPopulation extends PopulationFunction.Abstract {
-    final public Input<RealParameter> popSizeParameter = new Input<>("popSize",
+    final public Input<Function> popSizeParameter = new Input<>("popSize",
             "constant (effective) population size value.", Validate.REQUIRED);
 
     //
@@ -52,7 +53,7 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
      * @return initial population size.
      */
     public double getN0() {
-        N0 = popSizeParameter.get().getValue();
+        N0 = popSizeParameter.get().getArrayValue();
         return N0;
     }
 
@@ -70,7 +71,11 @@ public class ConstantPopulation extends PopulationFunction.Abstract {
 
     @Override
 	public List<String> getParameterIds() {
-        return Collections.singletonList(popSizeParameter.get().getID());
+        List<String> ids = new ArrayList<>();
+        if (popSizeParameter.get() instanceof BEASTObject)
+            ids.add(((BEASTObject)popSizeParameter.get()).getID());
+
+        return ids;
     }
 
     @Override
