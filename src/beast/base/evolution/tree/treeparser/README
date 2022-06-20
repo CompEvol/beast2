@@ -1,0 +1,5 @@
+To generate the java code from the parser, in this directory run
+
+java -jar antlr-complete.jar -o /tmp -visitor -listener -package beast.base.evolution.tree.treeparser *.g4
+
+where antlr-complete.jar is the complete version of jar, including the parser generator (not just the runtime).

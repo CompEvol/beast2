@@ -1,0 +1,101 @@
+<beast version='2.0'
+       namespace='beast.base.math:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood'>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="A">
+            A
+        </sequence>
+        <sequence taxon="B">
+            A
+        </sequence>
+        <sequence taxon="C">
+            A
+        </sequence>
+        <sequence taxon="D">
+            A
+        </sequence>
+    </data>
+
+   <tree spec='beast.base.evolution.tree.ClusterTree' id='tree' clusterType='upgma'>
+        <trait spec='beast.base.evolution.tree.TraitSet' traitname='date-backward' units='day'
+               value='
+		A  = 5000,
+		B  = 5000,
+		C  = 5000,
+		D  = 5000'>
+			<taxa spec='beast.base.evolution.alignment.TaxonSet' alignment='@alignment'/>
+        </trait>
+		<taxa idref='alignment'/>
+    </tree>
+
+    <parameter id="popSize" value="1000000" lower="0.0"/>
+
+    <run spec="MCMC" id="mcmc" chainLength="10000000"> <!--autoOptimize="true"-->
+        <state>
+            <stateNode idref='tree'/>
+        </state>
+
+        <distribution spec="CompoundDistribution" id="posterior">
+            <distribution id="coalescent" spec="Coalescent">
+                <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='TreeIntervals'>
+                     <tree idref="tree"/>
+                </treeIntervals>
+                <populationModel spec="ConstantPopulation" id='ConstantPopulation'>
+                    <popSize idref="popSize"/>
+                </populationModel>
+            </distribution>
+
+            <distribution id="tipDateA" monophyletic="false" spec="beast.base.evolution.tree.MRCAPrior" tipsonly="true" tree="@tree">
+                <taxonset id="TaxonSetA" spec="TaxonSet">
+                    <taxon id="A" spec="Taxon"/>
+                </taxonset>
+                <distr id="Uniform0" lower="4999" offset="0.0" spec="distribution.Uniform" upper="5001"/>
+            </distribution>
+
+            <distribution id="tipDateB" monophyletic="false" spec="beast.base.evolution.tree.MRCAPrior" tipsonly="true" tree="@tree">
+                <taxonset id="TaxonSetB" spec="TaxonSet">
+                    <taxon id="B" spec="Taxon"/>
+                </taxonset>
+                <distr id="Noraml0" offset="0.0" spec="distribution.Normal" mean="5000" sigma="1"/>
+            </distribution>
+
+            <distribution id="rootHeight" monophyletic="false" spec="beast.base.evolution.tree.MRCAPrior" tipsonly="false" tree="@tree">
+                <taxonset id="TaxonSetAll" spec="TaxonSet" alignment="@alignment"/>
+                <distr id="Noraml1" offset="0.0" spec="distribution.Normal" mean="20000" sigma="1"/>
+            </distribution>
+
+            <!--<distribution id="tipDateD" monophyletic="false" spec="beast.base.evolution.tree.MRCAPrior" tipsonly="true" tree="@tree">-->
+                <!--<taxonset id="TaxonSetD" spec="TaxonSet">-->
+                    <!--<taxon id="D" spec="Taxon"/>-->
+                <!--</taxonset>-->
+            <!--</distribution>-->
+        </distribution>
+
+        <operator spec='SubtreeSlide' weight="15" gaussian="true" size="14000" tree="@tree"/>
+        <operator id="TipDatesRandomWalkerA" windowSize="1" spec="TipDatesRandomWalker" taxonset="@TaxonSetA" tree="@tree" weight="1.0"/>
+        <operator id="TipDatesRandomWalkerB" windowSize="1" spec="TipDatesRandomWalker" taxonset="@TaxonSetB" tree="@tree" weight="1.0"/>
+
+        <logger logEvery="1000" fileName="test.$(seed).log">
+   	        <model idref='posterior'/>
+            <log idref="posterior"/>
+            <log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/>
+            <log idref="coalescent"/>
+            <log idref="popSize"/>
+            <log idref='tipDateA'/>
+			<log idref='tipDateB'/>
+            <log idref='rootHeight'/>
+        </logger>
+<!--        <logger logEvery="100" fileName="test.$(seed).trees">
+            <log idref="tree"/>
+        </logger>  -->
+        <logger logEvery="10000">
+	        <model idref='posterior'/>
+            <log idref="posterior"/>
+            <log idref="coalescent"/>
+            <log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree'/>
+            <log idref='rootHeight'/>
+            <log idref="popSize"/>
+        </logger>
+    </run>
+
+</beast>

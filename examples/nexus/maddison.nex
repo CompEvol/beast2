@@ -1,0 +1,27 @@
+#NEXUS
+
+[
+	Example from Nexus: An Extensible File Format for Systematic Information
+	David R. Maddison David L. Swofford Wayne P. Maddison David Cannatella
+	Syst Biol (1997) 46 (4): 590-621.
+]
+
+
+BEGIN TAXA;
+  DIMENSIONS NTAX=4;
+  TAXLABELS fish frog snake mouse;
+END;
+
+BEGIN CHARACTERS;
+  DIMENSIONS NCHAR=20;
+  FORMAT DATATYPE=DNA;
+  MATRIX
+    fish ACATAGAGGGTACCTCTAAG
+    frog ACTTAGAGGCTACCTCTACG
+    snake ACTCACTGGGTACCTTTGCG
+    mouse ACTCAGACGGTACCTTTGCG;
+END;
+
+BEGIN TREES;
+  TREE best = (fish,(frog,(snake,mouse)));
+END;

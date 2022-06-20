@@ -1,0 +1,78 @@
+<?xml version="1.0" standalone="yes"?>
+<beast version='2.0'
+       namespace='beast.base.evolution.alignment:beast.base.evolution.speciation:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.base.evolution.likelihood:beast.base.math.distributions:beast.base.evolution.operator:beast.base.inference.operator'>
+
+    <!-- for Figure 9.1 in BEAST2 book -->
+
+    <taxonset spec='TaxonSet' id='taxa'>
+        <taxon spec='Taxon' id='1'/>
+        <taxon spec='Taxon' id='2'/>
+        <taxon spec='Taxon' id='3'/>
+        <taxon spec='Taxon' id='4'/>
+    </taxonset>
+
+    <data id="alignment" dataType="nucleotide">
+        <sequence taxon="1">A</sequence>
+        <sequence taxon="2">A</sequence>
+        <sequence taxon="3">A</sequence>
+        <sequence taxon="4">A</sequence>
+    </data>
+
+    <input spec='CalibratedYuleModel' type="full" id="cyule">
+        <birthRate spec='parameter.RealParameter' value="2.0" id="birthRate"/>
+        <tree spec='TreeParser' id='tree' taxa='@alignment'
+              newick='(((1:1.0,2:1.0):1.0,3:2.0):1.0,4:3.0);'/>
+
+        <calibrations spec='CalibrationPoint' id='cal'>
+            <taxonset spec='TaxonSet' id='all'>
+                <taxon idref='1'/>
+                <taxon idref='2'/>
+                <taxon idref='3'/>
+                <taxon idref='4'/>
+            </taxonset>
+            <distr id='logNormalDistribution' spec='beast.base.inference.distribution.LogNormalDistributionModel'>
+                <parameter name='M' value='2'/>
+                <parameter name='S' value='0.2'/>
+            </distr>
+        </calibrations>
+    </input>
+
+    <run spec="MCMC" id="mcmc" chainLength="1000000">
+
+        <state>
+            <stateNode idref='tree'/>
+            <stateNode idref="birthRate"/>
+        </state>
+
+        <distribution spec='CompoundDistribution' id='posterior'>
+            <distribution id="yule.prior" idref='cyule'/>
+
+            <!-- <distribution id="birthRate.prior" spec="beast.base.inference.distribution.Prior" x="@birthRate">
+                <distr id="OneOnX" offset="0.0" spec="beast.base.inference.distribution.OneOnX"/>
+            </distribution> -->
+
+        </distribution>
+
+        <operator spec='SubtreeSlide' weight="4" gaussian="true" size="2.5" tree="@tree"/>
+        <operator spec="ScaleOperator" weight="1" scaleFactor="0.25">
+            <parameter idref="birthRate"/>
+        </operator>
+
+        <logger logEvery="100" fileName="cond_root_prior.$(seed).log">
+            <model idref='posterior'/>
+            <log idref="posterior"/>
+            <log idref="cyule"/>
+            <log idref="birthRate"/>
+            <log id="TreeHeight" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@tree"/>
+        </logger>
+        <logger logEvery="100" fileName="cond_root_prior.$(seed).trees">
+            <log idref="tree"/>
+        </logger>
+        <logger logEvery="100">
+            <model idref='posterior'/>
+            <log idref="cyule"/>
+            <log idref="birthRate"/>
+            <log idref="TreeHeight"/>
+        </logger>
+    </run>
+</beast>

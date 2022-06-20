@@ -1,0 +1,38 @@
+<beast version="2.0" namespace="beast.pkgmgmt:beast.base.core:beast.base.inference
+                              :beast.base.evolution.alignment
+                              :beast.base.evolution.tree
+                              :beast.base.evolution.speciation
+                              :beast.base.inference.distribution
+                              :beast.base.inference.util
+                              :beast.base.inference.parameter">
+
+
+
+    <run spec="DirectSimulator" nSamples="2">
+
+        <distribution spec="CompoundDistribution" id="fullModel">
+            <distribution spec="YuleModel" id="yuleModel">
+                <tree spec="Tree" id="tree">
+                    <taxonset spec="TaxonSet">
+                        <taxon spec="Taxon" id="t1"/>
+                        <taxon spec="Taxon" id="t2"/>
+                        <taxon spec="Taxon" id="t3"/>
+                        <taxon spec="Taxon" id="t4"/>
+                        <taxon spec="Taxon" id="t5"/>
+                    </taxonset>
+                </tree>
+                <birthDiffRate spec="RealParameter" id="birthDiffRateParam" value="1.0"/>
+            </distribution>
+
+            <distribution spec="beast.base.inference.distribution.Prior" id="birthDiffRatePrior">
+                <distr spec="Exponential" id="xExpParamDist" mean="1"/>
+                <x spec="RealParameter" idref="birthDiffRateParam"/>
+            </distribution>
+
+        </distribution>
+
+        <logger logEvery="1" fileName="$(filebase).trees">
+            <log idref="tree"/>
+        </logger>
+    </run>
+</beast>

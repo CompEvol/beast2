@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<!-- $Id: testCoalescent.xml,v 1.2 2005/07/11 23:22:40 rambaut Exp $ -->
+<!-- Tests the coalescent prior -->
+
+<beast>
+
+    <taxa id="taxa1">
+        <taxon id="A"/>
+        <taxon id="B"/>
+        <taxon id="C"/>
+        <taxon id="D"/>
+        <taxon id="E"/>
+        <taxon id="F"/>
+        <taxon id="G"/>
+        <taxon id="H"/>
+        <taxon id="I"/>
+        <taxon id="J"/>
+    </taxa>
+
+    <!-- create a demographic model and intialize currentPopulationSize parameter -->
+    <constantSize id="demo1" units="years">
+        <populationSize>
+            <parameter id="demo1.pop1" value="10.0"/>
+        </populationSize>
+    </constantSize>
+
+    <!-- simulate a coalescent tree -->
+    <coalescentTree id="tree1">
+        <demographicModel idref="demo1"/>
+        <taxa idref="taxa1"/>
+    </coalescentTree>
+
+	<!-- A prior on the distribution node heights defined given                  -->
+	<!-- a Birth-Death speciation process (Gernhard 2008).                       -->
+	<birthDeathModel id="birthDeath" units="substitutions">
+		<birthMinusDeathRate>
+			<parameter id="birthDiffRate" value="2.0" lower="0.0" upper="1000000.0"/>
+		</birthMinusDeathRate>
+		<relativeDeathRate>
+			<parameter id="relativeDeathRate" value="0.5" lower="0.0" upper="100.0"/>
+		</relativeDeathRate>
+	</birthDeathModel>
+
+
+    <treeModel id="treeModel1">
+        <tree idref="tree1"/>
+        <rootHeight>
+            <parameter id="treeModel1.rootHeight"/>
+        </rootHeight>
+        <nodeHeights rootNode="false" internalNodes="true">
+            <parameter id="treeModel1.internalNodeHeights"/>
+        </nodeHeights>
+        <nodeHeights rootNode="true" internalNodes="true">
+            <parameter id="treeModel1.allNodeHeights"/>
+        </nodeHeights>
+    </treeModel>
+
+    <speciationLikelihood id="speciation">
+        <model>
+            <yuleModel idref="birthDeath"/>
+        </model>
+        <speciesTree>
+            <treeModel idref="treeModel1"/>
+        </speciesTree>
+    </speciationLikelihood>
+
+    <treeLengthStatistic name="TL" id="TL">
+        <treeModel idref="treeModel1"/>
+    </treeLengthStatistic>
+
+    <mcmc id="mcmc1" chainLength="2000000" verbose="false">
+        <speciationLikelihood idref="speciation"/>
+        <log id="logScreen2" logEvery="20000">
+            <column dp="4">
+                <likelihood idref="speciation"/>
+                <parameter idref="treeModel1.rootHeight"/>
+                <treeLengthStatistic idref="TL"/>
+            </column>
+        </log>
+        <log id="log1" logEvery="10" fileName="birthDeath10taxa.log">
+            <likelihood idref="speciation"/>
+            <parameter idref="treeModel1.rootHeight"/>
+            <treeLengthStatistic idref="TL"/>
+        </log>
+        <logTree id="logTree1" logEvery="100" nexusFormat="true" fileName="birthDeath10taxa.trees">
+            <treeModel idref="treeModel1"/>
+        </logTree>
+        <operators>
+            <subtreeSlide weight="1" gaussian="true" size="1">
+                <treeModel idref="treeModel1"/>
+            </subtreeSlide>
+        </operators>
+    </mcmc>
+
+    <report>
+        Time taken:
+        <property name="timer">
+            <mcmc idref="mcmc1"/>
+        </property>
+    </report>
+
+    <traceAnalysis fileName="birthDeath10taxa.log" burnIn="1000">
+        <!-- expectation of root height for 10 tips and lambda = 2
+        <expectation name="treeModel1.rootHeight" value="0.964484127"/> ? 0.70105 -->
+        <!-- expectation of tree length for 10 tips and lambda = 2
+        <expectation name="TL" value="4.5"/> ? 2.99054 -->
+    </traceAnalysis>
+
+</beast>
+
+

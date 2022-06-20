@@ -1,0 +1,33 @@
+<beast version="2.0" namespace="beast.pkgmgmt:beast.base.core:beast.base.inference
+                              :beast.base.evolution.alignment
+                              :beast.base.evolution.tree
+                              :beast.base.inference.distribution
+                              :beast.base.inference.util
+                              :beast.base.inference.parameter">
+
+
+    <parameter spec="RealParameter" id="meanParam" value="1.0"/>
+
+
+    <run spec="DirectSimulator" nSamples="1">
+
+        <distribution spec="CompoundDistribution">
+
+            <distribution spec="beast.base.inference.distribution.Prior" id="xPriorDist">
+                <distr spec="Exponential" id="meanExpParamDist" mean="@meanParam"/>
+                <x spec="RealParameter" id="x" value="1.0"/>
+            </distribution>
+
+            <distribution spec="beast.base.inference.distribution.Prior" id="meanPriorDist">
+                <distr spec="Exponential" id="xExpParamDist" mean="1"/>
+                <x spec="RealParameter" idref="meanParam"/>
+            </distribution>
+
+        </distribution>
+
+        <logger logEvery="1" fileName="$(filebase).log">
+            <log idref="x"/>
+            <log idref="meanParam"/>
+        </logger>
+    </run>
+</beast>

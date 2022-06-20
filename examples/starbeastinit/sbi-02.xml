@@ -1,0 +1,170 @@
+<beast namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:util:beast.base.evolution.speciation:beast.base.math.distributions:beast.base.evolution.tree" version="2.0">
+  <data dataType="nucleotide" id="sb_l0_examnple01" name="alignment" strip="false">
+    <sequence id="seq_sb_l0_examnple01_s3_tip0" taxon="s3_tip0" totalcount="4" value="ACTGTAGGGTTGTTTCTTCAGAGGATTGCGTCGGCCGTAGGTTCATGCTTTCGCCGTTCACCATTAACCCTACACGCTGTAAATGGTCGGCTGCACATGCCCCTATCCTATTCATAGGAAACCACAACTCTGGCCACAAATCTTGGGTATCGACTAGCCCGCGTTAATTGATAGAAAGATACCTCATCAGCTTCAACGCCCATATGAATGTCACGGTTACAATTGTCGAGAAACCCTCGGGAGTGCATGAGACTAGCGCCCATTGATAATAAGCCGACCAGAATGTTACGGAAGAAAGGCGAACCCATCAAACCTGACCGCAGCGTCAGCGCCTTCGCTGTGCGGGGTTCGAGCGCTAGGTAGAGCCCAATCGAATATATTGCGAAATTATAGAGCTGGGTGACCGTTCTGCATCAACCAATCAGCAGTCCTTTGATGACGCATCTGCGTAGATAGCAGCCGGGGATCCTAGAGCGCAGACCACTTACGTGGCGGGTCTACCGAGGGCCCCTCGCCGACATTAGCGTGCCGCGTACCTATTCCGCCTGGTCGTTAGGTGGGAAGGATTTCCGCCTGTCCAATAGGGGGCGCGTATAAAACAAGGAATCAGCGACGCCTCGGAAATGACGCCCTCATTAAGAGCATCGGTGGTCCGTGGTCTCTATCAGGACCATTCGCAAAAACATCGCTTCTTAATTCGTCACGTATGTATTACTGTAGACTTATTTGTTTTGTTGTGTTCGACTTTTGCTAGCGTGGTGAAGTCACTATCCCACGGGCTGTAGCAATTCACGTTTAAGTCGACGCTCCGCCACGCTCTCTAGTTTGACGGCTAGACCCCCCCCGCCGGAGAATTATCTGAGTGCATTACAACGACCCTGCACATCGCCTCACCCGACACTATCGTTGAGCACACTAATGCTCGAATTTGGGCGCATGGTCGTGCTTAAACACACCTTCGGACCGCTGGCAGGGCGTGTCGCATTAATATAAAGTTTCC"/>
+    <sequence id="seq_sb_l0_examnple01_s2_tip0" taxon="s2_tip0" totalcount="4" value="ACTGTAGGGTTGTTTCTTCAGCGGATTGCGTCGGCCGTAGGTTCTTGCTTTCGCCACTCACCATAAACCCTTCACGCTGTAAATGGTCGGCGGCACATGCCCTGATCCTATTCATAGGAAACCACAACTCTCGCCACAAACCTTGGGTATCGACTAGCGCGCGTTCATTGATAGAAAGATACCTCATCAGCTTCAACGCCCATATGAATGTGACGGTTACAATTGACGATAAACCCTGGGGAGCGCATGAGACTAGCGCCCATTGATAATGAGCCGACCAGAATATTACGGAAGAAAGACCTACCCATCAAACCTGACCGCAGCGTCAGCTCCTTCGCTGTGCGGGGTTCGATCGGTAGGTAGAGCCCAGTCGAATATATTGCGAAATTATAGAGCTGGGTGACCGTTCTGCATCAGCCAATCAGCAGTCCTTTGATGACGCATCTGAGTAGATAGAAGCCGGGGATCCTAGAGCGCAGACAACATAAGTGGCGGGTCTACCGAGGGCCCCTCGCCGACATTAGCGTGCCGCGTACATATTCCGCCTGGTCGTTACGTGGGAAGGATTTCCGTCTGTCCAATAGGGGGCGCGTATAAAACAAGGAATCAGCGACGCCTCGGCAATGATGCCCTCATTAAGAGCATCGGTGGTCCGTGGTCTCTATCAGGCCCATTCGCAAAAACATCGCTTCTTAAGTCGTCACGTATGTATTACTGTAGACTTATTTGTTTTGTTGTGTTCGACTTTTGCTAGCGTGGTGAAGTCACTATCCCGCGGGCTGTACCAATTCACGTTTAAGTCGACGCTCCGCCACGCTCGCTAGTTTGACGGCTAGACCCCCCCCGACGGAGAATTATCTGAGTGCCTTACAACGACCCTGCACATCGCCTCACCCGACACAATCATTGAGGACACTAATGCTCGAATTTGGGTGCATGGTCGTGCTTAAACACACCTTCGGAGCGCTGGCAGGGCTTATCGCAATAATATAAAGTTTCC"/>
+    <sequence id="seq_sb_l0_examnple01_s1_tip0" taxon="s1_tip0" totalcount="4" value="ACTGTAGGGTTGTTTCTTCAGAGGATTGGGTCGGCCGTAGGTTCATGCTTTCGCCGTTCACCATAAACCCTACACGCTGTAAATGGTCGGCTGCACATGCCCTGATCCTATTCATAGGAAACCACAATTCTCACCACAAATCTTGGGTATCGACTAGCCCGCGTCAATTGATAGAAAGATAGCTCATCAGCTTCAACGCCCATATTAATGTCACGGTTACAATTGACGATAACCCCTTGGGAGCGCATTAAACTAGCGCCCATTGATAACGAGCCGACCAGAATGTTACGGAAGAAAGGCGTACCTATCAAACATGACCGCAGCGTCAGCGCCTTCGCTGAGCGGGGTTCGATCGCTAGGTAGAGTCCAGTCGAAAATATTGCGAAATTATAGAGCTGGGTGACCGTTCTGCATCAACCAATCAGCAGTCCTTTGATGACGCATCTGAGTAGATAGAAGCCGGGGATCCTAGAGCGCAGACAACATAAGTGGCGGGTCTACCGAGGGCCCCTCGCCGACATTAGCGTGCCGCGTACCTATTCCGCCTGGTCGTTAGGTGGGAAGGATTTCCGCCTGTCCAATAGGGGGCGCGTATAAAACAATGAATCAGCGACGCCTCGGCAATGACGCCCTCATTAAGAGCATCGGTGGTCCGTGGTCTCTTTCAGGACCATTCGCAAAAACATCGCTTCTTAAGTCGTCACGTTTGTATTACTGTAGACTTATTTGTTTTGTTGTGTTCGACTTTTGCTAGCGTGGTGAAGTCACTATCCCGCGGGCTGTAGCAATTCACGTTTAAGTCGACACTCCGCCACGCTCTCTAGTTTGACGGCTAGACCCCCCCCGCCGGAGAATTATCTGAGTGCCTTACAACGACCCTGCACATCGCCTCACCCGACACAATCGTTGAGCACACTAATGCTCGAATTTGGGTGCATGGTCTTGCTTAAACACACCTTCGGAGCGCTGGCAGGGCTTATCGCATTAATATAAATTTTTC"/>
+    <sequence id="seq_sb_l0_examnple01_s0_tip0" taxon="s0_tip0" totalcount="4" value="ACTGTAGGGTTGTTTCTTCAGAGGATTGCGTCGGCCGTAGGTTCATGCTTTCGCCGTTCACCATAAACCCTACACGCTGTAAATGGTCGGCTGCACATGCCCCTATCCTATTCATAGGAAACCACAACTCTCGCCACAAATCTTGGGTATCGACTAGCCCGCGTTAATTGATAGAAAGATACCTCATCAGCTTCCACGCCCATATGAATGTCACGGTTACAATTGACGAGAAACCCTCGGGAGCGCATGAGACTAGCGCCCATTGATAATAAGCCGACCAGAATGTTACGGAAGAAAGGCGTACCCATCAAACCTGACCGCACCGTCAGCGCCTTCGCTGTGCGGGGTACGAGCGCTAGGTAGAGCCCAATCGAATATATTGCGAAATTATAGAGCTGGGTGACCGTTCTGCATCAACCAATCAGCAGTCCTTTGATGACGCATCTGCGTAGATAGCAGCCGGGGATCCTAGAGCGCAGACAACTTACGTGGCGGGTCTACCGAGGGCCCCTCGCCGACATTAGCGTGCCGCGTACCTATTCCGCCTGGTCGTTAGGTGGGAAGGATTTCCGCCTGTCCAATAGGGGGCGCGTATAAAACAAGGAATCAGCGACGCCTCGGAAATGACGCCCTCATTAAGAGCATCGGTGGTCCGTGGTTTCTATCAGGACCATTCGCAAAAACATCGCTTCTTAATTCGTCACGTATGTATTACTGTAGACTTATTTGTTTTGTTGTGTTCGACTTTTGCTAGCGTGGTGAAGTCACTATCCCACGGGCTGTAGCAATTCACGTTTAGGTCGACGCTCCGCCACGCTCTCTAGTTTGAGGGCTAGACCCCCCCCGCCGGAGAATTATCTGAGTGCATTACAACGACCCTGCACATCGCCTCACCCGACACTATCGTTGAGCACACTAATGCTCGAATTTGGGCGCATGGTCGTGCTTAAACACACCATCGGACCGCTGGCAGGGCTTGTCGCATTAATATAAAGTTTCC"/>
+  </data>
+  <data dataType="nucleotide" id="sb_l1_examnple01" name="alignment" strip="false">
+    <sequence id="seq_sb_l1_examnple01_s3_tip0" taxon="s3_tip0" totalcount="4" value="TAAAAGGCACATTTCGCATGGTCCCGCATGTATCTGGGCTGTCATTTACTGAAACGGTAGATTAAAACTTACGTAGTTGTAGTCAAGCTTCTTGAGTTGGGAAACCCACTCAGATGTGTCGACGGCCGCCTGCAGCCGTGCATCGCTGGTGCTTTAGCTTGAATACATACAGGTTGACGACTTACCTCAAGGCTTTCGGTCGGCGCGTCAGTATACGCAAAACAGCGGGCGTATGCACCCACCGGTCCGAAAAGAGTTTCCTGCCGGTGGTGTCAACATGGGTGGACAGACAGGCGGTGGTTAAACCAGAATGACAGGGTTGATATCTCCGCGACTTCTCGGTCCAGTACCCACCGCTTCACGGTAACCGGGTTCAGTTTGACGGAGCAGAGCTTAGGTGGGCGCTTATCGTGCACAGAGGCTGGGCAAGAGATCCATGCTGCCCCAAGTGCGCCTCCTTGGCGTTCCTTGCTACAAAGCCACACCGTGAAATCAGGAATTTAACTGTCGCGAACGGATACTTTGGATTAATATCGGCCAGCTGCACGTACAAGCACGTCCGTTCTTCCACGTGTGACTCACCGTACTCCCTCTCACATATTATAGGGTTGCCGCGTTATAAACGAAATGATGAAATGATGTGGAATCCGCTGGGCTCACGACATCGAGGGTCCTTCGAGTAGTGACTTCTTGCCGCAGTCCGGCTAAAACAGCCGTAGCTGCATGAAGCTATTTTCCAATGCCGTTCCTCCTCTTCGACAGCGCTTTCAAAAGCCGGAAACCCAATTTTGACTATGGAAGAGCCCCGCTATACTGGCGGGGCCTTGAGTTCGTTACAAATCACCGTCTATTCCAGGCACAGAGATAATCCTCTGTTGATCCCGCCTCCTGAAAACTTCGTTGGTAAAGAAAAGAGGGATAAAGGCAGATCGTTCCGGAGCCCTGCCAAGTTGCGAGAAGCTTAGTTACAAATGGGGGTGCTACTATTGCTGGCATCGTT"/>
+    <sequence id="seq_sb_l1_examnple01_s2_tip0" taxon="s2_tip0" totalcount="4" value="TAAACGGCACATTTCTCGTGGCCCCGCATGTATCTGGGATGTCATCTCATGAAACGGTAGATTAAAACTTACGTAGTTGTATTCAAGCTTTTTTAGTTGGGAAACCCACTTAGATGTGTCGACGGCCGCCTGCAGCCGTGCATCGCTGTTGCTTTAGCTTGAATACATACAGGTTGACGACTTACCCCAAGGCTCTCGGTCGGCGCGTCAGTATACGGAAAACAGCGTGCGTATGCACCCACCGGTCGGAAAAGAGTTTCCTGCCGGTGGTGTCTACATGGGTAGACAGACAGGCGGTGGTTAAACCAGAATGACAGGGTTGATAACTGCGCGACATCACGGTCCAGTACCCACCTCTTCACGTTAACCGGGTTCAGTTTGACGGAGCAGCGCTTAGGTGGGCGCTTATAGTGCACAGAGGCTGGGCACGAGATTCATGCTGCCACAAGTGCGCCTCCTTGGCGTTCCTTCCTACAATGCCACACCGTGAAATCAGGAATTTAACTGTCGCGAACGGATACTTTGGTTTAATATCGCCCAGCTGCGGGTACAAGCACGTCCGTTGTTCCACGTGTGACTCTCTGTACTCCCTCTGACATATTATAGGGTTGCCGCGCTATAAACGAAATGATGAAATGATGTGGATTCCGCTGGGCTCTCGACTTCCAGGGTCCTTCGAATAGTGACTTCTTGCCGCAGTCCGGCTAAAACAGCTGTAGCTGCATGAAGCTATCTTCCAATGCCCTTCCTCCTCTTCGACAGCGCTTTGAAAAGCCGGGAACCCAATTTGGACTATGGGAGAGCCCAACTATTATGGCGGGGCCTTGAGTTCGTTACAAATCACCGACTATTGCAGGCACAGAGATGATCCTCTGTTGATCCCCCCTCCTGAAAACTTCGTTGGTAAAGAAAAGAGGGATAAAGGCAGATCCTTCCGGAGCCCTGCCAATTTGCTAGAAGCTTAGTTACAATTGAGGGTGCTACTATCGCTTGCGTCGTT"/>
+    <sequence id="seq_sb_l1_examnple01_s1_tip0" taxon="s1_tip0" totalcount="4" value="TAAACGGCACATTTCTCATGGCCCCGCATCTATCTGGGCTGTCATTTAAAGAAACGGTAGAGGAAAACTTACGTAGTTGTCGTCAAGCTTTTTTAGTTGGGAAACCCACTCAGATGTGTCGACGGCCGCCTGCAGCCGTGCATAGCTCGTGCTTTAGCTTGCATACAAACACGTTGACGACTTACCCCAAGGCTCTCGGTCGGCGCGTCAGTATACGCAAAACAGCGGGCGGATGCACCCACCGGTCGGAAAAGAGATTCCTGCCGGTGGTGTCAACATGGGTAGACAGACAGGCGTTGGTTAAACCAGAATGTCAGGGTTGATAACTGCGCGACATCTCGGTCCAGTACCCACCGCTTCACGTTAACCGGGTTCAGTTTGACGGAGCAGAGCTTAGGTGGGCGGTTATCGTGCACAGAGGCTGGGCACGAGATTCATGCTGCTACAAGTGCGCCTCCTTGGCGTTCCTTGCTACAATGCCACACCGTGAAATCAGGGATTTAACTGTCGCGAACGGATACTCTGGATTAATATCGCCTAGCTGCGCGTACAAGCACGTCCGTTCTTCCACGTGTGACTCTCAGTACTCCCTCTCACATATTATAGGGTTGCCGCGCTTTAAACGAAATGATGAAATGATGTGGATTCCGCTGGGCTCTCGACTTCGAGGGTCCTTCGAATAGTGACTTCTTGCCGCAGTCCGGCTAAAACAGACGTAGCCTCATGAAGCTATCTTCCAATGCCGTTCCTCCTCTTCGACAGCGCTTTCAAAAGCCGGAAACCCCATTTTGTCTATGGGATAGCCCCGCTATAATGGCGGCGCCTTGAGTTCGTTACAAATCACCGTCTATTTCAGGCACAGAGATGATCCTCTGTTGATACCACCTCCTGAAAACTTCGTTGGTAAAGAAAAGAGGGATAAAGGCAGATCGTTCCGGAGCCCTGCCAAGTTGCTAGAAGCTTAGTTACACTTGAGGGTGCTACTTTTGCTGGCGTCGTT"/>
+    <sequence id="seq_sb_l1_examnple01_s0_tip0" taxon="s0_tip0" totalcount="4" value="TGAACGGCACATTTCTCATGGTCCCGCATGTATCTGGGCTGTCACTTCCTGAAACGGTAGATGAAAACTTACGTAGTTGTCGTCAAGCTTTTTTAGTTGGGAAACCCACTCAGATGTGTCGACGGCCGCCTGCAGCCGTGCATCGCTGGTCCTTTAGCTTGAATACATACAGGTAGACGACTTACCCCAAGGCTTTCGGTCGGCGCGTCAGTATACGCAAAACAGCGGGCGTTTGCACCCACCGGTCGGAAAAGAGTTTCCTGCCGGTGGTTTCAACATGGGTAGACAGACAGGCGGTGGTTAAACCAGAATGACAGGGTTGATATCTCCGCGACTTCTCGGTCCAGTACCCACCGCTTCACGTTAACCGGGTTCAGTTTGACGGAGCACAGCCTAGGTGGGCGCTTATCGTGCACAGAGACTGGGCAAGAGATTCATGATGCCCCAAGTGCGCCTCCTAGGCGTTCCTTGCTACAATGCCTCACCGTGAAATCAGGAATTTAACCGTCGCGAACGGATACTTTGGATTAATATTGGCCAGCTGCACGTACAAGCACGTCCGTTCTTCCACGTGTGACTCTCTGTACTCCCTCTCACATATTATAGGGTTGCCGCGCTATAAACGAAATGATGAAATGATGTGGAATCCGCTGGGCTCTCGACTTCGAGGCTCCTTCGAGTAGTGATTTCTTGCCGCAGTCCGGCTAAAACAGCCGTAGCTGCATGAAGCTATCTTCCAATGCCGTTCCTCCTCTTCGACAGCGCTTTCAAAAGCCGGAAACCCAATTTTGACTATGGGAGAGCCCCCCTATAATGGCGGGGCCTTGAGTTCGTTACAAATCTCCGTCTATTCCAGGCACAGAGATGATCCTCTGTTGAACCCGCCTCCTGAAAACTTCGTTGGTAAACAAAAGAGGAATAAAGGCAGATCGTTCCGGAGCCCTGCCAAGTTGCTAGAAGCTTATTTACAAATGCGGGTGCTACTATTGCTGGTATCGTT"/>
+  </data>
+  <distribution id="posterior" spec="CompoundDistribution" useThreads="false">
+    <distribution id="speciescoalescent" spec="CompoundDistribution" useThreads="false">
+      <distribution bottomPopSize="@popSize" gammaParameter="@popMean" id="SpeciesTreePopSize.Species" popFunction="constant" spec="SpeciesTreePrior" taxonset="@speciestaxa" tree="@Tree.Species"/>
+      <distribution id="treePrior.sb_l0_examnple01" ploidy="1.0" spec="GeneTreeForSpeciesTreeDistribution" speciesTree="@Tree.Species" speciesTreePrior="@SpeciesTreePopSize.Species" tree="@Tree.sb_l0_examnple01"/>
+      <distribution id="treePrior.sb_l1_examnple01" ploidy="1.0" spec="GeneTreeForSpeciesTreeDistribution" speciesTree="@Tree.Species" speciesTreePrior="@SpeciesTreePopSize.Species" tree="@Tree.sb_l1_examnple01"/>
+    </distribution>
+    <distribution id="prior" spec="CompoundDistribution" useThreads="false">
+      <distribution birthDiffRate="@birthRate.Species" conditionalOnRoot="false" id="YuleModel.Species" spec="YuleModel" tree="@Tree.Species"/>
+      <distribution id="YuleBirthRatePrior.Species" spec="Prior" x="@birthRate.Species">
+        <distr id="OneOnX.0" offset="0.0" spec="OneOnX"/>
+      </distribution>
+      <distribution id="popMean.prior" spec="Prior" x="@popMean">
+        <distr id="OneOnX.01" offset="0.0" spec="OneOnX"/>
+      </distribution>
+    </distribution>
+    <distribution id="likelihood" spec="CompoundDistribution" useThreads="false">
+      <distribution data="@sb_l0_examnple01" id="treeLikelihood.sb_l0_examnple01" spec="TreeLikelihood" tree="@Tree.sb_l0_examnple01" useAmbiguities="false">
+        <siteModel gammaCategoryCount="0" id="SiteModel.sb_l0_examnple01" spec="SiteModel">
+          <parameter estimate="false" id="mutationRate.sb_l0_examnple01" name="mutationRate" value="1.0"/>
+          <parameter estimate="false" id="gammaShape.sb_l0_examnple01" name="shape" value="1.0"/>
+          <parameter estimate="false" id="proportionInvariant.sb_l0_examnple01" name="proportionInvariant" value="0.0"/>
+          <substModel id="JC69.sb_l0_examnple01" spec="JukesCantor"/>
+        </siteModel>
+        <branchRateModel id="StrictClock.sb_l0_examnple01" spec="beast.base.evolution.branchratemodel.StrictClockModel">
+          <parameter estimate="false" id="clockRate.sb_l0_examnple01" name="clock.rate" value="0.01"/>
+        </branchRateModel>
+      </distribution>
+      <distribution data="@sb_l1_examnple01" id="treeLikelihood.sb_l1_examnple01" spec="TreeLikelihood" tree="@Tree.sb_l1_examnple01" useAmbiguities="false">
+        <siteModel gammaCategoryCount="0" id="SiteModel.sb_l1_examnple01" spec="SiteModel">
+          <parameter estimate="false" id="mutationRate.sb_l1_examnple01" name="mutationRate" value="1.0"/>
+          <parameter estimate="false" id="gammaShape.sb_l1_examnple01" name="shape" value="1.0"/>
+          <parameter estimate="false" id="proportionInvariant.sb_l1_examnple01" name="proportionInvariant" value="0.0"/>
+          <substModel id="JC69.sb_l1_examnple01" spec="JukesCantor"/>
+        </siteModel>
+        <branchRateModel clock.rate="@clockRate.sb_l1_examnple01" id="StrictClock.sb_l1_examnple01" spec="beast.base.evolution.branchratemodel.StrictClockModel">
+	</branchRateModel>
+      </distribution>
+    </distribution>
+  </distribution>
+  <run chainLength="400000" id="mcmc" preBurnin="0" sampleFromPrior="false" spec="MCMC">
+    <state id="state">
+      <parameter dimension="1" id="popSize" minordimension="1" name="stateNode" value="1"/>
+      <tree id="Tree.sb_l0_examnple01" name="stateNode">
+        <taxonset id="TaxonSet.sb_l0_examnple01" spec="TaxonSet">
+          <data idref="sb_l0_examnple01" name="alignment"/>
+        </taxonset>
+      </tree>
+      <tree id="Tree.sb_l1_examnple01" name="stateNode">
+        <taxonset id="TaxonSet.sb_l1_examnple01" spec="TaxonSet">
+          <data idref="sb_l1_examnple01" name="alignment"/>
+        </taxonset>
+      </tree>
+      <parameter id="clockRate.sb_l1_examnple01" name="stateNode" value="0.01" lower="0.001" upper="0.1"/>
+      <tree id="Tree.Species" name="stateNode">
+        <taxonset id="speciestaxa" spec="TaxonSet">
+          <taxon id="s3" spec="TaxonSet">
+            <taxon id="s3_tip0" spec="Taxon"/>
+          </taxon>
+          <taxon id="s2" spec="TaxonSet">
+            <taxon id="s2_tip0" spec="Taxon"/>
+          </taxon>
+          <taxon id="s1" spec="TaxonSet">
+            <taxon id="s1_tip0" spec="Taxon"/>
+          </taxon>
+          <taxon id="s0" spec="TaxonSet">
+            <taxon id="s0_tip0" spec="Taxon"/>
+          </taxon>
+        </taxonset>
+      </tree>
+      <parameter dimension="1" estimate="true" id="birthRate.Species" minordimension="1" name="stateNode" lower="0.01" upper="100.0" value="1"/>
+      <parameter dimension="1" estimate="true" id="popMean" minordimension="1" name="stateNode" lower="0.05" upper="5.0" value="1"/>
+    </state>
+    <distribution idref="posterior"/>
+    <operator id="Reheight" spec="NodeReheight" taxonset="@speciestaxa" tree="@Tree.Species" weight="14">
+      <tree idref="Tree.sb_l0_examnple01" name="genetree"/>
+      <tree idref="Tree.sb_l1_examnple01" name="genetree"/>
+    </operator>
+    <operator degreesOfFreedom="1" id="popSizeScaler" optimise="true" parameter="@popSize" rootOnly="false" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.5" lower="0.05" upper="0.95" spec="ScaleOperator" weight="2"/>
+    <operator id="updown.stree" optimise="true" scaleFactor="0.75" spec="UpDownOperator" weight="5">
+      <parameter idref="birthRate.Species" name="up"/>
+      <parameter idref="popMean" name="down"/>
+      <parameter idref="popSize" name="down"/>
+      <tree idref="Tree.Species" name="down"/>
+    </operator>
+    <operator id="updown.pops" optimise="true" scaleFactor="0.75" spec="UpDownOperator" weight="5">
+      <parameter idref="popMean" name="down"/>
+      <parameter idref="popSize" name="down"/>
+    </operator>
+    <operator id="updown.all" optimise="true" scaleFactor="0.75" spec="UpDownOperator" weight="6">
+      <parameter idref="birthRate.Species" name="up"/>
+      <parameter idref="popMean" name="down"/>
+      <parameter idref="popSize" name="down"/>
+      <tree idref="Tree.Species" name="down"/>
+      <tree idref="Tree.sb_l0_examnple01" name="down"/>
+      <tree idref="Tree.sb_l1_examnple01" name="down"/>
+    </operator>
+    <operator degreesOfFreedom="1" id="YuleBirthRateScaler.Species" optimise="true" parameter="@birthRate.Species" rootOnly="false" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.75" lower="0.05" upper="0.95" spec="ScaleOperator" weight="2"/>
+    <operator degreesOfFreedom="1" id="popMeanScale" optimise="true" parameter="@popMean" rootOnly="false" scaleAll="false" scaleAllIndependently="false" scaleFactor="0.75" lower="0.05" upper="0.95" spec="ScaleOperator" weight="2"/>
+    <operator id="treeScaler.sb_l0_examnple01" scaleFactor="0.5" lower="0.05" upper="0.95" spec="ScaleOperator" tree="@Tree.sb_l0_examnple01" weight="3.0"/>
+    <operator id="UniformOperator.sb_l0_examnple01" spec="Uniform" tree="@Tree.sb_l0_examnple01" weight="10.0"/>
+    <operator gaussian="true" id="SubtreeSlide.sb_l0_examnple01" optimise="true" size="1.0" spec="SubtreeSlide" tree="@Tree.sb_l0_examnple01" weight="5.0"/>
+    <operator id="narrow.sb_l0_examnple01" isNarrow="true" spec="Exchange" tree="@Tree.sb_l0_examnple01" weight="2.0"/>
+    <operator id="treeScaler.sb_l1_examnple01" scaleFactor="0.5" lower="0.05" upper="0.95" spec="ScaleOperator" tree="@Tree.sb_l1_examnple01" weight="3.0"/>
+    <operator id="UniformOperator.sb_l1_examnple01" spec="Uniform" tree="@Tree.sb_l1_examnple01" weight="10.0"/>
+    <operator gaussian="true" id="SubtreeSlide.sb_l1_examnple01" optimise="true" size="1.0" spec="SubtreeSlide" tree="@Tree.sb_l1_examnple01" weight="5.0"/>
+    <operator id="narrow.sb_l1_examnple01" isNarrow="true" spec="Exchange" tree="@Tree.sb_l1_examnple01" weight="2.0"/>
+    <operator id="updown.sb_l1_examnple01" optimise="true" scaleFactor="0.75" spec="UpDownOperator" weight="3.0">
+      <up idref="clockRate.sb_l1_examnple01"/>
+      <down idref="Tree.sb_l1_examnple01"/>
+    </operator>
+    <operator id="StrictClockRateScaler.sb_l1_examnple01" parameter="@clockRate.sb_l1_examnple01" scaleFactor="0.75" lower="0.05" upper="0.95" spec="ScaleOperator" weight="3.0"/>
+    <logger fileName="sb_examnple01_$(seed).log" id="tracelog" logEvery="10000" mode="autodetect" model="@posterior">
+      <distribution idref="posterior" name="log"/>
+      <distribution idref="likelihood" name="log"/>
+      <distribution idref="prior" name="log"/>
+      <distribution idref="speciescoalescent" name="log"/>
+      <parameter idref="birthRate.Species" name="log"/>
+      <distribution idref="YuleModel.Species" name="log"/>
+      <log id="SpeciesTreeHeight" spec="TreeHeightLogger" tree="@Tree.Species"/>
+      <log idref="popMean"/>
+      <log id="TreeHeight.sb_l0_examnple01" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.sb_l0_examnple01"/>
+      <log id="TreeHeight.sb_l1_examnple01" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.sb_l1_examnple01"/>
+      <parameter idref="clockRate.sb_l1_examnple01" name="log"/>
+    </logger>
+    <logger fileName="sb_examnple01_species_$(seed).trees" id="speciesTreeLogger" logEvery="10000" mode="tree">
+      <log id="SpeciesTreeLogger.0" popSize="@popSize" spec="SpeciesTreeLogger" speciesTreePrior="@SpeciesTreePopSize.Species" tree="@Tree.Species">
+        <treetop id="treeTopFinder" spec="TreeTopFinder">
+          <tree idref="Tree.sb_l0_examnple01"/>
+          <tree idref="Tree.sb_l1_examnple01"/>
+        </treetop>
+      </log>
+    </logger>
+    <logger id="screenlog" logEvery="10000" mode="autodetect" model="@posterior">
+      <distribution idref="posterior" name="log"/>
+      <log arg="@posterior" id="ESS.0" spec="util.ESS"/>
+      <distribution idref="likelihood" name="log"/>
+      <distribution idref="prior" name="log"/>
+    </logger>
+    <operatorschedule autoOptimize="true" autoOptimizeDelay="10000" id="OperatorSchedule.0" spec="OperatorSchedule" transform="sqrt"/>
+    <logger fileName="sb_l0_examnple01.$(seed).trees" id="treelog.sb_l0_examnple01" logEvery="10000" mode="tree">
+      <tree idref="Tree.sb_l0_examnple01" name="log"/>
+    </logger>
+    <logger fileName="sb_l1_examnple01.$(seed).trees" id="treelog.sb_l1_examnple01" logEvery="10000" mode="tree">
+      <tree idref="Tree.sb_l1_examnple01" name="log"/>
+    </logger>
+
+    <tree id="SBI"  name="init" spec="StarBeastStartState" method="random">
+      <gene idref="Tree.sb_l0_examnple01"/>
+      <gene idref="Tree.sb_l1_examnple01"/>
+      <speciesTree idref="Tree.Species"/>
+      <baseRate idref="clockRate.sb_l0_examnple01"/>
+      <popMean idref="popMean"/>
+      <birthRate idref="birthRate.Species"/>
+      <speciesTreePrior idref="SpeciesTreePopSize.Species"/>
+    </tree>
+  </run>
+</beast>

@@ -1,0 +1,468 @@
+                    BEAST v2.6.6 2021
+                 Beast 2 development team 2011-2021
+Version History
+Last updated: August 2021
+
+All issues can be viewed at https://github.com/CompEvol/beast2/issues
+================================================================================
+Version 2.6.6
+	Fix so that when not using ambiguities, the nucleotide 'U' base pair is correctly interpreted
+	Fix tree annotator for lower bound on common ancestor heights
+	Make the -prefix option work when not using a directory
+	Allow '=' signs in options passsed with -D
+	Add filter input to SwapOperator
+	Fix so DocMaker works again
+	Update for R script to create EBSP plots
+	Limit size of Trie to prevent memory leaks for some models
+	More robust Nexus parser
+	Improved error messages
+
+Version 2.6.5
+	The GUI version of logcombiner produces output again
+
+Version 2.6.4
+	Applauncher picks up BEAGLE
+	Less clutter on screen output
+	Bayesian skyline plot has a proper prior alternative for the first element of the popSizes parameter
+	Fix DensiTree launcher for Windows
+	LogCombiner can now write to stdout
+	FilteredAlignment can deal with missing and ambiguous values
+	Node now recognises age trait
+	Allow packages to be released in github release area again
+	Add differentRandomIndex to UpDownOperator
+	Checksum support for developers chasing incorrectly calculated likelihoods
+
+Version 2.6.3
+	Robustify resume
+	RandomTree deals with calibrations in date-forward mode
+	BEAST new `-DF` and `-DFout` options
+	Default values for user defined values
+	LogAnalyser new `-tag` option
+	Let `Input.setValue()` ignore empty lists (instead of throwing exception) 
+	User data type lengths are not required to be equal any more
+	Robustify RPN calculator
+
+Version 2.6.2
+	Allow operator schedule changes in BEAUti
+	Fix quantile parameterisation of relaxed clocks
+	Add batch file for Windows command line usage
+	Improve error messages
+	Provide better access in API for developers
+
+Version 2.6.1
+	Fix bug in BEAUti so that template of "last" package is recognised
+	Make loganalyser deal with spacees in trace log names
+	Add column to LogAnalyser -oneline output
+	Random local clock fix for unscaled rates
+
+Version 2.6.0
+	Robustify application launching and package upgrading (especially for Windows)
+	Make sequenceSimulator less sensitive to taxa ordering
+	Improved error messages
+	XML being produced is more standardised
+
+BEAUti
+	Make help menu extendible to add for example automatic methods section generator        
+	Saves last accessed directory between sessions
+	Default bounds on BSP pop sizes and random local clock rates updated
+	Let GuessPatternDialog handle empty fields.
+	Adding MRCAPriors more robust when multiple alignments share a tree
+	More complete Nexus parser
+
+For developers
+	More flexible options for constructing BEAST objects 
+	More access methods to core classes
+    	Added BEASTInterface::notClonable
+
+Version 2.5.2
+	More robust release for Windows that includes JRE
+	Fix AppLauncher for OS X
+	Robustify start scripts for OS X, Linux
+	Implement rate parameterisation for uncorrelated relaxed clock model
+	Improved error messages	
+	Relaxed API giving more access to package developers
+	Node.getMetaData() now returns null on key not found
+	Pass -Xss arguments through launchers to set stack size
+	DOIs point to preferred resolver
+	Fix multi-threading issue with parameteric distributions
+	Remove posterior ESS from screen log
+
+Version 2.5.1
+	Add -X flag to all applications, so more memory can be allocated
+	Fix some OS X with Java 9+ anomalies
+	More robust OS X CUDA check
+	More robust launch scripts
+	Better error reporting
+	More robust package manager
+	TreeAnnotator handles taxa that are numbers now
+	Allow multiple -D arguments to BEAST, allows commas in user defined variables	
+
+Version 2.5.0
+        BEAST & friends are now compatible with Java 8, 9 and 10.
+        All appllications start a bit faster now package discovery is cached.
+        Versions available with Java bundled
+        
+BEAST   
+        A command line option is added to parameterise XML files.
+        Maximum MCMC length was 2147483647 is now 9223372036854775807.
+        Fix for resume of coalescent, which sometimes failed.
+        RPNCalculator logs starting from 1 consistent with multi dimensional parameters
+
+BEAUti
+        Facility to automatic update packages when BEAUti is started
+        Tip dates panel supports wider range of formats
+        Added clear classpath menu 
+        More robust NEXUS parsing
+        Allow top level templates, to easily switch between say MCMC and nested sampling
+        Bug fix for unlimited prior distributions to be changed
+        More robust substitution model initialisation
+        
+Utilities: 
+        Renamed appstore => applauncher to preven confusion with OS X app store.
+        Renamed addonmanager => packagemanager 
+        Packagemanager has an -update option to check for updates and -updatenow to install without asking
+        Better progress reporting on logcombiner, treeannotator, loganalyser
+
+
+Version 2.4.8 January 2018
+BEAST   Ensure BeagleTreeLikelihood gives correct likelihood with RNA data.
+
+Version 2.4.7 July 2017
+BEAUti
+	Relabel buttons: "Guess" is now "Auto configure" in tip dates panel. "+" button on priors panel is now "+ Add Prior".
+	More sensible default date value for taxa without date specified in tip dates panel.
+	Make sure the appropriate tree is used in MRCAprior.
+	Make sure tips with 'fixed' distributions imported from Nexus do not get estimated.
+	Robustify NEXUS parser.
+	Taxa could be duplicated in taxon list in NexusParser.
+	Prevent accidentally cloning of up-down-all operator in StarBeast.
+	
+BEAST
+	Default locale set to English so full stops are used in NEXUS output.
+ 	Warn if Yule (or BD) conditions on root, but no root MRCAPrior is set.
+	Robustify resume 
+	Suppress "Overwrite (Y/N)?" message when BEAST runs in console.
+	Stop chain when encountering a +infinity posterior.
+	Check that taxon set is specified when using RandomTree.
+	Normalise stateNodes so XML characters ('"&<>) get escaped properly when writing state files.
+
+
+Appstore
+	Improved formatting of app list.
+
+TreeAnnotator 
+	Now adds common ancestor height estimates as attributes.
+
+API updates:
+	Changed access levels of a few methods in nexus parser.
+	Add Tree scale and ScaleOperator test.
+	Add new Tree constructor from root node.
+	Add support for input/output of non-binary trees.
+	Add Input.set() method.
+	BeautiAlignmentProvider getAlignments method added to facilitate scripting.
+	TreeParser correctly parses tree edge length metadata, and improved error reporting.
+
+Version 2.4.6 May 2017
+    BEAUti
+	    Starting trees can now be edited (default random, choice of cluster and newick trees)
+	    Allow alignments to be replaced, so old analyses can be used for new data
+		Fix fasta file import bug that marked sequences as amino acid while it should be nucleotide
+	    Keep trees linked when splitting alignment on codon positions
+	    Automatically set estimate flag on shape when choosing rate categories
+	    Fix display of integer alignments
+
+    BEAST
+    	Better documentation
+    	More robust XMLParser
+	    Prevent double counting of offset in ParametricDistribution.sample
+	    
+	DensiTree version updated to v2.2.6
+	
+Version 2.4.5 January 2017
+
+	BEAUti
+		Clone fix that deals with edited priors
+		Package manager can now install specific package versions, not only the latest
+		Improved data type guessing on importing FASTA files
+		Log MRCAPriors imported through NEXUS files
+		
+	BEAST
+		Added -strictversions flag to indicate only package versions specified in XML should be loaded.
+		Tree parser fixes
+		StarBeastStartState now takes bounds of parameters it sets in account
+		Allow nested operator schedules
+		Improved error reporting
+		
+	Package manager
+		Added -version flag to specify exactly which package version to install.	
+	
+	TreeAnnotator
+		Now calculates 2D HPDs by default (for phylogeography analyses)
+		Added -nohpd2D flag to suppress 2D HPD calculation
+		Added -noSA flag to suppress tree set being seen as that of a sampled ancestor analysis
+
+
+Version 2.4.4 November 2016
+	Fix that prevented starting any BEAST application on Mac Sierra
+	
+	Smooth out some issues with importing Nexus files in BEAUti
+	
+	TreeAnnotator fix for use with user defined trees to annotate
+	
+	Allow smaller log files by logging fewer significant digits of metadata
+
+Version 2.4.3 August 2016
+	
+	BEAUti
+		Support for tip date sampling by setting 'tipsonly' in MRCA Priors
+		Allow packages to specify priors, e.g. multi-monophyletic constraints in BEASTLabs
+		Allow packages to specify file importers, which allows microsattelite support through the BEASTvntr package
+		Gamma distribution allows multiple parameterisations
+		Packages used now encoded in XML, for better error reporting of missing packages
+		Better looking on high-res screens
+		
+	Package Manager
+		Links to documentation available
+		Better layout
+		
+	BEAST
+		allow multiple citations per class
+		allow trait sets with unspecified dates
+		allow multiple arguments to Sum
+		improved error reporting
+		
+	TreeAnnotator fix for phylogeography in low-mem mode.
+	LogCombiner suppress duplicate '=' in tree output
+	
+Version 2.4.2 June 2016
+     Applications are scalable, making them visible on high resolution screens
+
+     BEAUti
+         improved error reporting
+     BEAST
+         improved error reporting
+         prevent closing window on parsing errors
+     
+     LogCombiner requires much less memory than before
+     
+     Densitree updated to version 2.2.5
+     
+Version 2.4.1 April 2016
+     BEAUti
+         import of calibrations from NEXUS files
+         add App Launcher menu
+         make missing *BEAST template available again
+         save in old style XML, with less restricions on taxa names 
+     Streamlined upgrades of BEAST
+     
+     BEAST
+     	improved BEAGLE library loading from CLI
+        test for spurious CUDA drivers on OSX, which used to cause a crash, but now provides instructions on how to solve this
+        improved operator tuning for slightly better performance
+        improved error reporting
+
+     LogAnalyser shows progress on CLI again by default
+        
+Version 2.4.0 February 2016
+    BEAST improved performance
+        up to 2x faster when using proportion invariant sites
+        improved threading support        
+        "instances" flag replaces beagle_instances
+        faster MRCAPrior handling
+        StartBeastStartState works with calibrations with other than CalibratedYule
+    
+    BEAUti
+        show mean of parametric distributions in priors panel
+        better taxon management preventing adding numbers to taxon names 
+        improved layout tip dates panel
+        improved package list errors
+        *BEAST clock cloning fix
+        Allow setting branch length as substitution option on tree logger
+        Improved JSON support
+        
+    Package manager
+       Allow BEAST to be upgraded as a package
+       Improved GUI
+    
+    For developers: http://beast2.org/2016/02/04/what-will-change-in-v2-4-0-for-developers/
+
+Version 2.3.2 December 2015
+	BEAUti
+		path corrected so Standard and StarBeast templates are visible under templates menu
+		import of traits from file when partitions are split fixed
+		cloning of scripts with partition information fixed
+		set up weights of FixedMeanRate operator when ascertainment correction is applied
+		allows ParameterInputEditor to edit Parameter inputs
+		
+	BEAST
+		add "-validate" command line option for parsing XML files without running them
+		more efficient MRCAPrior
+		more robust RandomTree
+	
+	LogCombiner
+		ensured logcombiner burn in editing finished properly
+		
+	LogAnalyser now has one line per file mode, and CLI script added for ease of launch
+		
+	More sensible error messages (in TreeParser, RPNCalculator, NodeReheight, and more).
+
+Version 2.3.1 September 2015
+     BEAUti
+       robustify (un)linking
+	   improved Fasta import
+
+	BEAST
+	   support for uncertain alignments (see examples/testJukesCantorShortUncertain.xml) 
+       improved error messages
+
+    TreeAnnotator allows lower memory consumption
+
+	AppStore, LogCombiners, LogAnalyser improved command line interface 
+
+	Antlr based tree parsing
+
+        DensiTree updated to v2.2.3
+
+	BinaryCovarion model option to run as reversible model 
+
+	Set log level by environment variable
+	
+Version 2.3.0 May 2015
+	BEAUti fixes
+		cloning, linking, unlinking bugs fixed
+        more robust templates
+        calibrations can be deleted now
+		improved access to package folders
+        improved import menu
+
+	LogCombiner improved command line interface
+
+	Fix synchronisation issues affecting ThreadedTreeLikelihood
+    
+	Auto load beast.jar, giving footprint for Mac
+
+	Bug fix in EigenDecomposition affecting asymmetric rate matrices
+
+	Reduced dependency on taxon order making multiple partition handling more robust
+
+    Can keep running v2.2 and its packages alongside v2.3
+
+	DensiTree updated to v2.2.2
+
+Version 2.2.1 March 2015
+	Support for multi-gamma-site-model package 
+
+	BEAUti some bug fixes involved in linking/cloning + some cosmetic changes
+
+	Better error reporting:
+    - in BEAUti, estimate of relative substitution rate for single partition only caused BEAST to hang
+    - check correct java version (8) is used
+	- package manager warns when there is no internet connection
+
+	Improved NEXUS Standard datatype support
+
+	TreeAnnotator improved sampled ancestor support
+
+	CLI script now sensitive to JAVA_HOME environment variable
+
+	DensiTree updated to v2.2.1
+
+Version 2.2.0 January 2015
+	Uses Java 8 to facilitate package development, thus preventing version clashes with packages
+
+	BEAUti default settings preventing common errors, template fixes, layout enhancements, error logging
+
+	Enhanced package manager
+	
+	Better error reporting for finding common issues with XML files (such as *BEAST gene trees not covering all species)
+
+	Improved install for Mac
+
+	Over 300 commits for small bug fixes and performance enhancements (more readable XML, better NEXUS parsing, TreeAnnotator fix, etc.)
+
+Version 2.1.3 May 2014
+	Patch release
+	
+	*BEAST template fixed
+
+	add AppStore for conveniently launching applications from packages
+
+	improved FASTA support
+
+	a few small fixes (BEAUti displays of log normal, monophyletic constraint logging, allow import of alignments with same name in BEAUti,etc.)
+
+
+Version 2.1.2 April 2014
+	Patch release
+
+	BEAUti handles multiple partitions more conveniently
+
+	improved package management
+
+	fix bug in *BEAST template
+	
+	many small fixes (FASTA support, stochastic distributions, *BEAST operator weighting, etc.)
+
+
+Version 2.1.1 January 2014
+	Patch release speeding up BEAUti to handle large Nexus files and handle multiple files.
+
+
+Version 2.1.0 December 2013
+	Support for many more packages, including 
+		o CladeAge for fossil calibrations
+		o Sampled Ancestor Trees
+		o Multi Type Trees for structured coalescent
+		o Birth-Death SIR model
+    If not already available these will be so soon.
+
+	Support for JSON file format
+
+	Beagle update issue resolved -- no more incorrectly calculated likelihoods
+
+	Core refactored, for ease of developing packages
+
+	*BEAST start state for getting faster through burn-in
+
+	BEAUti many small fixes supporting more packages
+
+	DensiTree and TreeAnnotator updated
+
+
+
+Version 2.0.2 February 2013
+
+	Beagle scale issue resolved, resulting in potentially faster 
+	treelikelihood calculations
+
+	Treeannotator and logcombiner updated to version 2
+	
+	BEAUti - use-ambiguities flag in partition panel
+
+	colt and apache math-commons libraries included so not all add-ons
+	need to supply them separately
+
+	Support for path-sampling through beastii add-on
+
+
+
+Version 2.0.c released on 1st December 2011
+
+	New Features:
+	
+    Allows resuming an MCMC chain. Handy when the chain turns out to
+    converge slower than expected.
+
+    Real time tracking of ESSs while running a chain.
+
+    Beauti allows reloading files, so that small changes do not require any
+    XML editing.
+
+    For developers, code is better documented, and only the most relevant
+    classes are part of Beast 2 (i.e. no experimental research code), making
+    it easier to learn.
+
+    Easily extendible: for example, the BeastII add-on supports multi chain
+    MCMC, some experimental likelihood calculations that are potentially
+    faster than the base implementation, and a spread sheet GUI for
+    manipulating models.    

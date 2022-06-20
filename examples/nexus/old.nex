@@ -1,0 +1,25 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=1;
+TAXLABELS
+[1] cae
+;
+END; [Taxa]
+
+BEGIN Characters;
+DIMENSIONS nchar=4;
+format datatype=standard
+        missing=?
+        gap=- 
+        symbols="01"
+        labels=left
+        transpose=no
+        interleave=no
+;
+MATRIX
+cae    1000
+;
+END; [Characters]
+
+

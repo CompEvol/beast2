@@ -1,0 +1,9 @@
+<itsabeastystatewerein version='2.0' sample='1'>
+<statenode id='Tree.t:tree'>((0:0.25,1:0.25)4:0.25,(2:0.25,3:0.25)5:0.25)6:0.0</statenode>
+<statenode id='birthRate.t:tree'>birthRate.t:tree[1 1] (-Infinity,Infinity): 1.0 </statenode>
+</itsabeastystatewerein>
+<!--
+{"operators":[
+{"id":"YuleBirthRateScaler.t:tree","p":0.75,"accept":0,"reject":2,"acceptFC":0,"rejectFC":0,"rejectIv":0,"rejectOp":0}
+]}
+-->
