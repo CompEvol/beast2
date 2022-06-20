@@ -1,6 +1,0 @@
-begin mrbayes;
-   set autoclose=yes nowarn=yes;
-   execute testHKY1366.nex;
-   lset nst=2;
-   mcmc nruns=1 ngen=1000000 samplefreq=10000 file=testHKY.nex1;
-end;

@@ -1,7 +1,0 @@
-\beamer@endinputifotherversion {3.07pt}
-\select@language {english}
-\beamer@sectionintoc {1}{Vision}{2}{0}{1}
-\beamer@sectionintoc {2}{Basic design}{4}{0}{2}
-\beamer@sectionintoc {3}{XML}{12}{0}{3}
-\beamer@sectionintoc {4}{Applications}{20}{0}{4}
-\beamer@sectionintoc {5}{Summary}{29}{0}{5}
