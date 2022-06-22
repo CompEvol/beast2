@@ -20,7 +20,7 @@ public class AppLauncherLauncher extends BeastLauncher {
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (javaVersionCheck("AppLauncher")) {
 			String classpath = getPath(false, null);
-			run(classpath, "beast.app.tools.AppLauncher", args);
+			run(classpath, "beastfx.app.tools.AppLauncher", args);
 		}
 	}
 

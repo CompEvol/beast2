@@ -9,3 +9,4 @@
 
 # OS X ignores
 .DS_Store
+/build/

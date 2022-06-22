@@ -43,7 +43,7 @@ public class BeastLauncher {
 				}
 			}
 			String classpath = getPath(useStrictVersions, args.length > 0 ? args[args.length - 1]: null);
-			run(classpath, "beast.app.beastapp.BeastMain", args);
+			run(classpath, "beastfx.app.beast.BeastMain", args);
 			// BeastMain.main(args);
 		}
 	}
@@ -120,7 +120,7 @@ public class BeastLauncher {
 					}
 				}
 				
-				templateDir = new File(userDir + pathDelimiter + packageName + pathDelimiter + "templates");
+				templateDir = new File(userDir + pathDelimiter + packageName + pathDelimiter + "fxtemplates");
 				if (!templateDir.exists()) {
 					if (!templateDir.mkdirs()) {
 						// cannot create dir, let alone create a beast package
@@ -152,7 +152,7 @@ public class BeastLauncher {
 				copyFilesInDir(new File(jarDir0 + pathDelimiter + "examples"),
 						new File(userDir + pathDelimiter + packageName + pathDelimiter + "examples"));
 				copyFilesInDir(new File(jarDir0 + pathDelimiter + "examples" + pathDelimiter + "nexus"), exampleDir);
-				copyFilesInDir(new File(jarDir0 + pathDelimiter + "templates"), templateDir);
+				copyFilesInDir(new File(jarDir0 + pathDelimiter + "fxtemplates"), templateDir);
 			}
 
 		} catch (Exception e) {

@@ -9,13 +9,18 @@
     </description>
 
     <!-- set global properties for this build -->
-    <property name="beast2" location="../beast2.7"/>
+    <property name="beast2" location="../beast2"/>
     <property name="src" location="${beast2}/src"/>
     <property name="build" location="${beast2}/build" />
     <property name="lib" location="${beast2}/lib" />
     <property name="doc" location="${beast2}/doc" />
     <property name="dist" location="${beast2}/build/dist" />
     <property name="test" location="${beast2}/test" />
+    
+    <property name="BEASTappName" value="BeastFX" />
+    <property name="beast2app" location="../${BEASTappName}"/>
+    <property name="distapp" location="${beast2app}/build/dist"/>
+    <property name="templates" value="fxtemplates"/>
 
     <property name="main_class_BEASTLauncher" value="beast.app.util.BeastLauncher" />
     <property name="report" value="build/junitreport" />
@@ -247,8 +252,8 @@
     <target name="dist_all_BEAST" depends="compile-all" description="create BEAST jar">
 
         <!-- create BEAST.base package -->
-        <mkdir dir="${release_dir}/package/beast.base/" />
-        <mkdir dir="${release_dir}/package/beast.base/lib" />
+        <mkdir dir="${release_dir}/package/beast.base/"/>
+        <mkdir dir="${release_dir}/package/beast.base/lib"/>
         <copy file="${dist}/BEAST.base.src.jar" todir="${release_dir}/package/beast.base/"/>
         <copy file="${dist}/BEAST.base.jar" todir="${release_dir}/package/beast.base/lib/"/>
         <copy file="${beast2}/version.xml" todir="${release_dir}/package/beast.base/"/>
@@ -259,8 +264,7 @@
                 <include name="lib/BEAST.base.jar" />
                 <include name="BEAST.base.src.jar" />
             </fileset>
-            <fileset dir="${beast2}/beast.base/">
-                <include name="templates/*.xml" />
+            <fileset dir=".">
                 <include name="examples/*.*" />
                 <include name="examples/nexus/*.*" />
             </fileset>
@@ -397,7 +401,7 @@
     <property name="Windows_package_dir" value="${Windows_dir}/${BEAST_name}" />
 
 
-    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="${beast2}/lib/jsign-3.1.jar"/>
+    <taskdef name="jsign" classname="net.jsign.JsignTask" classpath="${beast2}/lib/bundler/jsign-3.1.jar"/>
 
     <!-- Need to either install Launch4j under {BEAST workspace}/${release}
                  or install it in the default directory and change the location of launch4j.dir -->
@@ -785,9 +789,15 @@
         <echo message="Windows version release is finished." />
     </target>
 
+	<target name="beast.app">
+    	<available file="${distapp}/${BEASTappName}.jar" property="beast.app.present"/>
+        <fail unless="beast.app.present">
+			run `ant addon` in ${BEASTappName} before building this release.
+        </fail>
+	</target>
 
-    <target name="linux"
-            depends="compile-all,dist_all_BEAST"
+
+    <target name="linux" depends="beast.app,compile-all,dist_all_BEAST" if="beast.app.present"
             description="release Linux/Unix version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
         <delete dir="${Linux_package_dir}" />
         <!-- Create the release directory -->
@@ -799,15 +809,15 @@
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
 
         <copy todir="${Linux_package_dir}/examples/">
-            <fileset dir="${beast2}/beast.app/examples/">
+            <fileset dir="${beast2}/examples/">
                 <include name="*.xml" />
                 <include name="nexus/**" />
                 <exclude name="benchmark/**" />
             </fileset>
         </copy>
 
-        <copy file="${beast2}/beast.base/version.xml" tofile="${Linux_package_dir}/beast.base.version.xml" />
-        <copy file="${beast2}/beast.app/version.xml" tofile="${Linux_package_dir}/beast.app.version.xml" />
+        <copy file="${beast2}/version.xml" tofile="${Linux_package_dir}/BEAST.base.version.xml" />
+        <copy file="${beast2app}/version.xml" tofile="${Linux_package_dir}/BEAST.app.version.xml" />
 
         <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
@@ -816,49 +826,30 @@
         <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${dist}/BEAST.app.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${dist}/BEAST.app.src.jar" todir="${Linux_package_dir}/lib" />
-        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/>
-        <copy todir="${Linux_package_dir}/lib">
-            <fileset dir="${Linux_dir}/lib" />
-        </copy>-->
-
-        <!--
-        <copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
-        -->
+        <copy file="${distapp}/${BEASTappName}.jar" tofile="${Linux_package_dir}/lib/BEAST.app.jar" />
+        <copy file="${distapp}/${BEASTappName}.src.jar" tofile="${Linux_package_dir}/lib/BEAST.app.src.jar" />
 
         <copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
 
-        <copy todir="${Linux_package_dir}/templates/">
-            <fileset dir="${beast2}/beast.app/templates/" />
+        <copy todir="${Linux_package_dir}/${templates}/">
+            <fileset dir="${beast2app}/${templates}/" />
         </copy>
         <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
         <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
         <copy file="${common_dir}/LICENSE.txt" todir="${Linux_package_dir}" />
 
-        <!-- Only works under Unix or NonStop Kernel (Tandem) -->
-        <!-- <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**"/>
 
-            <tar destfile="${Linux_dir}/${BEAST_name}v${version}.tgz" compression="gzip">
-                    <tarfileset dir="${Linux_package_dir}" prefix="${BEAST_name}v${version}"/>
-            </tar>-->
-        <!-- [ANT Bug 550] the tar task change the mode of the executables files, have to tar manaully -->
-        <echo message="Have to tar manaully, because [ANT Bug 550] the tar task change the mode of the executables files." />
-        <!-- tar -cvzf BEASTv1.x.x.tgz BEASTv2.x.x/ -->
-        <!-- cksum BEASTv2.x.x.tgz -->
-        <!-- tar -xvzf BEASTv2.x.x.tgz -->
-        <echo message="Linux/Unix version release is finished." />
-        
-        <echo message="cd release/Linux"/>
-        <echo message="tar fcz BEAST.v${version}.tgz beast"/>
-        <echo message="cp BEAST.v${version}.tgz ~/tmp"/>
+        <exec executable="tar" dir="release/Linux">
+		    <arg line="fcz BEAST.${version}.tgz beast"/>
+	    </exec>
+
+        <echo message="Linux/Unix version release is finished as release/Linux/BEAST.v${version}.tgz." />
     </target>
 
-<!--            depends="build_jar_all_BEAST_NoJUnitTest"-->
-    <target name="linuxjre"
+    <target name="linuxjre" depends="beast.app,compile-all,dist_all_BEAST" if="beast.app.present"
             description="release Linux/Unix version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
+        
         <delete dir="${Linux_package_dir}" />
         <!-- Create the release directory -->
         <mkdir dir="${Linux_package_dir}" />
@@ -869,11 +860,8 @@
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
         <exec executable="cp">
              <arg line="-R ../jdk8u282-b08-jre ${Linux_package_dir}/jre1.8.0_282"/>
-	</exec>
+	    </exec>
 
-        <!--<copy todir="${Linux_package_dir}/doc">
-            <fileset dir="${common_dir}/doc" />
-        </copy>-->
         <copy todir="${Linux_package_dir}/examples/">
             <fileset dir="examples/">
                 <include name="*.xml" />
@@ -882,49 +870,34 @@
             </fileset>
         </copy>
 
+        <copy file="${beast2}/version.xml" tofile="${Linux_package_dir}/beast.base.version.xml" />
+        <copy file="${beast2app}/version.xml" tofile="${Linux_package_dir}/beast.app.version.xml" />
+
         <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
-        <!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
-        -->
-        <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${dist}/beast.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${dist}/beast.src.jar" todir="${Linux_package_dir}/lib" />
-        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Linux_package_dir}/lib"/>
-        <copy todir="${Linux_package_dir}/lib">
-            <fileset dir="${Linux_dir}/lib" />
-        </copy>-->
 
-        <!--
-        <copy file="${beast1_dir}/beast161.jar" todir="${Linux_package_dir}/lib" />
-        <copy file="${tools_dir}/treeannotator.jar" todir="${Linux_package_dir}/lib" />
-        -->
+        <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/BEAST.base.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/BEAST.base.src.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${distapp}/${BEASTappName}.jar" tofile="${Linux_package_dir}/lib/BEAST.app.jar" />
+        <copy file="${distapp}/${BEASTappName}.src.jar" tofile="${Linux_package_dir}/lib/BEAST.app.src.jar" />
 
         <copy file="${tools_dir}/DensiTree.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${tools_dir}/DensiTree.png" todir="${Linux_package_dir}/images" />
 
-        <copy todir="${Linux_package_dir}/templates/">
-            <fileset dir="templates/" />
+        <copy todir="${Linux_package_dir}/${templates}/">
+            <fileset dir="${beast2app}/${templates}/" />
         </copy>
         <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Linux_package_dir}" />
         <copy file="${common_dir}/README.txt" todir="${Linux_package_dir}" />
         <copy file="${common_dir}/LICENSE.txt" todir="${Linux_package_dir}" />
 
-        <!-- Only works under Unix or NonStop Kernel (Tandem) -->
-        <!-- <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**"/>
+        <exec executable="tar" dir="release/Linux">
+		    <arg line="fcz BEAST.${version}.tgz beast"/>
+	    </exec>
 
-            <tar destfile="${Linux_dir}/${BEAST_name}v${version}.tgz" compression="gzip">
-                    <tarfileset dir="${Linux_package_dir}" prefix="${BEAST_name}v${version}"/>
-            </tar>-->
-        <!-- [ANT Bug 550] the tar task change the mode of the executables files, have to tar manaully -->
-        <echo message="Have to tar manaully, because [ANT Bug 550] the tar task change the mode of the executables files." />
-        <!-- tar -cvzf BEASTv1.x.x.tgz BEASTv2.x.x/ -->
-        <!-- cksum BEASTv2.x.x.tgz -->
-        <!-- tar -xvzf BEASTv2.x.x.tgz -->
-        <echo message="Linux/Unix version release is finished." />
-        
-        <echo message="cd release/Linux"/>
-        <echo message="tar fcz BEAST.v${version}.tgz beast"/>
-        <echo message="cp BEAST.v${version}.tgz ~/tmp"/>
+        <echo message="Linux/Unix version release is finished as release/Linux/BEAST.v${version}.tgz." />
+
     </target>
 
     <!-- Define the appbundler task -->
