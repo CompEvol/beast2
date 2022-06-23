@@ -859,7 +859,10 @@
         </copy>
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
         <exec executable="cp">
+             <arg line="-R /opt/java/jre ${Linux_package_dir}/jre"/>
+             <!--
              <arg line="-R ../jdk8u282-b08-jre ${Linux_package_dir}/jre1.8.0_282"/>
+         -->
 	    </exec>
 
         <copy todir="${Linux_package_dir}/examples/">
