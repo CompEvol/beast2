@@ -16,7 +16,7 @@ import beast.base.util.Randomizer;
 @Description("Dirichlet distribution.  p(x_1,...,x_n;alpha_1,...,alpha_n) = 1/B(alpha) prod_{i=1}^K x_i^{alpha_i - 1} " +
         "where B() is the beta function B(alpha) = prod_{i=1}^K Gamma(alpha_i)/ Gamma(sum_{i=1}^K alpha_i}. ")
 public class Dirichlet extends ParametricDistribution {
-    final public Input<RealParameter> alphaInput = new Input<>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
+    final public Input<Function> alphaInput = new Input<>("alpha", "coefficients of the Dirichlet distribution", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() {
@@ -64,7 +64,7 @@ public class Dirichlet extends ParametricDistribution {
 
     @Override
     public double calcLogP(Function pX) {
-        Double[] alpha = alphaInput.get().getValues();
+        double[] alpha = alphaInput.get().getDoubleValues();
         if (alphaInput.get().getDimension() != pX.getDimension()) {
             throw new IllegalArgumentException("Dimensions of alpha and x should be the same, but dim(alpha)=" + alphaInput.get().getDimension()
                     + " and dim(x)=" + pX.getDimension());
@@ -89,7 +89,7 @@ public class Dirichlet extends ParametricDistribution {
 			Double[] dirichletSample = new Double[dim];
 			double sum = 0.0;
 			for (int j = 0; j < dim; j++) {
-				dirichletSample[j] = Randomizer.nextGamma(alphaInput.get().getValue(j), 1.0);
+				dirichletSample[j] = Randomizer.nextGamma(alphaInput.get().getArrayValue(j), 1.0);
 				sum += dirichletSample[j];
 			}
 			for (int j = 0; j < dim; j++) {

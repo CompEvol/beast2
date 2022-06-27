@@ -6,6 +6,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.Distribution;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -15,8 +16,8 @@ import beast.base.inference.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class InverseGamma extends ParametricDistribution {
-    final public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
-    final public Input<RealParameter> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
+    final public Input<Function> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
+    final public Input<Function> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
 
     InverseGammaImpl dist = new InverseGammaImpl(2, 2);
 
@@ -34,12 +35,12 @@ public class InverseGamma extends ParametricDistribution {
         if (alphaInput.get() == null) {
             alpha = 2;
         } else {
-            alpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getArrayValue();
         }
         if (betaInput.get() == null) {
             beta = 2;
         } else {
-            beta = betaInput.get().getValue();
+            beta = betaInput.get().getArrayValue();
         }
         dist.setAlphaBeta(alpha, beta);
     }
@@ -97,8 +98,8 @@ public class InverseGamma extends ParametricDistribution {
 
     @Override
     public double getMeanWithoutOffset() {
-    	RealParameter alpha = alphaInput.get();
-    	RealParameter beta = betaInput.get();
+    	Function alpha = alphaInput.get();
+    	Function beta = betaInput.get();
     	return (beta != null ? beta.getArrayValue() : 2.0) / (alpha != null ? (alpha.getArrayValue() - 1.0) : 2.0);
     }
     

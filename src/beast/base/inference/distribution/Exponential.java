@@ -5,6 +5,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.ExponentialDistributionImpl;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.inference.parameter.RealParameter;
@@ -14,7 +15,7 @@ import beast.base.inference.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Exponential extends ParametricDistribution {
-    final public Input<RealParameter> lambdaInput = new Input<>("mean", "mean parameter, defaults to 1");
+    final public Input<Function> lambdaInput = new Input<>("mean", "mean parameter, defaults to 1");
 
     final org.apache.commons.math.distribution.ExponentialDistribution m_dist = new ExponentialDistributionImpl(1) {
 		private static final long serialVersionUID = 1L;
@@ -47,7 +48,7 @@ public class Exponential extends ParametricDistribution {
         if (lambdaInput.get() == null) {
             lambda = 1;
         } else {
-            lambda = lambdaInput.get().getValue();
+            lambda = lambdaInput.get().getArrayValue();
             if (lambda < 0) {
                 Log.err.println("Exponential::Lambda should be positive not " + lambda + ". Assigning default value.");
                 lambda = 1;

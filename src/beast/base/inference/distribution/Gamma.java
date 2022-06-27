@@ -5,6 +5,7 @@ import org.apache.commons.math.distribution.ContinuousDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -12,8 +13,8 @@ import beast.base.inference.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Gamma extends ParametricDistribution {
-    final public Input<RealParameter> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
-    final public Input<RealParameter> betaInput = new Input<>("beta", "second parameter depends on mode, defaults to 2."
+    final public Input<Function> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
+    final public Input<Function> betaInput = new Input<>("beta", "second parameter depends on mode, defaults to 2."
     		+ "For mode=ShapeScale beta is interpreted as scale. "
     		+ "For mode=ShapeRate beta is interpreted as rate. "
     		+ "For mode=ShapeMean beta is interpreted as mean."
@@ -45,23 +46,23 @@ public class Gamma extends ParametricDistribution {
         if (alphaInput.get() == null) {
             alpha = 2;
         } else {
-            alpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getArrayValue();
         }
         
         switch (parameterisation) {
         case ShapeScale:
             if (betaInput.get() != null) {
-                beta = betaInput.get().getValue();
+                beta = betaInput.get().getArrayValue();
             }
         	break;
         case ShapeRate:
             if (betaInput.get() != null) {
-                beta = 1.0/betaInput.get().getValue();
+                beta = 1.0/betaInput.get().getArrayValue();
             }
         	break;
         case ShapeMean:
             if (betaInput.get() != null) {
-                beta = betaInput.get().getValue() / alpha;
+                beta = betaInput.get().getArrayValue() / alpha;
             }
         	break;
         case OneParameter:

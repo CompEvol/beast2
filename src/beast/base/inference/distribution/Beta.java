@@ -4,6 +4,7 @@ import org.apache.commons.math.distribution.BetaDistributionImpl;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -14,8 +15,8 @@ import beast.base.inference.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Beta extends ParametricDistribution {
-    final public Input<RealParameter> alphaInput = new Input<>("alpha", "first shape parameter, defaults to 1");
-    final public Input<RealParameter> betaInput = new Input<>("beta", "the other shape parameter, defaults to 1");
+    final public Input<Function> alphaInput = new Input<>("alpha", "first shape parameter, defaults to 1");
+    final public Input<Function> betaInput = new Input<>("beta", "the other shape parameter, defaults to 1");
 
     org.apache.commons.math.distribution.BetaDistribution m_dist = new BetaDistributionImpl(1, 1);
 
@@ -34,12 +35,12 @@ public class Beta extends ParametricDistribution {
         if (alphaInput.get() == null) {
             alpha = 1;
         } else {
-            alpha = alphaInput.get().getValue();
+            alpha = alphaInput.get().getArrayValue();
         }
         if (betaInput.get() == null) {
             beta = 1;
         } else {
-            beta = betaInput.get().getValue();
+            beta = betaInput.get().getArrayValue();
         }
         m_dist.setAlpha(alpha);
         m_dist.setBeta(beta);

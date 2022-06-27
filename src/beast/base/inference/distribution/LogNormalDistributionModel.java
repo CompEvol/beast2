@@ -6,6 +6,7 @@ import org.apache.commons.math.distribution.Distribution;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -16,8 +17,8 @@ import beast.base.inference.parameter.RealParameter;
  */
 @Description("A log-normal distribution with mean and variance parameters.")
 public class LogNormalDistributionModel extends ParametricDistribution {
-    final public Input<RealParameter> MParameterInput = new Input<>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
-    final public Input<RealParameter> SParameterInput = new Input<>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
+    final public Input<Function> MParameterInput = new Input<>("M", "M parameter of lognormal distribution. Equal to the mean of the log-transformed distribution.");
+    final public Input<Function> SParameterInput = new Input<>("S", "S parameter of lognormal distribution. Equal to the standard deviation of the log-transformed distribution.");
     final public Input<Boolean> hasMeanInRealSpaceInput = new Input<>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 
     boolean hasMeanInRealSpace;
@@ -26,21 +27,23 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     @Override
 	public void initAndValidate() {
         hasMeanInRealSpace = hasMeanInRealSpaceInput.get();
-        if (MParameterInput.get() != null) {
-            if (MParameterInput.get().getLower() == null) {
-                MParameterInput.get().setLower(Double.NEGATIVE_INFINITY);
+        if (MParameterInput.get() != null && MParameterInput.get() instanceof RealParameter) {
+        	RealParameter M = (RealParameter) MParameterInput.get();
+            if (M.getLower() == null) {
+                M.setLower(Double.NEGATIVE_INFINITY);
             }
-            if (MParameterInput.get().getUpper() == null) {
-                MParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
+            if (M.getUpper() == null) {
+                M.setUpper(Double.POSITIVE_INFINITY);
             }
         }
 
-        if (SParameterInput.get() != null) {
-            if (SParameterInput.get().getLower() == null) {
-                SParameterInput.get().setLower(0.0);
+        if (SParameterInput.get() != null && SParameterInput.get() instanceof RealParameter) {
+        	RealParameter S = (RealParameter) SParameterInput.get();
+            if (S.getLower() == null) {
+                S.setLower(0.0);
             }
-            if (SParameterInput.get().getUpper() == null) {
-                SParameterInput.get().setUpper(Double.POSITIVE_INFINITY);
+            if (S.getUpper() == null) {
+                S.setUpper(Double.POSITIVE_INFINITY);
             }
         }
         refresh();
@@ -55,12 +58,12 @@ public class LogNormalDistributionModel extends ParametricDistribution {
         if (SParameterInput.get() == null) {
             sigma = 1;
         } else {
-            sigma = SParameterInput.get().getValue();
+            sigma = SParameterInput.get().getArrayValue();
         }
         if (MParameterInput.get() == null) {
             mean = 0;
         } else {
-            mean = MParameterInput.get().getValue();
+            mean = MParameterInput.get().getArrayValue();
         }
         if (hasMeanInRealSpace) {
             mean = Math.log(mean) - (0.5 * sigma * sigma);
@@ -127,13 +130,13 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     protected double getMeanWithoutOffset() {
     	if (hasMeanInRealSpace) {
     		if (MParameterInput.get() != null) {
-    			return MParameterInput.get().getValue();
+    			return MParameterInput.get().getArrayValue();
     		} else {
     			return 0.0;
     		}
     	} else {
-    		double s = SParameterInput.get().getValue();
-    		double m = MParameterInput.get().getValue();
+    		double s = SParameterInput.get().getArrayValue();
+    		double m = MParameterInput.get().getArrayValue();
     		return Math.exp(m + s * s/2.0);
     		//throw new RuntimeException("Not implemented yet");
     	}

@@ -4,6 +4,7 @@ package beast.base.inference.distribution;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -12,7 +13,7 @@ import beast.base.inference.parameter.RealParameter;
         "If the input x is a multidimensional parameter, each of the dimensions is considered as a " +
         "separate independent component.")
 public class Poisson extends ParametricDistribution {
-    final public Input<RealParameter> lambdaInput = new Input<>("lambda", "rate parameter, defaults to 1");
+    final public Input<Function> lambdaInput = new Input<>("lambda", "rate parameter, defaults to 1");
 
     org.apache.commons.math.distribution.PoissonDistribution dist = new PoissonDistributionImpl(1);
 
@@ -45,7 +46,7 @@ public class Poisson extends ParametricDistribution {
         if (lambdaInput.get() == null) {
             m_fLambda = 1;
         } else {
-            m_fLambda = lambdaInput.get().getValue();
+            m_fLambda = lambdaInput.get().getArrayValue();
             if (m_fLambda < 0) {
                 m_fLambda = 1;
             }
@@ -61,7 +62,7 @@ public class Poisson extends ParametricDistribution {
     
     @Override
     public double getMeanWithoutOffset() {
-    	return lambdaInput.get().getValue();
+    	return lambdaInput.get().getArrayValue();
     }
     
 } // class Poisson

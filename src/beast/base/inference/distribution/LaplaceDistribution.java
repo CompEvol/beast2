@@ -4,6 +4,7 @@ import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.ContinuousDistribution;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
 
@@ -13,8 +14,8 @@ import beast.base.inference.parameter.RealParameter;
         "the Laplace density is expressed in terms of the absolute difference from the mean. Consequently the Laplace " +
         "distribution has fatter tails than the normal distribution.")
 public class LaplaceDistribution extends ParametricDistribution {
-    final public Input<RealParameter> muInput = new Input<>("mu", "location parameter, defaults to 0");
-    final public Input<RealParameter> scaleInput = new Input<>("scale", "scale parameter, defaults to 1");
+    final public Input<Function> muInput = new Input<>("mu", "location parameter, defaults to 0");
+    final public Input<Function> scaleInput = new Input<>("scale", "scale parameter, defaults to 1");
 
     // the mean parameter
     double mu;
@@ -37,12 +38,12 @@ public class LaplaceDistribution extends ParametricDistribution {
         if (muInput.get() == null) {
             mu = 0;
         } else {
-            mu = muInput.get().getValue();
+            mu = muInput.get().getArrayValue();
         }
-        if (scaleInput.get() == null || scaleInput.get().getValue()<=0.0) {
+        if (scaleInput.get() == null || scaleInput.get().getArrayValue()<=0.0) {
             scale = 1;
         } else {
-            scale = scaleInput.get().getValue();
+            scale = scaleInput.get().getArrayValue();
         }
 
         //Normalizing constant
