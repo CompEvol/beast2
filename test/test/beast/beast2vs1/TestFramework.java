@@ -7,7 +7,6 @@ import beagle.BeagleFlag;
 import beast.base.inference.Logger;
 import beast.base.parser.XMLParser;
 import beast.base.util.Randomizer;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import test.beast.beast2vs1.trace.Expectation;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -16,18 +17,22 @@ public class ClockModelTest extends TestFramework {
     private final String[] XML_FILES = new String[]{"testStrictClock.xml", "testStrictClock2.xml",
             "testRandomLocalClock.xml", "testUCRelaxedClockLogNormal.xml"};
 
+    @Test
     public void testStrictClock() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testStrictClock2() throws Exception {
         analyse(1);
     }
 
+    @Test
     public void testRandomLocalClock() throws Exception {
         analyse(2);
     }
 
+    @Test
     public void testUCRelaxedClockLogNormal() throws Exception {
         analyse(3);
     }

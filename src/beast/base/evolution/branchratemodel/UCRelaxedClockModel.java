@@ -8,10 +8,12 @@ import org.apache.commons.math.MathException;
 
 import beast.base.core.Citation;
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
+import beast.base.inference.CalculationNode;
 import beast.base.inference.distribution.ParametricDistribution;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
@@ -56,8 +58,8 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     ParametricDistribution distribution; //the distribution of the rates
     public ParametricDistribution getDistribution() {return distribution;}
 
-    private RealParameter meanRate;
-    public RealParameter getMeanRate() {return meanRate;}
+    private Function meanRate;
+    public Function getMeanRate() {return meanRate;}
     Tree tree;
     private int branchCount;//the number of branches of the tree
     private boolean normalize = false;//
@@ -215,7 +217,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
             }
             renormalize = false;
         }
-        return getRawRate(node) * scaleFactor * meanRate.getValue();
+        return getRawRate(node) * scaleFactor * meanRate.getArrayValue();
     }
 
     /**
@@ -368,7 +370,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (rateInput.get() != null && rateInput.get().somethingIsDirty()) {
             return true;
         }
-        if (meanRate.somethingIsDirty()) {
+        if (meanRate instanceof CalculationNode && ((CalculationNode)meanRate).isDirtyCalculation()) {
             return true;
         }
 

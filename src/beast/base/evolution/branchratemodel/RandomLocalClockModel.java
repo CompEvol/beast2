@@ -2,6 +2,7 @@ package beast.base.evolution.branchratemodel;
 
 import beast.base.core.Citation;
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.evolution.tree.Node;
@@ -44,7 +45,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
                     false, Input.Validate.OPTIONAL);
 
     Tree tree;
-    RealParameter meanRate;
+    Function meanRate;
     boolean scaling = true;
 
     @Override
@@ -145,7 +146,7 @@ public class RandomLocalClockModel extends BranchRateModel.Base {
 
             scaleFactor = timeTotal / branchTotal;
 
-            scaleFactor *= meanRate.getValue();
+            scaleFactor *= meanRate.getArrayValue();
         } else {
             scaleFactor = 1.0;
         }
