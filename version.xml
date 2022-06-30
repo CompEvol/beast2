@@ -25,6 +25,7 @@
 
             <service type="beast.base.core.BEASTInterface">
                 <provider classname="beast.base.core.VirtualBEASTObject"/>
+                <provider classname="beast.base.core.Function$Constant"/>
                 <provider classname="beast.base.evolution.RateStatistic"/>
                 <provider classname="beast.base.evolution.Sum"/>
                 <provider classname="beast.base.evolution.TreeWithMetaDataLogger"/>
@@ -63,6 +64,7 @@
                 <provider classname="beast.base.evolution.operator.TreeStretchOperator"/>
                 <provider classname="beast.base.evolution.operator.Uniform"/>
                 <provider classname="beast.base.evolution.operator.WilsonBalding"/>
+                <provider classname="beast.base.inference.operator.kernel.KernelDistribution$Bactrian"/>
                 <provider classname="beast.base.evolution.operator.kernel.AdaptableVarianceMultivariateNormalOperator"/>
                 <provider classname="beast.base.evolution.operator.kernel.BactrianNodeOperator"/>
                 <provider classname="beast.base.evolution.operator.kernel.BactrianOperatorSchedule"/>

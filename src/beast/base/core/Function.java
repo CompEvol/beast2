@@ -41,7 +41,7 @@ public interface Function {
     }
 
     @Description("Function that does not change over time")
-	class Constant extends BEASTObject implements Function {
+	public class Constant extends BEASTObject implements Function {
     	private double [] values;
     	private String[] names;
     	
