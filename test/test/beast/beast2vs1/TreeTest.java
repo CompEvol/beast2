@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -15,10 +16,12 @@ public class TreeTest extends TestFramework {
 
     String[] XML_FILES = new String[]{"testCalibration.xml", "testCalibrationMono.xml"};
 
+    @Test
     public void testCalibration() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testCalibrationMono() throws Exception {
         analyse(1);
     }

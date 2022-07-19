@@ -33,7 +33,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
     final public Input<IntegerParameter> categoryInput = new Input<>("rateCategories", "the rate categories associated with nodes in the tree for sampling of individual rates among branches."); // , Input.Validate.REQUIRED);
     final public Input<Integer> numberOfDiscreteRates = new Input<>("numberOfDiscreteRates", "the number of discrete rates to approximate the rate distribution by. "
     		+ "With category parameterisation, a value <= 0 will cause the number of categories to be set equal to the number of branches in the tree. "
-    		+ "With quantile paramterisation, a value <= 1 will calculate rates for every quantile, a value > 1 will approximate the distribution piecewise linearly with specified number of rates. "
+    		+ "With quantile parameterisation, a value <= 1 will calculate rates for every quantile, a value > 1 will approximate the distribution piecewise linearly with specified number of rates. "
     		+ "(default = -1)", -1);
     final public Input<RealParameter> quantileInput = new Input<>("rateQuantiles", "the rate quantiles associated with nodes in the tree for sampling of individual rates among branches.");
     final public Input<RealParameter> rateInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches."); // , Input.Validate.XOR, categoryInput);

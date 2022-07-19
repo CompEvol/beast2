@@ -1,10 +1,12 @@
 package test.beast.beast2vs1;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -16,18 +18,22 @@ public class SubstitutionModelTest extends TestFramework {
     private final String[] XML_FILES = new String[]{"testHKY.xml", "testSiteModelAlpha.xml",
             "testMultiSubstModel.xml", "testSRD06CP12_3.xml"};
 
+    @Test
     public void testHKY() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testSiteModelAlpha() throws Exception {
         analyse(1);
     }
 
+    @Test
     public void testMultiSubstModel() throws Exception {
         analyse(2);
     }
 
+    @Test
     public void testSRD06CP12_3() throws Exception {
         analyse(3);
     }

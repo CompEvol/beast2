@@ -205,7 +205,7 @@ public class BeastLauncher {
 					fin.close();
 
 					int start = str.indexOf("version=");
-					int end = str.indexOf("'", start + 9);
+					int end = str.indexOf("\"", start + 9);
 					String version = str.substring(start + 9, end);
 					double localVersion = parseVersion(version);
 					double desiredVersion = parseVersion(BEASTVersion.INSTANCE.getVersion());

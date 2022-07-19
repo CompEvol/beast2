@@ -346,7 +346,7 @@ public class AdaptableOperatorSampler extends Operator {
 
 	/**
 	 * 
-	 * @return A list of cumulative probabilites for sampling each operator
+	 * @return A list of cumulative probabilities for sampling each operator
 	 */
 	public double[] getOperatorCumulativeProbs(boolean forceSampling){
 		
@@ -367,8 +367,10 @@ public class AdaptableOperatorSampler extends Operator {
 				// Calculate h for each parameter with respect to this operator
 				for (int p = 0; p < this.numParams; p ++) {
 					
-					// p = numParams - 1 is the tree heights, all others are RealParameters 
-					hScore += this.getZ(i, p) / this.numParams;
+					// p = numParams - 1 is the tree heights, all others are RealParameters
+					double h = this.getZ(i, p) / this.numParams;
+					if (Double.isNaN(h) || Double.isInfinite(h)) h = 0;
+					hScore += h;
 					
 				}
 				

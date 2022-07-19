@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -15,22 +16,27 @@ public class TipTimeTest extends TestFramework {
     private final String[] XML_FILES = new String[]{"testCoalescentTipDates.xml", "testCoalescentTipDates1.xml",
             "testStrictClockTipTime.xml", "testCoalescentTipDatesSampling.xml", "testStrictClockTipDatesSampling.xml"};//, "testTipDates.xml"};
 
+    @Test
     public void testCoalescentTipDates() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testCoalescentTipDates1() throws Exception {
         analyse(1);
     }
 
+    @Test
     public void testStrictClockTipTime() throws Exception {
         analyse(2);
     }
 
+    @Test
     public void testCoalescentTipDatesSampling() throws Exception {
         analyse(3);
     }
 
+    @Test
     public void testStrictClockTipDatesSampling() throws Exception {
         analyse(4);
     }

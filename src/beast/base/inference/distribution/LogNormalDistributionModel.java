@@ -22,7 +22,7 @@ public class LogNormalDistributionModel extends ParametricDistribution {
     final public Input<Boolean> hasMeanInRealSpaceInput = new Input<>("meanInRealSpace", "Whether the M parameter is in real space, or in log-transformed space. Default false = log-transformed.", false);
 
     boolean hasMeanInRealSpace;
-    LogNormalImpl dist = new LogNormalImpl(0, 1);
+    protected LogNormalImpl dist = new LogNormalImpl(0, 1);
 
     @Override
 	public void initAndValidate() {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -30,14 +31,17 @@ public class StarBEASTTest extends TestFramework {
     String[] XML_FILES = new String[]{"testStarBEASTConstant.xml", "testStarBEASTLinear.xml",
             "testStarBEASTLinearConstRoot.xml"};//"testStarBEAST.xml" };
 
+    @Test
     public void testStarBEASTConstant() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testStarBEASTLinear() throws Exception {
         analyse(1);
     }
 
+    @Test
     public void testStarBEASTLinearConstRoot() throws Exception {
         analyse(2);
     }

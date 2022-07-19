@@ -375,7 +375,7 @@ public class MCMC extends Runnable {
         	Log.warning("WARNING: Loggers appear to have different log frequency.");
         	Log.warning("WARNING: This may cause problems in post-processing based on more than one log files.");
         	Log.warning("WARNING: Therefore, it is recommended to use the same log frequency");
-        	Log.warning("Hint: note that TreeWithMetaDataLogger with dp=\"X\" prints out trees with decimal places, potentially reducing tree file sizez substantially.");
+        	Log.warning("Hint: note that TreeWithMetaDataLogger with dp=\"X\" prints out trees with decimal places, potentially reducing tree file sizes substantially.");
         }
 
         // initialises log so that log file headers are written, etc.

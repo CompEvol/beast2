@@ -14,9 +14,9 @@ public class Uniform extends ParametricDistribution {
     final public Input<Double> lowerInput = new Input<>("lower", "lower bound on the interval, default 0", 0.0);
     final public Input<Double> upperInput = new Input<>("upper", "lower bound on the interval, default 1", 1.0);
 
-    UniformImpl distr = new UniformImpl();
+    protected UniformImpl distr = new UniformImpl();
 
-    double _lower, _upper, density;
+    protected double _lower, _upper, density;
 
     private boolean infiniteSupport;
 
@@ -37,7 +37,7 @@ public class Uniform extends ParametricDistribution {
     }
 
 
-    class UniformImpl implements ContinuousDistribution {
+    public class UniformImpl implements ContinuousDistribution {
         private double lower;
         private double upper;
 

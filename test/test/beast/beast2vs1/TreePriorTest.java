@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import test.beast.beast2vs1.trace.Expectation;
 
@@ -16,38 +17,47 @@ public class TreePriorTest extends TestFramework {
             "testExponentialGrowth.xml", "testYuleModel_10taxa.xml", "testBirthDeathModel_10taxa.xml",
             "testBirthDeathAsYule.xml", "testBSP1.xml", "testBSPNoClock.xml", "testEBSP.xml"};
 
+    @Test
     public void testCoalescentNoClock() throws Exception {
         analyse(0);
     }
 
+    @Test
     public void testCoalescentNoClock1() throws Exception {
         analyse(1);
     }
 
+    @Test
     public void testExponentialGrowth() throws Exception {
         analyse(2);
     }
 
+    @Test
     public void testYuleModel_10taxa() throws Exception {
         analyse(3);
     }
 
+    @Test
     public void testBirthDeathModel_10taxa() throws Exception {
         analyse(4);
     }
 
+    @Test
     public void testBirthDeathAsYule() throws Exception {
         analyse(5);
     }
 
+    @Test
     public void testBSP() throws Exception {
         analyse(6);
     }
 
+    @Test
     public void testBSPNoClock() throws Exception {
         analyse(7);
     }
 
+    @Test
     public void testEBSP() throws Exception {
         analyse(8);
     }
