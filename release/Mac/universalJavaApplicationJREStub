@@ -471,7 +471,7 @@ function is_valid_requirement_pattern() {
 # determine which JVM to use
 ############################################
 
-JAVACMD="${AppPackageFolder}/../jre1.8.0_262/bin/java"
+JAVACMD="${AppPackageFolder}/../jre/bin/java"
 
 
 # log the Java Command and the extracted version number

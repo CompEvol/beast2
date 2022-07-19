@@ -47,6 +47,9 @@
         <xmlproperty file="${beast2}/version.xml" prefix="fromVersionFile" />
         <property name="version" value="${fromVersionFile.package(version)}" />
         <echo message="Version: ${version}" />
+        
+	    <!-- name is fixed to BEAST v2.?.? in createdmg.sh -->
+    	<property name="beast.dmg" value="${BEAST_name} v${version}.dmg"/>
     </target>
     
 
@@ -930,24 +933,37 @@
 
     <!-- Create the app bundle -->
     <target name="bundle">
-        <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
-        <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
-        <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
-        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Mac_package_dir}/lib"/>
-        <copy todir="${Mac_package_dir}/lib">
-            <fileset dir="${Mac_dir}/lib" />
-        </copy> -->
+    
+        <copy file="${beast2}/version.xml" tofile="${Mac_package_dir}/BEAST.base.version.xml" />
+        <copy file="${beast2app}/version.xml" tofile="${Mac_package_dir}/BEAST.app.version.xml" />
 
+        <copy file="${common_dir}/icons/beast.png" todir="${Mac_package_dir}/images" />
+        <copy file="${common_dir}/icons/beauti.png" todir="${Mac_package_dir}/images" />
+        <!-- <copy file="${common_dir}/icons/utility.png" todir="${Mac_package_dir}/images" />
+        -->
+        <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/BEAST.base.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/BEAST.base.src.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${distapp}/${BEASTappName}.jar" tofile="${Mac_package_dir}/lib/BEAST.app.jar" />
+        <copy file="${distapp}/${BEASTappName}.src.jar" tofile="${Mac_package_dir}/lib/BEAST.app.src.jar" />
+
+        <copy file="${tools_dir}/DensiTree.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${tools_dir}/DensiTree.png" todir="${Mac_package_dir}/images" />
+
+        <copy todir="${Mac_package_dir}/${templates}/">
+            <fileset dir="${beast2app}/${templates}/" />
+        </copy>
         <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
         <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
         <copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
+
 
         <echo message="Creating BEAST.app ..." />
 
         <!-- create a jar bundle for the mac -->
         <jarbundler dir="${Mac_package_dir}"
                     name="${BEAST_name}"
-                    mainclass="beast.app.beastapp.BeastLauncher"
+                    mainclass="beast.pkgmgmt.launcher.BeastLauncher"
                     stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/beast.icns"
@@ -957,7 +973,7 @@
                     highresolutioncapable="true"
                     version="${version}"
                     copyright="${BEAST_name}, ${copyright}"
-                    bundleid="beast.app.beastapp.BeastMain">
+                    bundleid="beast.pkgmgmt.launcher.BeastMain">
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib"/>
             <jarfileset dir="${Mac_package_dir}/lib">
@@ -972,7 +988,7 @@
 
         <jarbundler dir="${Mac_package_dir}"
                     name="${BEAUti_name}"
-                    mainclass="beast.app.beauti.BeautiLauncher"
+                    mainclass="beast.pkgmgmt.launcher.BeautiLauncher"
                     stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/beauti.icns"
@@ -982,7 +998,7 @@
                     highresolutioncapable="true"
                     version="${version}"
                     copyright="${BEAUti_name}, ${copyright}"
-                    bundleid="beast.app.beauti.Beauti">
+                    bundleid="beast.pkgmgmt.launcher.Beauti">
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib"/>
             <jarfileset dir="${Mac_package_dir}/lib">
@@ -995,7 +1011,7 @@
 
         <jarbundler dir="${Mac_package_dir}"
                     name="${LogCombiner_name}"
-                    mainclass="beast.app.tools.LogCombinerLauncher"
+                    mainclass="beast.pkgmgmt.launcher.LogCombinerLauncher"
                     stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
@@ -1005,7 +1021,7 @@
                     highresolutioncapable="true"
                     version="${version}"
                     copyright="${LogCombiner_name}, ${copyright}"
-                    bundleid="beast.app.tools.LogCombiner">
+                    bundleid="beast.pkgmgmt.launcher.LogCombiner">
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib"/>
             <jarfileset dir="${Mac_package_dir}/lib">
@@ -1018,7 +1034,7 @@
 
         <jarbundler dir="${Mac_package_dir}"
                     name="${TreeAnnotator_name}"
-                    mainclass="beast.app.treeannotator.TreeAnnotatorLauncher"
+                    mainclass="beast.pkgmgmt.launcher.TreeAnnotatorLauncher"
                     stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
@@ -1028,7 +1044,7 @@
                     highresolutioncapable="true"
                     version="${version}"
                     copyright="${TreeAnnotator_name}, ${copyright}"
-                    bundleid="beast.app.treeannotator.TreeAnnotator">
+                    bundleid="beast.pkgmgmt.launcher.TreeAnnotator">
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib"/>
             <jarfileset dir="${Mac_package_dir}/lib">
@@ -1041,7 +1057,7 @@
 
         <jarbundler dir="${Mac_package_dir}"
                     name="${AppLauncher_name}"
-                    mainclass="beast.app.tools.AppLauncherLauncher"
+                    mainclass="beast.pkgmgmt.launcher.AppLauncherLauncher"
                     stubfile="${stubfile}"
                     useJavaXKey="true"
                     icon="${common_dir}/icons/utility.icns"
@@ -1051,7 +1067,7 @@
                     highresolutioncapable="true"
                     version="${version}"
                     copyright="${AppLauncher_name}, ${copyright}"
-                    bundleid="beast.app.tools.AppLauncher">
+                    bundleid="beast.pkgmgmt.launcher.AppLauncher">
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
             <javaproperty name="java.library.path" value="$JAVAROOT:/usr/local/lib"/>
             <jarfileset dir="${Mac_package_dir}/lib">
@@ -1161,17 +1177,14 @@
         </exec>
 
         <!-- templates -->
-        <copy todir="${Mac_package_dir}/templates/">
-            <fileset dir="templates/" />
+        <copy todir="${Mac_package_dir}/fxtemplates/">
+            <fileset dir="${beast2app}/fxtemplates/" />
         </copy>
 
     </target>
 
-    <!-- name is fixed to BEAST v2.?.? in createdmg.sh -->
-    <property name="beast.dmg" value="${BEAST_name} v${version}.dmg"/>
-
     <!-- build dmg -->
-    <target name="dmg">
+    <target name="dmg" depends="init">
         <echo message="Building disk image." />
         <exec executable='release/Mac/createdmg.sh'/>
 
@@ -1357,29 +1370,14 @@
 
 
 
-	<target name="init-fx-tasks">
-		<echo message="java.home = ${java.home} "/>
-		<path id="fxant">
-			<filelist>
-				<file name="${java.home}/../lib/ant-javafx.jar"/>
-				<file name="${java.home}/../lib/jfxrt.jar"/> <!-- jdk9, jdk10 -->
-				<file name="${java.home}/../jre/lib/ext/jfxrt.jar"/> <!-- jdk8 -->
-			</filelist>
-		</path>
-	
-		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"      
-			uri="javafx:com.sun.javafx.tools.ant"
-			classpathref="fxant"/>
-
-	</target>
 
     <!-- Create the app bundle -->
-    <target name="macjre3" depends="init-fx-tasks">
+    <target name="macjre3" depends="init,beast.app" if="beast.app.present">
     
 
         <delete dir="${Mac_package_dir}" />
         <!--<delete file="${Mac_dir}/pack.temp.dmg"/>-->
-        <delete file="${Mac_dir}/BEAST v${version}.dmg"/>
+        <delete file="${Mac_dir}/${beast.dmg}"/>
         <!-- Create the release directory -->
         <mkdir dir="${Mac_package_dir}" />
 
@@ -1395,169 +1393,36 @@
                 <exclude name="benchmark/**" />
             </fileset>
         </copy>
+        <property name="openjre" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home/jre"/>
+        <!--
+        <property name="openjre" value="/Users/remco/Downloads/zulu17.34.19-ca-fx-jre17.0.3-macosx_x64/zulu-17.jre/Contents/Home"/>
+        -->
+        <exec executable="cp">
+		    <arg line="-R ${openjre} ${Mac_package_dir}/jre"/>
+		</exec>
 
-        <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
-        <copy file="${dist}/beast.jar" todir="${Mac_package_dir}/lib" />
-        <copy file="${dist}/beast.src.jar" todir="${Mac_package_dir}/lib" />
-        <!-- <copy file="${dist}/beast-beagle.jar" todir="${Mac_package_dir}/lib"/>
-        <copy todir="${Mac_package_dir}/lib">
-            <fileset dir="${Mac_dir}/lib" />
-        </copy> -->
-
-        <copy file="${common_dir}/VERSION HISTORY.txt" todir="${Mac_package_dir}" />
-        <copy file="${common_dir}/README.txt" todir="${Mac_package_dir}" />
-        <copy file="${common_dir}/LICENSE.txt" todir="${Mac_package_dir}" />
+        <antcall target="bundle">
+             <param name="stubfile" value="${Mac_dir}/universalJavaApplicationJREStub"/>
+        </antcall>
         
-        
-		<!--
-		<fx:signjar destdir="/tmp" alias="${AppleSigner}" verbose="true" storePass="" keyPass="">
-			<fx:fileset dir='${dist}' includes='*.jar'/>
-		</fx:signjar>
-		-->
-		
-		<fx:resources id="appRes">
-			<fx:fileset dir="${dist}" includes="launcher.jar"/>
-			<fx:fileset dir="${dist}" includes="beast.jar"/>
-			<!--
-			<fx:fileset dir="${dist}" includes="beast.src.jar"/>
-  	        <fx:fileset dir="${common_dir}" includes="VERSION HISTORY.txt"/>
-    	    <fx:fileset dir="${common_dir}" includes="README.txt"/>
-        	<fx:fileset dir="${common_dir}" includes="LICENSE.txt"/>
-            <fx:fileset dir="./examples/" includes="*.xml" />
-            <fx:fileset dir="./examples/nexus" includes="**" />
-            <fx:fileset dir="./templates" includes="**" />
-            -->
-		</fx:resources> 
-		
-		<fx:application id="fxApplication"
-			name="${BEAST_name}"
-			mainClass="beast.app.beastapp.BeastMain"
-			toolkit="fx"
-		    version="${version}"
-		>
-            <fx:argument>-window</fx:argument>
-            <fx:argument>-working</fx:argument>
-            <fx:argument>-options</fx:argument>
-		</fx:application>
-	
-		<mkdir dir="${Mac_package_dir}/build/classes/META-INF" />
-		
-				<fx:deploy
-			embedJNLP="true"
-			extension="false"
-			width="1200" height="800" 
-			includeDT="false"
-			offlineAllowed="true"
-			outdir="${Mac_package_dir}"
-			outfile="${BEAUti_name}" 
-			nativeBundles="image"
-			updatemode="background" >
-	
-	    	<fx:info title="${BEAUti_name}" vendor="${appVendor}"
-            	copyright="${BEAUti_name}, ${copyright}" description="${BEAUti_name}">
-        		<fx:icon href="${common_dir}/icons/beauti.icns"/>   
-    		</fx:info>
-			<fx:application id="BEAUtiApplication"
-				name="${BEAUti_name}"
-				mainClass="beast.app.beauti.Beauti"
-				toolkit="fx"
-			    version="${version}"
-			>
-            	<fx:argument>-capture</fx:argument>
-			</fx:application>
-			<fx:resources id="appResBEAUti">
-				<fx:fileset dir="${dist}" includes="beauti.jar"/>
-			</fx:resources> 
-			<fx:platform>
-            	<fx:jvmarg value="-Xmx8g"/>
-	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
-    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
-        	    <fx:jvmarg value="-Duser.language=en"/>            
-            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
-			</fx:platform>
+        <antcall target="codesign"/>
 
-
-
+        <antcall target="dmg"/>
 <!--
-			<fx:secondaryLauncher name="BEAUti"
-			    mainClass="beast.app.beauti.Beauti"
-			    version="${version}"
-			    title="BEAUti"
-			    description="BEAUti"
-			    copyright="${copyright}"
-			    menu="true"
-     			shortcut="false"
-     		>
-     			<fx:argument>-capture</fx:argument>
-            	<fx:jvmarg value="-Xmx8g"/>
-	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
-    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
-        	    <fx:jvmarg value="-Duser.language=en"/>            
-            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
-			</fx:secondaryLauncher>
--->			
-		</fx:deploy>
-		
-		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
-		<fx:deploy
-			embedJNLP="true"
-			extension="false"
-			width="1200" height="800" 
-			includeDT="false"
-			offlineAllowed="true"
-			outdir="${Mac_package_dir}"
-			outfile="${BEAST_name}" 
-			nativeBundles="image"
-			updatemode="background" >
-	
-	    	<fx:info title="${BEAST_name}" vendor="${appVendor}"
-            	copyright="${BEAST_name}, ${copyright}" description="${BEAST_name}">
-        		<fx:icon href="${common_dir}/icons/beast.icns"/>   
-    		</fx:info>
-			<fx:application refId="fxApplication"/>
-			<fx:resources id="appResBEAUST">
-				<fx:fileset dir="${dist}" includes="beast.jar"/>
-			</fx:resources> 
-			<fx:platform>
-            	<fx:jvmarg value="-Xmx8g"/>
-	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
-    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
-        	    <fx:jvmarg value="-Duser.language=en"/>            
-            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
-			</fx:platform>
+-->
+        <property environment="env"/>
+        <property name="dmg.path" value="../../tmp/${BEAST_name}_with_JRE.v${version}.dmg" />
 
+        <copy file="${Mac_dir}/${beast.dmg}" tofile="${dmg.path}" />
 
+        <echo message="Mac with JRE version release is finished." />
 
-<!--
-			<fx:secondaryLauncher name="BEAUti"
-			    mainClass="beast.app.beauti.Beauti"
-			    version="${version}"
-			    title="BEAUti"
-			    description="BEAUti"
-			    copyright="${copyright}"
-			    menu="true"
-     			shortcut="false"
-     		>
-     			<fx:argument>-capture</fx:argument>
-            	<fx:jvmarg value="-Xmx8g"/>
-	            <fx:jvmarg value="-Dapple.laf.useScreenMenuBar=true"/>
-    	        <fx:jvmarg value="-Djava.library.path=$JAVAROOT:/usr/local/lib"/>
-        	    <fx:jvmarg value="-Duser.language=en"/>            
-            	<fx:jvmarg value="-Dbeast.load.jars=true"/>
-			</fx:secondaryLauncher>
--->			
-		</fx:deploy>
+        <echo message="Go to ~/tmp to make notarization" />
 
+        <antcall target="notarization">
+            <param name="dmg.path" value="${dmg.path}"/>
+        </antcall>
 
-
-        <echo message="Signing..." />
-
-        <exec executable="codesign">
-            <arg value="-s"/>
-            <arg value="${AppleSigner}"/>
-            <arg value="-v"/>
-            <arg value="${Mac_dir}/${BEAST_name}/BEAST-${version}.dmg"/>
-        </exec>
 
         <echo message="Mac with JRE version release is finished." />
     </target>
