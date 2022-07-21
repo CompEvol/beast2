@@ -33,6 +33,7 @@ package beast.pkgmgmt;
 
 
 
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,12 +41,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -81,6 +84,8 @@ public class PackageManager {
     public final static String TO_INSTALL_LIST_FILE = "toInstallList";
     
     public final static String BEAST_PACKAGE_NAME = "BEAST";
+    public final static String BEAST_BASE_PACKAGE_NAME = "BEAST.base";
+    public final static String BEAST_APP_PACKAGE_NAME = "BEAST.app";
 
     public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + 
     		BEASTVersion.INSTANCE.getMajorVersion() +".xml";
@@ -1432,12 +1437,11 @@ public class PackageManager {
      * @param string warning to display
      */
     private static void warning(String string) {
-        System.err.println(string);
-        System.err.println("Unexpected behavior may follow!");
         if (!java.awt.GraphicsEnvironment.isHeadless() && System.getProperty("no.beast.popup") == null) {
-            JOptionPane.showMessageDialog(null, string +
+        	message(string +
                     "\nUnexpected behavior may follow!");
         }
+        System.err.println("Unexpected behavior may follow!");
     }
     
     /**
@@ -1449,7 +1453,16 @@ public class PackageManager {
     private static void message(String string) {
     	System.out.println(string);
         if (!java.awt.GraphicsEnvironment.isHeadless()) {
-            JOptionPane.showMessageDialog(null, string);
+        	SwingUtilities.invokeLater(new Runnable() { 
+        		@Override
+        		public void run() {
+        			JOptionPane.showMessageDialog(null, string);
+        		}
+        	});
+//        	Alert a = new Alert(AlertType.NONE);
+//        	a.setContentText(string);
+//        	a.getButtonTypes().add(ButtonType.CLOSE);
+//        	a.showAndWait();
         }
     }
 
@@ -2198,26 +2211,35 @@ public class PackageManager {
 	    		}
 	    		buf.append("</table>");
 	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
-	    		int response = JOptionPane.showOptionDialog(null, "<html><h2>New packages are available to install:</h2>" +
-	    				buf.toString() + 
-	    				"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-	    		        null, options, options[2]);
-	    		switch (response) {
-	    		case 0: // No, never check again
-	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
-	    			return;
-	    		case 1: // No, check later
-	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
-	    			return;
-	    		case 2: // Yes, ask next time
-	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
-	    			break;
-	    		case 3: // Always install automatically
-	                Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
-	    			break;
-	    		default: // e.g. escape-key gets us here
-	    			return;
-	    		}
+	    		try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+						public void run() {
+							int response = JOptionPane.showOptionDialog(null, "<html><h2>New packages are available to install:</h2>" +
+									buf.toString() + 
+									"Do you want to install?</html>", "Package Manager", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+							        null, options, options[2]);
+							switch (response) {
+							case 0: // No, never check again
+					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.DO_NOT_CHECK.toString());
+								return;
+							case 1: // No, check later
+					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+								return;
+							case 2: // Yes, ask next time
+					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+								break;
+							case 3: // Always install automatically
+					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
+								break;
+							default: // e.g. escape-key gets us here
+								return;
+							}
+						}
+					});
+				} catch (InvocationTargetException | InterruptedException e) {
+					e.printStackTrace();
+					return;
+				}
     		} else {
     			System.out.println("New packages are available to install:");
 	    		System.out.println("Package name\tNew version\tInstalled");
@@ -2249,7 +2271,7 @@ public class PackageManager {
 
 	        if (getToDeleteListFile().exists()) {
 	        	if (useGUI) {
-	        		JOptionPane.showMessageDialog(null,
+	        		warning(
 	                    "<html><body><p style='width: 200px'>Upgrading packages on your machine requires BEAUti " +
 	                            "to restart. Shutting down now.</p></body></html>");
 	        	} else {
@@ -2264,14 +2286,14 @@ public class PackageManager {
 	        }
 		} catch (DependencyResolutionException e) {
 	        if (useGUI) {
-				JOptionPane.showMessageDialog(null, "Install failed because: " + e.getMessage());
+	        	warning("Install failed because: " + e.getMessage());
 			} else {
 				System.err.println("Install failed because " + e.getMessage());
 			}
 			e.printStackTrace();			
 		} catch (IOException e) {
 	        if (useGUI) {
-				JOptionPane.showMessageDialog(null, "Install failed because: " + e.getMessage());
+	        	warning("Install failed because: " + e.getMessage());
 			} else {
 				System.err.println("Install failed because " + e.getMessage());
 			}

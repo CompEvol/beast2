@@ -412,8 +412,13 @@
     <target name="windows"
             description="release Windows version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
 
-<input message="Keystore password : " addproperty="storepass"><!-- same as UoA password --></input>
-
+<!--
+<input message="Keystore password : " addproperty="storepass">
+-->
+    <!-- same as UoA password -->
+<!--
+</input>
+-->
         <delete dir="${Windows_package_dir}" />
         <!-- Create the release directory -->
         <mkdir dir="${Windows_package_dir}" />
@@ -438,16 +443,6 @@
             </fileset>
         </copy>
 
-        <!--<copy todir="${Windows_package_dir}/native">
-            <fileset dir="${common_dir}/native"/>
-        </copy>
-        <copy todir="${Windows_package_dir}/doc">
-            <fileset dir="${common_dir}/doc" />
-        </copy>
-        <copy todir="${Windows_package_dir}/bin">
-            <fileset dir="${Windows_dir}/scripts"/>
-        </copy>
-        -->
         <copy file="${dist}/launcher.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
@@ -622,8 +617,8 @@
             </fileset>
         </copy>
 
-        <copy file="${beast2}/version.xml" tofile="${Windows_package_dir}/beast.base.version.xml" />
-        <copy file="${beast2app}/version.xml" tofile="${Windows_package_dir}/beast.app.version.xml" />
+        <copy file="${beast2}/version.xml" tofile="${Windows_package_dir}/BEAST.base.version.xml" />
+        <copy file="${beast2app}/version.xml" tofile="${Windows_package_dir}/BEAST.app.version.xml" />
 
         <copy file="${common_dir}/icons/beast.png" todir="${Windows_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Windows_package_dir}/images" />
@@ -656,7 +651,7 @@
         	<!--
             <fileset dir="../jdk8u212-b04-jre" />
             -->
-            <fileset dir="/Users/remco/Downloads/zulu17.34.19-ca-fx-jre17.0.3-linux_x64/"/>
+            <fileset dir="../../Downloads/zulu17.34.19-ca-fx-jre17.0.3-win_x64/"/>
         </copy>
 
         <mkdir dir="${Windows_package_dir}/bat" />
@@ -875,12 +870,11 @@
             <fileset dir="${Linux_dir}/jrebin" />
         </copy>
         <chmod dir="${Linux_package_dir}/bin" perm="755" includes="**/**" />
-        <mkdir dir="${Linux_package_dir}/jre" />
         <exec executable="cp">
 	        <!--
              <arg line="-R /opt/java/jre ${Linux_package_dir}/jre"/>
              -->
-             <arg line="-R /Users/remco/Downloads/zulu17.34.19-ca-fx-jre17.0.3-linux_x64/ ${Linux_package_dir}/jre"/>
+             <arg line="-R /opt/zulu17.34.19-ca-fx-jre17.0.3-linux_x64/ ${Linux_package_dir}/jre"/>
         </exec>
 
         <copy todir="${Linux_package_dir}/examples/">
@@ -891,8 +885,8 @@
             </fileset>
         </copy>
 
-        <copy file="${beast2}/version.xml" tofile="${Linux_package_dir}/beast.base.version.xml" />
-        <copy file="${beast2app}/version.xml" tofile="${Linux_package_dir}/beast.app.version.xml" />
+        <copy file="${beast2}/version.xml" tofile="${Linux_package_dir}/BEAST.base.version.xml" />
+        <copy file="${beast2app}/version.xml" tofile="${Linux_package_dir}/BEAST.app.version.xml" />
 
         <copy file="${common_dir}/icons/beast.png" todir="${Linux_package_dir}/images" />
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />

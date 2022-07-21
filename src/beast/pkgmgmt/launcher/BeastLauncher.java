@@ -135,13 +135,13 @@ public class BeastLauncher {
 
 			File versionFile = new File(jarDir0 + pathDelimiter + packageName + ".version.xml");
 			if (!versionFile.exists()) {
-				String version = "<package name='" + packageName + "' version='" + BEASTVersion.INSTANCE.getVersion() + "'>\n" + "</package>";
-				FileWriter outfile = new FileWriter(userDir + pathDelimiter + packageName + pathDelimiter + "version.xml");
-				outfile.write(version);
-				outfile.close();
-			} else {				
+				versionFile = new File(jarDir0 + pathDelimiter + packageName.toLowerCase() + ".version.xml");
+			}				
+			if (!versionFile.exists()) {
+				System.err.println("Error: cannot find version file: " + versionFile);
+			} else {
 				File versionTarget = new File(userDir + pathDelimiter + packageName + pathDelimiter + "version.xml");
-				copyFileUsingStream(versionFile, versionTarget);				
+				copyFileUsingStream(versionFile, versionTarget);
 			}
 
 			File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".src.jar");
@@ -205,7 +205,10 @@ public class BeastLauncher {
 					fin.close();
 
 					int start = str.indexOf("version=");
-					int end = str.indexOf("\"", start + 9);
+					int end = str.indexOf("\"",  start + 9);
+					if (end == -1 || str.indexOf("'",  start + 9) > 0) {
+						end = Math.min(end, str.indexOf("'",  start + 9));
+					}
 					String version = str.substring(start + 9, end);
 					double localVersion = parseVersion(version);
 					double desiredVersion = parseVersion(BEASTVersion.INSTANCE.getVersion());
