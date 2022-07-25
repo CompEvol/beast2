@@ -290,6 +290,29 @@ public class BEASTClassLoader extends URLClassLoader {
     		class2loaderMap.put(className, getClassLoader(packageName));
 		}
 
+		/**
+		 * delete services with specified class name -- useful for testing
+		 * @param service: name of the service to add
+		 * @param className: name of the service provider
+		 */
+		public static void delService(Map<String,Set<String>> serviceMap, String packageName) {
+			for (String service : serviceMap.keySet()) {
+				Set<String> classNames = serviceMap.get(service);
+				for (String provider : classNames) {
+					// release service
+					BEASTClassLoader.services.get(service).remove(provider);
+				
+					// release name space
+					String namespace = provider.substring(0, provider.lastIndexOf('.'));
+					namespaces.remove(namespace);
+				}
+			}
+			
+			if (package2classLoaderMap.containsKey(packageName)) {
+				package2classLoaderMap.remove(packageName);
+			}
+		}
+
 		public static String usesExistingNamespaces(Set<String> services) {
 			for (String service : services) {
 				if (service.contains(".")) {

@@ -628,6 +628,8 @@ public class PackageManager {
         	dir = new File(dirName);
         	useArchive = !useArchive;
         }
+    	unloadPackage(dir);
+        
         List<File> deleteFailed = new ArrayList<File>();
         deleteRecursively(dir, deleteFailed);
         
@@ -678,10 +680,29 @@ public class PackageManager {
     		}		
     	//} catch (IOException e) {
         //    System.err.println("Could not close ClassLoader: " + e.getMessage());
+   		
         } catch (ClassCastException e) {
             System.err.println("Could not close ClassLoader: " + e.getMessage());
 		}
 	}
+    
+    private static void unloadPackage(File dir) {
+        File versionFile = new File(dir.getPath() + "/version.xml");
+        if (versionFile.exists()) {
+            try {
+                // print name and version of package
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                Document doc = factory.newDocumentBuilder().parse(versionFile);
+                Element packageElement = doc.getDocumentElement();
+                String packageName = packageElement.getAttribute("name");
+                Map<String,Set<String>> services = parseServices(doc);
+        		BEASTClassLoader.delService(services, packageName);
+            } catch (Exception e) {
+                // ignore
+            	e.printStackTrace();
+            }
+        }
+    }
 
 	private static void deleteRecursively(File file, List<File> deleteFailed) {
         if (file.isDirectory()) {
@@ -2212,6 +2233,7 @@ public class PackageManager {
 	    		buf.append("</table>");
 	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
 	    		try {
+	    			final boolean [] update = new boolean[] {false};
 					SwingUtilities.invokeAndWait(new Runnable() {
 						public void run() {
 							int response = JOptionPane.showOptionDialog(null, "<html><h2>New packages are available to install:</h2>" +
@@ -2227,15 +2249,20 @@ public class PackageManager {
 								return;
 							case 2: // Yes, ask next time
 					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_CHECK_AND_ASK.toString());
+					            update[0] = true; 
 								break;
 							case 3: // Always install automatically
 					            Utils6.saveBeautiProperty("package.update.status", UpdateStatus.AUTO_UPDATE.toString());
+					            update[0] = true; 
 								break;
 							default: // e.g. escape-key gets us here
 								return;
 							}
 						}
 					});
+					if (!update[0]) {
+						return;
+					}
 				} catch (InvocationTargetException | InterruptedException e) {
 					e.printStackTrace();
 					return;
