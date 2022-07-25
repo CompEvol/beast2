@@ -274,11 +274,11 @@ public class PackageManager {
         // This can happen when the BEAST package is not installed (perhaps due to 
         // file access issues)
         Package beastPkg;
-        if (packageMap.containsKey(BEAST_PACKAGE_NAME)) {
-            beastPkg = packageMap.get(BEAST_PACKAGE_NAME);
+        if (packageMap.containsKey(BEAST_BASE_PACKAGE_NAME)) {
+            beastPkg = packageMap.get(BEAST_BASE_PACKAGE_NAME);
         } else {
-            beastPkg = new Package(BEAST_PACKAGE_NAME);
-            packageMap.put(BEAST_PACKAGE_NAME, beastPkg);
+            beastPkg = new Package(BEAST_BASE_PACKAGE_NAME);
+            packageMap.put(BEAST_BASE_PACKAGE_NAME, beastPkg);
         }
 
         if (!beastPkg.isInstalled()) {
@@ -1766,13 +1766,7 @@ public class PackageManager {
         Collections.sort(result, new Comparator<String>() {
 			@Override
 			public int compare(String s1, String s2) {
-	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-	        		return -1;
-	        	}
-	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-	        		return 1;
-	        	}
-	        	return s1.compareTo(s2);
+				return comparePackageNames(s1,s2);
 			}
         }); //, new StringCompare());
 
@@ -1826,13 +1820,7 @@ public class PackageManager {
         Collections.sort(result, new Comparator<String>() {
 			@Override
 			public int compare(String s1, String s2) {
-	        	if (s1.equals(BEAST_PACKAGE_NAME)) {
-	        		return -1;
-	        	}
-	        	if (s2.equals(BEAST_PACKAGE_NAME)) {
-	        		return 1;
-	        	}
-	        	return s1.compareTo(s2);
+	        	return comparePackageNames(s1, s2);
 			}
         }); //, new StringCompare());
         // remove duplicates
@@ -1948,7 +1936,7 @@ public class PackageManager {
 
         // Print formatted package information
         for (Package pkg : packageList) {
-        	if (pkg.getName().equals(BEAST_PACKAGE_NAME)) {
+        	if (pkg.getName().equals(BEAST_BASE_PACKAGE_NAME) || pkg.getName().equals(BEAST_APP_PACKAGE_NAME)) {
         		ps.printf(nameFormat, pkg.getName()); ps.print(sep);
 		        ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : "NA"); ps.print(sep);
 		        ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
@@ -1962,7 +1950,7 @@ public class PackageManager {
         
         // Print formatted package information
         for (Package pkg : packageList) {
-        	if (!pkg.getName().equals(BEAST_PACKAGE_NAME)) {
+        	if (!pkg.getName().equals(BEAST_BASE_PACKAGE_NAME) && !pkg.getName().equals(BEAST_APP_PACKAGE_NAME)) {
 	            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
 	            ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : "NA"); ps.print(sep);
 	            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
@@ -2037,7 +2025,7 @@ public class PackageManager {
             	// String::compareToIgnoreCase
     			@Override
     			public int compare(String s1, String s2) {
-    	        	return s1.toLowerCase().compareTo(s2.toLowerCase());
+    				return comparePackageNames(s1, s2);
     			}
             });
             try {
@@ -2134,6 +2122,31 @@ public class PackageManager {
         }
     }
 
+    /** compare package names, putting BEAST.base in front, then BEAST.app,
+     * then every other package in alphabetical order, ignoring case
+     */
+	public static int comparePackageNames(String s1, String s2) {
+    	if (s1.equals(BEAST_BASE_PACKAGE_NAME)) {
+    		if (s2.equals(BEAST_BASE_PACKAGE_NAME)) {
+    			return 0;
+    		}
+    		return -1;
+    	}
+    	if (s2.equals(BEAST_BASE_PACKAGE_NAME)) {
+    		return 1;
+    	}
+    	if (s1.equals(BEAST_APP_PACKAGE_NAME)) {
+    		if (s2.equals(BEAST_APP_PACKAGE_NAME)) {
+    			return 0;
+    		}
+    		return -1;
+    	}
+    	if (s2.equals(BEAST_APP_PACKAGE_NAME)) {
+    		return 1;
+    	}
+    	return s1.toLowerCase().compareTo(s2.toLowerCase());
+	}
+
     private static String join(String string, List<String> deps) {
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < deps.size(); i++) {
@@ -2184,16 +2197,7 @@ public class PackageManager {
         		new Comparator<String>() {
 			@Override
 			public int compare(String s1, String s2) {
-	        	if (s1.equals(PackageManager.BEAST_PACKAGE_NAME)) {
-	        		if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
-	        			return 0;
-	        		}
-	        		return -1;
-	        	}
-	        	if (s2.equals(PackageManager.BEAST_PACKAGE_NAME)) {
-	        		return 1;
-	        	}
-	        	return s1.compareToIgnoreCase(s2);
+	        	return comparePackageNames(s1, s2);
 			}
         });
         try {
