@@ -409,7 +409,7 @@ public class BeastLauncher {
 	    			Package pkg = new Package(pkgname);
 	    			PackageVersion version = new PackageVersion(pkgversion);
 	    			PackageManager.useArchive(true);
-	    			String dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
+	    			String dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPackagePathProperty());
 	    			if (new File(dirName).exists()) {
 	    				buf.append(addJarsToPath(dirName, classes));
 	    			} else {
@@ -419,7 +419,7 @@ public class BeastLauncher {
 	        				unavailablePackages += s +", ";
 	    				} else {
 	    					PackageManager.useArchive(false);
-	            			dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
+	            			dirName = PackageManager.getPackageDir(pkg, version, false, PackageManager.getBeastPackagePathProperty());
 	            			if (new File(dirName).exists()) {
 	            				buf.append(addJarsToPath(dirName, classes));
 	            			} else {
@@ -680,16 +680,16 @@ public class BeastLauncher {
 	        }            
            	        	
 			for (String jarFileName : classPath.substring(1, classPath.length() - 1).split(File.pathSeparator)) {
-				if (jarFileName.toLowerCase().endsWith("base.jar")) {
+				if (jarFileName.toLowerCase().endsWith("BEAST.jar")) {
 					File jarFile = new File(jarFileName);
-					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST.base", null);
+					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST", null);
 				}
 				if (jarFileName.toLowerCase().endsWith("app.jar")) {
 					File jarFile = new File(jarFileName);
 					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST.app", null);
 				}
 			}
-			BEASTClassLoader.classLoader.addParent("BEAST.app", "BEAST.base");
+			BEASTClassLoader.classLoader.addParent("BEAST.app", "BEAST");
 			BEASTClassLoader.initServices(classPath);
 		
 			Class<?> mainClass = BEASTClassLoader.forName(main);

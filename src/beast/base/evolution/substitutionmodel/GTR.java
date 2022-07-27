@@ -76,7 +76,7 @@ public class GTR extends GeneralSubstitutionModel {
     }
 
     @Override
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
         relativeRates[0] = rateAC.getArrayValue(); // A->C
         relativeRates[1] = rateAG.getArrayValue(); // A->G
         relativeRates[2] = rateAT.getArrayValue(); // A->T

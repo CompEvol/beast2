@@ -77,7 +77,7 @@ public class TVM extends GeneralSubstitutionModel {
     }
 
     @Override
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
         relativeRates[0] = rateAC.getValue(); // A->C
         relativeRates[1] = rateTransitions.getValue(); // A->G
         relativeRates[2] = rateAT.getValue(); // A->T

@@ -919,8 +919,8 @@ public class PackageManager {
     	
         List<String> dirs = new ArrayList<String>();
         // check if there is the BEAST environment variable is set
-        if (PackageManager.getBeastPacakgePathProperty() != null) {
-            String BEAST = PackageManager.getBeastPacakgePathProperty();
+        if (PackageManager.getBeastPackagePathProperty() != null) {
+            String BEAST = PackageManager.getBeastPackagePathProperty();
             for (String dirName : BEAST.split(":")) {
                 dirs.add(dirName);
             }
@@ -1154,7 +1154,7 @@ public class PackageManager {
         			Package pkg = new Package(pkgname);
         			PackageVersion version = new PackageVersion(pkgversion);
         	    	useArchive = true;
-        			String dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
+        			String dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPackagePathProperty());
         			if (new File(dirName).exists()) {
         				loadPackage(dirName);
         			} else {
@@ -1164,7 +1164,7 @@ public class PackageManager {
             				unavailablePacakges += s +", ";
         				} else {
 	            	    	useArchive = false;
-	            			dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPacakgePathProperty());
+	            			dirName = getPackageDir(pkg, version, false, PackageManager.getBeastPackagePathProperty());
 	            			if (new File(dirName).exists()) {
 	            				loadPackage(dirName);
 	            			} else {
@@ -2011,7 +2011,7 @@ public class PackageManager {
             boolean useAppDir = arguments.hasOption("useAppDir");
             String customDir = arguments.getStringOption("dir");
             if (customDir != null) {
-                String path = PackageManager.getBeastPacakgePathProperty();
+                String path = PackageManager.getBeastPackagePathProperty();
                 System.setProperty("BEAST_PACKAGE_PATH", (path != null ? path + ":" : "") +customDir);
             }
 
@@ -2332,7 +2332,7 @@ public class PackageManager {
 		}
     }
 
-    public static String getBeastPacakgePathProperty() {
+    public static String getBeastPackagePathProperty() {
     	if (System.getProperty("BEAST_PACKAGE_PATH") != null) {
     		return System.getProperty("BEAST_PACKAGE_PATH");
     	}

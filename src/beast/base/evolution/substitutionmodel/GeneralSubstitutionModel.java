@@ -187,7 +187,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         return rateMatrix.clone();
     }
 
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
         Function rates = this.ratesInput.get();
         for (int i = 0; i < rates.getDimension(); i++) {
             relativeRates[i] = rates.getArrayValue(i);
@@ -197,7 +197,7 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
     /**
      * sets up rate matrix *
      */
-    protected void setupRateMatrix() {
+    public void setupRateMatrix() {
         double[] freqs = frequencies.getFreqs();
         for (int i = 0; i < nrOfStates; i++) {
             rateMatrix[i][i] = 0;

@@ -73,7 +73,7 @@ public class TIM extends GeneralSubstitutionModel {
     }
 
     @Override
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
         relativeRates[0] = rateTransversions1.getValue(); // A->C
         relativeRates[1] = rateAG.getValue(); // A->G
         relativeRates[2] = rateTransversions2.getValue(); // A->T

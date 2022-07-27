@@ -42,7 +42,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     } // initAndValidate
 
     @Override
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
         System.arraycopy(m_empiricalRates, 0, relativeRates, 0, m_empiricalRates.length);
     }
 
@@ -50,7 +50,7 @@ public abstract class EmpiricalSubstitutionModel extends GeneralSubstitutionMode
     /**
      * convert empirical rates into a RealParameter, only off diagonal entries are recorded *
      */
-    double[] getEmpericalRateValues() {
+    public double[] getEmpericalRateValues() {
         double[][] matrix = getEmpiricalRates();
         int[] order = getEncodingOrder();
         int states = matrix.length;

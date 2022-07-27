@@ -322,8 +322,8 @@ beast.util.treeparser.NewickParserVisitor beast.base.evolution.tree.treeparser.N
 biceps.operators.EpochFlexOperator beast.base.evolution.operator.EpochFlexOperator
 biceps.operators.TreeStretchOperator beast.base.evolution.operator.TreeStretchOperator
 orc.operators.AdaptableOperatorSampler beast.base.evolution.operator.AdaptableOperatorSampler
-org.apache.commons.math.distribution.Distribution beast.base.inference.Distribution
-org.apache.commons.math.special.Beta beast.base.inference.distribution.Beta
+beast.core.Distribution beast.base.inference.Distribution
+beast.math.distributions.Beta beast.base.inference.distribution.Beta
 beast.app.util.LogAnalyser beast.app.tools.LogAnalyser
 beast.math.distributions.Prior beast.base.inference.distribution.Prior
 beast.math.distributions.Uniform beast.base.inference.distribution.Uniform

@@ -22,7 +22,7 @@ import java.util.Arrays;
  * The former gives better control of newlines, while the latter always adds a newline to the string.
  **/ 
 public class Log {
-	static PrintStream nullStream = new PrintStream(new OutputStream() {
+	static public PrintStream nullStream = new PrintStream(new OutputStream() {
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {};
 		@Override
@@ -31,7 +31,7 @@ public class Log {
 	});
 	
     public enum Level {
-        error, warning, info, debug, trace
+        none, error, warning, info, debug, trace
     }
 
     static Level level = Level.info;
@@ -124,6 +124,8 @@ public class Log {
 			warning = warningIfOpen;
 		case error:
 			err = errIfOpen;
+		case none:
+			
 		}
 	}
 	

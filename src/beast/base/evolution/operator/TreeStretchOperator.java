@@ -1,6 +1,7 @@
 package beast.base.evolution.operator;
 
 
+
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.inference.parameter.RealParameter;
@@ -10,7 +11,6 @@ import beast.base.evolution.tree.Tree;
 @Description("Scales tree skewing parts to take tip dates in account")
 public class TreeStretchOperator extends EpochFlexOperator {
     final public Input<RealParameter> meanRateInput = new Input<>("meanRate", "mean clock rate -- inversely scaled if specified");
-	
 	// TODO: make up/down version that takes clock rates in account
 	
 	private double [] oldLengths;
@@ -80,8 +80,9 @@ public class TreeStretchOperator extends EpochFlexOperator {
 				double h2 = right.getHeight() + oldLengths[right.getNr()] * scale;
 				//h2 = Math.max(h1, h2);
 				h2 = (h1+ h2)/2.0;
-				logHR += Math.log(h2/node.getHeight());
-				// logHR += Math.log(scale);
+				double oldLength = oldLengths[left.getNr()] + oldLengths[right.getNr()];
+				double newLength = h2 - left.getHeight() + h2 - right.getHeight();
+				logHR += Math.log(newLength / oldLength);
 				node.setHeight(h2);
 			}
 		}

@@ -161,12 +161,12 @@ public class BinaryCovarion extends GeneralSubstitutionModel {
 
 
     @Override
-    protected void setupRelativeRates() {
+    public void setupRelativeRates() {
     }
 
 
     @Override
-    protected void setupRateMatrix() {
+    public void setupRateMatrix() {
         setupUnnormalizedQMatrix();
 
         for (int i = 0; i < 4; i++) {

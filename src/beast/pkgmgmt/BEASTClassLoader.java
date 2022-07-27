@@ -149,7 +149,7 @@ public class BEASTClassLoader extends URLClassLoader {
 			if (!services.get(service).contains(className)) {
 				throw new ClassNotFoundException("Could not find class " + className + " as service " + service + "\n"
 						+ "Perhaps the package is missing or the package is not correctly configured by the developer "
-						+ "(Developer: check by running beast.app.tools.PackageHealthChecker on the package)");
+						+ "(Developer: check by running beastfx.app.tools.PackageHealthChecker on the package)");
 			}
 			ClassLoader loader = class2loaderMap.get(className);
 			return Class.forName(className, false, loader);
