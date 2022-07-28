@@ -34,6 +34,8 @@
         <path location="build"/>
     </path>
 
+    <import file="${beast2app}/build.xml" />
+
 
     <!-- start -->
     <target name="init">
@@ -444,6 +446,7 @@
         </copy>
 
         <copy file="${dist}/launcher.jar" todir="${Windows_package_dir}/lib" />
+        <copy file="${dist}/launcher/src.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/beast.src.jar" todir="${Windows_package_dir}/lib" />
         <!-- <copy file="${dist}/beast-beagle.jar" todir="${Windows_package_dir}/lib"/>
@@ -624,6 +627,7 @@
         <copy file="${common_dir}/icons/beauti.png" todir="${Windows_package_dir}/images" />
 
         <copy file="${dist}/launcher.jar" todir="${Windows_package_dir}/lib" />
+        <copy file="${dist}/launcher.src.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Windows_package_dir}/lib" />
         <copy file="${distapp}/${BEASTappName}.jar" tofile="${Windows_package_dir}/lib/BEAST.app.jar" />
@@ -836,6 +840,7 @@
         <!-- <copy file="${common_dir}/icons/utility.png" todir="${Linux_package_dir}/images" />
         -->
         <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/launcher.src.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${distapp}/${BEASTappName}.jar" tofile="${Linux_package_dir}/lib/BEAST.app.jar" />
@@ -892,6 +897,7 @@
         <copy file="${common_dir}/icons/beauti.png" todir="${Linux_package_dir}/images" />
 
         <copy file="${dist}/launcher.jar" todir="${Linux_package_dir}/lib" />
+        <copy file="${dist}/launcher.src.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Linux_package_dir}/lib" />
         <copy file="${distapp}/${BEASTappName}.jar" tofile="${Linux_package_dir}/lib/BEAST.app.jar" />
@@ -936,6 +942,7 @@
         <!-- <copy file="${common_dir}/icons/utility.png" todir="${Mac_package_dir}/images" />
         -->
         <copy file="${dist}/launcher.jar" todir="${Mac_package_dir}/lib" />
+        <copy file="${dist}/launcher.src.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${distapp}/${BEASTappName}.jar" tofile="${Mac_package_dir}/lib/BEAST.app.jar" />

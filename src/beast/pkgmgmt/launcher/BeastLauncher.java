@@ -680,16 +680,16 @@ public class BeastLauncher {
 	        }            
            	        	
 			for (String jarFileName : classPath.substring(1, classPath.length() - 1).split(File.pathSeparator)) {
-				if (jarFileName.toLowerCase().endsWith("BEAST.jar")) {
+				if (jarFileName.toLowerCase().endsWith("beast.base.jar")) {
 					File jarFile = new File(jarFileName);
-					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST", null);
+					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST.base", null);
 				}
-				if (jarFileName.toLowerCase().endsWith("app.jar")) {
+				if (jarFileName.toLowerCase().endsWith("beast.app.jar")) {
 					File jarFile = new File(jarFileName);
 					BEASTClassLoader.classLoader.addURL(jarFile.toURI().toURL(), "BEAST.app", null);
 				}
 			}
-			BEASTClassLoader.classLoader.addParent("BEAST.app", "BEAST");
+			BEASTClassLoader.classLoader.addParent("BEAST.app", "BEAST.base");
 			BEASTClassLoader.initServices(classPath);
 		
 			Class<?> mainClass = BEASTClassLoader.forName(main);
