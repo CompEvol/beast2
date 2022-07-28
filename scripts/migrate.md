@@ -4,7 +4,7 @@
 ## tl;dr
 
 1. Make sure your code, example XML and BEAUti template are compatible with the v2.7 API and updated libraries. The `beast2/script/migrate.pl` script can assist with that.
-2. Make sure to list your services in `version.xml`. Run `applauncher PackageHealthChecker mypackage.zip` to get suggestions for services to add in `version.xml`
+2. Make sure to list your services in `version.xml`. Run `beastfx.app.tools.PackageHealthChecker` to get suggestions for services to add in `version.xml`
 
 
 ## Migrating java code
@@ -81,4 +81,16 @@ Make sure things are fine by running BEAUti -- see [BEAUti debugging tips](http:
 
 ## Run the `PackageHealthChecker` tool
 
-The `PackageHealthChecker` tool comes with BEAST v2.7, and can be launched through the `applauncher` or through an IDE through the `beast.app.tools.PackageHealthChecker` class. It takes as input a zip file containing the package and performs some checks on the packages, including suggestions on what services to put in the `version.xml` file.
+The `PackageHealthChecker` checks installed packages only: be sure to have your package installed ([install by hand](https://www.beast2.org/managing-packages/#Install_by_hand)).
+
+The `PackageHealthChecker` takes as arguments:
+
+* `package` name of the  BEAST package (required)
+* `namespace` only classes inside this package name will be listed (required)
+* `output` output-file where report is stored. Use stdout if not specified.
+* `verbose` flag to show info and error messages when parsing XML. 
+
+
+The `PackageHealthChecker` tool comes with BEAST v2.7 is best run through an IDE through the `beastfx.app.tools.PackageHealthChecker` class. It performs some checks on the packages, including suggestions on what services to put in the `version.xml` file.
+
+
