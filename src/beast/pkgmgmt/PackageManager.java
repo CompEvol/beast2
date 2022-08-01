@@ -1303,7 +1303,9 @@ public class PackageManager {
 	 */
     public static Map<String, Set<String>> parseServices(Document doc) {
 		Map<String, Set<String>> serviceMap = new HashMap<>();
-        NodeList nodes = doc.getElementsByTagName("service");
+
+        // process "service" elements
+		NodeList nodes = doc.getElementsByTagName("service");
         for (int i = 0; i < nodes.getLength(); i++) {
             Element service = (Element) nodes.item(i);
             String type = service.getAttribute("type");
@@ -1323,6 +1325,20 @@ public class PackageManager {
             }
             serviceMap.put(type, providers);
         }
+        
+        // process "packageapp" elements
+        // package apps are services of type "has.main.method"
+        Set<String> providers = new HashSet<>();
+		nodes = doc.getElementsByTagName("packageapp");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element service = (Element) nodes.item(i);
+			String clazz = service.getAttribute("class");
+			providers.add(clazz);
+		}
+        if (providers.size() > 0) {
+        	serviceMap.put("has.main.method", providers);
+        }
+
 		return serviceMap;
 	}
 

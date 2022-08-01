@@ -163,9 +163,11 @@ public class BeastLauncher {
 
 	private static void copyFilesInDir(File srcDir, File targetDir) throws IOException {
 		String targetDirName = targetDir.getAbsolutePath();
-		for (File src : srcDir.listFiles()) {
-			if (src.isFile()) {
-				copyFileUsingStream(src, new File(targetDirName + pathDelimiter + src.getName()));
+		if (srcDir.exists() && srcDir.listFiles() != null) {
+			for (File src : srcDir.listFiles()) {
+				if (src.isFile()) {
+					copyFileUsingStream(src, new File(targetDirName + pathDelimiter + src.getName()));
+				}
 			}
 		}
 	}
