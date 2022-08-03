@@ -44,7 +44,7 @@ import beast.base.core.Input.Validate;
 public abstract class Operator extends BEASTObject {
     final public Input<Double> m_pWeight = new Input<>("weight", "weight with which this operator is selected", Validate.REQUIRED);
 
-    private final String STANDARD_OPERATOR_PACKAGE = "beast.evolution.operators";
+    private final String STANDARD_OPERATOR_PACKAGE = "beast.base.evolution.operator";
 
     /**
      * the schedule used for auto optimisation *

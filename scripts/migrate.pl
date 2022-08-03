@@ -341,6 +341,17 @@ org.apache.commons.math.distribution.Distribution beast.base.inference.Distribut
 beast.core: beast.base.core:beast.base.inference:
 beast.core.util: beast.base.util:
 beast.math.distributions.WeibullDistribution beastlabs.math.distributions.WeibullDistribution
+"TreeIntervals" "beast.base.evolution.tree.TreeIntervals"
+"util.CompoundDistribution" "beast.base.inference.CompoundDistribution"
+"BactrianDeltaExchangeOperator" "beast.base.inference.operator.kernel.BactrianDeltaExchangeOperator"
+"BactrianIntervalOperator" "beast.base.inference.operator.kernel.BactrianIntervalOperator"
+"BactrianNodeOperator" "beast.base.evolution.operator.kernel.BactrianNodeOperator"
+"BactrianOperatorSchedule" "beast.base.evolution.operator.kernel.BactrianOperatorSchedule"
+"BactrianRandomWalkOperator" "beast.base.inference.operator.kernel.BactrianRandomWalkOperator"
+"BactrianScaleOperator" "beast.base.evolution.operator.kernel.BactrianScaleOperator"
+"BactrianSubtreeSlide" "beast.base.evolution.operator.kernel.BactrianSubtreeSlide"
+"BactrianTipDatesRandomWalker" "beast.base.evolution.operator.kernel.BactrianTipDatesRandomWalker"
+"BactrianUpDownOperator" "beast.base.inference.operator.kernel.BactrianUpDownOperator"
 ';
 
 if ($#ARGV < 0) {
@@ -351,7 +362,11 @@ if ($#ARGV < 0) {
 @s = split('\n',$s);
 foreach $s (@s) {
 	$s =~/(.*) (.*)/;
-	$map{$1}=$2;
+	$from = $1;
+	$to = $2;
+	$from =~ s/"/["']/g;
+	$map{$from}=$to;
+	
 }
 
 $dir = $ARGV[0];

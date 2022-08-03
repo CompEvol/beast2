@@ -17,6 +17,21 @@ perl ../beast2/script/migrate.pl src
 
 Not all imports may be resolved, and some APIs changed slightly, so some manual clean up is probably necessary to make the code work again. API changes are mostly of the form of making member variables private and providing getters and setters to access them.
 
+## Update java
+
+BEAST now uses Java 17 instead of Java 8, which might give a small performance boost for some models and allows access to Java 17 features.
+
+It is recommended to install the JDK from Azul, since it allows painless integration of JavaFX. It can be downloaded from here: https://www.azul.com/downloads/?package=jdk
+
+* scroll to the bottom
+* select `Java 17 LTS`
+* select your operating system
+* select `JDK FX` ** make sure to include FX and not just select JDK without FX **
+* download the file and install according to instructions under the `How to install` link.
+
+In the IDE that you are using, make sure that the JDK points to Java 17.
+
+
 ## Update libraries
 
 Some library versions have been updated, so any references in your `build.xml` file need to be updated.
@@ -28,7 +43,7 @@ junit-4.8.2.jar => junit/junit-platform-console-standalone-1.8.2.jar
 
 ## Update `version.xml`
 
-The `version.xml` file allows you to specify which services are available for external packages, the XML parser, etc.. A service is specified by adding a `service` element to the XML, e.g. like so:
+The `version.xml` file allows you to specify which services are available for external packages, the XML parser, etc.. A service is specified by adding a `service` element *inside* the `package` element, e.g. like so:
 
 ``` xml
 <service type="beast.base.core.BEASTInterface">
@@ -75,6 +90,11 @@ perl ../beast2/script/migrate.pl templates
 
 Make sure things are fine by running BEAUti -- see [BEAUti debugging tips](http://www.beast2.org/2022/02/01/debugging-beauti-templates.html) for details on how to debug BEAUti templates.
 
+
+BEAUti templates are now picked up from the `fxtemplates` directory instead of the `templates` directory, so 
+* rename `templates` to `fxtemplates`
+* in your `build.xml` file, replace '<mkdir dir="${Add_on_dir}/templates" />' with '<mkdir dir="${Add_on_dir}/fxtemplates" />'
+* also in `build.xml`, replace `<copy todir="${Add_on_dir}/templates">` with `<copy todir="${Add_on_dir}/fxtemplates">`
 
 
 
