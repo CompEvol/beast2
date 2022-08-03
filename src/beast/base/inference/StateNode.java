@@ -189,6 +189,10 @@ public abstract class StateNode extends CalculationNode implements Loggable, Clo
     public State getState() {
         return state;
     }
+    
+    public void setState(State newState) {
+        this.state = newState;
+    }
 
     /**
      * flag to indicate some value has changed after operation is performed on state
