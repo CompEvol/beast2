@@ -249,7 +249,7 @@
                 <distribution id="genetree.priors" spec="CompoundDistribution">
                     <distribution id='tree.prior.29' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree29'
                                   speciesTree='@speciesTree'
-                                  speciesTreePrior='@SpeciesTreePopSizePrior'>
+                                  speciesTreePrior='@SpeciesTreePopSizePrior' ploidy="1">
                         <treetop spec='TreeTopFinder' id='treeTopFinder'>
                             <tree idref='tree29'/>
                             <tree idref='tree26'/>
@@ -257,7 +257,7 @@
                     </distribution>
                     <distribution id='tree.prior.26' spec='GeneTreeForSpeciesTreeDistribution' tree='@tree26'
                                   speciesTree='@speciesTree'
-                                  speciesTreePrior='@SpeciesTreePopSizePrior' treetop='@treeTopFinder'/>
+                                  speciesTreePrior='@SpeciesTreePopSizePrior' treetop='@treeTopFinder' ploidy="1"/>
                 </distribution>
 
                 <!-- species tree priors -->

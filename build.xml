@@ -556,7 +556,7 @@
 
 
 
-    <target name="linux" depends="beast.app,compile-all,dist_all_BEAST" if="beast.app.present"
+    <target name="linux" depends="compile-all,dist_all_BEAST" 
             description="release Linux/Unix version of BEAST, BEAUTI, TreeAnnotator, LogCombiner">
         <echo message="=============================================="/>
         <echo message="DO NOT USE ant linux" />
@@ -637,8 +637,8 @@
         <copy file="${dist}/launcher.src.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${dist}/BEAST.base.src.jar" todir="${Mac_package_dir}/lib" />
-        <copy file="${distapp}/${BEASTappName}.jar" tofile="${Mac_package_dir}/lib/BEAST.app.jar" />
-        <copy file="${distapp}/${BEASTappName}.src.jar" tofile="${Mac_package_dir}/lib/BEAST.app.src.jar" />
+        <copy file="${distapp}/BEAST.app.jar" tofile="${Mac_package_dir}/lib/BEAST.app.jar" />
+        <copy file="${distapp}/BEAST.app.src.jar" tofile="${Mac_package_dir}/lib/BEAST.app.src.jar" />
 
         <copy file="${tools_dir}/DensiTree.jar" todir="${Mac_package_dir}/lib" />
         <copy file="${tools_dir}/DensiTree.png" todir="${Mac_package_dir}/images" />
