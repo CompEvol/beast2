@@ -17,6 +17,7 @@ import beast.base.inference.CalculationNode;
 import beast.base.inference.distribution.ParametricDistribution;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
+import beast.base.inference.util.InputUtil;
 import beast.base.util.Randomizer;
 
 /**
@@ -370,7 +371,7 @@ public class UCRelaxedClockModel extends BranchRateModel.Base {
         if (rateInput.get() != null && rateInput.get().somethingIsDirty()) {
             return true;
         }
-        if (meanRate instanceof CalculationNode && ((CalculationNode)meanRate).isDirtyCalculation()) {
+        if (InputUtil.isDirty(meanRateInput)) {
             return true;
         }
 
