@@ -30,5 +30,5 @@ if [ -z "$JAVA_HOME" ]; then
 else
   JAVA="$JAVA_HOME"/bin/java
 fi
-"$JAVA" -Xms256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$JAVA_HOME/lib/ext/jfxrt.jar:$BEAST_LIB/launcher.jar" beast.pkgmgmt.PackageManager $*
+"$JAVA" -Xms256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.PackageManager $*
 

@@ -31,17 +31,45 @@ It is recommended to install the JDK from Azul, since it allows painless integra
 
 In the IDE that you are using, make sure that the JDK points to Java 17.
 
+It is convenient to make this JDK the default. For Linux, this can be done by adding to your `~/.bashrc` file the following two lines:
+
+```
+export JAVA_HOME=/path/to/zulu17.34.19-ca-fx-jdk17.0.3-linux_x64
+export PATH=${JAVA_HOME}/bin:${PATH}
+```
+
+
 
 ## Update libraries
 
 Some library versions have been updated, so any references in your `build.xml` file need to be updated.
 
-commons-math => commons-math3-3.6.1.jar		
-antl => antlr-runtime-4.10.1.jar	
-fest.jar => assertj-core-3.20.2.jar, assertj-swing-junit-3.17.1.jar, assertj-swing-3.17.1.jar
-junit-4.8.2.jar => junit/junit-platform-console-standalone-1.8.2.jar
+* commons-math => commons-math3-3.6.1.jar		
+* antl => antlr-runtime-4.10.1.jar	
+* fest.jar => assertj-core-3.20.2.jar, assertj-swing-junit-3.17.1.jar, assertj-swing-3.17.1.jar
+* junit-4.8.2.jar => junit/junit-platform-console-standalone-1.8.2.jar
 
 ## Update `version.xml`
+
+
+Since the BEAST package is now split into `BEAST.base` and `BEAST.app` the dependencies need to be updated: replace
+``` xml
+<depends on='beast2' atleast='2.6.7'/>
+```
+
+with
+
+``` xml
+        <depends on='BEAST.base' atleast='2.7.0'/>
+```
+
+or, if you also depend on `BEAST.app`, with
+
+``` xml
+        <depends on='BEAST.base' atleast='2.7.0'/>
+        <depends on='BEAST.app' atleast='2.7.0'/>
+```
+
 
 The `version.xml` file allows you to specify which services are available for external packages, the XML parser, etc.. A service is specified by adding a `service` element *inside* the `package` element, e.g. like so:
 

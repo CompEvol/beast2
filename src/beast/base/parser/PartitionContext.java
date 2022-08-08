@@ -30,22 +30,22 @@ public class PartitionContext {
 		this.tree = tree;
 	}
 	
-//	public PartitionContext(GenericTreeLikelihood treeLikelihood) {
-//		String id = treeLikelihood.dataInput.get().getID();
-//		id = parsePartition(id);
-//		this.partition = id;
-//		if (treeLikelihood.branchRateModelInput.get() != null) {
-//			id = treeLikelihood.branchRateModelInput.get().getID();
-//			id = parsePartition(id);
-//		}
-//		this.clockModel = id;
-//		id = ((BEASTInterface) treeLikelihood.siteModelInput.get()).getID();
-//		id = parsePartition(id);
-//		this.siteModel = id;
-//		id = treeLikelihood.treeInput.get().getID();
-//		id = parsePartition(id);
-//		this.tree = id;
-//	}
+	public PartitionContext(GenericTreeLikelihood treeLikelihood) {
+		String id = treeLikelihood.dataInput.get().getID();
+		id = parsePartition(id);
+		this.partition = id;
+		if (treeLikelihood.branchRateModelInput.get() != null) {
+			id = treeLikelihood.branchRateModelInput.get().getID();
+			id = parsePartition(id);
+		}
+		this.clockModel = id;
+		id = ((BEASTInterface) treeLikelihood.siteModelInput.get()).getID();
+		id = parsePartition(id);
+		this.siteModel = id;
+		id = treeLikelihood.treeInput.get().getID();
+		id = parsePartition(id);
+		this.tree = id;
+	}
 	
 	
     static public String parsePartition(String id) {

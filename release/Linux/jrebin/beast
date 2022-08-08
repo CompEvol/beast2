@@ -58,4 +58,4 @@ if [ -n "$BEAST_EXTRA_LIBS" ]; then
 	  BEAST_EXTRA_LIBS="$JAVA_HOME/lib/amd64"
 fi
 
-"$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path=$LD_LIBRARY_PATH -Duser.language=en -cp "$JAVA_HOME/lib/ext/jfxrt.jar:$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeastLauncher $*
+"$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path=$LD_LIBRARY_PATH -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeastLauncher $*
