@@ -233,7 +233,6 @@ beast.evolution.tree.CladeSet beast.base.evolution.tree.CladeSet
 beast.evolution.tree.Node beast.base.evolution.tree.Node
 beast.evolution.tree.RandomTree beast.base.evolution.tree.coalescent.RandomTree
 beast.evolution.tree.TraitSet beast.base.evolution.tree.TraitSet
-beast.evolution.tree.Tree beast.base.evolution.tree.Tree
 beast.evolution.tree.TreeDistribution beast.base.evolution.tree.TreeDistribution
 beast.evolution.tree.TreeHeightLogger beast.base.evolution.tree.TreeHeightLogger
 beast.evolution.tree.TreeInterface beast.base.evolution.tree.TreeInterface
@@ -242,6 +241,7 @@ beast.evolution.tree.TreeStatLogger beast.base.evolution.tree.TreeStatLogger
 beast.evolution.tree.TreeTraceAnalysis beastfx.app.tools.TreeTraceAnalysis
 beast.evolution.tree.TreeUtils beast.base.evolution.tree.TreeUtils
 beast.evolution.tree.TreeWithMetaDataLogger beast.base.evolution.TreeWithMetaDataLogger
+beast.evolution.tree.Tree beast.base.evolution.tree.Tree
 beast.evolution.tree.coalescent.BayesianSkyline beast.base.evolution.tree.coalescent.BayesianSkyline
 beast.evolution.tree.coalescent.Coalescent beast.base.evolution.tree.coalescent.Coalescent
 beast.evolution.tree.coalescent.CompoundPopulationFunction beast.base.evolution.tree.coalescent.CompoundPopulationFunction

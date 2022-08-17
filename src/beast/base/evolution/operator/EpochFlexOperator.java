@@ -16,7 +16,7 @@ import beast.base.evolution.tree.TreeIntervals;
 import beast.base.util.Randomizer;
 
 @Description("Scale operator that scales random epoch in a tree")
-@Citation(value="Bouckaert RR. An efficient coalescent epoch model for Bayesian phylogenetic inference. bioRxiv. 2021",DOI="10.1101/2021.06.28.450225")
+@Citation(value="Bouckaert RR. An efficient coalescent epoch model for Bayesian phylogenetic inference. Systematic Biology, syac015, 2022", DOI="DOI:10.1093/sysbio/syac015")
 public class EpochFlexOperator extends Operator {
     final public Input<Tree> treeInput = new Input<>("tree", "beast.tree on which this operation is performed", Validate.REQUIRED);
     final public Input<KernelDistribution> kernelDistributionInput = new Input<>("kernelDistribution", "provides sample distribution for proposals", 
