@@ -184,8 +184,8 @@ public class Alignment extends Map<String> {
     /**
      * From AscertainedAlignment
      */
-    Set<Integer> excludedPatterns;
-	List<Integer> m_nIncluded;
+    protected Set<Integer> excludedPatterns;
+    protected List<Integer> m_nIncluded;
 
     /**
      * A flag to indicate if the alignment is ascertained
