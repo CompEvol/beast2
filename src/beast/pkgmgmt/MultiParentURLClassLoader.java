@@ -50,7 +50,7 @@ public class MultiParentURLClassLoader extends URLClassLoader {
 	public void addParentLoader(ClassLoader parentLoader) {
 		parentLoaders.add(parentLoader);
 		if (parentLoader instanceof MultiParentURLClassLoader) {
-			System.err.println(((MultiParentURLClassLoader)parentLoader).name + " -> " + name);
+			// System.err.println(((MultiParentURLClassLoader)parentLoader).name + " -> " + name);
 		}
  		if (parentLoader instanceof  MultiParentURLClassLoader) {
 			((MultiParentURLClassLoader)parentLoader).addChildLoader(this);

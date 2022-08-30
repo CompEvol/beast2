@@ -65,7 +65,7 @@ public class Alignment extends Map<String> {
     static public void findDataTypes() {
     	
     	//Iterable<DataType> dataTypes = (Iterable<DataType>) BEASTClassLoader.load(DataType.class);
-        Log.warning("findDataTypes called");
+        Log.debug("findDataTypes called");
     	Set<String> dataTypes = BEASTClassLoader.loadService(DataType.class);
     	
         // build up list of data types
@@ -76,10 +76,10 @@ public class Alignment extends Map<String> {
                 if (dataType.isStandard()) {
                     String description = dataType.getTypeDescription();
                     types.putIfAbsent(description, dataType);
-                    Log.warning("Discovered " + d);
+                    Log.debug("Discovered " + d);
                 }
             } catch (Exception e) {
-                Log.warning("Failed to discover " + d + " " + e.getMessage());
+                Log.debug("Failed to discover " + d + " " + e.getMessage());
                 // TODO: handle exception
             }
         }
@@ -184,8 +184,8 @@ public class Alignment extends Map<String> {
     /**
      * From AscertainedAlignment
      */
-    Set<Integer> excludedPatterns;
-	List<Integer> m_nIncluded;
+    protected Set<Integer> excludedPatterns;
+    protected List<Integer> m_nIncluded;
 
     /**
      * A flag to indicate if the alignment is ascertained

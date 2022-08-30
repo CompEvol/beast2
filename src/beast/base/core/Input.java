@@ -387,7 +387,7 @@ public class Input<T> {
             try {
                 setStringValue((String) value, beastObject);
             } catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
             	Log.warning.println("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
                 throw new RuntimeException("Failed to set the string value to '" + value + "' for beastobject id=" + beastObject.getID());
             }
@@ -581,7 +581,7 @@ public class Input<T> {
                 if (theClass.equals(Integer.class)) {
                     list.add(new BigDecimal(stringValues[i % stringValues.length]).intValueExact());
                 } else if (theClass.equals(Double.class)) {
-                    list.add(new Double(stringValues[i % stringValues.length]));
+                    list.add(Double.parseDouble(stringValues[i % stringValues.length]));
                 } else if (theClass.equals(Boolean.class)) {
                     String str = stringValues[i % stringValues.length].toLowerCase();
                     list.add(str.equals("1") || str.equals("true") || str.equals("yes"));

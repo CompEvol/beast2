@@ -84,11 +84,11 @@ public class BEASTClassLoader extends URLClassLoader {
 	    public void addJar(String jarFile) {
 	        File file = new File(jarFile);
 	        if (file.exists()) {
-	        	System.err.println("found file " + jarFile);
+	        	//System.err.println("found file " + jarFile);
 	            try {
 	                URL url = file.toURI().toURL();
 	                super.addURL(url);
-	                System.err.println("Loaded " + url);
+	                //System.err.println("Loaded " + url);
 	            } catch (MalformedURLException e) {
 	                e.printStackTrace();
 	            }
@@ -96,7 +96,7 @@ public class BEASTClassLoader extends URLClassLoader {
 	    }
 	    
 	    public void addJar(String jarFile, String packageName) {
-	    	System.err.println("Attempting to load " + jarFile);
+	    	//System.err.println("Attempting to load " + jarFile);
 	    	MultiParentURLClassLoader loader = getClassLoader(packageName);
 	    	loader.addURL(jarFile);
 	    } 	
@@ -263,7 +263,7 @@ public class BEASTClassLoader extends URLClassLoader {
 		private static MultiParentURLClassLoader getClassLoader(String packageName) {
 	    	if (!package2classLoaderMap.containsKey(packageName)) {
 		    	package2classLoaderMap.put(packageName, new MultiParentURLClassLoader(new URL[0], packageName));
-		    	System.err.println("Created classloader >>" + packageName + "<<");
+		    	// System.err.println("Created classloader >>" + packageName + "<<");
 	    	}
 	    		
 	    	MultiParentURLClassLoader loader = package2classLoaderMap.get(packageName);
@@ -325,4 +325,17 @@ public class BEASTClassLoader extends URLClassLoader {
 			return null;
 		}
 
+		/** get the resource for a BEAST package
+		 * This replaces <Class>.class.getResource(resourceName)
+		 * and is required because every BEAST package has its own class loader now 
+		 * @return
+		 */
+		public static URL getResource(String packageName, String resourceName) {
+			ClassLoader classLoader = package2classLoaderMap.get(packageName);
+			if (classLoader == null) {
+				return null;				
+			}
+			URL url = classLoader.getResource(resourceName);
+			return url;
+		}
 }

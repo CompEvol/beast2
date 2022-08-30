@@ -77,7 +77,7 @@ public class Logger extends BEASTObject {
     final public Input<List<BEASTObject>> loggersInput = new Input<>("log",
             "Element in a log. This can be any plug in that is Loggable.",
             new ArrayList<>(), Validate.REQUIRED, Loggable.class);
-
+    final public Input<Boolean> convertToASCIIInput = new Input<>("ascii", "whether to convert the log output to ASCII" , true);
     // the file name to log to, or null, or "" if logging to stdout
     private String fileName;
 
@@ -665,7 +665,12 @@ public class Logger extends BEASTObject {
         // Acquire log string and trim excess tab
         String logContent;
         try {
-            logContent = baos.toString("ASCII").trim();
+        	// Convert to ASCII?
+        	if (convertToASCIIInput.get()) {
+        		logContent = baos.toString("ASCII").trim();
+        	} else { 
+        		logContent = baos.toString().trim();
+        	}
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("ASCII string encoding not supported: required for logging!");
         }

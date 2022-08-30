@@ -18,7 +18,12 @@ import beast.base.inference.distribution.ParametricDistribution;
 
 
 @Description("Prior over set of taxa, useful for defining monophyletic constraints and "
-        + "distributions over MRCA times or (sets of) tips of trees")
+        + "distributions over MRCA times or (sets of) tips of trees. "
+		+ "Be aware that the distribution is in units equal to that used in the tree: "
+        + "if the tree has intenal node heights representing age, the distribution represents age, "
+		+ "if the tree is in units of a date since some time in the past "
+		+ "(e.g. if tip dates are added) the distribution is in units of date since some time in the past."
+        )
 public class MRCAPrior extends Distribution {
     public final Input<Tree> treeInput = new Input<>("tree", "the tree containing the taxon set", Validate.REQUIRED);
     public final Input<TaxonSet> taxonsetInput = new Input<>("taxonset",

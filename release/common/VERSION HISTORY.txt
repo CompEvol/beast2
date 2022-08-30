@@ -1,10 +1,33 @@
-                    BEAST v2.6.6 2021
-                 Beast 2 development team 2011-2021
+                    BEAST v2.7.0 2022
+                 Beast 2 development team 2011-2022
 Version History
-Last updated: August 2021
+Last updated: August 2022
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.0
+	BEAUti has had a facelift, allows dark mode
+	BEAUti templates reorganised for better performance
+	"Help me choose" buttons added to BEAUti for direct targeted help
+ 	Faster MCMC convergence due to smarter operators
+	DensiTree v3.0.0 included, which allows pairwise comparison of tree sets
+	Uses latest version of libraries: java 17, javafx, commons math, etc.
+	Code reorganised, BEAST split into two packages: BEAST.base and BEAST.app
+	Module like treatment of BEAST packages to prevent package library clashes
+
+Version 2.6.7
+	SimulatedAlignment correctly links indices of tree to alignment
+	Option 'ascii' added to Logger to allow it to convert output to ascii or not
+	Loading two dimensional data into trait dialog robustified
+	Make NexusParser more robust and allow Fasta imports to select from all data types
+	Fix TreeAnnotator -heights processing issue
+	Make Prior.sample() obey parameter bounds
+	Fix auto-set clock rate in BEAUti when independent trees are involved
+	Fix TipDateRandomWalker to ensure heights are always >= 0
+	Add upper limit to delta exchange optimization 
+	Made tree input to RatesStatistic required to ensure appropriate behaviour
+	Remove superfluous new lines in XML produced by BEAUti
+
 Version 2.6.6
 	Fix so that when not using ambiguities, the nucleotide 'U' base pair is correctly interpreted
 	Fix tree annotator for lower bound on common ancestor heights
@@ -62,7 +85,7 @@ Version 2.6.0
 	XML being produced is more standardised
 
 BEAUti
-	Make help menu extendible to add for example automatic methods section generator        
+	Make help menu extendible to add for example automatic methods section generator
 	Saves last accessed directory between sessions
 	Default bounds on BSP pop sizes and random local clock rates updated
 	Let GuessPatternDialog handle empty fields.

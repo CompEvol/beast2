@@ -90,6 +90,8 @@ public class PackageManager {
     public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + 
     		BEASTVersion.INSTANCE.getMajorVersion() +".xml";
 
+    private final static Set<String> RECOMMENDED_PACKAGES = new HashSet<>(Arrays.asList("ORC", "starbeast3"));
+
     public final static String ARCHIVE_DIR = "archive";
     
     // flag to indicate archive directory and version numbers in directories are required
@@ -1081,6 +1083,15 @@ public class PackageManager {
      * load external jars in beast directories *
      */
     public static void loadExternalJars() throws IOException {
+    	if (externalJarsLoaded) {
+    		return;
+    	}
+    	loadExternalJarsEvenIfAlreadyLoaded();
+    }
+    
+    public static void loadExternalJarsEvenIfAlreadyLoaded() throws IOException {
+    	
+    	
     	Utils6.logToSplashScreen("PackageManager::processDeleteList");
         processDeleteList();
 
@@ -1968,7 +1979,8 @@ public class PackageManager {
         for (Package pkg : packageList) {
         	if (!pkg.getName().equals(BEAST_BASE_PACKAGE_NAME) && !pkg.getName().equals(BEAST_APP_PACKAGE_NAME)) {
 	            ps.printf(nameFormat, pkg.getName()); ps.print(sep);
-	            ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : "NA"); ps.print(sep);
+	            ps.printf(statusFormat, pkg.isInstalled() ? pkg.getInstalledVersion() : 
+	            	(RECOMMENDED_PACKAGES.contains(pkg.getName()) ? "NA - Recommended": "NA")); ps.print(sep);
 	            ps.printf(latestFormat, pkg.isAvailable() ? pkg.getLatestVersion() : "NA"); ps.print(sep);
 	            ps.printf(depsFormat, pkg.getDependenciesString()); ps.print(sep);
 	            ps.printf("%s\n", pkg.getDescription());
@@ -2234,6 +2246,15 @@ public class PackageManager {
         		}
         	}
         }
+
+        // check whether recommended packages are already installed
+        for (String packageName : RECOMMENDED_PACKAGES) {
+        	Package _package = packageMap.get(packageName);
+        	if (_package != null && !_package.isInstalled()) {
+        		packagesToInstall.put(_package, _package.getLatestVersion());
+        	}
+        }
+
         
         if (packagesToInstall.size() == 0) {
         	// nothing to install
@@ -2246,9 +2267,12 @@ public class PackageManager {
 	    		StringBuilder buf = new StringBuilder();
 	    		buf.append("<table><tr><td>Package name</td><td>New version</td><td>Installed</td></tr>");
 	    		for (Package _package : packagesToInstall.keySet()) {
+	    			
 	    			buf.append("<tr><td>" + _package.packageName + "</td>"
 	    					+ "<td>" + _package.getLatestVersion()+ "</td>"
-	    					+ "<td>" + _package.getInstalledVersion() + "</td></tr>");
+	    					+ "<td>"
+	    					+ (RECOMMENDED_PACKAGES.contains(_package.packageName) ? " Not installed yet, but recommended!" : _package.getInstalledVersion())
+	    					+ "</td></tr>");
 	    		}
 	    		buf.append("</table>");
 	    		String [] options = new String[]{"No, never check again", "Not now", "Yes", "Always install without asking"};
@@ -2289,9 +2313,16 @@ public class PackageManager {
 				}
     		} else {
     			System.out.println("New packages are available to install:");
-	    		System.out.println("Package name\tNew version\tInstalled");
+	    		System.out.println("Package name    New version      Installed");
 	    		for (Package _package : packagesToInstall.keySet()) {
-	    			System.out.println(_package.packageName + "\t" + _package.getLatestVersion()+ "\t" + _package.getInstalledVersion());
+	    			String padding = _package.packageName.length() < 16 ? 
+	    					"                ".substring(_package.packageName.length()) : "";
+	    			String latestVersion = _package.getLatestVersion() + "";
+	    			String padding2 = latestVersion.length() < 16 ? 
+	    					"                ".substring(latestVersion.length()) : "";
+	    			System.out.println(_package.packageName + padding +
+	    					_package.getLatestVersion() + padding2 + 
+	    					(RECOMMENDED_PACKAGES.contains(_package.packageName) ? " Not installed yet, but recommended!" : _package.getInstalledVersion()));
 	    		}
     			System.out.println("Do you want to install (y/n)?");
                 System.out.flush();

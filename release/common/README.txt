@@ -1,7 +1,7 @@
-                    BEAST v2.6.6 2021
-                 Beast 2 development team 2011-2021
+                    BEAST v2.7.0 2022
+                 Beast 2 development team 2011-2022
 
-Last updated: August 2021
+Last updated: September 2022
 
 Contents:
 1) INTRODUCTION
@@ -59,7 +59,7 @@ doc/            Documentation of BEAST
 examples/       Some NEXUS and XML files
 lib/            Java & native libraries used by BEAST 
 bin/            Scripts of the corresponding OS
-templates/      Templates to initiate BEAUti
+fxtemplates/    Templates to initiate BEAUti
 
 ___________________________________________________________________________
 3) CONVERTING SEQUENCES
@@ -72,8 +72,10 @@ To run BEAUti simply double-click the "BEAUti.exe" file in the BEAST
 folder. If this doesn't work then you may not have Java installed correctly. 
 Try opening an MS-DOS window and typing:
 
-	java -cp lib/launcher.jar beast.app.beauti.BeautiLauncher
+	\path\to\BEAST\bat\beauti.bat
 
+Where "\path\to" the path to where BEAST is installed.
+	
 __________________________________________________________________________
 4) RUNNING BEAST
 
@@ -82,11 +84,11 @@ folder. You will be asked to select a BEAST XML input file.
 
 Alternatively open a Command window and type:
 	
-	java -jar lib/launcher.jar input.xml
+	\path\to\BEAST\bat\beast.bat input.xml
 
-Where "input.xml" is the name of a BEAST XML format file. This file can
-either be created from scratch using a text editor or be created by the
-BEAUti program from a NEXUS format file. 
+Where "\path\to" the path to where BEAST is installed and "input.xml" is the 
+name of a BEAST XML format file. This file can either be created from scratch 
+using a text editor or be created by the BEAUti program from a NEXUS format file. 
 
 For documentation on creating and tuning the input files look at the
 documentation and tutorials on-line at:
@@ -130,7 +132,7 @@ BEAST arguments:
     
 For example:
 
-     java -jar lib/launcher.jar -seed 123456 -overwrite input.xml
+     \path\to\BEAST\bin\beast.bat -seed 123456 -overwrite input.xml
 
 On Linux, there is a bin directory inside the beast directory that has 
 a number of scripts for starting programs, including beast, and beauti, 

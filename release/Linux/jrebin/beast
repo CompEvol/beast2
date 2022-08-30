@@ -33,29 +33,34 @@ fi
 
 
 # use BEAGLE_LIB if the BEAGLE library is not in a standard location
-if [ -n "$BEAGLE_LIB" ]; then
+if [[ $(uname -m) == 'x86_64' ]]; then
+  if [ -n "$BEAGLE_LIB" ]; then
 	if [ -n "$BEAST_EXTRA_LIBS" ]; then
 		BEAST_EXTRA_LIBS="$BEAST_EXTRA_LIBS:$BEAGLE_LIB:$JAVA_HOME/lib/amd64"
 	else
 		BEAST_EXTRA_LIBS="$BEAGLE_LIB:$JAVA_HOME/lib/amd64"
 	fi
+  fi
 fi
 
 # Explicitly add /usr/local/lib to library search path to ensure 
 # beast continues to find beagle when installed here.  (This is
 # necessary due to known problems with certain JREs.)
-if [ -z "$LD_LIBRARY_PATH" ]; then
+if [[ $(uname -m) == 'x86_64' ]]; then
+  if [ -z "$LD_LIBRARY_PATH" ]; then
     export LD_LIBRARY_PATH="/usr/local/lib:$JAVA_HOME/lib/amd64"
-else
+  else
     export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:$JAVA_HOME/lib/amd64"
+  fi
 fi
-
 
 
 # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
 # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
 if [ -n "$BEAST_EXTRA_LIBS" ]; then 
+	if [[ $(uname -m) == 'x86_64' ]]; then
 	  BEAST_EXTRA_LIBS="$JAVA_HOME/lib/amd64"
+	fi
 fi
 
 "$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path=$LD_LIBRARY_PATH -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeastLauncher $*
