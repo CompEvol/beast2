@@ -349,6 +349,9 @@ public class Input<T> {
      */
     // use beast.inference.util.InputUtil.isDirty(input)
     // public boolean isDirty()
+    // isDirty() relies on StateNode and CalculationNode, which rely on beast.app.core
+    // so implementing isDirty() here introduces circular dependencies
+    // (or require ugly introspection).
     
 
     /**
