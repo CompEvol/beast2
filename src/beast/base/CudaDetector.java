@@ -1,5 +1,7 @@
 package beast.base;
 
+import beast.base.core.Log;
+import beast.base.core.Log.Level;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.alignment.Sequence;
 import beast.base.evolution.likelihood.BeagleTreeLikelihood;
@@ -16,6 +18,7 @@ public class CudaDetector {
      */
     public static void main(String[] args) {
 		try {
+			Log.setLevel(Level.none);
 			Sequence a = new Sequence("A", "A");
 	        Sequence b = new Sequence("B", "A");
 	        Sequence c = new Sequence("C", "A");
@@ -43,7 +46,7 @@ public class CudaDetector {
 		}
 
 
-    	System.out.println("Success");
+    	// System.out.println("Success");
     	// if we got this far, exit with status 0
 		System.exit(0);
 	}

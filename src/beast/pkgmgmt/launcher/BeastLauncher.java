@@ -133,9 +133,9 @@ public class BeastLauncher {
 			File target = new File(dir + pathDelimiter + packageName + ".jar");
 			copyFileUsingStream(beastJar, target);
 
-			File versionFile = new File(jarDir0 + pathDelimiter + packageName + ".version.xml");
+			File versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".version.xml");
 			if (!versionFile.exists()) {
-				versionFile = new File(jarDir0 + pathDelimiter + packageName.toLowerCase() + ".version.xml");
+				versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName.toLowerCase() + ".version.xml");
 			}				
 			if (!versionFile.exists()) {
 				System.err.println("Error: cannot find version file: " + versionFile);
@@ -572,6 +572,7 @@ public class BeastLauncher {
 	    beastJar += "/" + "BEAST.base" + "/" + "lib" + "/" + "BEAST.base.jar";
 		BeastLauncher clu = new BeastLauncher();
 		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		launcherJar = launcherJar.replaceAll("%20", "\\ ");
 		return testCudaStatusOnMac(beastJar + File.pathSeparator + launcherJar, "beast.base.CudaDetector");
 	}
 	

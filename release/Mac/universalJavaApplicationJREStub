@@ -560,6 +560,18 @@ stub_logger "[WorkingDirectory] ${WorkingDirectory}"
 # - main class arguments
 # - passthrough arguments from Terminal or Drag'n'Drop to Finder icon
 stub_logger "[Exec] \"$JAVACMD\" -cp \"${JVMClassPath}\" -splash:\"${ResourcesFolder}/${JVMSplashFile}\" -Xdock:icon=\"${ResourcesFolder}/${CFBundleIconFile}\" -Xdock:name=\"${CFBundleName}\" ${JVMOptionsArr:+$(printf "'%s' " "${JVMOptionsArr[@]}") }${JVMDefaultOptions:+$JVMDefaultOptions }${JVMMainClass}${MainArgsArr:+ $(printf "'%s' " "${MainArgsArr[@]}")}${ArgsPassthru:+ $(printf "'%s' " "${ArgsPassthru[@]}")}"
+
+if [[ $AppPackageFolder == *"BEAUti.app"* ]]; then
+exec "${JAVACMD}" \
+		-cp "${JVMClassPath}" \
+		-Xdock:icon="${ResourcesFolder}/${CFBundleIconFile}" \
+		-Xdock:name="${CFBundleName}" \
+		${JVMOptions:+"${JVMOptions[@]}" }\
+		${JVMDefaultOptions:+$JVMDefaultOptions }\
+		"${JVMMainClass}"\
+		${MainArgsArr:+ "${MainArgsArr[@]}"}\
+		${ArgsPassthru:+ "${ArgsPassthru[@]}"}
+else 
 exec "${JAVACMD}" \
 		-cp "${JVMClassPath}" \
 		-splash:"${ResourcesFolder}/${JVMSplashFile}" \
@@ -570,3 +582,4 @@ exec "${JAVACMD}" \
 		"${JVMMainClass}"\
 		${MainArgsArr:+ "${MainArgsArr[@]}"}\
 		${ArgsPassthru:+ "${ArgsPassthru[@]}"}
+fi
