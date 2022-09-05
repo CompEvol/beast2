@@ -53,7 +53,7 @@ fi
 # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
 # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
 if [ -n "$BEAST_EXTRA_LIBS" ]; then 
-  "$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path=$BEAST_EXTRA_LIBS -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher LogAnalyser $*
+  "$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher LogAnalyser $*
 else	
   "$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher LogAnalyser $*
 fi
