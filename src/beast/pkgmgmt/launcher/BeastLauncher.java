@@ -634,8 +634,9 @@ public class BeastLauncher {
 	            			 return true;
 	            		 }
 	            	 }
-				      Process p = Runtime.getRuntime().exec(new String[]{java , "-Dbeast.user.package.dir=/NONE", "-cp" , 
-				    		  classPath , testCudaClass});
+	            	 String [] args = new String[]{java , "-Dbeast.user.package.dir=/NONE", "-cp" , 
+				    		  classPath.replaceAll(" ", "\\ "), testCudaClass};
+				      Process p = Runtime.getRuntime().exec(args);
 				      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			          int c;
 			          while ((c = input.read()) != -1) {
