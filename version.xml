@@ -1,11 +1,6 @@
 <package name="BEAST.base" version="2.7.0">
 <!-- note version="2.7.x" must be double quotes for Mac release script release/Mac/createdmg.sh -->
 
-			<!-- name space -->
-			<service type="beast.pkgmgmt.NameSpaceInfo">
-				<provider classname="beast.base.NameSpaceInfo"/>
-			</service>
-
             <!-- data types -->
             <service type="beast.base.evolution.datatype.DataType">
 				<provider classname="beast.base.evolution.datatype.Aminoacid"/>

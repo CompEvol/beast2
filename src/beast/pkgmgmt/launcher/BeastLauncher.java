@@ -1,14 +1,9 @@
 package beast.pkgmgmt.launcher;
 
+import beast.pkgmgmt.Package;
+import beast.pkgmgmt.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import beast.pkgmgmt.BEASTClassLoader;
-import beast.pkgmgmt.BEASTVersion;
-import beast.pkgmgmt.Package;
-import beast.pkgmgmt.PackageManager;
-import beast.pkgmgmt.PackageVersion;
-import beast.pkgmgmt.Utils6;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -133,9 +131,9 @@ public class BeastLauncher {
 			File target = new File(dir + pathDelimiter + packageName + ".jar");
 			copyFileUsingStream(beastJar, target);
 
-			File versionFile = new File(jarDir0 + pathDelimiter + packageName + ".version.xml");
+			File versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".version.xml");
 			if (!versionFile.exists()) {
-				versionFile = new File(jarDir0 + pathDelimiter + packageName.toLowerCase() + ".version.xml");
+				versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName.toLowerCase() + ".version.xml");
 			}				
 			if (!versionFile.exists()) {
 				System.err.println("Error: cannot find version file: " + versionFile);
@@ -568,11 +566,13 @@ public class BeastLauncher {
 
 	
 	public static boolean testCudaStatusOnMac() {
-	    String beastJar = Utils6.getPackageUserDir();
-	    beastJar += "/" + "BEAST.base" + "/" + "lib" + "/" + "BEAST.base.jar";
-		BeastLauncher clu = new BeastLauncher();
-		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		return testCudaStatusOnMac(beastJar + File.pathSeparator + launcherJar, "beast.base.CudaDetector");
+		return true; // requested by Remco #1030
+//	    String beastJar = Utils6.getPackageUserDir();
+//	    beastJar += "/" + "BEAST.base" + "/" + "lib" + "/" + "BEAST.base.jar";
+//		BeastLauncher clu = new BeastLauncher();
+//		String launcherJar = clu.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+//		launcherJar = launcherJar.replaceAll("%20", "\\ ");
+//		return testCudaStatusOnMac(beastJar + File.pathSeparator + launcherJar, "beast.base.CudaDetector");
 	}
 	
 	/**
@@ -633,8 +633,9 @@ public class BeastLauncher {
 	            			 return true;
 	            		 }
 	            	 }
-				      Process p = Runtime.getRuntime().exec(new String[]{java , "-Dbeast.user.package.dir=/NONE", "-cp" , 
-				    		  classPath , testCudaClass});
+	            	 String [] args = new String[]{java , "-Dbeast.user.package.dir=/NONE", "-cp" , 
+				    		  classPath.replaceAll(" ", "\\ "), testCudaClass};
+				      Process p = Runtime.getRuntime().exec(args);
 				      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			          int c;
 			          while ((c = input.read()) != -1) {
