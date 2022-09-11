@@ -1,3 +1,5 @@
+@echo off
+
 REM Check whether the JRE is included
 IF EXIST %~dp0\..\jre (
 
