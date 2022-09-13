@@ -355,8 +355,9 @@ beast.math.distributions.WeibullDistribution beastlabs.math.distributions.Weibul
 ';
 
 if ($#ARGV < 0) {
-	print "Usage: perl migrate.pl <directory>\n";
-	print "Attempts to convert java class + xml files from BEAST v2.6.x to v2.7.0\n";
+	print "Usage: perl migrate.pl <directory or file>\n";
+	print "If a directory is specified, it recursively attempts to convert java class + xml files from BEAST v2.6.x to v2.7.0\n";
+	print "If a file is specified, only that file is converted.";
 	exit(0);
 }
 @s = split('\n',$s);
@@ -371,12 +372,19 @@ foreach $s (@s) {
 
 $dir = $ARGV[0];
 
-open(FIN0,"find $dir|egrep \"java|xml\"|");
-while ($s = <FIN0>) {
-	$s =~ s/\n//;
-	process($s);
+if (-d $dir) {
+	open(FIN0,"find $dir|egrep \"java|xml\"|");
+	while ($s = <FIN0>) {
+		$s =~ s/\n//;
+		process($s);
+	}
+	close FIN0;
+} elsif (-e $dir) {
+	process($dir);
+} else {
+	print STDER "File or directory $dir could not be found.";
 }
-close FIN0;
+
 exit(0);
 
 sub process {
@@ -396,6 +404,7 @@ sub process {
 	foreach $s (keys(%map)) {
 		$text =~ s/$s/$map{$s}/g;
 	}
+	$text =~ s/beast.base.evolution.tree.TreeWithMetaDataLogger/beast.base.evolution.TreeWithMetaDataLogger/g;
 	open(FOUT,">$file");
 	print FOUT $text;
 	close FOUT;
