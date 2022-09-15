@@ -217,7 +217,7 @@ public class BEASTClassLoader extends URLClassLoader {
 		}
 		
 		
-		private static void addServices(String versionFile) {
+		public static void addServices(String versionFile) {
 			try {
 				Map<String,Set<String>> services = null;
 		        // print name and version of package
