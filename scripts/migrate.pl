@@ -352,7 +352,19 @@ beast.math.distributions.WeibullDistribution beastlabs.math.distributions.Weibul
 "BactrianSubtreeSlide" "beast.base.evolution.operator.kernel.BactrianSubtreeSlide"
 "BactrianTipDatesRandomWalker" "beast.base.evolution.operator.kernel.BactrianTipDatesRandomWalker"
 "BactrianUpDownOperator" "beast.base.inference.operator.kernel.BactrianUpDownOperator"
-';
+"LG" "beastclassic.evolution.substitutionmodel.LG"
+beast.inference.PathSampler modelselection.inference.PathSampler
+starbeast3.SpeciesTree starbeast3.tree.SpeciesTree
+starbeast3.SpeciesTreePrior starbeast3.evolution.speciation.SpeciesTreePrior
+starbeast3.GeneTreeForSpeciesTreeDistribution starbeast3.evolution.speciation.GeneTreeForSpeciesTreeDistribution
+starbeast3.StarBeast3Clock starbeast3.evolution.branchratemodel.StarBeast3Clock
+starbeast3.StarBeastStartState starbeast3.core.StarBeastStartState
+starbeast3.SpeciesTreeLogger starbeast3.core.SpeciesTreeLogger
+starbeast3.GeneTreeLogger beast.base.evolution.TreeWithMetaDataLogger
+beast.base.inference.OperatorScheduleRecalculator starbeast3.core.OperatorScheduleRecalculator
+beast.evolution.tree.RNNIMetric beastlabs.evolution.tree.RNNIMetric
+beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistanceLogger
+;
 
 if ($#ARGV < 0) {
 	print "Usage: perl migrate.pl <directory or file>\n";
