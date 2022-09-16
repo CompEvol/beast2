@@ -1,15 +1,10 @@
 package beast.pkgmgmt.launcher;
 
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-
-/**
- * Loads beast.jar and launches TreeAnnotator 
- * 
- * This class should be compiled against 1.6 and packaged by itself. The
- * remained of BEAST can be compiled against Java 1.7 or higher
+/** Launches TreeAnnotator 
+ * @see BeastLauncher
  * **/
 public class TreeAnnotatorLauncher extends BeastLauncher  {
 
