@@ -97,6 +97,10 @@
                includeAntRuntime='false'>
             <include name="beast/pkgmgmt/**/**" />
         </javac>
+
+        <copy todir="${build}">
+            <fileset dir="${beast2}/src" includes="**/*.png" />
+        </copy>
                 
         <jar jarfile="${build}/dist/launcher.jar">
             <manifest>
