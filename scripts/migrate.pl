@@ -352,11 +352,24 @@ beast.math.distributions.WeibullDistribution beastlabs.math.distributions.Weibul
 "BactrianSubtreeSlide" "beast.base.evolution.operator.kernel.BactrianSubtreeSlide"
 "BactrianTipDatesRandomWalker" "beast.base.evolution.operator.kernel.BactrianTipDatesRandomWalker"
 "BactrianUpDownOperator" "beast.base.inference.operator.kernel.BactrianUpDownOperator"
-';
+"LG" "beastclassic.evolution.substitutionmodel.LG"
+beast.inference.PathSampler modelselection.inference.PathSampler
+starbeast3.SpeciesTreePrior starbeast3.evolution.speciation.SpeciesTreePrior
+starbeast3.SpeciesTree starbeast3.tree.SpeciesTree
+starbeast3.GeneTreeForSpeciesTreeDistribution starbeast3.evolution.speciation.GeneTreeForSpeciesTreeDistribution
+starbeast3.StarBeast3Clock starbeast3.evolution.branchratemodel.StarBeast3Clock
+starbeast3.StarBeastStartState starbeast3.core.StarBeastStartState
+starbeast3.SpeciesTreeLogger starbeast3.core.SpeciesTreeLogger
+starbeast3.GeneTreeLogger beast.base.evolution.TreeWithMetaDataLogger
+beast.base.inference.OperatorScheduleRecalculator starbeast3.core.OperatorScheduleRecalculator
+beast.evolution.tree.RNNIMetric beastlabs.evolution.tree.RNNIMetric
+beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistanceLogger'
+;
 
 if ($#ARGV < 0) {
-	print "Usage: perl migrate.pl <directory>\n";
-	print "Attempts to convert java class + xml files from BEAST v2.6.x to v2.7.0\n";
+	print "Usage: perl migrate.pl <directory or file>\n";
+	print "If a directory is specified, it recursively attempts to convert java class + xml files from BEAST v2.6.x to v2.7.0\n";
+	print "If a file is specified, only that file is converted.\n";
 	exit(0);
 }
 @s = split('\n',$s);
@@ -371,12 +384,19 @@ foreach $s (@s) {
 
 $dir = $ARGV[0];
 
-open(FIN0,"find $dir|egrep \"java|xml\"|");
-while ($s = <FIN0>) {
-	$s =~ s/\n//;
-	process($s);
+if (-d $dir) {
+	open(FIN0,"find $dir|egrep \"java|xml\"|");
+	while ($s = <FIN0>) {
+		$s =~ s/\n//;
+		process($s);
+	}
+	close FIN0;
+} elsif (-e $dir) {
+	process($dir);
+} else {
+	print STDER "File or directory $dir could not be found.";
 }
-close FIN0;
+
 exit(0);
 
 sub process {
@@ -396,6 +416,7 @@ sub process {
 	foreach $s (keys(%map)) {
 		$text =~ s/$s/$map{$s}/g;
 	}
+	$text =~ s/beast.base.evolution.tree.TreeWithMetaDataLogger/beast.base.evolution.TreeWithMetaDataLogger/g;
 	open(FOUT,">$file");
 	print FOUT $text;
 	close FOUT;

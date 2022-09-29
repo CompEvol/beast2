@@ -1,7 +1,7 @@
-                    BEAST v2.7.0 2022
+                    BEAST v2.7.1 2022
                  Beast 2 development team 2011-2022
 
-Last updated: September 2022
+Last updated: October 2022
 
 Contents:
 1) INTRODUCTION
