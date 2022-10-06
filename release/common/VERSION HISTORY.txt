@@ -1,10 +1,27 @@
-                    BEAST v2.7.0 2022
+                    BEAST v2.7.1 2022
                  Beast 2 development team 2011-2022
 Version History
-Last updated: August 2022
+Last updated: October 2022
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.1
+	Fix assorted launch issues on Windows, Mac and Linux
+	DocMaker functional again
+	Applauncher: deal with superfluous icon not found messages 
+	EBSPanalyser converted to JavaFX
+	Logcombiner converted to JavaFX
+	BEAST: added option to specify version.xml files explicitly. 
+	BEAUti:    
+	o Fix some BEAUti tooltip glitches, and BEAUti icon in Windows
+	o Remove AquaFX theme.
+	o Fix splash screen for BEAUti
+	o Add theming to Alert
+	o More responsive refresh + do not loose list view selection
+	Clean up BEAST code and some BEAUti code
+	DensiTree update to v3.0.1, fixing a display bug on Apple Silicon
+	Update migration script for converting v2.6 packages to v2.7
+
 Version 2.7.0
 	BEAUti has had a facelift, allows dark mode
 	BEAUti templates reorganised for better performance
