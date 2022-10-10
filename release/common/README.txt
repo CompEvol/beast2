@@ -129,6 +129,7 @@ BEAST arguments:
     -DF as -D, but attribute-value pairs defined in file in JSON format
     -DFout BEAST XML file written when -DF option is used
     -sampleFromPrior samples from prior for MCMC analysis (by adding sampleFromPrior="true" in the first run element)
+    -version_file Provide a version file containing a list of services to explicitly allow. (Useful for package development.)
     
 For example:
 
