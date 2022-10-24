@@ -23,6 +23,7 @@ foreach $s (@s) {
 	$namespacemap{$1}=$2;
 }
 
+
 $s = 'beast.app.BEASTVersion beast.pkgmgmt.BEASTVersion
 beast.app.BEASTVersion2 beast.base.core.BEASTVersion2
 beast.app.BeastMCMC beastfx.app.beast.BeastMCMC
@@ -363,7 +364,10 @@ starbeast3.SpeciesTreeLogger starbeast3.core.SpeciesTreeLogger
 starbeast3.GeneTreeLogger beast.base.evolution.TreeWithMetaDataLogger
 beast.base.inference.OperatorScheduleRecalculator starbeast3.core.OperatorScheduleRecalculator
 beast.evolution.tree.RNNIMetric beastlabs.evolution.tree.RNNIMetric
-beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistanceLogger'
+beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistanceLogger
+"MultiGammaSiteModel" "mgsm.evolution.sitemodel.MultiGammaSiteModel"
+"MultiGammaSiteModelPrior" "mgsm.evolution.sitemodel.MultiGammaSiteModelPrior"
+"RelaxedGammaSiteModel" "mgsm.evolution.sitemodel.RelaxedGammaSiteModel"'
 ;
 
 if ($#ARGV < 0) {
