@@ -81,6 +81,7 @@ public class TraitSet extends BEASTObject {
         taxonValues = new String[labels.size()];
         values = new double[labels.size()];
         for (String trait : traits) {
+        	Log.warning(trait);
             trait = trait.replaceAll("\\s+", " ");
             String[] strs = trait.split("=");
             if (strs.length != 2) {
@@ -157,6 +158,10 @@ public class TraitSet extends BEASTObject {
      */
     public String getTraitName() {
         return traitNameInput.get();
+    }
+    
+    public String[] getTaxonValues() {
+    	return taxonValues;
     }
 
     @Deprecated // use getStringValue by name instead
