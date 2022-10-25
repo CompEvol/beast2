@@ -230,6 +230,14 @@ public class Node extends BEASTObject {
     public List<Node> getChildren() {
         return Collections.unmodifiableList(children);
     }
+    
+    
+    /**
+     * @return modifiable list of children of this node
+     */
+    public List<Node> getChildrenMutable() {
+        return children;
+    }
 
     /**
      * get all child node under this node, if this node is leaf then list.size() = 0.
