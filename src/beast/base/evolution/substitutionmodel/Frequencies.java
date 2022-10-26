@@ -67,6 +67,8 @@ public class Frequencies extends CalculationNode {
             throw new IllegalArgumentException("Frequencies do not add up to 1");
         }
 
+        if (freqs != null)
+            Log.info.println("Starting frequencies: " + Arrays.toString(freqs));
     }
 
     /**
@@ -119,7 +121,6 @@ public class Frequencies extends CalculationNode {
     protected void estimateFrequencies() {
         Alignment alignment = dataInput.get();
         freqs = alignment.calcFrequencies();
-        Log.info.println("Starting frequencies: " + Arrays.toString(freqs));
     } // calcFrequencies
 
     /**
