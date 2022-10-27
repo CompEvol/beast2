@@ -367,7 +367,15 @@ beast.evolution.tree.RNNIMetric beastlabs.evolution.tree.RNNIMetric
 beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistanceLogger
 "MultiGammaSiteModel" "mgsm.evolution.sitemodel.MultiGammaSiteModel"
 "MultiGammaSiteModelPrior" "mgsm.evolution.sitemodel.MultiGammaSiteModelPrior"
-"RelaxedGammaSiteModel" "mgsm.evolution.sitemodel.RelaxedGammaSiteModel"'
+"RelaxedGammaSiteModel" "mgsm.evolution.sitemodel.RelaxedGammaSiteModel"
+"LeafToSampledAncestorJump" "sa.evolution.operators.LeafToSampledAncestorJump"
+"SAWilsonBalding" "sa.evolution.operators.SAWilsonBalding"
+"SAExchange" "sa.evolution.operators.SAExchange"
+"SAUniform" "sa.evolution.operators.SAUniform"
+"SAScaleOperator" "sa.evolution.operators.SAScaleOperator"
+"SampledNodeDateRandomWalker" "sa.evolution.operators.SampledNodeDateRandomWalker"
+beast.evolution.speciation.BirthDeathSkylineDiversifiedSampling bdsky.evolution.speciation.BirthDeathSkylineDiversifiedSampling
+'
 ;
 
 if ($#ARGV < 0) {
