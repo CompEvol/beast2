@@ -1049,4 +1049,9 @@ public class Tree extends StateNode implements TreeInterface {
         }
         return true;
     }
+
+	public void setNodeCount(int i) {
+		// TODO Auto-generated method stub
+		this.nodeCount = i;
+	}
 } // class Tree
