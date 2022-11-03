@@ -404,6 +404,11 @@ public interface Parameter<T> extends Function {
             return Arrays.copyOf(values, values.length);
         }
 
+
+        public T[] getStoredValues() {
+            return Arrays.copyOf(storedValues, storedValues.length);
+        }
+        
         /**
          * Copies this parameters values to the given array
          *
