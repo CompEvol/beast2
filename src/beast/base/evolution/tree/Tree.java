@@ -1050,6 +1050,10 @@ public class Tree extends StateNode implements TreeInterface {
         return true;
     }
 
+    /** 
+     * This method sets the field nodeCount but it does not adjust any other fields. Use with caution. 
+     * @param i
+     */
 	public void setNodeCount(int i) {
 		// TODO Auto-generated method stub
 		this.nodeCount = i;
