@@ -175,6 +175,7 @@ public class XMLParserUtils {
 	            break;
 
 	        case Node.CDATA_SECTION_NODE:
+			case Node.TEXT_NODE:
 	        	String content = node.getTextContent();
 	        	node.setNodeValue(replaceVariablesInString(content, variableDefs));
 				break;
