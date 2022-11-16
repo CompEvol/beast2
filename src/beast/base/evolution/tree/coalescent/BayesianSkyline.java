@@ -12,6 +12,7 @@ import beast.base.core.Description;
 import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
+import beast.base.core.Log;
 import beast.base.evolution.tree.IntervalType;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeDistribution;
@@ -53,6 +54,8 @@ public class BayesianSkyline extends TreeDistribution {
 
     int[] cumulativeGroupSizes;
     boolean m_bIsPrepared = false;
+
+    private static int warningCount = 0;
 
     public BayesianSkyline() {
     }
@@ -228,9 +231,18 @@ public class BayesianSkyline extends TreeDistribution {
 
             currentTime += intervals.getInterval(j);
         }
+        
+        if (logP == Double.POSITIVE_INFINITY && warningCount == 0) {
+        	Log.warning("WARNING: Positive infinity calculated for Bayesian skyline");
+        	Log.warning("This indicates there may be some numerical instability due to\n"
+        			  + "branch lengths becoming very smalle and population sizes escaping\n"
+        			  + "to very small values. Consider putting a small lower bound on the"
+        			  + "popSize parameter to prevent this.");
+        	warningCount++;
+        }
         return logP;
     }
-
+    
     public static double calculateIntervalLikelihood(double popSize, double width,
                                                      double timeOfPrevCoal, int lineageCount, IntervalType type) {
         final double timeOfThisCoal = width + timeOfPrevCoal;
