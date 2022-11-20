@@ -1,15 +1,14 @@
 package beast.base.evolution.tree;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
 import beast.base.inference.CalculationNode;
 import beast.base.util.HeapSort;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -487,8 +486,8 @@ public class TreeIntervals extends CalculationNode implements IntervalList {
     protected double[] storedIntervals;
 
     /** interval times **/
-    double[] times;
-    int[] indices;
+    protected double[] times;
+    protected int[] indices;
     
     /**
      * The number of uncoalesced lineages within a particular interval.
