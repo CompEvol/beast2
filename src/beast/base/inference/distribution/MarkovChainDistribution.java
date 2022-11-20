@@ -7,9 +7,12 @@ import java.util.Random;
 import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
+import beast.base.core.BEASTInterface;
+import beast.base.core.BEASTObject;
 import beast.base.core.Description;
 import beast.base.core.Function;
 import beast.base.core.Input;
+import beast.base.core.Log;
 import beast.base.core.Input.Validate;
 import beast.base.inference.*;
 import beast.base.inference.distribution.LogNormalDistributionModel.LogNormalImpl;
@@ -37,7 +40,7 @@ public class MarkovChainDistribution extends Distribution {
     final public Input<Function> initialMeanInput = new Input<>("initialMean", "the mean of the prior distribution on the first element. This is an alternative boundary condition to Jeffrey's on the first value.", Validate.OPTIONAL);
 
     final public Input<Boolean> useLogNormalInput = new Input<>("useLogNormal", "use Log Normal distribution instead of Gamma (default false)", false);
-
+  
     // **************************************************************
     // Private instance variables
     // **************************************************************
@@ -50,6 +53,7 @@ public class MarkovChainDistribution extends Distribution {
     GammaDistribution gamma;
     LogNormalImpl logNormal;
     boolean useLogNormal;
+    private static int warningCount = 0;
 
     @Override
     public void initAndValidate() {
@@ -101,9 +105,17 @@ public class MarkovChainDistribution extends Distribution {
                 logP += gamma.logDensity(x);
             }
         }
+        if (logP == Double.POSITIVE_INFINITY && warningCount == 0) {
+        	Log.warning("WARNING: Positive infinity calculated for MarkovChainDistribution (" + getID() + ")");
+        	Log.warning("This indicates there may be some numerical instability due to\n"
+        			  + "the chain parameter (" + ((BEASTInterface) chainParameter).getID()+ ") escaping\n"
+        			  + "to very small values. Consider putting a small lower bound on the\n"
+        			  + "chain parameter to prevent this.");
+        	warningCount++;
+        }
         return logP;
     }
-
+    
     private double getChainValue(int i) {
         if (i == -1) {
             if (initialMean != null){

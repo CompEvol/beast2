@@ -223,9 +223,9 @@ public class InputForAnnotatedConstructorTest  {
 		o = parser.parseBareFragment(xml, false);
 		po = (PrimitiveBeastObject) o;
 		assertEquals(3, po.getB().length);
-		assertEquals(1.0, po.getB()[0]);
-		assertEquals(15.0, po.getB()[1]);
-		assertEquals(17.0, po.getB()[2]);
+		assertEquals(1.0, (po.getB()[0]).doubleValue());
+		assertEquals(15.0, (po.getB()[1]).doubleValue());
+		assertEquals(17.0, (po.getB()[2]).doubleValue());
 
 		xml2 = producer.toRawXML(po).trim();
 		xml = "<input id='testObject' spec='test.beast.core.PrimitiveBeastObject' b=\"1.0 15.0 17.0\" e='none' i='0'/>";
@@ -306,9 +306,9 @@ public class InputForAnnotatedConstructorTest  {
 		o = parser.parseBareFragment(json, false);
 		po = (PrimitiveBeastObject) o.get(0);
 		assertEquals(3, po.getB().length);
-		assertEquals(1.0, po.getB()[0]);
-		assertEquals(15.0, po.getB()[1]);
-		assertEquals(17.0, po.getB()[2]);
+		assertEquals(1.0, (po.getB()[0]).doubleValue());
+		assertEquals(15.0, (po.getB()[1]).doubleValue());
+		assertEquals(17.0, (po.getB()[2]).doubleValue());
 
 		json2 = producer.toJSON(po);
 		json2 = json2.substring(json2.indexOf('[') + 1, json2.lastIndexOf(']')).trim();
