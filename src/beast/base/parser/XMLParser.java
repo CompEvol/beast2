@@ -25,25 +25,13 @@
 package beast.base.parser;
 
 
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import beast.base.core.BEASTInterface;
-import beast.base.core.BEASTObjectStore;
-import beast.base.core.Input;
-import beast.base.core.Log;
-import beast.base.core.Param;
-import beast.base.core.VirtualBEASTObject;
+import beast.base.core.*;
 import beast.base.core.Input.Validate;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.alignment.Sequence;
 import beast.base.evolution.tree.Tree;
-import beast.base.inference.Distribution;
-import beast.base.inference.Logger;
-import beast.base.inference.Operator;
+import beast.base.inference.*;
 import beast.base.inference.Runnable;
-import beast.base.inference.State;
 import beast.base.inference.Logger.LogFileMode;
 import beast.base.inference.parameter.Parameter;
 import beast.base.inference.parameter.RealParameter;
@@ -51,24 +39,19 @@ import beast.base.util.FileUtils;
 import beast.base.util.Randomizer;
 import beast.pkgmgmt.BEASTClassLoader;
 import beast.pkgmgmt.PackageManager;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import static beast.base.parser.XMLParserUtils.processPlates;
-import static beast.base.parser.XMLParserUtils.replaceVariable;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
+
+import static beast.base.parser.XMLParserUtils.processPlates;
+import static beast.base.parser.XMLParserUtils.replaceVariable;
 
 
 /**
@@ -1517,6 +1500,10 @@ public class XMLParser {
     public void setRequiredInputProvider(final RequiredInputProvider provider, final PartitionContext context) {
         requiredInputProvider = provider;
         partitionContext = context;
+    }
+
+    public HashMap<String, BEASTInterface> getIDMap() {
+        return IDMap;
     }
 
     /**
