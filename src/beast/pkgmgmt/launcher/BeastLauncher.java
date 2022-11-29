@@ -68,7 +68,7 @@ public class BeastLauncher {
 		while ((!foundJavaJarFile) && (jarDir0 != null)) {
 			foundJavaJarFile = checkForBEAST(jarDir0, packageName);
 			foundJavaJarFile = foundJavaJarFile
-					|| checkForBEAST(new File(jarDir0.getAbsolutePath() + pathDelimiter + "lib"), packageName);
+					|| checkForBEAST(new File(jarDir0.getAbsolutePath() + pathDelimiter + "lib" + pathDelimiter + "packages"), packageName);
 
 			if (foundJavaJarFile) {
 				createBeastPackage(jarDir0, packageName, copyExamplesAndTemplates);
@@ -127,13 +127,13 @@ public class BeastLauncher {
 				}
 			}
 
-			File beastJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".jar");
+			File beastJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "packages" + pathDelimiter + packageName + ".jar");
 			File target = new File(dir + pathDelimiter + packageName + ".jar");
 			copyFileUsingStream(beastJar, target);
 
-			File versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".version.xml");
+			File versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "packages" + pathDelimiter + packageName + ".version.xml");
 			if (!versionFile.exists()) {
-				versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName.toLowerCase() + ".version.xml");
+				versionFile = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "packages" + pathDelimiter + packageName.toLowerCase() + ".version.xml");
 			}				
 			if (!versionFile.exists()) {
 				System.err.println("Error: cannot find version file: " + versionFile);
@@ -142,7 +142,7 @@ public class BeastLauncher {
 				copyFileUsingStream(versionFile, versionTarget);
 			}
 
-			File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + packageName + ".src.jar");
+			File beastSrcJar = new File(jarDir0 + pathDelimiter + "lib" + pathDelimiter + "packages" + pathDelimiter + packageName + ".src.jar");
 			File srcTarget = new File(userDir + pathDelimiter + packageName + pathDelimiter + packageName + ".src.jar");
 			copyFileUsingStream(beastSrcJar, srcTarget);
 
@@ -388,11 +388,10 @@ public class BeastLauncher {
 	
 	private static String determinePackagePath(String packagesString) throws UnsupportedEncodingException {
 		StringBuilder buf = new StringBuilder();
-		if (PackageManager.getBEASTInstallDir() != null) {
-			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.base.jar", "UTF-8"));
-
-		}
+//		if (PackageManager.getBEASTInstallDir() != null) {
+//			buf.append(File.pathSeparator);
+//			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.base.jar", "UTF-8"));
+//		}
 	    if (packagesString != null && packagesString.trim().length() > 0) {
 	    	Map<String, Package> packages = new HashMap<String, Package>();
 	    	PackageManager.addInstalledPackages(packages);
@@ -482,12 +481,12 @@ public class BeastLauncher {
 			}
 
 		}
-		if (PackageManager.getBEASTInstallDir() != null) {
-			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.base.jar", "UTF-8"));
-			buf.append(File.pathSeparator);
-			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.app.jar", "UTF-8"));
-		}
+//		if (PackageManager.getBEASTInstallDir() != null) {
+//			buf.append(File.pathSeparator);
+//			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.base.jar", "UTF-8"));
+//			buf.append(File.pathSeparator);
+//			buf.append(URLDecoder.decode(PackageManager.getBEASTInstallDir() + "/lib/beast.app.jar", "UTF-8"));
+//		}
 		return buf.toString();
 	}
 
