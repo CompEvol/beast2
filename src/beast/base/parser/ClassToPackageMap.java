@@ -60,7 +60,13 @@ public class ClassToPackageMap {
 	 * for all packages used by o and its predecessors in the model graph.
 	 */
 	public static Set<String> getPackagesAndVersions(Object o) {
-		Set<String> packagesAndVersions = new LinkedHashSet<String>();
+    	if (classToPackageMap.size() == 0) {
+	        for (String jarDirName : PackageManager.getBeastDirectories()) {
+	        	ClassToPackageMap.initPackageMap(jarDirName);
+	        }
+    	}
+
+    	Set<String> packagesAndVersions = new LinkedHashSet<String>();
 		getPackagesAndVersions(o, packagesAndVersions);
 		return packagesAndVersions;
 	}
