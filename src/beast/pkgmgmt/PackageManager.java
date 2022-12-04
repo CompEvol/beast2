@@ -1529,6 +1529,8 @@ public class PackageManager {
         all_classes = null;
     }
     
+    /** use addURL(u, packageName, services) instead **/
+    @Deprecated
     public static void addURL(URL u) throws IOException {
     	BEASTClassLoader.classLoader.addURL(u);
 //        // ClassloaderUtil clu = new ClassloaderUtil();

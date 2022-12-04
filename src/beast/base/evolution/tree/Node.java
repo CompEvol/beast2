@@ -247,6 +247,7 @@ public class Node extends BEASTObject {
      * @deprecated issue 703: name is confusing, replaced by
      * {@link #getAllChildNodesAndSelf() getAllChildNodesAndSelf}
      */
+    @Deprecated
     public List<Node> getAllChildNodes() {
         return getAllChildNodesAndSelf();
     }
@@ -256,6 +257,7 @@ public class Node extends BEASTObject {
      * @deprecated issue 703: name is confusing, replaced by
      * {@link #getAllChildNodesAndSelf(List<Node>) getAllChildNodesAndSelf}
      */
+    @Deprecated
     public void getAllChildNodes(final List<Node> childNodes) {
         getAllChildNodesAndSelf(childNodes);
     }

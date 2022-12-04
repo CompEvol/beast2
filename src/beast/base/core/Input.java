@@ -32,10 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.base.inference.CalculationNode;
-import beast.base.inference.Operator;
-import beast.base.inference.StateNode;
-
 
 /**
  * Represents input of a BEASTObject class.
@@ -604,11 +600,11 @@ public class Input<T> {
             return;
         }
         if (theClass.equals(Double.class)) {
-            value = (T) new Double(stringValue);
+            value = (T) (Double) Double.parseDouble(stringValue);
             return;
         }
         if (theClass.equals(Float.class)) {
-            value = (T) new Float(stringValue);
+            value = (T) (Float) Float.parseFloat(stringValue);
             return;
         }
         if (theClass.equals(Boolean.class)) {
@@ -621,7 +617,7 @@ public class Input<T> {
 //                value = (T) Boolean.FALSE;
 //                return;
 //            }
-        	value = (T) new Boolean(stringValue);
+        	value = (T) (Boolean) Boolean.parseBoolean(stringValue);
         	return;
         }
         if (theClass.equals(Function.class)) {
@@ -811,19 +807,19 @@ public class Input<T> {
 			} else if (type.isPrimitive()) {
 				// convert from a primitive type
 				if (type.equals(Integer.TYPE)) {
-					arg = (int) new Integer(arg.toString());
+					arg = (int) Integer.parseInt(arg.toString());
 				} else if (type.equals(Long.TYPE)) {
-					arg = (long) new Long(arg.toString());
+					arg = (long) Long.parseLong(arg.toString());
 				} else if (type.equals(Short.TYPE)) {
-					arg = (short) new Short(arg.toString());
+					arg = (short) Short.parseShort(arg.toString());
 				} else if (type.equals(Float.TYPE)) {
-					arg = (float) new Float(arg.toString());
+					arg = (float) Float.parseFloat(arg.toString());
 				} else if (type.equals(Double.TYPE)) {
-					arg = (double) new Double(arg.toString());
+					arg = (double) Double.parseDouble(arg.toString());
 				} else if (type.equals(Boolean.TYPE)) {
-					arg = (boolean) new Boolean(arg.toString());
+					arg = (boolean) Boolean.parseBoolean(arg.toString());
 				} else if (type.equals(Byte.TYPE)) {
-					arg = (byte) new Byte(arg.toString());
+					arg = (byte) Byte.parseByte(arg.toString());
 				} else if (type.equals(Character.TYPE)) {
 					if (arg.toString().length() == 1) {
 						arg = arg.toString().charAt(0);

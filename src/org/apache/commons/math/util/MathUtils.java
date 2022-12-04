@@ -793,7 +793,7 @@ public final class MathUtils {
      * @return the hash code
      */
     public static int hash(double value) {
-        return new Double(value).hashCode();
+        return Double.valueOf(value).hashCode();
     }
 
     /**

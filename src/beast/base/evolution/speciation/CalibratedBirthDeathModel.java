@@ -346,7 +346,7 @@ public class CalibratedBirthDeathModel extends SpeciesTreeDistribution {
             }
             for (final int i : taxaPartialOrder[k]) {
                 for (final int u : xclades[i]) {
-                    freeTaxa.remove(new Integer(u));
+                    freeTaxa.remove(Integer.valueOf(u));
                 }
             }
 

@@ -230,9 +230,9 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
             String[] valuesString = valueString2.split("\\s+");
             for (int i = 0; i < valuesString.length; i++) {
                 if (theClass.equals(Integer.class)) {
-                    list.add(new Integer(valuesString[i % valuesString.length]));
+                    list.add(Integer.parseInt(valuesString[i % valuesString.length]));
                 } else if (theClass.equals(Double.class)) {
-                    list.add(new Double(valuesString[i % valuesString.length]));
+                    list.add(Double.parseDouble(valuesString[i % valuesString.length]));
                 } else if (theClass.equals(Boolean.class)) {
                     String str = valuesString[i % valuesString.length].toLowerCase();
                     list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
@@ -244,11 +244,11 @@ public class InputForAnnotatedConstructor<T> extends Input<T> {
         }
 
         if (theClass.equals(Integer.class)) {
-            setValue(new Integer(valueString));
+            setValue(Integer.parseInt(valueString));
             return;
         }
         if (theClass.equals(Double.class)) {
-        	setValue(new Double(valueString));
+        	setValue(Double.parseDouble(valueString));
             return;
         }
         if (theClass.equals(Boolean.class)) {
