@@ -49,6 +49,7 @@ import beast.base.core.ProgramStatus;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.alignment.FilteredAlignment;
 import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.substitutionmodel.Frequencies;
 import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.inference.State;
 
@@ -70,6 +71,10 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     
     enum Scaling {none, always, _default};
     final public Input<Scaling> scalingInput = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
+    
+    final public Input<Frequencies> rootFrequenciesInput =
+            new Input<>("rootFrequencies", "prior state frequencies at root, optional", Input.Validate.OPTIONAL);
+
     
     /** private list of likelihoods, to notify framework of TreeLikelihoods being created in initAndValidate() **/
     final private Input<List<TreeLikelihood>> likelihoodsInput = new Input<>("*","",new ArrayList<>());
@@ -134,6 +139,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     				"siteModel", siteModelInput.get(), 
     				"branchRateModel", branchRateModelInput.get(), 
     				"useAmbiguities", useAmbiguitiesInput.get(),
+    				"rootFrequencies", rootFrequenciesInput.get(),
 					"scaling" , scalingInput.get() + ""
     				);
     		treelikelihood[0].getOutputs().add(this);
@@ -168,6 +174,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
         				"tree", treeInput.get(), 
         				"siteModel", duplicate((BEASTInterface) siteModelInput.get(), i), 
         				"branchRateModel", duplicate(branchRateModelInput.get(), i), 
+        				"rootFrequencies", rootFrequenciesInput.get(),
         				"useAmbiguities", useAmbiguitiesInput.get(),
                                     	"scaling" , scalingInput.get() + ""
         				);
