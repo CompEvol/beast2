@@ -375,6 +375,15 @@ beast.base.evolution.tree.TreeDistanceLogger beastlabs.evolution.tree.TreeDistan
 "SAScaleOperator" "sa.evolution.operators.SAScaleOperator"
 "SampledNodeDateRandomWalker" "sa.evolution.operators.SampledNodeDateRandomWalker"
 beast.evolution.speciation.BirthDeathSkylineDiversifiedSampling bdsky.evolution.speciation.BirthDeathSkylineDiversifiedSampling
+beast.math.distributions.BMTPrior bmodeltest.math.distributions.BMTPrior
+beast.math.distributions.NucleotideRevJumpSubstModelRatePrior bmodeltest.math.distributions.NucleotideRevJumpSubstModelRatePrior
+"NucleotideRevJumpSubstModel" "bmodeltest.evolution.substitutionmodel.NucleotideRevJumpSubstModel"
+"ModelFrequencies" "bmodeltest.evolution.substitutionmodel.ModelFrequencies"
+"BEASTModelTestSiteModel" "bmodeltest.evolution.sitemodel.BEASTModelTestSiteModel"
+"BMTMergeSplitOperator" "bmodeltest.evolution.operators.BMTMergeSplitOperator"
+"BMTExchangeOperator" "bmodeltest.evolution.operators.BMTExchangeOperator"
+"BMTScaleOperator" "bmodeltest.evolution.operators.BMTScaleOperator"
+"BMTBirthDeathOperator" "bmodeltest.evolution.operators.BMTBirthDeathOperator"
 '
 ;
 
