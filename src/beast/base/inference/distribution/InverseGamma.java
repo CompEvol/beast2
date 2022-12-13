@@ -1,14 +1,12 @@
 package beast.base.inference.distribution;
 
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.ContinuousDistribution;
-import org.apache.commons.math.distribution.Distribution;
-
 import beast.base.core.Description;
 import beast.base.core.Function;
 import beast.base.core.Input;
-import beast.base.inference.parameter.RealParameter;
+import org.apache.commons.math.MathException;
+import org.apache.commons.math.distribution.ContinuousDistribution;
+import org.apache.commons.math.distribution.Distribution;
 
 
 
@@ -19,7 +17,7 @@ public class InverseGamma extends ParametricDistribution {
     final public Input<Function> alphaInput = new Input<>("alpha", "shape parameter, defaults to 2");
     final public Input<Function> betaInput = new Input<>("beta", "scale parameter, defaults to 2");
 
-    InverseGammaImpl dist = new InverseGammaImpl(2, 2);
+    protected InverseGammaImpl dist = new InverseGammaImpl(2, 2);
 
     @Override
     public void initAndValidate() {
@@ -51,7 +49,7 @@ public class InverseGamma extends ParametricDistribution {
         return dist;
     }
 
-    class InverseGammaImpl implements ContinuousDistribution {
+    public class InverseGammaImpl implements ContinuousDistribution {
         double m_fAlpha;
         double m_fBeta;
         // log of the constant beta^alpha/Gamma(alpha)
@@ -61,7 +59,7 @@ public class InverseGamma extends ParametricDistribution {
             setAlphaBeta(alpha, beta);
         }
 
-        void setAlphaBeta(double alpha, double beta) {
+        public void setAlphaBeta(double alpha, double beta) {
             m_fAlpha = alpha;
             m_fBeta = beta;
             C = m_fAlpha * Math.log(m_fBeta) - org.apache.commons.math.special.Gamma.logGamma(m_fAlpha);
