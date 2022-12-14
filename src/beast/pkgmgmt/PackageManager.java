@@ -2043,6 +2043,7 @@ public class PackageManager {
             if (customDir != null) {
                 String path = PackageManager.getBeastPackagePathProperty();
                 System.setProperty("BEAST_PACKAGE_PATH", (path != null ? path + ":" : "") +customDir);
+                System.setProperty("beast.user.package.dir", (path != null ? path + ":" : "") +customDir);
             }
 
             List<URL> urlList = getRepositoryURLs();
