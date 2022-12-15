@@ -1,10 +1,21 @@
-                    BEAST v2.7.1 2022
+                    BEAST v2.7.3 2022
                  Beast 2 development team 2011-2022
 Version History
-Last updated: October 2022
+Last updated: December 2022
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.3
+	Allow all packages to be installed, not just a small subset
+	Add suppor for various packages
+	Add -packagedir and -version_file CLI options to BEAST, BEAUti
+	Extend XML variable substitution to text nodes
+	BEAUti: fix bugs in templates
+	BEAUti more robust when reloading XML into BEAUti
+
+Version 2.7.2
+        Add suppor for various packages	
+
 Version 2.7.1
 	Fix assorted launch issues on Windows, Mac and Linux
 	DocMaker functional again

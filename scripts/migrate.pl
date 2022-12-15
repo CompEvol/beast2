@@ -384,6 +384,28 @@ beast.math.distributions.NucleotideRevJumpSubstModelRatePrior bmodeltest.math.di
 "BMTExchangeOperator" "bmodeltest.evolution.operators.BMTExchangeOperator"
 "BMTScaleOperator" "bmodeltest.evolution.operators.BMTScaleOperator"
 "BMTBirthDeathOperator" "bmodeltest.evolution.operators.BMTBirthDeathOperator"
+"tree.MultiRateTreeFromNewick" "msbd.base.evolution.tree.MultiRateTreeFromNewick"
+"ExtendableRealParameter" "msbd.base.inference.parameter.ExtendableRealParameter"
+"StdBirthDeathDensity" "msbd.distributions.StdBirthDeathDensity"
+"StateChangeModel" "msbd.evolution.tree.StateChangeModel"
+"PointDistribution" "msbd.distributions.PointDistribution"
+"MRTSubtreeExchange" "msbd.evolution.operator.MRTSubtreeExchange"
+"MRTWilsonBalding" "msbd.evolution.operator.MRTWilsonBalding"
+"MultiRateTreeUniform" "msbd.evolution.operator.MultiRateTreeUniform"
+"NodeShiftRetype" "msbd.evolution.operator.NodeShiftRetype"
+"NodeRetype" "msbd.evolution.operator.NodeRetype"
+"AddRemoveColourWPropagation" "msbd.evolution.operator.AddRemoveColourWPropagation"
+"AddRemoveConnectedWPropagation" "msbd.evolution.operator.AddRemoveConnectedWPropagation"
+"MoveColourChange" "msbd.evolution.operator.MoveColourChange"
+"parameter.ExtendableRealParameter" "msbd.base.inference.parameter.ExtendableRealParameter"
+"MultiRateTreeFromNewick" "msbd.base.evolution.tree.MultiRateTreeFromNewick"
+beast.base.evolution.tree.MultiRateTreeFromNewick msbd.base.evolution.tree.MultiRateTreeFromNewick
+beast.base.evolution.tree.MultiRateTree msbd.base.evolution.tree.MultiRateTree
+beast.math.distributions.FossilCalibration cladeage.math.distributions.FossilCalibration
+beast.math.distributions.FossilPrior cladeage.math.distributions.FossilPrior
+beast.math.distributions.DuoFossilPrior cladeage.math.distributions.DuoFossilPrior
+beast.math.distributions.DuoFossilCalibration cladeage.math.distributions.DuoFossilCalibration
+beast.math.distributions.CompoundFossilPrior cladeage.math.distributions.CompoundFossilPrior
 '
 ;
 
