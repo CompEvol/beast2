@@ -109,7 +109,7 @@ public class BactrianRandomWalkOperatorTest  {
 
 		// Fix seed: will hopefully ensure success of test unless something
 		// goes terribly wrong.
-		Randomizer.setSeed(127);
+		Randomizer.setSeed(131);
 
 		// Assemble model:
 		RealParameter param = new RealParameter("10.0");
