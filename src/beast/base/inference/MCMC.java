@@ -568,7 +568,7 @@ public class MCMC extends Runnable {
             logAlpha = newLogLikelihood - oldLogLikelihood + logHastingsRatio; //CHECK HASTINGS
             if (printDebugInfo) System.err.print(logAlpha + " " + newLogLikelihood + " " + oldLogLikelihood);
 
-            if (logAlpha >= 0 || Randomizer.nextDouble() < Math.exp(logAlpha)) {
+            if (logAlpha >= 0 || (logAlpha != Double.NEGATIVE_INFINITY && Randomizer.nextDouble() < Math.exp(logAlpha))) {
                 // accept
                 oldLogLikelihood = newLogLikelihood;
                 state.acceptCalculationNodes();
