@@ -11,6 +11,7 @@
     <initialHeapSize>256</initialHeapSize>
     <maxHeapSize>8096</maxHeapSize>
     <opt>-Duser.language=en</opt>
+    <opt>-Dfile.encoding=UTF-8</opt>    
   </jre>    
   <versionInfo>
     <fileDescription>BEAST2</fileDescription>    

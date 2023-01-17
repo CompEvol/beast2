@@ -7,7 +7,7 @@ All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
 Version 2.7.3
 	Allow all packages to be installed, not just a small subset
-	Add suppor for various packages
+	Add support for various packages
 	Add -packagedir and -version_file CLI options to BEAST, BEAUti
 	Extend XML variable substitution to text nodes
 	BEAUti: fix bugs in templates
