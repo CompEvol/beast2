@@ -84,6 +84,9 @@ public class Sequence extends BEASTObject {
 			//double total = 0;
     		for (int j=0; j<pr.length; j++) {    			
     			if (likelihoods == null) likelihoods = new double[strs.length][pr.length];
+                if (likelihoods != null && likelihoods[i].length != pr.length) {
+                    likelihoods[i] = new double[pr.length];
+                }
     			likelihoods[i][j] = Double.parseDouble(pr[j].trim());
     			//total += likelihoods[i][j]; 
     		}    		
