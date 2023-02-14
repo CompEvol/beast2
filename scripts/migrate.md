@@ -21,7 +21,7 @@ Not all imports may be resolved, and some APIs changed slightly, so some manual 
 
 BEAST now uses Java 17 instead of Java 8, which might give a small performance boost for some models and allows access to Java 17 features.
 
-It is recommended to install the JDK from Azul, since it allows painless integration of JavaFX. It can be downloaded from here: https://www.azul.com/downloads/?package=jdk
+It is recommended to install the JDK from Azul, since it allows painless integration of JavaFX. It can be downloaded from here: https://www.azul.com/downloads/?package=jdk-fx
 
 * scroll to the bottom
 * select `Java 17 LTS`
