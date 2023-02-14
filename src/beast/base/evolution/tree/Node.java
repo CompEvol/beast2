@@ -156,7 +156,7 @@ public class Node extends BEASTObject {
         if (isRoot()) {
             return 0;
         } else {
-            return getParent().height - height;
+            return getParent().getHeight() - getHeight();
         }
     }
 
