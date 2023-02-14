@@ -121,7 +121,7 @@ Make sure things are fine by running BEAUti -- see [BEAUti debugging tips](http:
 
 BEAUti templates are now picked up from the `fxtemplates` directory instead of the `templates` directory, so 
 * rename `templates` to `fxtemplates`
-* in your `build.xml` file, replace '<mkdir dir="${Add_on_dir}/templates" />' with '<mkdir dir="${Add_on_dir}/fxtemplates" />'
+* in your `build.xml` file, replace `<mkdir dir="${Add_on_dir}/templates" />` with `<mkdir dir="${Add_on_dir}/fxtemplates" />`
 * also in `build.xml`, replace `<copy todir="${Add_on_dir}/templates">` with `<copy todir="${Add_on_dir}/fxtemplates">`
 
 
