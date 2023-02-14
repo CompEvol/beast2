@@ -106,6 +106,7 @@
                 <provider classname="beast.base.evolution.substitutionmodel.Frequencies"/>
                 <provider classname="beast.base.evolution.substitutionmodel.GTR"/>
                 <provider classname="beast.base.evolution.substitutionmodel.GeneralSubstitutionModel"/>
+                <provider classname="beast.base.evolution.substitutionmodel.ComplexSubstitutionModel"/>
                 <provider classname="beast.base.evolution.substitutionmodel.HKY"/>
                 <provider classname="beast.base.evolution.substitutionmodel.JTT"/>
                 <provider classname="beast.base.evolution.substitutionmodel.JukesCantor"/>
