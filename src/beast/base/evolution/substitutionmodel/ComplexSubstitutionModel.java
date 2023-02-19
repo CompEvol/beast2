@@ -66,6 +66,11 @@ public class ComplexSubstitutionModel extends GeneralSubstitutionModel {
 	
 	
 	@Override
+    public boolean hasImaginaryEigenvectors() {
+        return true;
+    }
+	
+	@Override
 	protected EigenSystem createEigenSystem() {
 		int stateCount = getStateCount();
         return new ComplexColtEigenSystem(stateCount);

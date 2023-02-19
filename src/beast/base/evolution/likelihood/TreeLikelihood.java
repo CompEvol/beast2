@@ -142,19 +142,32 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 					leaves, String.join(", ", dataInput.get().getTaxaNames())));
 		}
         beagle = null;
-        beagle = new BeagleTreeLikelihood();
-        try {
-	        beagle.initByName(
-                    "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
-                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), 
-                    "useTipLikelihoods", m_useTipLikelihoods.get(),"scaling", scaling.get().toString());
-	        if (beagle.beagle != null) {
-	            //a Beagle instance was found, so we use it
-	            return;
-	        }
-        } catch (Exception e) {
-			// ignore
-		}
+        
+        
+        // Do not run beagle if the susbtitution model has imaginary eigenvectors
+        boolean hasImaginaryEigenvectors = false;
+        if (siteModelInput.get() instanceof SiteModel.Base) {
+        	SiteModel.Base sm = (SiteModel.Base) siteModelInput.get();
+    		hasImaginaryEigenvectors = sm.substModelInput.get().hasImaginaryEigenvectors();
+        }
+        
+        if (!hasImaginaryEigenvectors) {
+	        beagle = new BeagleTreeLikelihood();
+	        try {
+		        beagle.initByName(
+	                    "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
+	                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), 
+	                    "useTipLikelihoods", m_useTipLikelihoods.get(),"scaling", scaling.get().toString());
+		        if (beagle.beagle != null) {
+		            //a Beagle instance was found, so we use it
+		            return;
+		        }
+	        } catch (Exception e) {
+				// ignore
+			}
+        }else {
+        	Log.warning("Warning: cannot start beagle because there are imaginary eigenvectors in the susbtitution model");
+        }
         // No Beagle instance was found, so we use the good old java likelihood core
         beagle = null;
 
@@ -374,6 +387,18 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             return logP;
         }
         final TreeInterface tree = treeInput.get();
+        
+        
+		final Node root = tree.getRoot(); // tmp
+		for (Node node : root.getAllChildNodesAndSelf()) {
+			if (node.isRoot()) continue;
+			double length = node.getLength();; 
+			if (length < 0) {
+				Log.warning("negatuve branch length detected!!! " + length);
+				logP = Double.NEGATIVE_INFINITY;
+				return logP;
+			}
+		}
 
         try {
         	if (traverse(tree.getRoot()) != Tree.IS_CLEAN)

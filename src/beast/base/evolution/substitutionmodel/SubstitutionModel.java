@@ -65,6 +65,14 @@ public interface SubstitutionModel {
     double[] getFrequencies();
 
     public int getStateCount();
+    
+    
+    /**
+     * Does the matrix have imaginary eigenvectors/values? If so, then it is not compatible with beagle
+     */
+    public default boolean hasImaginaryEigenvectors() {
+        return false;
+    }
 
 
     /**
@@ -111,6 +119,11 @@ public interface SubstitutionModel {
         @Override
         public void initAndValidate() {
             frequencies = frequenciesInput.get();
+        }
+        
+        @Override
+        public boolean hasImaginaryEigenvectors() {
+            return false;
         }
 
         @Override

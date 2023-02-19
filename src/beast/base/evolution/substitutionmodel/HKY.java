@@ -115,6 +115,7 @@ public class HKY extends SubstitutionModel.NucleotideBase {
         matrix[14] = matrix[6];
         matrix[15] = freqT + t1Taa + (tab2T * bbY);
     }
+    
 
     @Override
     public EigenDecomposition getEigenDecomposition(Node node) {

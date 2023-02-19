@@ -34,6 +34,7 @@ import beast.base.core.Description;
 import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
+import beast.base.core.Log;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.tree.Node;
 import beast.pkgmgmt.BEASTClassLoader;
@@ -295,7 +296,23 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
             if (updateMatrix) {
                 setupRelativeRates();
                 setupRateMatrix();
+                try {
                 eigenDecomposition = eigenSystem.decomposeMatrix(rateMatrix);
+                }catch(Exception e) {
+                	Log.warning(this.getID());
+                	Log.warning(this.toString());
+                	System.out.print("freqs:\t");
+                	for (int i = 0; i < 4; i++) {
+                		System.out.print(this.getFrequencies()[i] + "\t");
+                	}
+                	System.out.println();
+                	for (int i = 0; i < 4; i++) {
+                		for (int j = 0; j < 4; j++) {
+                			System.out.println(rateMatrix[i][j] + "\t"); 
+                		}
+                		System.out.println();
+                	}
+                }
                 updateMatrix = false;
             }
         }
