@@ -148,7 +148,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         boolean hasImaginaryEigenvectors = false;
         if (siteModelInput.get() instanceof SiteModel.Base) {
         	SiteModel.Base sm = (SiteModel.Base) siteModelInput.get();
-    		hasImaginaryEigenvectors = sm.substModelInput.get().hasImaginaryEigenvectors();
+    		hasImaginaryEigenvectors = sm.hasImaginaryEigenvectors();
         }
         
         if (!hasImaginaryEigenvectors) {

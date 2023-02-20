@@ -196,6 +196,13 @@ public interface SiteModelInterface {
             return 0;
         }
 
+        /**
+         * Does the matrix have imaginary eigenvectors/values? If so, then it is not compatible with beagle
+         */
+		public boolean hasImaginaryEigenvectors() {
+			return substModelInput.get().hasImaginaryEigenvectors();
+		}
+
     } // class SiteModelInterface.Base
 
 } // SiteModelInterface
