@@ -53,7 +53,7 @@ public interface TreeInterface {
 
     static int getNodesPostOrder(final Node node, final Node[] nodes, int pos) {
         //node.m_tree = this;
-        for (final Node child : node.children) {
+        for (final Node child : node.getChildren()) {
             pos = getNodesPostOrder(child, nodes, pos);
         }
         nodes[pos] = node;
