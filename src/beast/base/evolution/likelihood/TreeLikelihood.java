@@ -387,18 +387,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
             return logP;
         }
         final TreeInterface tree = treeInput.get();
-        
-        
-		final Node root = tree.getRoot(); // tmp
-		for (Node node : root.getAllChildNodesAndSelf()) {
-			if (node.isRoot()) continue;
-			double length = node.getLength();; 
-			if (length < 0) {
-				Log.warning("negatuve branch length detected!!! " + length);
-				logP = Double.NEGATIVE_INFINITY;
-				return logP;
-			}
-		}
+
 
         try {
         	if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
