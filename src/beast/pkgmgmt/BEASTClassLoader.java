@@ -219,6 +219,30 @@ public class BEASTClassLoader extends URLClassLoader {
 		
 		public static void addServices(String versionFile) {
 			try {
+				// when an asterisk is used at the end of the -version_file argument, probe all version.xml files in subdirectory of specified directory, so -version_file /path/to/my/project/* loads all version.xml files inside the directories inside /path/to/my/project/.
+				if (versionFile.endsWith("*")) {
+					File vf = new File(versionFile.substring(0, versionFile.length()-1));
+					if (vf.exists() && vf.isDirectory()) {
+						for (File f : vf.listFiles()) {
+							if (f.isDirectory()) {
+								versionFile = f.getAbsolutePath() + "/version.xml";
+								if (new File(versionFile).exists()) {
+									addServices(versionFile);
+								}
+							}
+						}
+					}
+					return;
+				}
+				// when specifying a directory instead of a file, assume the version.xml file needs to be loaded. So, -version_file ../BEASTLabs/version.xml ../ORC/version.xml and -version_file ../BEASTLabs ../ORC will be equivalent.
+				File vf = new File(versionFile); 
+				if (vf.exists() && vf.isDirectory()) {
+					versionFile = versionFile + "/version.xml";
+					addServices(versionFile);
+					return;
+				}
+				
+				// load info from version.xml
 				Map<String,Set<String>> services = null;
 		        // print name and version of package
 		        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -229,6 +253,7 @@ public class BEASTClassLoader extends URLClassLoader {
 				BEASTClassLoader.classLoader.addServices(packageName, services);
 			} catch (Throwable e) {
 				// ignore
+				System.err.println(e.getMessage());;
 			}
 		}	
 		

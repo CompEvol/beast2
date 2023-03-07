@@ -78,7 +78,7 @@ public class Alignment extends Map<String> {
                     types.putIfAbsent(description, dataType);
                     Log.debug("Discovered " + d);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 Log.debug("Failed to discover " + d + " " + e.getMessage());
                 // TODO: handle exception
             }
