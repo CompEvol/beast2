@@ -157,7 +157,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 		        beagle.initByName(
 	                    "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
 	                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), 
-	                    "useTipLikelihoods", m_useTipLikelihoods.get(),"scaling", scaling.get().toString());
+	                    "useTipLikelihoods", m_useTipLikelihoods.get(),"scaling", scaling.get().toString(),
+	                    "rootFrequencies", rootFrequenciesInput.get());
 		        if (beagle.beagle != null) {
 		            //a Beagle instance was found, so we use it
 		            return;

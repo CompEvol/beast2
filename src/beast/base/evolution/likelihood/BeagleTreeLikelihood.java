@@ -756,7 +756,10 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	            }
 	            categoryWeights = tmp;
             }
-            double[] frequencies = substitutionModel.getFrequencies();
+            double[] frequencies = rootFrequenciesInput.get() == null ?
+                    				substitutionModel.getFrequencies() :
+                    				rootFrequenciesInput.get().getFreqs();
+
 
             int cumulateScaleBufferIndex = Beagle.NONE;
             if (useScaleFactors) {

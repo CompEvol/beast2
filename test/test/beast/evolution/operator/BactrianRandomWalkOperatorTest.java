@@ -15,7 +15,6 @@ import beast.base.inference.distribution.LogNormalDistributionModel;
 import beast.base.inference.distribution.Normal;
 import beast.base.inference.distribution.ParametricDistribution;
 import beast.base.inference.distribution.Prior;
-import beast.base.inference.operator.RealRandomWalkOperator;
 import beast.base.inference.operator.kernel.BactrianRandomWalkOperator;
 import beast.base.inference.operator.kernel.KernelDistribution;
 import beast.base.inference.parameter.RealParameter;
