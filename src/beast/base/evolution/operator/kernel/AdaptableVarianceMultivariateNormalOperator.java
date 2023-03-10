@@ -733,7 +733,13 @@ public class AdaptableVarianceMultivariateNormalOperator extends KernelOperator 
             return parameterIndex1.length;
         }
 
-        public int setValue(final int param, final double value) {
+        public int setValue(final int param, final double value) throws Exception {
+        	
+        	if (Double.isNaN(value)) {
+        		throw new Exception();
+        	}
+        	
+        	
             final Function para = parameterList.get(getY(param));
             if (para instanceof RealParameter) {
             	RealParameter p = (RealParameter) para;
