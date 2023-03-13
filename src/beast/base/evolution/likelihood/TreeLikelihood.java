@@ -144,14 +144,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         beagle = null;
         
         
-        // Do not run beagle if the susbtitution model has imaginary eigenvectors
-        boolean hasImaginaryEigenvectors = false;
-        if (siteModelInput.get() instanceof SiteModel.Base) {
-        	SiteModel.Base sm = (SiteModel.Base) siteModelInput.get();
-    		hasImaginaryEigenvectors = sm.hasImaginaryEigenvectors();
-        }
-        
-        if (!hasImaginaryEigenvectors) {
+//        // Do not run beagle if the susbtitution model has imaginary eigenvectors
+//        boolean hasImaginaryEigenvectors = false;
+//        if (siteModelInput.get() instanceof SiteModel.Base) {
+//        	SiteModel.Base sm = (SiteModel.Base) siteModelInput.get();
+//    		hasImaginaryEigenvectors = sm.hasImaginaryEigenvectors();
+//        }
+//        
+//        if (!hasImaginaryEigenvectors) {
 	        beagle = new BeagleTreeLikelihood();
 	        try {
 		        beagle.initByName(
@@ -166,9 +166,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 	        } catch (Exception e) {
 				// ignore
 			}
-        }else {
-        	Log.warning("Warning: cannot start beagle because there are imaginary eigenvectors in the susbtitution model");
-        }
+//        }else {
+//        	Log.warning("Warning: cannot start beagle because there are imaginary eigenvectors in the susbtitution model");
+//        }
         // No Beagle instance was found, so we use the good old java likelihood core
         beagle = null;
 

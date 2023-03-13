@@ -100,4 +100,8 @@ public class MutationDeathModel extends SubstitutionModel.Base {
     	}
     }
 
+    @Override
+    public boolean canReturnComplexDiagonalization() {
+    	return true;
+    }
 } // class MutationDeathModel
