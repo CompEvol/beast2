@@ -318,14 +318,16 @@ public class PackageManager {
         		loadURL(url, is, packageMap);
             } catch (IOException e) {
     			if (url.toString().equals(PACKAGES_XML)) {
+    				URL urlBackup = null;
     				try {
-    					is = new URL(PACKAGES_XML_BACKUP).openStream();
-    					loadURL(url, is, packageMap);
+        				urlBackup = new URL(PACKAGES_XML_BACKUP);
+    					is = urlBackup.openStream();
+    					loadURL(urlBackup, is, packageMap);
     				} catch (IOException|ParserConfigurationException|SAXException e2) {
     	                if (brokenPackageRepositories.isEmpty())
     	                    firstException = e;
 
-    	                brokenPackageRepositories.add(url);
+    	                brokenPackageRepositories.add(urlBackup);
     				}
     			}
                 if (brokenPackageRepositories.isEmpty())
@@ -712,6 +714,8 @@ public class PackageManager {
                 String packageName = packageElement.getAttribute("name");
                 Map<String,Set<String>> services = parseServices(doc);
         		BEASTClassLoader.delService(services, packageName);
+            } catch (NullPointerException e) {
+            	// map not initialised -- ignore
             } catch (Exception e) {
                 // ignore
             	e.printStackTrace();
