@@ -89,6 +89,7 @@ public class PackageManager {
 
     public final static String PACKAGES_XML = "https://raw.githubusercontent.com/CompEvol/CBAN/master/packages" + 
     		BEASTVersion.INSTANCE.getMajorVersion() +".xml";
+    public final static String PACKAGES_XML_BACKUP = "https://bitbucket.org/rrb/cbanclone/raw/master/packages2.7.xml";
 
     private final static Set<String> RECOMMENDED_PACKAGES = new HashSet<>(Arrays.asList("ORC", "starbeast3"));
 
@@ -312,77 +313,26 @@ public class PackageManager {
 
         for (URL url : urls) {
         	InputStream is = null;
-            try {            		
+        	try {            		
             	is = url.openStream();
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document document = builder.parse(new InputSource(is));
-
-                Element rootElement = document.getDocumentElement(); // <packages>
-                NodeList nodes = rootElement.getChildNodes();
-
-                for(int i = 0; i < nodes.getLength(); i++) {
-                    Node node = nodes.item(i);
-
-                    if(node instanceof Element){
-                        Element element = (Element) node;
-                        String packageName = element.getAttribute("name");
-                        Package pkg;
-                        if (packageMap.containsKey(packageName)) {
-                            pkg = packageMap.get(packageName);
-                        } else {
-                            pkg = new Package(packageName);
-//                            packageMap.put(packageName, pkg); // issue 754
-                        }
-                        pkg.setDescription(element.getAttribute("description"));
-
-                        PackageVersion packageVersion = new PackageVersion(element.getAttribute("version"));
-
-                        if (element.hasAttribute("projectURL") &&
-                                !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
-                            pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
-
-                        Set<PackageDependency> packageDependencies = new HashSet<PackageDependency>();
-                        NodeList depNodes = element.getElementsByTagName("depends");
-                        for (int j = 0; j < depNodes.getLength(); j++) {
-                            Element dependson = (Element) depNodes.item(j);
-                            String dependencyName = dependson.getAttribute("on");
-                            String atLeastString = dependson.getAttribute("atleast");
-                            String atMostString = dependson.getAttribute("atmost");
-                            PackageDependency dependency =  new PackageDependency(
-                                    dependencyName,
-                                    atLeastString.isEmpty() ? null : new PackageVersion(atLeastString),
-                                    atMostString.isEmpty() ? null : new PackageVersion(atMostString));
-
-                            packageDependencies.add(dependency);
-                        }
-
-                        URL packageURL = new URL(element.getAttribute("url"));
-
-                        pkg.addAvailableVersion(packageVersion, packageURL, packageDependencies);
-
-                        // issue 754 Package manager should make project links compulsory
-                        if (pkg.isValidFormat()) {
-                            packageMap.put(packageName, pkg);
-                        } else{
-                            String urlStr = pkg.getProjectURL()==null ? "null" : pkg.getProjectURL().toString();
-                            System.err.println("Warning: filter " + packageName + " from package manager " +
-                                    " because of invalid project URL " + urlStr + " !");
-                        }
-                    }
-                }
-                is.close();
+        		loadURL(url, is, packageMap);
             } catch (IOException e) {
+    			if (url.toString().equals(PACKAGES_XML)) {
+    				try {
+    					is = new URL(PACKAGES_XML_BACKUP).openStream();
+    					loadURL(url, is, packageMap);
+    				} catch (IOException|ParserConfigurationException|SAXException e2) {
+    	                if (brokenPackageRepositories.isEmpty())
+    	                    firstException = e;
+
+    	                brokenPackageRepositories.add(url);
+    				}
+    			}
                 if (brokenPackageRepositories.isEmpty())
                     firstException = e;
 
                 brokenPackageRepositories.add(url);
-            } catch (ParserConfigurationException e) {
-                if (brokenPackageRepositories.isEmpty())
-                    firstException = e;
-
-                brokenPackageRepositories.add(url);
-            } catch (SAXException e) {
+            } catch (ParserConfigurationException | SAXException e) {
                 if (brokenPackageRepositories.isEmpty())
                     firstException = e;
 
@@ -404,6 +354,69 @@ public class PackageManager {
             throw new PackageListRetrievalException(message, firstException);
         }
     }
+
+	private static void loadURL(URL url, InputStream is, Map<String, Package> packageMap) throws IOException, ParserConfigurationException, SAXException {
+		
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(new InputSource(is));
+
+        Element rootElement = document.getDocumentElement(); // <packages>
+        NodeList nodes = rootElement.getChildNodes();
+
+        for(int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+
+            if(node instanceof Element){
+                Element element = (Element) node;
+                String packageName = element.getAttribute("name");
+                Package pkg;
+                if (packageMap.containsKey(packageName)) {
+                    pkg = packageMap.get(packageName);
+                } else {
+                    pkg = new Package(packageName);
+//                        packageMap.put(packageName, pkg); // issue 754
+                    }
+                pkg.setDescription(element.getAttribute("description"));
+
+                PackageVersion packageVersion = new PackageVersion(element.getAttribute("version"));
+
+                if (element.hasAttribute("projectURL") &&
+                        !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
+                    pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
+
+                Set<PackageDependency> packageDependencies = new HashSet<PackageDependency>();
+                NodeList depNodes = element.getElementsByTagName("depends");
+                for (int j = 0; j < depNodes.getLength(); j++) {
+                    Element dependson = (Element) depNodes.item(j);
+                    String dependencyName = dependson.getAttribute("on");
+                    String atLeastString = dependson.getAttribute("atleast");
+                    String atMostString = dependson.getAttribute("atmost");
+                    PackageDependency dependency =  new PackageDependency(
+                            dependencyName,
+                            atLeastString.isEmpty() ? null : new PackageVersion(atLeastString),
+                            atMostString.isEmpty() ? null : new PackageVersion(atMostString));
+
+                    packageDependencies.add(dependency);
+                }
+
+                URL packageURL = new URL(element.getAttribute("url"));
+
+                pkg.addAvailableVersion(packageVersion, packageURL, packageDependencies);
+
+                // issue 754 Package manager should make project links compulsory
+                if (pkg.isValidFormat()) {
+                    packageMap.put(packageName, pkg);
+                } else{
+                    String urlStr = pkg.getProjectURL()==null ? "null" : pkg.getProjectURL().toString();
+                    System.err.println("Warning: filter " + packageName + " from package manager " +
+                            " because of invalid project URL " + urlStr + " !");
+                }
+            }
+        }
+        is.close();
+    }
+
 
     /**
      * Looks through packages to be installed and uninstalls any that are already installed but
