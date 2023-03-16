@@ -199,8 +199,8 @@ public interface SiteModelInterface {
         /**
          * Does the matrix have imaginary eigenvectors/values? If so, then it is not compatible with beagle
          */
-		public boolean hasImaginaryEigenvectors() {
-			return substModelInput.get().hasImaginaryEigenvectors();
+		public boolean canReturnComplexDiagonalization() {
+			return substModelInput.get().canReturnComplexDiagonalization();
 		}
 
     } // class SiteModelInterface.Base

@@ -66,7 +66,7 @@ public class ComplexSubstitutionModel extends GeneralSubstitutionModel {
 	
 	
 	@Override
-    public boolean hasImaginaryEigenvectors() {
+    public boolean canReturnComplexDiagonalization() {
         return true;
     }
 	
