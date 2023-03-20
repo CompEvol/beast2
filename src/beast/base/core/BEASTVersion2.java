@@ -11,9 +11,9 @@ public class BEASTVersion2 extends BEASTVersion {
     /**
      * Version string: assumed to be in format x.x.x
      */
-    private static final String VERSION = "2.7.3";
+    private static final String VERSION = "2.7.4";
 
-    private static final String DATE_STRING = "2002-2022";
+    private static final String DATE_STRING = "2002-2023";
 
     private static final boolean IS_PRERELEASE = true;
 //

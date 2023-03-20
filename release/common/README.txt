@@ -1,7 +1,7 @@
-                    BEAST v2.7.3 2022
-                 Beast 2 development team 2011-2022
+                    BEAST v2.7.4 2023
+                 Beast 2 development team 2011-2023
 
-Last updated: October 2022
+Last updated: March 2023
 
 Contents:
 1) INTRODUCTION
@@ -108,14 +108,14 @@ BEAST arguments:
     -resume Allow appending of log files
     -validate Parse the XML, but do not run -- useful for debugging XML
     -errors Specify maximum number of numerical errors before stopping
-    -threads The number of computational threads to use (default auto)
+    -threads The number of computational threads to use (default 1), -1 for number of cores
     -java Use Java only, no native implementations
     -noerr Suppress all output to standard error
     -loglevel error,warning,info,debug,trace
+    -instances divide site patterns amongst number of threads (use with -threads option)
     -beagle Use beagle library if available
     -beagle_info BEAGLE: show information on available resources
     -beagle_order BEAGLE: set order of resource use
-    -beagle_instances BEAGLE: divide site patterns amongst instances
     -beagle_CPU BEAGLE: use CPU instance
     -beagle_GPU BEAGLE: use GPU instance if available
     -beagle_SSE BEAGLE: use SSE extensions if available
@@ -130,6 +130,7 @@ BEAST arguments:
     -DFout BEAST XML file written when -DF option is used
     -sampleFromPrior samples from prior for MCMC analysis (by adding sampleFromPrior="true" in the first run element)
     -version_file Provide a version file containing a list of services to explicitly allow. (Useful for package development.)
+    -packagedir Set user package directory instead of using the default
     
 For example:
 

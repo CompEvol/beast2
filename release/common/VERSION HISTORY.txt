@@ -1,10 +1,27 @@
-                    BEAST v2.7.3 2022
-                 Beast 2 development team 2011-2022
+                    BEAST v2.7.4 2023
+                 Beast 2 development team 2011-2023
 Version History
-Last updated: December 2022
+Last updated: March 2023
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.4
+	BEAST:
+	o add commmand line option for setting package user directory
+	o more robust -version_file handling
+	o make beast script find BEAGLE easier on arm cpu
+	o allow BEAGLE usage for irreversible models, and make BEAGLE rootFrequencies input aware
+	o more robust AVMN operator, uncertain alignment 
+	BEAUti:
+	o fix bug that prevented BEAUti from saving files if directory was removed 
+	o make sure tip date operator is added when tips-only for MRCA prior is set
+	o add functionality for auto-configuring tip date
+	o allow 'Cancel' to stop BEAUti from closing
+	o make short-cut keys on OS-X use command key instead of control
+	Package manager 
+	o selects CBAN clone if the default is not available
+	o add -dir option to switch user package directory
+
 Version 2.7.3
 	Allow all packages to be installed, not just a small subset
 	Add support for various packages
