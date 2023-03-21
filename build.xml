@@ -138,6 +138,7 @@
                destdir="${build}"
                classpathref="classpath"
                fork="true"
+			   encoding="UTF-8"
                memoryinitialsize="256m"
                memorymaximumsize="1024m"
                includeAntRuntime='false'>
@@ -178,6 +179,7 @@
                destdir="${build}"
                classpathref="classpath"
                fork="true"
+			   encoding="UTF-8"
                memoryinitialsize="256m"
                memorymaximumsize="1024m"
                includeAntRuntime='false'>
