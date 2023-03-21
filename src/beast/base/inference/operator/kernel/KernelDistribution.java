@@ -106,7 +106,7 @@ public interface KernelDistribution {
 				b = 0.5 * (Math.sqrt(12-3 * a * a) - a);
 				break;
 	        case bactrian_airplane: {
-	        	// b is root of 4b^3−12b+6a−a^3=0
+	        	// b is root of 4b^3-12b+6a-a^3=0
 	        	// which according to https://www.wolframalpha.com/input/?i=4x%5E3%E2%88%9212x%2B6a%E2%88%92a%5E3%3D0
 	        	// is below (the other two roots are imaginary)
 	        	double a2 = a * a;
@@ -117,7 +117,7 @@ public interface KernelDistribution {
 					2/Math.pow(a3 + Math.sqrt(a6 - 12 * a4 + 36 * a2 - 64) - 6 * a,1.0/3.0);
 	        } break;
 	        case bactrian_strawhat: {
-	        	// b is root of 5x^3−15x+10a−2a^3
+	        	// b is root of 5x^3-15x+10a-2a^3
 	        	// which according to https://www.wolframalpha.com/input/?i=5x%5E3%E2%88%9215x%2B10a%E2%88%922a%5E3
 	        	// is 
 	        	// x = (a^3 + sqrt(a^6 - 10 a^4 + 25 a^2 - 25) - 5 a)^(1/3)/5^(1/3) + 5^(1/3)/(a^3 + sqrt(a^6 - 10 a^4 + 25 a^2 - 25) - 5 a)^(1/3)

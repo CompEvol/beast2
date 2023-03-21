@@ -148,14 +148,14 @@ public abstract class CalculationNode extends BEASTObject {
     protected int preOperatorChecksum;
 
     /**
-     * Store the current checksum as the ´preOperatorChecksum´.
+     * Store the current checksum as the 'preOperatorChecksum'.
      */
     public void storeChecksum() {
         preOperatorChecksum = getChecksum();
     }
 
     /**
-     * Check whether the current checksum matches the ´preOperatorChecksum´.
+     * Check whether the current checksum matches the 'preOperatorChecksum'.
      * @return true iff the checksums match
      */
     public boolean matchesOldChecksum() {

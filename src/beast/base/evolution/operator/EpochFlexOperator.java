@@ -127,15 +127,15 @@ public class EpochFlexOperator extends Operator {
 //
 //			Subtract second form first:
 //
-//			h1’-h2’ = s * (h1-h2) so s =  (h1’-h2’)/(h1-h2). Fill s in first equation gives L.
+//			h1'-h2' = s * (h1-h2) so s =  (h1'-h2')/(h1-h2). Fill s in first equation gives L.
 //
 //			Given two more nodes above U at heights h3, h4
 //
-//			h3’ = h3 + delta
+//			h3' = h3 + delta
 //
-//			so delta = h3’ - h3
+//			so delta = h3' - h3
 //
-//			delta = U’ - U where U’ = L + s * (U-L) so
+//			delta = U' - U where U' = L + s * (U-L) so
 //			delta = L + s * (U-L) - U =>
 //			delta = (1+s)L + (s-1)U
 //			U = (delta - (1+s)L)/(s-1)
