@@ -395,7 +395,7 @@
     <!--<property name="AppleSigner" value="Developer ID Application: Remco Bouckaert (LHFJWE5U63)" />-->
     <property name="AppleSigner" value="Developer ID Application: Walter Xie (27V5YMX65C)" />
 
-    <property name="jvm_version" value="1.8+"/>
+    <property name="jvm_version" value="17.0+"/>
 
     <!-- Create the app bundle -->
     <target name="bundle">
