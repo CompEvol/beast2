@@ -12,6 +12,8 @@ export finalDMGName=${title}
 
 mkdir "BEAST/BEAST ${version}"
 mv BEAST/* "BEAST/BEAST ${version}"
+# issue 1100 Mac release err: hdiutil create failed - Permission denied
+chmod -Rf u+w "BEAST/BEAST ${version}/jre"
 
 cp install.png ${source}/${backgroundPictureName}
 
