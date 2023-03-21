@@ -26,9 +26,9 @@ BEAST_LIB="$BEAST/lib"
 export JAVA_HOME="$BEAST/jre"
 
 if [ -x "${JAVA_HOME}/bin/java" ]; then
-  JAVA=java
-else
   JAVA="$JAVA_HOME"/bin/java
+else
+  JAVA=java
 fi
 
 CPU=`uname -m`
