@@ -329,11 +329,12 @@ public class PackageManager {
 
     	                brokenPackageRepositories.add(urlBackup);
     				}
+    			} else {
+	                if (brokenPackageRepositories.isEmpty())
+	                    firstException = e;
+	
+	                brokenPackageRepositories.add(url);
     			}
-                if (brokenPackageRepositories.isEmpty())
-                    firstException = e;
-
-                brokenPackageRepositories.add(url);
             } catch (ParserConfigurationException | SAXException e) {
                 if (brokenPackageRepositories.isEmpty())
                     firstException = e;
