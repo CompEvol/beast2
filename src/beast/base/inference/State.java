@@ -32,7 +32,9 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,6 +67,8 @@ public class State extends BEASTObject {
 //    public Input<Boolean> m_checkPoint =
 //            new Input<>("checkpoint", "keep saved states (every X samples).", false);
 
+  public Input<Boolean> experimentalInput = new Input<>("experimental", "Use experimental code to calculate calcNodePath.", false);
+  private boolean experimental;
     /**
      * The components of the state, for instance tree & parameters.
      * This represents the current state, but a copy is kept so that when
@@ -225,7 +229,9 @@ public class State extends BEASTObject {
         trieSize = 0;
         // add the empty list for the case none of the StateNodes have changed
         trie.list = new ArrayList<>();
-    } // initAndValidate
+
+        experimental = experimentalInput.get();
+    } // initialise
 
 
     /**
@@ -589,6 +595,10 @@ public class State extends BEASTObject {
      * @throws IllegalArgumentException 
      */
     private List<CalculationNode> calculateCalcNodePath() throws IllegalArgumentException, IllegalAccessException {
+    	if (experimental) {
+    		return calculateCalcNodePath2();
+    	}
+    	
         final List<CalculationNode> calcNodes = new ArrayList<>();
 //    	for (int i = 0; i < stateNode.length; i++) {
 //    		if (m_changedStateNodeCode.get(i)) {
@@ -649,8 +659,70 @@ public class State extends BEASTObject {
         return calcNodes;
     } // calculateCalcNodePath
 
+    /** optimised version of calculateCalcNodePath -- needs testing **/
+    private List<CalculationNode> calculateCalcNodePath2() {
+        final List<CalculationNode> calcNodes = new ArrayList<>();
+        final Set<CalculationNode> seen = new HashSet<>();
+        
+        boolean progress = false;
+        for (int k = 0; k < nrOfChangedStateNodes; k++) {
+            int i = changeStateNodes[k];
+            // go grab the path to the Runnable
+            // first the outputs of the StateNodes that is changed
+            for (CalculationNode node : stateNodeOutputs[i]) {
+                if (!seen.contains(node)) {
+                	calcNodes.add(node);
+                    seen.add(node);
+                    progress = true;
+                }
+            }
+        }
+        
+        // next the path following the outputs
+        if (progress) {
+            progress = false;
+            // loop over beastObjects till no more beastObjects can be added
+            // efficiency is no issue here, assuming the graph remains 
+            // constant
+            for (int calcNodeIndex = 0; calcNodeIndex < calcNodes.size(); calcNodeIndex++) {
+                CalculationNode node = calcNodes.get(calcNodeIndex);
+                for (BEASTInterface output : outputMap.get(node)) {
+                    if (output instanceof CalculationNode) {
+                        final CalculationNode calcNode = (CalculationNode) output;
+                        if (!seen.contains(calcNode)) {
+                            calcNodes.add(calcNode);
+                            seen.add(calcNode);
+                            progress = true;
+                        }
+                    } else {
+                        throw new RuntimeException("DEVELOPER ERROR: found a"
+                                + " non-CalculatioNode ("
+                                +output.getClass().getName()
+                                +") on path between StateNode and Runnable");
+                    }
+                }
+            }
+        }
 
-    public double robustlyCalcPosterior(final Distribution posterior) {
+        // put calc nodes in partial order
+        for (int i = calcNodes.size()-1; i > 0; i--) {
+            CalculationNode node = calcNodes.get(i);
+            Set<BEASTInterface> outputs = node.getOutputs();
+            for (int j = 0; j < i; j++) {
+                if (outputs.contains(calcNodes.get(j))) {
+                    // swap
+                    final CalculationNode node2 = calcNodes.get(j);
+                    calcNodes.set(j, node);
+                    calcNodes.set(i, node2);
+                    i++;
+                    break;
+                }
+            }
+        }
+        return calcNodes;
+	}
+
+	public double robustlyCalcPosterior(final Distribution posterior) {
         store(-1);
         setEverythingDirty(true);
         //state.storeCalculationNodes();
