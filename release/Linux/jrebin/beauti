@@ -31,5 +31,5 @@ else
   JAVA="$JAVA_HOME"/bin/java
 fi
 
-"$JAVA" -Dlauncher.wait.for.exit=true -Xms256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeautiLauncher -capture $*
+"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeautiLauncher -capture $*
 
