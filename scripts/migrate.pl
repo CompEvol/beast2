@@ -406,6 +406,13 @@ beast.math.distributions.FossilPrior cladeage.math.distributions.FossilPrior
 beast.math.distributions.DuoFossilPrior cladeage.math.distributions.DuoFossilPrior
 beast.math.distributions.DuoFossilCalibration cladeage.math.distributions.DuoFossilCalibration
 beast.math.distributions.CompoundFossilPrior cladeage.math.distributions.CompoundFossilPrior
+beast.evolution.tree.SimpleRandomTree beastlabs.evolution.tree.SimpleRandomTree
+beast.evolution.speciation.BirthDeathSkylineModel bdsky.evolution.speciation.BirthDeathSkylineModel
+beast.geo.SampledTraitLikelihood breakaway.geo.SampledTraitLikelihood
+beast.geo.DistanceBasedDiffusionModel breakaway.geo.DistanceBasedDiffusionModel
+beast.geo.IslandHopLocationParameter breakaway.geo.IslandHopLocationParameter
+beast.geo.IslandHopOperator breakaway.geo.IslandHopOperator
+beast.geo.IslandHopeMetaOperator breakaway.geo.IslandHopeMetaOperator
 '
 ;
 
