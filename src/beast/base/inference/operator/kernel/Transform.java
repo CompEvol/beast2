@@ -26,6 +26,7 @@
 package beast.base.inference.operator.kernel;
 
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -1388,6 +1389,266 @@ public interface Transform {
 			return 2;
 		}
     }
+
+    @Description("Log transform with lower bound")
+    public class LowerBound extends UnivariableTransform {
+    	final public Input<Double> lowerInput = new Input<>("lower", "lower bound for this parameter", 0.0);
+    	
+    	double lower;
+    	
+    	public LowerBound() {    		
+    		super(new ArrayList<>());
+    	}
+    	
+    	public LowerBound(Function parameter) {
+    		myInitByName("f", parameter);
+    	}
+
+    	public LowerBound(List<Function> parameter) {
+    		super(parameter);
+    	}
+
+    	@Override
+    	public void initAndValidate() {
+    		super.initAndValidate();
+    		lower = lowerInput.get();
+    	}
+
+		@Override
+		public int getMinDimensions() {
+			return 1;
+		}
+
+		@Override
+		public String getTransformName() {
+			return "lowerbound";
+		}
+
+		@Override
+		public double transform(double value) {
+        	return Math.log(value - lower);
+		}
+
+		@Override
+		public double inverse(double value) {
+        	double r = Math.exp(value - lower) + lower;
+    		return r;
+		}
+
+		@Override
+        public double gradientInverse(double value) { 
+			return Math.exp(value - lower); 
+        }
+
+		@Override
+        public double updateGradientLogDensity(double gradient, double value) {
+            // gradient == gradient of inverse()
+            // value == gradient of inverse() (value is untransformed)
+            // 1.0 == gradient of log Jacobian of inverse()
+            return gradient * (value - lower) + 1.0;
+        }
+
+		@Override
+		protected double getGradientLogJacobianInverse(double value) {
+            return 1.0;
+		}
+
+        @Override
+        public double updateDiagonalHessianLogDensity(double diagonalHessian, double gradient, double value) {
+            // value == inverse()
+            // diagonalHessian == hessian of inverse()
+            // gradient == gradient of inverse()
+            return value * (gradient + (value - lower) * diagonalHessian);
+        }
+
+        @Override
+        public double updateOffdiagonalHessianLogDensity(double offdiagonalHessian, double transfomationHessian, double gradientI, double gradientJ, double valueI, double valueJ) {
+            return offdiagonalHessian * (valueI - lower) * (valueJ - lower) + gradientJ * transfomationHessian;
+        }
+
+        @Override
+        public double gradient(double value) {
+            return value - lower;
+        }
+
+		@Override
+        public double getLogJacobian(double value) { 
+			return -Math.log(value - lower); 
+        }
+    }
+    
+    @Description("Log transform with upper bound")
+    public class UpperBound extends UnivariableTransform {
+    	final public Input<Double> upperInput = new Input<>("upper", "upper bound for this parameter", 0.0);
+    	
+    	double upper;
+    	
+    	public UpperBound() {    		
+    		super(new ArrayList<>());
+    	}
+    	
+    	public UpperBound(Function parameter) {
+    		myInitByName("f", parameter);
+    	}
+
+    	public UpperBound(List<Function> parameter) {
+    		super(parameter);
+    	}
+
+    	@Override
+    	public void initAndValidate() {
+    		super.initAndValidate();
+    		upper = upperInput.get();
+    	}
+
+		@Override
+		public int getMinDimensions() {
+			return 1;
+		}
+
+		@Override
+		public String getTransformName() {
+			return "upperbound";
+		}
+
+		@Override
+		public double transform(double value) {
+        	return Math.log(upper - value);
+		}
+
+		@Override
+		public double inverse(double value) {
+        	double r = upper - Math.exp(upper - value);
+    		return r;
+		}
+
+		@Override
+        public double gradientInverse(double value) { 
+			return -Math.exp(value); 
+        }
+
+		@Override
+        public double updateGradientLogDensity(double gradient, double value) {
+            // gradient == gradient of inverse()
+            // value == gradient of inverse() (value is untransformed)
+            // 1.0 == gradient of log Jacobian of inverse()
+            return gradient * (upper - value) + 1.0;
+        }
+
+		@Override
+		protected double getGradientLogJacobianInverse(double value) {
+            return 1.0;
+		}
+
+        @Override
+        public double updateDiagonalHessianLogDensity(double diagonalHessian, double gradient, double value) {
+            // value == inverse()
+            // diagonalHessian == hessian of inverse()
+            // gradient == gradient of inverse()
+            return value * (gradient + (upper - value) * diagonalHessian);
+        }
+
+        @Override
+        public double updateOffdiagonalHessianLogDensity(double offdiagonalHessian, double transfomationHessian, double gradientI, double gradientJ, double valueI, double valueJ) {
+            return offdiagonalHessian * (upper - valueI ) * (upper - valueJ) + gradientJ * transfomationHessian;
+        }
+
+        @Override
+        public double gradient(double value) {
+            return upper - value;
+        }
+
+		@Override
+        public double getLogJacobian(double value) { 
+			return -Math.log(upper - value); 
+        }
+    }
+    
+    @Description("Logit transform with lower and upper bound")
+    public class Interval extends UnivariableTransform {
+    	final public Input<Double> upperInput = new Input<>("upper", "upper bound for this parameter", 1.0);
+    	final public Input<Double> lowerInput = new Input<>("lower", "lower bound for this parameter", 0.0);
+
+    	double lower;
+    	double upper;
+    	
+    	public Interval() {    		
+    		super(new ArrayList<>());
+    	}
+    	
+    	public Interval(Function parameter) {
+    		myInitByName("f", parameter);
+    	}
+
+    	public Interval(List<Function> parameter) {
+    		super(parameter);
+    	}
+
+    	@Override
+    	public void initAndValidate() {
+    		super.initAndValidate();
+    		lower = lowerInput.get();
+    		upper = upperInput.get();
+    	}
+
+		@Override
+		public int getMinDimensions() {
+			return 1;
+		}
+
+		@Override
+		public String getTransformName() {
+			return "interval";
+		}
+
+		@Override
+		public double transform(double value) {
+	    	return Math.log(value - lower) - Math.log(upper - value);
+		}
+
+		@Override
+		public double inverse(double value) {
+        	double r = (upper - lower) * 1.0/(1+Math.exp(-value)) + lower;
+    		return r;
+		}
+
+		@Override
+        public double gradientInverse(double value) {
+			throw new RuntimeException("Not implemented yet");
+        }
+
+		@Override
+        public double updateGradientLogDensity(double gradient, double value) {
+			throw new RuntimeException("Not implemented yet");
+        }
+
+		@Override
+		protected double getGradientLogJacobianInverse(double value) {
+			throw new RuntimeException("Not implemented yet");
+		}
+
+        @Override
+        public double updateDiagonalHessianLogDensity(double diagonalHessian, double gradient, double value) {
+			throw new RuntimeException("Not implemented yet");
+        }
+
+        @Override
+        public double updateOffdiagonalHessianLogDensity(double offdiagonalHessian, double transfomationHessian, double gradientI, double gradientJ, double valueI, double valueJ) {
+			throw new RuntimeException("Not implemented yet");
+        }
+
+        @Override
+        public double gradient(double value) {
+			throw new RuntimeException("Not implemented yet");
+        }
+
+		@Override
+        public double getLogJacobian(double value) {
+			return -Math.log(value - lower) - Math.log(upper - value); 
+        }
+
+    }    
+
 
     @Description(value="Composable transform: apply inner transforms first, then outer transform on the result")
     public class Compose extends UnivariableTransform  {
