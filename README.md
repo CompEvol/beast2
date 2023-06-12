@@ -24,7 +24,7 @@ Development Rules and Philosophy
 
 Aspects relating to BEAST 2 development such as coding style, version
 numbering and design philosophy are discussed on the BEAST 2 web page at
-http://www.beast2.org/package-development-guide/core-development-rules/.
+[beast2.org/package-development-guide/core-development-rules](https://www.beast2.org/package-development-guide/core-development-rules/).
 
 License
 -------
