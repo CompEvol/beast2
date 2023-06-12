@@ -4,7 +4,7 @@ BEAST 2
 [![Build Status](https://github.com/CompEvol/beast2/workflows/Core%20tests/badge.svg)](https://github.com/CompEvol/beast2/actions?query=workflow%3A%22Core+tests%22)
 
 BEAST is a cross-platform program for Bayesian inference using MCMC of
-molecular sequences. It is entirely orientated towards rooted,
+molecular sequences. It is entirely oriented towards rooted,
 time-measured phylogenies inferred using strict or relaxed molecular
 clock models. It can be used as a method of reconstructing phylogenies
 but is also a framework for testing evolutionary hypotheses without
@@ -17,14 +17,14 @@ analysing the results.
 NOTE: This directory contains the BEAST 2 source code, and is
 therefore of interest primarily to BEAST 2 developers.  For binary
 releases, user tutorials and other information you should visit the
-project website at www.beast2.org.
+project website at [beast2.org](https://www.beast2.org).
 
 Development Rules and Philosophy
 --------------------------------
 
 Aspects relating to BEAST 2 development such as coding style, version
 numbering and design philosophy are discussed on the BEAST 2 web page at
-http://www.beast2.org/package-development-guide/core-development-rules/.
+[beast2.org/package-development-guide/core-development-rules](https://www.beast2.org/package-development-guide/core-development-rules/).
 
 License
 -------
