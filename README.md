@@ -17,7 +17,7 @@ analysing the results.
 NOTE: This directory contains the BEAST 2 source code, and is
 therefore of interest primarily to BEAST 2 developers.  For binary
 releases, user tutorials and other information you should visit the
-project website at www.beast2.org.
+project website at [beast2.org](https://www.beast2.org).
 
 Development Rules and Philosophy
 --------------------------------
