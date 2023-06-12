@@ -4,7 +4,7 @@ BEAST 2
 [![Build Status](https://github.com/CompEvol/beast2/workflows/Core%20tests/badge.svg)](https://github.com/CompEvol/beast2/actions?query=workflow%3A%22Core+tests%22)
 
 BEAST is a cross-platform program for Bayesian inference using MCMC of
-molecular sequences. It is entirely orientated towards rooted,
+molecular sequences. It is entirely oriented towards rooted,
 time-measured phylogenies inferred using strict or relaxed molecular
 clock models. It can be used as a method of reconstructing phylogenies
 but is also a framework for testing evolutionary hypotheses without
