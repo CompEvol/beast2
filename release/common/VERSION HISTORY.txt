@@ -1,11 +1,28 @@
                     BEAST v2.7.4 2023
                  Beast 2 development team 2011-2023
 Version History
-Last updated: March 2023
+Last updated: June 2023
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
-Version 2.7.4
+Version 2.7.5 June 2023
+	BEAST
+	o bounded transforms added
+	o higher default heap sizes for Windows
+	o fixed command line argument parsing problem
+	BEAUti
+	o make linking by combobox changes work in partition panel of BEAUti
+	o make drag/drop work in FileListInputEditor
+	o add warning when adding hyperpriors on parametric distribution parameters
+	o fix MRCA prior editor using the wrong tree (useful for multi-species coalescent analyses)
+	o make it possible for the MCMC analysis to be replaced by others
+	o added command line options to import nucleotide and AA fasta files.
+	o improve tool tips for PriorInputEditor
+	o fix prior panel parametric distribution display
+	o make BEAUti show coalescent based tree prior inputs
+	Logcombiner GUI selects appropriate file types in file selector by default
+
+Version 2.7.4 March 2023
 	BEAST:
 	o add commmand line option for setting package user directory
 	o more robust -version_file handling
@@ -22,7 +39,7 @@ Version 2.7.4
 	o selects CBAN clone if the default is not available
 	o add -dir option to switch user package directory
 
-Version 2.7.3
+Version 2.7.3 December 2022
 	Allow all packages to be installed, not just a small subset
 	Add support for various packages
 	Add -packagedir and -version_file CLI options to BEAST, BEAUti
@@ -30,10 +47,10 @@ Version 2.7.3
 	BEAUti: fix bugs in templates
 	BEAUti more robust when reloading XML into BEAUti
 
-Version 2.7.2
+Version 2.7.2 November 2022
         Add suppor for various packages	
 
-Version 2.7.1
+Version 2.7.1 October 2022
 	Fix assorted launch issues on Windows, Mac and Linux
 	DocMaker functional again
 	Applauncher: deal with superfluous icon not found messages 
@@ -50,7 +67,7 @@ Version 2.7.1
 	DensiTree update to v3.0.1, fixing a display bug on Apple Silicon
 	Update migration script for converting v2.6 packages to v2.7
 
-Version 2.7.0
+Version 2.7.0 August 2022
 	BEAUti has had a facelift, allows dark mode
 	BEAUti templates reorganised for better performance
 	"Help me choose" buttons added to BEAUti for direct targeted help
@@ -60,7 +77,7 @@ Version 2.7.0
 	Code reorganised, BEAST split into two packages: BEAST.base and BEAST.app
 	Module like treatment of BEAST packages to prevent package library clashes
 
-Version 2.6.7
+Version 2.6.7 
 	SimulatedAlignment correctly links indices of tree to alignment
 	Option 'ascii' added to Logger to allow it to convert output to ascii or not
 	Loading two dimensional data into trait dialog robustified
