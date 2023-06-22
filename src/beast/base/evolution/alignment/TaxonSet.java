@@ -53,7 +53,7 @@ public void initAndValidate() {
         if (taxonList.size() > 0) {
             throw new IllegalArgumentException("Only one of taxon and alignment should be specified, not both (id=" + getID() + ").");
         }
-        taxaNames = alignmentInput.get().taxaNames;
+        taxaNames = alignmentInput.get().getTaxaNames();
     } else {
         if (taxonList.size() == 0) {
             throw new IllegalArgumentException(getID() + ": Either taxon or alignment should be specified (id=" + getID() + ").");
