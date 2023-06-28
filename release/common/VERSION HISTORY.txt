@@ -1,4 +1,4 @@
-                    BEAST v2.7.4 2023
+                    BEAST v2.7.5 2023
                  Beast 2 development team 2011-2023
 Version History
 Last updated: June 2023
@@ -6,11 +6,12 @@ Last updated: June 2023
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
 Version 2.7.5 June 2023
-	BEAST
+	BEAST:
 	o bounded transforms added
 	o higher default heap sizes for Windows
 	o fixed command line argument parsing problem
-	BEAUti
+	o enable quiting BEAST on OS X with cmd-Q
+	BEAUti:
 	o make linking by combobox changes work in partition panel of BEAUti
 	o make drag/drop work in FileListInputEditor
 	o add warning when adding hyperpriors on parametric distribution parameters
@@ -20,7 +21,14 @@ Version 2.7.5 June 2023
 	o improve tool tips for PriorInputEditor
 	o fix prior panel parametric distribution display
 	o make BEAUti show coalescent based tree prior inputs
-	Logcombiner GUI selects appropriate file types in file selector by default
+	o show input dialog in center of BEAUti when drag/dropping files in partitions panel
+	o fasta importer allows choosing datatype other than nucleotide and aminoacid
+	o BEAUti package manager buttons and taxon set editor show correctly with bootstrap theme
+	o x-axis of graph for parametric distributions in prior panel scales better
+	o better error messages
+	o selected theme indicated in view menu 
+	Logcombiner:
+	o GUI selects appropriate file types in file selector by default
 
 Version 2.7.4 March 2023
 	BEAST:
