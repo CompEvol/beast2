@@ -711,7 +711,7 @@ public class Tree extends StateNode implements TreeInterface {
         printTranslate(node, translateLines, nodeCount);
         Collections.sort(translateLines);
         for (String line : translateLines) {
-            line = line.substring(line.indexOf(" ", 5)).replace(',', ' ').trim();
+            line = line.substring(line.indexOf(" ", 7)).replace(',', ' ').trim();
             out.println("\t\t\t" + line);
         }
     }
