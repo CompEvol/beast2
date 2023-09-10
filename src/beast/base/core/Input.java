@@ -30,6 +30,7 @@ import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -568,8 +569,8 @@ public class Input<T> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void setStringValue(final String stringValue, final BEASTInterface beastObject) {
         // figure out the type of T and create object based on T=Integer, T=Double, T=Boolean, T=Valuable
-        if (value instanceof List<?>) {
-            List list = (List) value;
+        if (value instanceof Collection<?>) {
+            Collection list = (Collection) value;
             list.clear();
             // remove start and end spaces
             String stringValue2 = stringValue.replaceAll("^\\s+", "");
@@ -586,6 +587,12 @@ public class Input<T> {
                     list.add(str.equals("1") || str.equals("true") || str.equals("yes"));
                 } else if (theClass.equals(String.class)) {
                     list.add(new String(stringValues[i % stringValues.length]));
+                } else {
+                	Object o = constructFromString(stringValues[i % stringValues.length]); 
+                	list.add(o);
+                    if (o instanceof BEASTInterface) {
+                        ((BEASTInterface) o).getOutputs().add(beastObject);
+                    }
                 }
             }
             return;
@@ -647,46 +654,47 @@ public class Input<T> {
         }
 
         // call a string constructor of theClass
-        try {
-            Constructor ctor;
-            Object v = stringValue;
-            try {
-            	ctor = theClass.getDeclaredConstructor(String.class);
-            } catch (NoSuchMethodException e) {
-            	// we get here if there is not String constructor
-            	// try integer constructor instead
-            	try {
-            		if (stringValue.startsWith("0x")) {
-            			v = Integer.parseInt(stringValue.substring(2), 16);
-            		} else {
-            			v = Integer.parseInt(stringValue);
-            		}
-                	ctor = theClass.getDeclaredConstructor(int.class);
-                	
-            	} catch (NumberFormatException e2) {
-                	// could not parse as integer, try double instead
-            		v = Double.parseDouble(stringValue);
-                	ctor = theClass.getDeclaredConstructor(double.class);
-            	}
-            }
-            ctor.setAccessible(true);
-            final Object o = ctor.newInstance(v);
-            if (value != null && value instanceof List) {
-                ((List) value).add(o);
-            } else {
-                value = (T) o;
-            }
-            if (o instanceof BEASTInterface) {
-                ((BEASTInterface) o).getOutputs().add(beastObject);
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
-                    "' with value '" + stringValue + "'.\nExpected something of type " + getType().getName() +
-                    ". " + (e.getMessage() != null ? e.getMessage() : ""));
+        Object o = constructFromString(stringValue);
+        value = (T) o;
+        if (o instanceof BEASTInterface) {
+            ((BEASTInterface) o).getOutputs().add(beastObject);
         }
     } // setStringValue
 
-    @SuppressWarnings("rawtypes")
+    private Object constructFromString(String stringValue) {
+    	try {
+	        Constructor ctor;
+	        Object v = stringValue;
+	        try {
+	        	ctor = theClass.getDeclaredConstructor(String.class);
+	        } catch (NoSuchMethodException e) {
+	        	// we get here if there is not String constructor
+	        	// try integer constructor instead
+	        	try {
+	        		if (stringValue.startsWith("0x")) {
+	        			v = Integer.parseInt(stringValue.substring(2), 16);
+	        		} else {
+	        			v = Integer.parseInt(stringValue);
+	        		}
+	            	ctor = theClass.getDeclaredConstructor(int.class);
+	            	
+	        	} catch (NumberFormatException e2) {
+	            	// could not parse as integer, try double instead
+	        		v = Double.parseDouble(stringValue);
+	            	ctor = theClass.getDeclaredConstructor(double.class);
+	        	}
+	        }
+	        ctor.setAccessible(true);
+	        final Object o = ctor.newInstance(v);
+	        return o;
+	    } catch (Exception e) {
+	        throw new IllegalArgumentException("Input 103: type mismatch, cannot initialize input '" + getName() +
+	                "' with value '" + stringValue + "'.\nExpected something of type " + getType().getName() +
+	                ". " + (e.getMessage() != null ? e.getMessage() : ""));
+	    }
+	}
+
+	@SuppressWarnings("rawtypes")
     private static void setStringValue( List list, String stringValue, Class<?> theClass) {
         // remove start and end spaces
         String stringValue2 = stringValue.replaceAll("^\\s+", "");
