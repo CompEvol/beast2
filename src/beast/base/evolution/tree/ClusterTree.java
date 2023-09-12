@@ -25,18 +25,19 @@
 package beast.base.evolution.tree;
 
 
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.distance.Distance;
 import beast.base.evolution.distance.JukesCantorDistance;
 import beast.base.inference.StateNode;
 import beast.base.inference.StateNodeInitialiser;
-import beast.base.inference.parameter.RealParameter;
 
 
 
@@ -69,9 +70,9 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
 
     final public Input<Distance> distanceInput = new Input<>("distance", "method for calculating distance between two sequences (default Jukes Cantor)");
 
-    final public Input<RealParameter> clockRateInput = new Input<>("clock.rate",
+    final public Input<Function> clockRateInput = new Input<>("clock.rate",
             "the clock rate parameter, used to divide all divergence times by, to convert from substitutions to times. (default 1.0)",
-            new RealParameter(new Double[] {1.0}));
+            new Constant("1.0"));
 
     /**
      * Whether the distance represent node height (if false) or branch length (if true).
@@ -89,7 +90,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
     @Override
     public void initAndValidate() {
     	
-        RealParameter clockRate = clockRateInput.get();
+        Function clockRate = clockRateInput.get();
 
     	if (dataInput.get() != null) {
     		taxaNames = dataInput.get().getTaxaNames();
@@ -177,7 +178,7 @@ public class ClusterTree extends Tree implements StateNodeInitialiser {
         //divide all node heights by clock rate to convert from substitutions to time.
         for (Node node : getInternalNodes()) {
             double height = node.getHeight();
-            node.setHeight(height/clockRate.getValue());
+            node.setHeight(height/clockRate.getArrayValue());
         }
 
         initStateNodes();
