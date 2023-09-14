@@ -470,34 +470,41 @@ public class AdaptableOperatorSampler extends Operator {
 	@Override
 	public void accept() {
 		
-
-		
 		// Update trained terms from the accept
 		if (learningHasBegun) {
+
+			try {
 			
-			this.recordRuntime(this.startTimeOfProposal, System.currentTimeMillis(), this.lastOperator);
-			
-			if (this.numParams > 0) {
 				
-				long n = this.numAccepts[this.lastOperator];
-			
-				// Get the values of each parameter after doing the proposal
-				double[][] stateAfter = this.getAllParameterValues();
-	
-				// Compute the average squared difference between the before and after states
-				double[] squaredDiffs = this.computeSS(this.stateBefore, stateAfter, this.treesBefore, this.trees);
+				this.recordRuntime(this.startTimeOfProposal, System.currentTimeMillis(), this.lastOperator);
 				
-				// Update the sum of squared diffs for each parameter with respect to this operator
-				for (int p = 0; p < this.numParams; p ++) {
-					double SS = this.mean_SS[this.lastOperator][p]*n + squaredDiffs[p];
-					this.mean_SS[this.lastOperator][p] = SS / (n+1.0);
+				if (this.numParams > 0) {
+					
+					long n = this.numAccepts[this.lastOperator];
+				
+					// Get the values of each parameter after doing the proposal
+					double[][] stateAfter = this.getAllParameterValues();
+		
+					// Compute the average squared difference between the before and after states
+					double[] squaredDiffs = this.computeSS(this.stateBefore, stateAfter, this.treesBefore, this.trees);
+					
+					// Update the sum of squared diffs for each parameter with respect to this operator
+					for (int p = 0; p < this.numParams; p ++) {
+						double SS = this.mean_SS[this.lastOperator][p]*n + squaredDiffs[p];
+						this.mean_SS[this.lastOperator][p] = SS / (n+1.0);
+					}
 				}
+				
+			}catch (Exception e) {
+				
 			}
 			
-			// Update the num accepts of this operator
-			this.numAccepts[this.lastOperator] ++;	
-		
 		}
+		
+		// Update the num accepts of this operator
+		this.numAccepts[this.lastOperator] ++;	
+		
+		
 		
 		this.operators.get(this.lastOperator).accept();
 		super.accept();
