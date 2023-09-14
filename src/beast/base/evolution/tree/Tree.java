@@ -683,7 +683,7 @@ public class Tree extends StateNode implements TreeInterface {
      */
     static void printTranslate(Node node, List<String> translateLines, int nodeCount) {
         if (node.isLeaf()) {
-            String line = String.format("\t\t%4d ", node.getNr() + taxaTranslationOffset);
+            String line = String.format("\t\t%6d ", node.getNr() + taxaTranslationOffset);
             if (node.getID().indexOf(' ') > 0) {
             	char c = node.getID().charAt(0);
             	if (c == '\"' || c == '\'') {
@@ -711,7 +711,7 @@ public class Tree extends StateNode implements TreeInterface {
         printTranslate(node, translateLines, nodeCount);
         Collections.sort(translateLines);
         for (String line : translateLines) {
-            line = line.substring(line.indexOf(" ", 5)).replace(',', ' ').trim();
+            line = line.substring(line.indexOf(" ", 7)).replace(',', ' ').trim();
             out.println("\t\t\t" + line);
         }
     }

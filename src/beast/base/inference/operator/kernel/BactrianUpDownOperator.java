@@ -92,7 +92,7 @@ public class BactrianUpDownOperator extends KernelOperator {
             for (StateNode up : upInput.get()) {
                 if (up instanceof RealParameter) {
                     RealParameter p = (RealParameter) up;
-                    p.setValue(p.getValue(index) * scale);
+                    p.setValue(index, p.getValue(index) * scale);
                 }
                 if (outsideBounds(up)) {
                     return Double.NEGATIVE_INFINITY;
@@ -102,7 +102,7 @@ public class BactrianUpDownOperator extends KernelOperator {
             for (StateNode down : downInput.get()) {
                 if (down instanceof RealParameter) {
                     RealParameter p = (RealParameter) down;
-                    p.setValue(p.getValue(index) / scale);
+                    p.setValue(index, p.getValue(index) / scale);
                 }
                 if (outsideBounds(down)) {
                     return Double.NEGATIVE_INFINITY;
