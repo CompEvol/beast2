@@ -43,9 +43,17 @@ public class TipDatesRandomWalker extends TreeOperator {
 
         // determine taxon set to choose from
         if (m_taxonsetInput.get() != null) {
-            List<String> taxaNames = new ArrayList<>();
-            for (String taxon : treeInput.get().getTaxaNames()) {
-                taxaNames.add(taxon);
+            List<String> taxaNames;
+            if (treeInput.get().m_taxonset.get() != null) {
+            	// taxonset may have changed in BEAUti, and
+            	// internal tree state not updated yet, so use
+            	// taxonset input of tree directly
+            	taxaNames = treeInput.get().m_taxonset.get().asStringList();
+            } else {
+            	taxaNames = new ArrayList<>();
+            	for (String taxon : treeInput.get().getTaxaNames()) {
+            		taxaNames.add(taxon);
+            	}
             }
 
             List<String> set = m_taxonsetInput.get().asStringList();
