@@ -342,6 +342,8 @@ public interface Parameter<T> extends Function {
          */
         @SuppressWarnings("unchecked")
         public void setDimension(final int dimension) {
+        	startEditing(null);
+        	
             if (getDimension() != dimension) {
                 final T[] values2 = (T[]) Array.newInstance(getMax().getClass(), dimension);
                 for (int i = 0; i < dimension; i++) {
