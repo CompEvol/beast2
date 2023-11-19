@@ -1,10 +1,28 @@
                     BEAST v2.7.5 2023
                  Beast 2 development team 2011-2023
 Version History
-Last updated: June 2023
+Last updated: November 2023
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.6 November 2023
+	TreeAnnotator allows packages to define new methods for creating summary trees CompEvol/BeastFX#71
+	BEAST
+	o parameters restored correctly after dimension change CompEvol/beast2#1130
+	o robustify AdaptableOperatorSampler CompEvol/beast2#1129
+	o fix element wise update in BactrianUpDownOperator CompEvol/beast2#1126
+	o robustify Input when setting String values CompEvol/beast2#1125
+	o allow trees to be exported correctly up to 999999 taxa
+	o enable close button in top bar of BeastMain dialog CompEvol/BeastFX#26
+	BEAUti
+	o TipDatesRandomWalker picks up correct tree 
+	o make sure there are no numbers in tree taxon label block CompEvol/beast2#1112
+	o improved error messages  CompEvol/beast2#1121
+	o indicate current theme in menu CompEvol/BeastFX#67
+	PackageManager resizes properly CompEvol/BeastFX#73
+	Applauncher improved layout CompEvol/BeastFX#77
+	Logcombiner fix default type when selecting files CompEvol/BeastFX#74
+
 Version 2.7.5 June 2023
 	BEAST:
 	o bounded transforms added
