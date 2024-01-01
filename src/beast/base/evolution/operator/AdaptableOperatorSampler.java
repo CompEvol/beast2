@@ -122,7 +122,14 @@ public class AdaptableOperatorSampler extends Operator {
 	public void initAndValidate() {
 
 		// Operators
-		this.operators = operatorsInput.get();
+		this.operators = new ArrayList<>();
+		for (Operator operator: operatorsInput.get()) {
+			if (operator.getWeight() > 0) {
+				operators.add(operator);
+			} else {
+				Log.warning("Operator " + operator.getID() + " ignored by " + this.getClass().getSimpleName() + " because its weight is " + operator.getWeight());
+			}
+		}
 		this.numOps = this.operators.size();
 		
 		// Parameters/tree
