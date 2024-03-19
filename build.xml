@@ -77,7 +77,7 @@
     </target>
 
     <!-- compile Java source code -->
-    <target name="compile-all" depends="init,beast.pkgmgmt,beast.base,test.beast">
+    <target name="compile-all" depends="init,beast.pkgmgmt,beast.base,test.beast,compile-allBeastFX">
         <echo>Building BEAST 2</echo>
    
         <echo message="Successfully compiled." />
