@@ -49,6 +49,8 @@
 
 package beast.base.util;
 
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Handy utility functions which have some Mathematical relevance.
@@ -82,7 +84,7 @@ public class Randomizer {
      */
     public static int randomChoice(double[] cf) {
 
-        double U = random.nextDouble();
+        double U = random().nextDouble();
 
         int s;
         if (U <= cf[0]) {
@@ -98,7 +100,30 @@ public class Randomizer {
         return s;
     }
 
-    /**
+    
+    private static Map<String, MersenneTwisterFast> randomMap = new HashMap<>();
+    
+    private static MersenneTwisterFast random() {
+    	final String threadName = Thread.currentThread().getName();
+    	if (threadName == null) {
+        	// no thread name used, so use default MersenneTwisterFast
+    		return random;
+    	}
+
+    	// retrieve MersenneTwisterFast from the randomMap
+    	// creating a new one if it is not already in the randomMap
+    	MersenneTwisterFast r = randomMap.get(threadName);
+    	if (r != null) {
+    		return r;
+    	}
+
+    	r = new MersenneTwisterFast();
+    	r.setSeed(random.getSeed() + randomMap.size());
+    	randomMap.put(threadName, r);
+    	return r;
+	}
+
+	/**
      * Binary search to sample an integer given a cumulative probability distribution.
      * Modified from {@link java.util.Arrays#binarySearch(double[], double)}.
      * @param cpd  normalized cumulative probability distribution.
@@ -106,7 +131,7 @@ public class Randomizer {
      *             Negative integer if something is wrong.
      */
     public static int binarySearchSampling(double[] cpd) {
-        double U = random.nextDouble();
+        double U = random().nextDouble();
 
         if (U <= cpd[0])
             return 0;
@@ -140,7 +165,7 @@ public class Randomizer {
      */
     public static int randomChoicePDF(double[] pdf) {
 
-        double U = random.nextDouble() * getTotal(pdf);
+        double U = random().nextDouble() * getTotal(pdf);
         for (int i = 0; i < pdf.length; i++) {
 
             U -= pdf[i];
@@ -202,7 +227,7 @@ public class Randomizer {
      */
     public static long getSeed() {
         synchronized (random) {
-            return random.getSeed();
+            return random().getSeed();
         }
     }
 
@@ -211,7 +236,11 @@ public class Randomizer {
      */
     public static void setSeed(long seed) {
         synchronized (random) {
-            random.setSeed(seed);
+            random.setSeed(seed == 1 ? 4357 : seed-1);
+            int i = 0;
+            for (MersenneTwisterFast r : randomMap.values()) {
+            	r.setSeed(seed + i++);
+            }
         }
     }
 
@@ -220,7 +249,7 @@ public class Randomizer {
      */
     public static byte nextByte() {
         synchronized (random) {
-            return random.nextByte();
+            return random().nextByte();
         }
     }
 
@@ -229,7 +258,7 @@ public class Randomizer {
      */
     public static boolean nextBoolean() {
         synchronized (random) {
-            return random.nextBoolean();
+            return random().nextBoolean();
         }
     }
 
@@ -238,7 +267,7 @@ public class Randomizer {
      */
     public static void nextBytes(byte[] bs) {
         synchronized (random) {
-            random.nextBytes(bs);
+            random().nextBytes(bs);
         }
     }
 
@@ -247,7 +276,7 @@ public class Randomizer {
      */
     public static char nextChar() {
         synchronized (random) {
-            return random.nextChar();
+            return random().nextChar();
         }
     }
 
@@ -259,7 +288,7 @@ public class Randomizer {
      */
     public static double nextGaussian() {
         synchronized (random) {
-            return random.nextGaussian();
+            return random().nextGaussian();
         }
     }
 
@@ -274,7 +303,7 @@ public class Randomizer {
      */
     public static double nextGamma(double alpha, double lambda) {
         synchronized (random) {
-            return random.nextGamma(alpha, lambda);
+            return random().nextGamma(alpha, lambda);
         }
     }
     
@@ -287,7 +316,7 @@ public class Randomizer {
      */
     public static long nextPoisson(double lambda) {
         synchronized (random) {
-            return random.nextPoisson(lambda);
+            return random().nextPoisson(lambda);
         }
     }
 
@@ -298,7 +327,7 @@ public class Randomizer {
      */
     public static double nextDouble() {
         synchronized (random) {
-            return random.nextDouble();
+            return random().nextDouble();
         }
     }
 
@@ -318,7 +347,7 @@ public class Randomizer {
      */
     public static double nextExponential(double lambda) {
         synchronized (random) {
-            return -1.0 * Math.log(1 - random.nextDouble()) / lambda;
+            return -1.0 * Math.log(1 - random().nextDouble()) / lambda;
         }
     }
 
@@ -347,7 +376,7 @@ public class Randomizer {
      */
     public static float nextFloat() {
         synchronized (random) {
-            return random.nextFloat();
+            return random().nextFloat();
         }
     }
 
@@ -360,7 +389,7 @@ public class Randomizer {
      */
     public static long nextLong() {
         synchronized (random) {
-            return random.nextLong();
+            return random().nextLong();
         }
     }
 
@@ -374,7 +403,7 @@ public class Randomizer {
      */
     public static short nextShort() {
         synchronized (random) {
-            return random.nextShort();
+            return random().nextShort();
         }
     }
 
@@ -387,7 +416,7 @@ public class Randomizer {
      */
     public static int nextInt() {
         synchronized (random) {
-            return random.nextInt();
+            return random().nextInt();
         }
     }
 
@@ -400,7 +429,7 @@ public class Randomizer {
      */
     public static int nextInt(int n) {
         synchronized (random) {
-            return random.nextInt(n);
+            return random().nextInt(n);
         }
     }
 
@@ -436,7 +465,7 @@ public class Randomizer {
      */
     public static void shuffle(int[] array) {
         synchronized (random) {
-            random.shuffle(array);
+            random().shuffle(array);
         }
     }
 
@@ -447,7 +476,7 @@ public class Randomizer {
      */
     public static void shuffle(int[] array, int numberOfShuffles) {
         synchronized (random) {
-            random.shuffle(array, numberOfShuffles);
+            random().shuffle(array, numberOfShuffles);
         }
     }
 
@@ -459,7 +488,7 @@ public class Randomizer {
      */
     public static int[] shuffled(int l) {
         synchronized (random) {
-            return random.shuffled(l);
+            return random().shuffled(l);
         }
     }
 
@@ -475,7 +504,7 @@ public class Randomizer {
         synchronized (random) {
             int[] result = new int[l];
             for (int i = 0; i < l; i++)
-                result[i] = random.nextInt(l);
+                result[i] = random().nextInt(l);
             return result;
         }
     }
@@ -487,7 +516,7 @@ public class Randomizer {
      */
     public static void permute(int[] array) {
         synchronized (random) {
-            random.permute(array);
+            random().permute(array);
         }
     }
 
@@ -499,7 +528,7 @@ public class Randomizer {
      */
     public static int[] permuted(int l) {
         synchronized (random) {
-            return random.permuted(l);
+            return random().permuted(l);
         }
     }
 
