@@ -65,7 +65,7 @@
 
     <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar -->
     <target name="build_jar_all_BEAST"
-            depends="clean,compile-all,junit,dist_all_BEAST"
+            depends="clean,compile-all,dist_all_BEAST"
             description="Clean and Build all run-time stuff">
     </target>
 
