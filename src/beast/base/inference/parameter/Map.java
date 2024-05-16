@@ -6,10 +6,10 @@ import java.util.List;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
-import beast.base.inference.CalculationNode;
+import beast.base.inference.StateNode;
 
 @Description("Unordered set mapping keys to values")
-abstract public class Map<T> extends CalculationNode {
+abstract public class Map<T> extends StateNode {
 
     final public Input<java.util.Map<java.lang.String, T>> defaultInput = new Input<>("*",
             "Input containing the map", new LinkedHashMap<>());

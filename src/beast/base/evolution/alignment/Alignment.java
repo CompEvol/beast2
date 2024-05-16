@@ -24,13 +24,17 @@
 */
 package beast.base.evolution.alignment;
 
+import java.io.PrintStream;
 import java.util.*;
+
+import org.w3c.dom.Node;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.core.Input.Validate;
 import beast.base.evolution.datatype.DataType;
+import beast.base.inference.StateNode;
 import beast.base.inference.parameter.Map;
 import beast.pkgmgmt.BEASTClassLoader;
 import beast.pkgmgmt.PackageManager;
@@ -880,5 +884,95 @@ public class Alignment extends Map<String> {
 	        } while (difference > 1E-8 && attempts < 1000);
 	        return freqs;
 	  } // calcFrequencies
+
+	@Override
+	public void init(PrintStream out) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void log(long sample, PrintStream out) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void close(PrintStream out) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getDimension() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getArrayValue(int dim) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setEverythingDirty(boolean isDirty) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public StateNode copy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void assignTo(StateNode other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void assignFrom(StateNode other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void assignFromFragile(StateNode other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fromXML(Node node) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+	@Override
+	public String toXML() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int scale(double scale) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected void store() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void restore() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 } // class Data
