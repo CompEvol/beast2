@@ -22,7 +22,7 @@
     <property name="distapp" location="${beast2app}/build/dist"/>
     <property name="templates" value="fxtemplates"/>
 
-    <property name="main_class_BEASTLauncher" value="beast.app.util.BeastLauncher" />
+    <property name="main_class_BEASTLauncher" value="beast.pkgmgmt.launcher.BeastLauncher" />
     <property name="report" value="build/junitreport" />
 
     <path id="classpath">
@@ -106,6 +106,7 @@
         <jar jarfile="${build}/dist/launcher.jar">
             <manifest>
                 <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Main-Class" value="${main_class_BEASTLauncher}" />
             </manifest>
             
             
