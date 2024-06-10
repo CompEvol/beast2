@@ -974,5 +974,10 @@ public class Alignment extends Map<String> {
 		// TODO Auto-generated method stub
 		
 	}
+
 	
+	@Override
+	public boolean notCloneable() {
+		return true;
+	}
 } // class Data
