@@ -1,4 +1,4 @@
-<package name="BEAST.base" version="2.7.6">
+<package name="BEAST.base" version="2.7.7">
 <!-- note version="2.7.x" must be double quotes for Mac release script release/Mac/createdmg.sh -->
 
             <!-- data types -->

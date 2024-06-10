@@ -91,7 +91,7 @@ public class PackageManager {
     		BEASTVersion.INSTANCE.getMajorVersion() +".xml";
     public final static String PACKAGES_XML_BACKUP = "https://bitbucket.org/rrb/cbanclone/raw/master/packages2.7.xml";
 
-    private final static Set<String> RECOMMENDED_PACKAGES = new HashSet<>(Arrays.asList("ORC", "starbeast3"));
+    private final static Set<String> RECOMMENDED_PACKAGES = new HashSet<>(Arrays.asList("ORC", "starbeast3", "CCD"));
 
     public final static String ARCHIVE_DIR = "archive";
     

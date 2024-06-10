@@ -1,10 +1,26 @@
-                    BEAST v2.7.5 2023
-                 Beast 2 development team 2011-2023
+                    BEAST v2.7.7 2024
+                 Beast 2 development team 2011-2024
 Version History
-Last updated: November 2023
+Last updated: June 2024
 
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
+Version 2.7.7 June 2024
+	o Add CCD to the list of recommended packages for TreeAnnotator CompEvol/beast2#1138
+	TreeAnnotator GUI to pick up correct topology setting method CompEvol/beast2#1143
+	BEAST
+	o allow launch through `java -jar launcher.jar` CompEvol/beast2#1151
+	o make alignment a StateNode CompEvol/beast2#1150
+	o make Randomizer thread aware for better replicability of threaded runs CompEvol/beast2#1141	
+	o make the AdaptableOperatorSampler ignore zero weight operators CompEvol/beast2#1136
+	BEAUti
+	o robustify for drag/dropping alignments CompeVol/BeastFX/#72
+	o enable importing of alignments in files with .txt extension CompeVol/BeastFX/#78
+	o remove HTML error messages CompeVol/BeastFX/#65
+	LogAnalyser 
+	o check added to prevent out of bound exception CompeVol/BeastFX/#81
+	o add threading option to loganalyser when running with the oneline option CompeVol/BeastFX/#80
+
 Version 2.7.6 November 2023
 	TreeAnnotator allows packages to define new methods for creating summary trees CompEvol/BeastFX#71
 	BEAST

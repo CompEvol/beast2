@@ -87,8 +87,13 @@ public class EpochFlexOperator extends Operator {
 			intervalLow = treeIntervals.getIntervalTime(j);
 			intervalHi = treeIntervals.getIntervalTime(j + groupSizes.getValue(k));
 		} else {
-			intervalLow = lower0 + Randomizer.nextDouble() * (upper - lower0);
-			intervalHi  = lower0 + Randomizer.nextDouble() * (upper - lower0);
+			int x = Randomizer.nextInt(tree.getInternalNodeCount());
+			intervalLow = tree.getNode(tree.getLeafNodeCount() + x).getHeight();
+			int y = x;
+			while (x == y) {
+				y = Randomizer.nextInt(tree.getInternalNodeCount());
+				intervalHi  = tree.getNode(tree.getLeafNodeCount() + y).getHeight();
+			}
 		}
 		
 		if (intervalHi < intervalLow) {
@@ -106,7 +111,7 @@ public class EpochFlexOperator extends Operator {
 			if (!node.isFake()) {
 				// only change "real" internal nodes, not ancestral ones
 				double h = node.getHeight();
-				if (h > intervalLow && h < intervalHi) {
+				if (h > intervalLow && h <= intervalHi) {
 					h = intervalLow + scale * (h-intervalLow);
 					node.setHeight(h);
 					scaled++;
@@ -154,12 +159,7 @@ public class EpochFlexOperator extends Operator {
 			}
 		}
 
-		double newHeight = tree.getRoot().getHeight();
-
 		double logHR = scaled * Math.log(scale);
-		if (groupSizes == null) {
-			logHR += 2 * Math.log(newHeight/oldHeight);
-		}
 		return logHR;
     }
 

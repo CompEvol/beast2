@@ -1,7 +1,7 @@
-                    BEAST v2.7.6 2023
-                 Beast 2 development team 2011-2023
+                    BEAST v2.7.7 2024
+                 Beast 2 development team 2011-2024
 
-Last updated: October 2023
+Last updated: June 2024
 
 Contents:
 1) INTRODUCTION
@@ -42,16 +42,11 @@ adjustment and a number of runs to get a valid answer. Sorry.
 ___________________________________________________________________________
 2) INSTALLING BEAST
 
-BEAST requires a Java Virtual Machine to run. Many systems will already
-have this installed. It requires at least version 1.8 of Java to run. The
-latest versions of Java can be downloaded from:
-
-<http://java.com/>
-
-If in doubt type "java -version" to see what version of java is installed
-(or if it is installed at all).
-
-Mac OS X will already have a suitable version of Java installed.
+BEAST requires a Java Virtual Machine version 17 and JavaFX to run. The
+BEAST installation packages come with a suitable Java + JavaFX and it is
+recommended to use these versions of Java + JavaFX. It is possible to use
+different versions, but it will require considerable time configuring them,
+so that is not recommended.
 
 Within the BEAST package will be the following directories:
 Directory       Contents
@@ -60,7 +55,7 @@ examples/       Some NEXUS and XML files
 lib/            Java & native libraries used by BEAST 
 bin/            Scripts of the corresponding OS
 fxtemplates/    Templates to initiate BEAUti
-
+jre/            Suitable java runtime
 ___________________________________________________________________________
 3) CONVERTING SEQUENCES
 
