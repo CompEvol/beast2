@@ -1,6 +1,7 @@
 package beast.base.parser;
 
 
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -1385,6 +1386,24 @@ public class NexusParser {
         if (att.startsWith("\"") && att.endsWith("\"")) {
             final int start = matcher.start(1);
             att = str.substring(start + 1, str.indexOf('"', start + 1));
+        } else if (att.startsWith("\"")) { // but does not end with quote!
+
+        	// we are looking for the end quote
+        	int i = str.indexOf(attribute);
+        	i += attribute.length();
+        	// find start quote
+        	i = str.indexOf('"', i);
+        	if (i < 0) {
+        		return att;
+        	}
+        	i++;
+        	// find end quote
+        	int j = str.indexOf('"', i);
+        	if (j < 0) {
+        		return att;
+        	}
+        	// remove spaces
+        	att = str.substring(i, j).replaceAll("\\s", "");
         }
         return att;
     }
