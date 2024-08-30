@@ -50,10 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.*;
@@ -161,7 +158,7 @@ public class PackageManager {
      */
     public static List<URL> getRepositoryURLs() throws MalformedURLException {
 
-        List<URL> URLs = new ArrayList<URL>();
+        List<URL> URLs = new ArrayList<>();
         URLs.add(new URL(PACKAGES_XML));
 
 	    //# url
@@ -2016,6 +2013,7 @@ public class PackageManager {
         System.out.println("packagemanager -add SNAPP");
         System.out.println("packagemanager -useAppDir -add SNAPP");
         System.out.println("packagemanager -del SNAPP");
+        System.out.println("packagemanager -addRepository URL");
         System.exit(0);
     }
 
@@ -2032,6 +2030,7 @@ public class PackageManager {
                             new Arguments.Option("help", "Show help"),
                             new Arguments.Option("update", "Check for updates, and ask to install if available"),
                             new Arguments.Option("updatenow", "Check for updates and install without asking"),
+                            new Arguments.StringOption("addRepository", "URL", "Add an external repository URL"),
                     });
             try {
                 arguments.parseArguments(args);
@@ -2165,6 +2164,35 @@ public class PackageManager {
                 if (!processed) {
                     System.out.println("Could not find package '" + name + "' (typo perhaps?)");
                 }
+            }
+
+            if (arguments.hasOption("addRepository")) {
+                String urlString = arguments.getStringOption("addRepository");
+                if (urlString != null) {
+
+                    URL repoURL;
+                    try {
+                        repoURL = new URI(urlString).toURL();
+
+                        List<URL> urls = getRepositoryURLs();
+
+                        if (!urls.contains(repoURL)) {
+                            urls.add(repoURL);
+                            saveRepositoryURLs(urls);
+                            System.out.println("Successfully added repository URL '"
+                                    + repoURL + "' to "
+                                    + getPackageUserDir() + "/beauti.properties.");
+                        } else {
+                            System.out.println("Repository URL '" + repoURL + "' already in "
+                                    + getPackageUserDir() + "/beauti.properties.");
+                        }
+                    } catch (MalformedURLException ex) {
+                        System.err.println("Error: malformed repository URL.");
+                        System.exit(1);
+                    }
+
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
