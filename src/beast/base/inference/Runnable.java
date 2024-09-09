@@ -10,7 +10,11 @@ public abstract class Runnable extends BEASTObject {
 	/** entry point for anything runnable **/
 	abstract public void run() throws Exception;
 
-    /**
+
+	/** make sure whatever is runnable is valid, but do not run yet **/
+	public void validate() throws Exception {}
+
+	/**
      * Set up information related to the file for (re)storing the State.
      * The Runnable implementation is responsible for making its
      * State synchronising with the file *
