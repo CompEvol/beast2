@@ -522,10 +522,20 @@ public class NexusParser {
         }
 
         // read trees
+        int current = 0;
         while (nextCommand != null && !nextCommand.isEndOfBlock()) {
             if (nextCommand.isCommand("tree")) {
                 String treeString = nextCommand.arguments;
                 final int i = treeString.indexOf('(');
+
+                
+                String id = "" + current;
+                try {
+	                 id = treeString.substring(5, i).split("=")[0].trim();
+                } catch (Exception e) {
+                	// ignore
+                }
+                
                 if (i > 0) {
                     treeString = treeString.substring(i);
                 }
@@ -546,8 +556,11 @@ public class NexusParser {
                     listener.treeParsed(trees.size(), treeParser);
                 }
 
+                treeParser.setID(id);
+                
                 // this must come after listener or trees.size() gives the wrong index to treeParsed
                 trees.add(treeParser);
+                current++;
 
             }
             nextCommand = readNextCommand(fin);
