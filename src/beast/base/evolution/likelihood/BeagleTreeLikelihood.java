@@ -959,7 +959,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             matrixUpdateIndices[eigenIndex][updateCount] = matrixBufferHelper.getOffsetIndex(nodeNum);
 
             if (substitutionModel.canReturnComplexDiagonalization()) {
-                for (int i = 0; i < m_siteModel.getCategoryCount(); i++) {
+                for (int i = 0; i < this.categoryCount; i++) {
                     final double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
                     substitutionModel.getTransitionProbabilities(node, node.getParent().getHeight(), node.getHeight(), jointBranchRate, probabilities);
                     //System.out.println(node.getNr() + " " + Arrays.toString(m_fProbabilities));
