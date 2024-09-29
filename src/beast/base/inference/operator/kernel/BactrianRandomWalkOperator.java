@@ -17,15 +17,24 @@ import beast.base.util.Randomizer;
         + "p(x) = 1/2*N(x;-m,1-m^2) + 1/2*N(x;+m,1-m^2) and more efficient than RealRandomWalkOperator")
 public class BactrianRandomWalkOperator extends KernelOperator {
     final public Input<RealParameter> parameterInput = new Input<>("parameter", "the parameter to operate a random walk on.", Validate.REQUIRED);
-    public final Input<Double> scaleFactorInput = new Input<>("scaleFactor", "scaling factor: larger means more bold proposals", 1.0);
+    public final Input<Double> scaleFactorInput = new Input<>("scaleFactor", "deprecated -- use windowSize instead");
+    public final Input<Double> windowSizeInput = new Input<>("windowSize", "window size: larger means more bold proposals");
     final public Input<Boolean> optimiseInput = new Input<>("optimise", "flag to indicate that the scale factor is automatically changed in order to achieve a good acceptance rate (default true)", true);
 
-    double scaleFactor;
+    double windowSize;
 
     @Override
 	public void initAndValidate() {
     	super.initAndValidate();
-        scaleFactor = scaleFactorInput.get();
+
+    	if (scaleFactorInput.get() != null && windowSizeInput.get() != null) {
+    		throw new IllegalArgumentException("Specify at most one of windowSize and scaleFactor, not both -- note scaleFactor is deprecated");
+    	}
+
+    	// windowSize is windowSizeInput or scaleFactorInput if specified, otherwise defaults to 1.0
+        windowSize = scaleFactorInput.get() != null ? scaleFactorInput.get(): 
+        			 windowSizeInput.get() != null ? windowSizeInput.get() : 
+        				1.0;
     }
 
     @Override
@@ -35,7 +44,7 @@ public class BactrianRandomWalkOperator extends KernelOperator {
 
         int i = Randomizer.nextInt(param.getDimension());
         double value = param.getValue(i);
-        double newValue = value + kernelDistribution.getRandomDelta(i, value, scaleFactor);
+        double newValue = value + kernelDistribution.getRandomDelta(i, value, windowSize);
         
         if (newValue < param.getLower() || newValue > param.getUpper()) {
             return Double.NEGATIVE_INFINITY;
@@ -49,12 +58,12 @@ public class BactrianRandomWalkOperator extends KernelOperator {
 
     @Override
     public double getCoercableParameterValue() {
-        return scaleFactor;
+        return windowSize;
     }
 
     @Override
     public void setCoercableParameterValue(double value) {
-    	scaleFactor = value;
+    	windowSize = value;
     }
 
     /**
@@ -70,8 +79,8 @@ public class BactrianRandomWalkOperator extends KernelOperator {
 	        // must be overridden by operator implementation to have an effect
 	        double delta = calcDelta(logAlpha);
 	
-	        delta += Math.log(scaleFactor);
-	        scaleFactor = Math.exp(delta);
+	        delta += Math.log(windowSize);
+	        windowSize = Math.exp(delta);
     	}
     }
 
@@ -90,11 +99,12 @@ public class BactrianRandomWalkOperator extends KernelOperator {
         if (ratio < 0.5) ratio = 0.5;
 
         // new scale factor
-        double newWindowSize = scaleFactor * ratio;
+        double newWindowSize = windowSize * ratio;
 
         DecimalFormat formatter = new DecimalFormat("#.###");
         if (prob < 0.10 || prob > 0.40) {
             return "Try setting scale factor to about " + formatter.format(newWindowSize);
         } else return "";
     }
+    
 } // class BactrianRandomWalkOperator
