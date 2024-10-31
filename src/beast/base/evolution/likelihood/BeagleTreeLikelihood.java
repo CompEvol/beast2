@@ -25,14 +25,17 @@
 
 package beast.base.evolution.likelihood;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import beagle.Beagle;
+import beagle.BeagleBenchmarkFlag;
 import beagle.BeagleFactory;
 import beagle.BeagleFlag;
 import beagle.BeagleInfo;
+import beagle.BenchmarkedResourceDetails;
 import beagle.InstanceDetails;
 import beagle.ResourceDetails;
 import beast.base.core.Description;
@@ -63,6 +66,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     // will wrap around.
     // note: to use a different device, say device 2, start beast with
     // java -Dbeagle.resource.order=2 beast.app.BeastMCMC
+    private static final String RESOURCE_AUTO_PROPERTY = "beagle.resource.auto";
     private static final String RESOURCE_ORDER_PROPERTY = "beagle.resource.order";
     private static final String PREFERRED_FLAGS_PROPERTY = "beagle.preferred.flags";
     private static final String REQUIRED_FLAGS_PROPERTY = "beagle.required.flags";
@@ -92,7 +96,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     private double [] currentCategoryWeights;
     
     private int invariantCategory = -1;
-
+    
     @Override
     public void initAndValidate() {
         boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
@@ -272,6 +276,53 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         if (substitutionModel.canReturnComplexDiagonalization()) {
             requirementFlags |= BeagleFlag.EIGEN_COMPLEX.getMask();
         }
+
+        // start auto resource selection
+        String resourceAuto = System.getProperty(RESOURCE_AUTO_PROPERTY);
+        if (resourceAuto != null && Boolean.parseBoolean(resourceAuto)) {
+
+            long benchmarkFlags = 0;
+
+            if (this.rescalingScheme == PartialsRescalingScheme.NONE) {
+                benchmarkFlags =  BeagleBenchmarkFlag.SCALING_NONE.getMask();
+            } else if (this.rescalingScheme == PartialsRescalingScheme.ALWAYS) {
+                benchmarkFlags =  BeagleBenchmarkFlag.SCALING_ALWAYS.getMask();
+            } else {
+                benchmarkFlags =  BeagleBenchmarkFlag.SCALING_DYNAMIC.getMask();
+            }
+
+            Log.warning("\nRunning benchmarks to automatically select fastest BEAGLE resource for analysis... ");
+
+            List<BenchmarkedResourceDetails> benchmarkedResourceDetails =
+                    BeagleFactory.getBenchmarkedResourceDetails(
+                            tipCount,
+                            compactPartialsCount,
+                            m_nStateCount,
+                            patternCount,
+                            categoryCount,
+                            resourceList,
+                            preferenceFlags,
+                            requirementFlags,
+                            1, // eigenModelCount,
+                            1,
+                            0, // calculateDerivatives,
+                            benchmarkFlags);
+
+
+            Log.warning(" Benchmark results, from fastest to slowest:");
+
+            for (BenchmarkedResourceDetails benchmarkedResource : benchmarkedResourceDetails) {
+                Log.warning(benchmarkedResource.toString());
+            }
+
+            long benchedFlags = benchmarkedResourceDetails.get(0).getBenchedFlags();
+//            if ((benchedFlags & BeagleFlag.FRAMEWORK_CPU.getMask()) != 0) {
+//                throw new DelegateTypeException();
+//            }
+
+            resourceList = new int[]{benchmarkedResourceDetails.get(0).getResourceNumber()};
+        }
+        // end auto resource selection
 
         instanceCount++;
 
@@ -1210,6 +1261,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     public double [] getPatternLogLikelihoods() {
         beagle.getSiteLogLikelihoods(patternLogLikelihoods);
 		return patternLogLikelihoods.clone();
+	}
+
+    @Override
+    public boolean isInitialisedSuccesfully() {
+		return beagle != null;
 	}
 
 }
