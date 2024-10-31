@@ -1263,9 +1263,9 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 		return patternLogLikelihoods.clone();
 	}
 
-    @Override
-    public boolean isInitialisedSuccesfully() {
-		return beagle != null;
-	}
+//    @Override
+//    public boolean isInitialisedSuccesfully() {
+//		return beagle != null;
+//	}
 
 }
