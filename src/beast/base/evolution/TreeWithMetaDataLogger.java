@@ -123,11 +123,15 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 		if (someMetaDataNeedsLogging) {
 			buf2.append("[&");
 			if (metadataList.size() > 0) {
+				boolean needsComma = false;
 				for (Function metadata : metadataList) {
 					if (metadata instanceof Parameter<?>) {
 						Parameter<?> p = (Parameter<?>) metadata;
 						int dim = p.getMinorDimension1();
 						if (p.getMinorDimension2() > node.getNr()) {
+							if (needsComma) {
+								buf2.append(",");
+							}
 							buf2.append(((BEASTObject) metadata).getID());
 							buf2.append('=');
 							if (dim > 1) {
@@ -152,18 +156,20 @@ public class TreeWithMetaDataLogger extends BEASTObject implements Loggable {
 									buf2.append(metadata.getArrayValue(node.getNr()));
 								}
 							}
+							needsComma = true;
 						} else {
 						
 						}
 					} else {
 						if (metadata.getDimension() > node.getNr()) {
+							if (needsComma) {
+								buf2.append(",");
+							}
 							buf2.append(((BEASTObject) metadata).getID());
 							buf2.append('=');
 							buf2.append(metadata.getArrayValue(node.getNr()));
+							needsComma = true;
 						}
-					}
-					if (buf2.length() > 2 && metadataList.indexOf(metadata) < metadataList.size() - 1) {
-						buf2.append(",");
 					}
 				}
 				if (buf2.length() > 2 && branchRateModel != null) {
