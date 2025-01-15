@@ -26,6 +26,7 @@
 
 package beast.base.evolution.likelihood;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import beast.base.core.Description;
@@ -41,6 +42,7 @@ import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeInterface;
 import beast.base.inference.State;
+import beast.pkgmgmt.BEASTClassLoader;
 
 @Description("Calculates the probability of sequence data on a beast.tree given a site and substitution model using " +
         "a variant of the 'peeling algorithm'. For details, see" +
@@ -51,7 +53,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     final public Input<Boolean> m_useTipLikelihoods = new Input<>("useTipLikelihoods", "flag to indicate that partial likelihoods are provided at the tips", false);
     final public Input<String> implementationInput = new Input<>("implementation", "name of class that implements this treelikelihood potentially more efficiently. "
     		+ "This class will be tried first, with the TreeLikelihood as fallback implementation. "
-    		+ "When multi-threading, multiple objects can be created.", "beast.evolution.likelihood.BeagleTreeLikelihood");
+    		+ "When multi-threading, multiple objects can be created.", BeagleTreeLikelihood.class.getName());
     
     public static enum Scaling {none, always, _default};
     final public Input<Scaling> scaling = new Input<>("scaling", "type of scaling to use, one of " + Arrays.toString(Scaling.values()) + ". If not specified, the -beagle_scaling flag is used.", Scaling._default, Scaling.values());
@@ -116,6 +118,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     protected boolean useAscertainedSitePatterns = false;
 
     /**
+     * alias for the data 
+     */
+    protected Alignment alignment;
+
+    /**
      * dealing with proportion of site being invariant *
      */
     protected double proportionInvariant = 0;
@@ -128,9 +135,14 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
     @Override
     public void initAndValidate() {
+        // sanity check: make sure data is an Alignment 
+    	if (!(dataInput.get() instanceof Alignment)) {
+    		throw new RuntimeException("Expected Alignment as data, not " + dataInput.get().getClass().getName());
+    	}
+        alignment = (Alignment) dataInput.get();
+
         // sanity check: alignment should have same #taxa as tree
-		
-		if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
+		if (alignment.getTaxonCount() != treeInput.get().getLeafNodeCount()) {
 			String leaves = "?";
 			if (treeInput.get() instanceof Tree) {
 				leaves = String.join(", ", ((Tree) treeInput.get()).getTaxaNames());
@@ -138,8 +150,8 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 			throw new IllegalArgumentException(String.format(
 					"The number of leaves in the tree (%d) does not match the number of sequences (%d). "
 							+ "The tree has leaves [%s], while the data refers to taxa [%s].",
-					treeInput.get().getLeafNodeCount(), dataInput.get().getTaxonCount(),
-					leaves, String.join(", ", dataInput.get().getTaxaNames())));
+					treeInput.get().getLeafNodeCount(), alignment.getTaxonCount(),
+					leaves, String.join(", ", alignment.getTaxaNames())));
 		}
         beagle = null;
         
@@ -152,8 +164,11 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 //        }
 //        
 //        if (!hasImaginaryEigenvectors) {
-	        beagle = new BeagleTreeLikelihood();
 	        try {
+	        	Object o = newTreeLikelihood();
+	        	if (o instanceof BeagleTreeLikelihood) {
+	        		beagle = (BeagleTreeLikelihood) o;
+	        	}
 		        beagle.initByName(
 	                    "data", dataInput.get(), "tree", treeInput.get(), "siteModel", siteModelInput.get(),
 	                    "branchRateModel", branchRateModelInput.get(), "useAmbiguities", m_useAmbiguities.get(), 
@@ -177,7 +192,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         	throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
         }
         m_siteModel = (SiteModel.Base) siteModelInput.get();
-        m_siteModel.setDataType(dataInput.get().getDataType());
+        m_siteModel.setDataType(alignment.getDataType());
         substitutionModel = m_siteModel.substModelInput.get();
 
         if (branchRateModelInput.get() != null) {
@@ -188,13 +203,12 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         m_branchLengths = new double[nodeCount];
         storedBranchLengths = new double[nodeCount];
 
-        int stateCount = dataInput.get().getMaxStateCount();
-        int patterns = dataInput.get().getPatternCount();
+        int stateCount = alignment.getMaxStateCount();
+        int patterns = alignment.getPatternCount();
         likelihoodCore = createLikelihoodCore(stateCount);
 
         String className = getClass().getSimpleName();
 
-        Alignment alignment = dataInput.get();
 
         Log.info.println(className + "(" + getID() + ") uses " + likelihoodCore.getClass().getSimpleName());
         Log.info.println("  " + alignment.toString(true));
@@ -214,12 +228,18 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         probabilities = new double[(stateCount + 1) * (stateCount + 1)];
         Arrays.fill(probabilities, 1.0);
 
-        if (dataInput.get().isAscertained) {
+        if (alignment.isAscertained) {
             useAscertainedSitePatterns = true;
         }
     }
 
-    protected LikelihoodCore createLikelihoodCore(int stateCount) {
+    private TreeLikelihood newTreeLikelihood() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		String class_ = implementationInput.get();
+		TreeLikelihood tl = (TreeLikelihood) BEASTClassLoader.forName(class_).getConstructor().newInstance();
+		return tl;
+	}
+    
+	protected LikelihoodCore createLikelihoodCore(int stateCount) {
 		if (stateCount == 4) {
 			return new BeerLikelihoodCore4();
 		} else {
@@ -239,12 +259,12 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     protected void calcConstantPatternIndices(final int patterns, final int stateCount) {
         constantPattern = new ArrayList<>();
         for (int i = 0; i < patterns; i++) {
-            final int[] pattern = dataInput.get().getPattern(i);
+            final int[] pattern = alignment.getPattern(i);
             final boolean[] isInvariant = new boolean[stateCount];
             Arrays.fill(isInvariant, true);
             for (final int state : pattern) {
-                final boolean[] isStateSet = dataInput.get().getStateSet(state);
-                if (m_useAmbiguities.get() || !dataInput.get().getDataType().isAmbiguousCode(state)) {
+                final boolean[] isStateSet = alignment.getStateSet(state);
+                if (m_useAmbiguities.get() || !alignment.getDataType().isAmbiguousCode(state)) {
                     for (int k = 0; k < stateCount; k++) {
                         isInvariant[k] &= isStateSet[k];
                     }
@@ -262,7 +282,7 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         final int nodeCount = treeInput.get().getNodeCount();
         likelihoodCore.initialize(
                 nodeCount,
-                dataInput.get().getPatternCount(),
+                alignment.getPatternCount(),
                 m_siteModel.getCategoryCount(),
                 true, m_useAmbiguities.get()
         );
@@ -271,9 +291,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
         final int intNodeCount = nodeCount / 2;
 
         if (m_useAmbiguities.get() || m_useTipLikelihoods.get()) {
-            setPartials(treeInput.get().getRoot(), dataInput.get().getPatternCount());
+            setPartials(treeInput.get().getRoot(), alignment.getPatternCount());
         } else {
-            setStates(treeInput.get().getRoot(), dataInput.get().getPatternCount());
+            setStates(treeInput.get().getRoot(), alignment.getPatternCount());
         }
         hasDirt = Tree.IS_FILTHY;
         for (int i = 0; i < intNodeCount; i++) {
@@ -294,13 +314,12 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      */
     protected void setStates(Node node, int patternCount) {
         if (node.isLeaf()) {
-            Alignment data = dataInput.get();
             int i;
             int[] states = new int[patternCount];
-            int taxonIndex = getTaxonIndex(node.getID(), data);
+            int taxonIndex = getTaxonIndex(node.getID(), alignment);
             for (i = 0; i < patternCount; i++) {
-                int code = data.getPattern(taxonIndex, i);
-                int[] statesForCode = data.getDataType().getStatesForCode(code);
+                int code = alignment.getPattern(taxonIndex, i);
+                int[] statesForCode = alignment.getDataType().getStatesForCode(code);
                 if (statesForCode.length==1)
                     states[i] = statesForCode[0];
                 else
@@ -339,21 +358,20 @@ public class TreeLikelihood extends GenericTreeLikelihood {
      */
     protected void setPartials(Node node, int patternCount) {
         if (node.isLeaf()) {
-            Alignment data = dataInput.get();
-            int states = data.getDataType().getStateCount();
+            int states = alignment.getDataType().getStateCount();
             double[] partials = new double[patternCount * states];
             int k = 0;
-            int taxonIndex = getTaxonIndex(node.getID(), data);
+            int taxonIndex = getTaxonIndex(node.getID(), alignment);
             for (int patternIndex_ = 0; patternIndex_ < patternCount; patternIndex_++) {                
-                double[] tipLikelihoods = data.getTipLikelihoods(taxonIndex,patternIndex_);
+                double[] tipLikelihoods = alignment.getTipLikelihoods(taxonIndex,patternIndex_);
                 if (tipLikelihoods != null) {
                 	for (int state = 0; state < states; state++) {
                 		partials[k++] = tipLikelihoods[state];
                 	}
                 }
                 else {
-                	int stateCount = data.getPattern(taxonIndex, patternIndex_);
-	                boolean[] stateSet = data.getStateSet(stateCount);
+                	int stateCount = alignment.getPattern(taxonIndex, patternIndex_);
+	                boolean[] stateSet = alignment.getStateSet(stateCount);
 	                for (int state = 0; state < states; state++) {
 	                	 partials[k++] = (stateSet[state] ? 1.0 : 0.0);                
 	                }
@@ -369,6 +387,9 @@ public class TreeLikelihood extends GenericTreeLikelihood {
 
     // for testing
     public double[] getRootPartials() {
+    	if (beagle != null) {
+    		return beagle.getRootPartials();
+    	}
         return m_fRootPartials.clone();
     }
 
@@ -424,13 +445,13 @@ public class TreeLikelihood extends GenericTreeLikelihood {
     protected void calcLogP() {
         logP = 0.0;
         if (useAscertainedSitePatterns) {
-            final double ascertainmentCorrection = dataInput.get().getAscertainmentCorrection(patternLogLikelihoods);
-            for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
-                logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * dataInput.get().getPatternWeight(i);
+            final double ascertainmentCorrection = alignment.getAscertainmentCorrection(patternLogLikelihoods);
+            for (int i = 0; i < alignment.getPatternCount(); i++) {
+                logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * alignment.getPatternWeight(i);
             }
         } else {
-            for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
-                logP += patternLogLikelihoods[i] * dataInput.get().getPatternWeight(i);
+            for (int i = 0; i < alignment.getPatternCount(); i++) {
+                logP += patternLogLikelihoods[i] * alignment.getPatternWeight(i);
             }
         }
     }

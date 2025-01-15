@@ -104,10 +104,13 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
 	// specified a set ranges of patterns assigned to each thread
 	// first patternPoints contains 0, then one point for each thread
     private int [] patternPoints;
+    
+    private Alignment alignment;
 	
     @Override
     public void initAndValidate() {
 		threadCount = ProgramStatus.m_nThreads;
+		alignment = (Alignment) dataInput.get();
 
 		if (maxNrOfThreadsInput.get() > 0) {
 			threadCount = Math.min(maxNrOfThreadsInput.get(), ProgramStatus.m_nThreads);
@@ -120,13 +123,13 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
         logPByThread = new double[threadCount];
 
     	// sanity check: alignment should have same #taxa as tree
-    	if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
+    	if (alignment.getTaxonCount() != treeInput.get().getLeafNodeCount()) {
     		throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
     	}
     	
     	treelikelihood = new TreeLikelihood[threadCount];
     	
-    	if (dataInput.get().isAscertained) {
+    	if (alignment.isAscertained) {
     		Log.warning.println("Note, can only use single thread per alignment because the alignment is ascertained");
     		threadCount = 1;
     	}
@@ -147,12 +150,11 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     	} else {
         	pool = Executors.newFixedThreadPool(threadCount);
     		
-        	calcPatternPoints(dataInput.get().getSiteCount());
+        	calcPatternPoints(alignment.getSiteCount());
         	for (int i = 0; i < threadCount; i++) {
-        		Alignment data = dataInput.get();
         		String filterSpec = (patternPoints[i] +1) + "-" + (patternPoints[i + 1]);
-        		if (data.isAscertained) {
-        			filterSpec += data.excludefromInput.get() + "-" + data.excludetoInput.get() + "," + filterSpec;
+        		if (alignment.isAscertained) {
+        			filterSpec += alignment.excludefromInput.get() + "-" + alignment.excludetoInput.get() + "," + filterSpec;
         		}
         		treelikelihood[i] = new TreeLikelihood();
         		treelikelihood[i].setID(getID() + i);
@@ -176,7 +178,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
         				"branchRateModel", duplicate(branchRateModelInput.get(), i), 
         				"rootFrequencies", rootFrequenciesInput.get(),
         				"useAmbiguities", useAmbiguitiesInput.get(),
-                                    	"scaling" , scalingInput.get() + ""
+                        "scaling", scalingInput.get() + ""
         				);
         		
         		likelihoodCallers.add(new TreeLikelihoodCaller(treelikelihood[i], i));
@@ -321,7 +323,7 @@ public class ThreadedTreeLikelihood extends GenericTreeLikelihood {
     
     /* return copy of pattern log likelihoods for each of the patterns in the alignment */
 	public double [] getPatternLogLikelihoods() {
-		double [] patternLogLikelihoods = new double[dataInput.get().getPatternCount()];
+		double [] patternLogLikelihoods = new double[alignment.getPatternCount()];
 		int i = 0;
 		for (TreeLikelihood b : treelikelihood) {
 			double [] d = b.getPatternLogLikelihoods();

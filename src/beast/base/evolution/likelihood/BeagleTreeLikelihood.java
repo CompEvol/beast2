@@ -99,6 +99,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
     
     @Override
     public void initAndValidate() {
+    	alignment = (Alignment) dataInput.get();
         boolean forceJava = Boolean.valueOf(System.getProperty("java.only"));
         if (forceJava) {
         	return;
@@ -114,7 +115,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         	throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
         }
         m_siteModel = (SiteModel.Base) siteModelInput.get();
-        m_siteModel.setDataType(dataInput.get().getDataType());
+        m_siteModel.setDataType(alignment.getDataType());
         substitutionModel = m_siteModel.substModelInput.get();
         branchRateModel = branchRateModelInput.get();
         if (branchRateModel == null) {
@@ -123,8 +124,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         m_branchLengths = new double[m_nNodeCount];
         storedBranchLengths = new double[m_nNodeCount];
 
-        m_nStateCount = dataInput.get().getMaxStateCount();
-        patternCount = dataInput.get().getPatternCount();
+        m_nStateCount = alignment.getMaxStateCount();
+        patternCount = alignment.getPatternCount();
 
         //System.err.println("Attempt to load BEAGLE TreeLikelihood");
 
@@ -136,8 +137,8 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	        for (int i = 0; i < categoryRates.length; i++) {
 	        	if (categoryRates[i] == 0) {
 	        		proportionInvariant = m_siteModel.getRateForCategory(i, null);
-	                int stateCount = dataInput.get().getMaxStateCount();
-	                int patterns = dataInput.get().getPatternCount();
+	                int stateCount = alignment.getMaxStateCount();
+	                int patterns = alignment.getPatternCount();
 	                calcConstantPatternIndices(patterns, stateCount);
 	                invariantCategory = i;
 	                
@@ -152,7 +153,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
 	        		break;
 	        	}
 	        }
-	        if (constantPattern != null && constantPattern.size() > dataInput.get().getPatternCount()) {
+	        if (constantPattern != null && constantPattern.size() > alignment.getPatternCount()) {
 	        	// if there are many more constant patterns than patterns (each pattern can
 	        	// have a number of constant patters, one for each state) it is less efficient
 	        	// to just calculate the TreeLikelihood for constant sites than optimising
@@ -385,7 +386,7 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
         
         Node [] nodes = treeInput.get().getNodesAsArray();
         for (int i = 0; i < tipCount; i++) {
-        	int taxon = getTaxonIndex(nodes[i].getID(), dataInput.get());  
+        	int taxon = getTaxonIndex(nodes[i].getID(), alignment);  
             if (m_bUseAmbiguities || m_bUseTipLikelihoods) {
                 setPartials(beagle, i, taxon);
             } else {
@@ -393,13 +394,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             }
         }
 
-        if (dataInput.get().isAscertained) {
+        if (alignment.isAscertained) {
             ascertainedSitePatterns = true;
         }
 
         double[] patternWeights = new double[patternCount];
         for (int i = 0; i < patternCount; i++) {
-            patternWeights[i] = dataInput.get().getPatternWeight(i);
+            patternWeights[i] = alignment.getPatternWeight(i);
         }
         beagle.setPatternWeights(patternWeights);
 
@@ -482,22 +483,21 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      */
     protected final void setPartials(Beagle beagle,
                                      int nodeIndex, int taxon) {
-        Alignment data = dataInput.get();
 
         double[] partials = new double[patternCount * m_nStateCount * categoryCount];
 
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
 
-        	double[] tipProbabilities = data.getTipLikelihoods(taxon,i);
+        	double[] tipProbabilities = alignment.getTipLikelihoods(taxon,i);
             if (tipProbabilities != null) {
             	for (int state = 0; state < m_nStateCount; state++) {
             		partials[v++] = tipProbabilities[state];
             	}
             }
             else {
-            	int stateCount = data.getPattern(taxon, i);
-                boolean[] stateSet = data.getStateSet(stateCount);
+            	int stateCount = alignment.getPattern(taxon, i);
+                boolean[] stateSet = alignment.getStateSet(stateCount);
                 for (int state = 0; state < m_nStateCount; state++) {
                 	 partials[v++] = (stateSet[state] ? 1.0 : 0.0);                
                 }
@@ -547,14 +547,13 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
      */
     protected final void setStates(Beagle beagle,
                                    int nodeIndex, int taxon) {
-        Alignment data = dataInput.get();
         int i;
 
         int[] states = new int[patternCount];
 
         for (i = 0; i < patternCount; i++) {
-            int code = data.getPattern(taxon, i);
-            int[] statesForCode = data.getDataType().getStatesForCode(code);
+            int code = alignment.getPattern(taxon, i);
+            int[] statesForCode = alignment.getDataType().getStatesForCode(code);
             if (statesForCode.length==1)
                 states[i] = statesForCode[0];
             else
@@ -866,11 +865,11 @@ public class BeagleTreeLikelihood extends TreeLikelihood {
             if (ascertainedSitePatterns) {
                 // Need to correct for ascertainedSitePatterns
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
-                logL = getAscertainmentCorrectedLogLikelihood(dataInput.get(),
-                        patternLogLikelihoods, dataInput.get().getWeights(), frequencies);
+                logL = getAscertainmentCorrectedLogLikelihood(alignment,
+                        patternLogLikelihoods, alignment.getWeights(), frequencies);
             } else if (invariantCategory >= 0) {
                 beagle.getSiteLogLikelihoods(patternLogLikelihoods);
-                int [] patternWeights = dataInput.get().getWeights();
+                int [] patternWeights = alignment.getWeights();
                 proportionInvariant = m_siteModel.getProportionInvariant();
                 
                 
