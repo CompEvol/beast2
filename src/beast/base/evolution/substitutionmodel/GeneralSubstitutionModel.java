@@ -284,6 +284,10 @@ public class GeneralSubstitutionModel extends SubstitutionModel.Base {
         return true;
     }
 
+    
+    public void doUpdate() {
+    	updateMatrix = true;
+    }
 
     /**
      * This function returns the Eigen vectors.
