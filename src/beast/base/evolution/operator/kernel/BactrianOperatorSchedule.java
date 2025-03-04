@@ -22,6 +22,7 @@ import beast.base.inference.operator.kernel.BactrianDeltaExchangeOperator;
 import beast.base.inference.operator.kernel.BactrianIntervalOperator;
 import beast.base.inference.operator.kernel.BactrianRandomWalkOperator;
 import beast.base.inference.operator.kernel.BactrianUpDownOperator;
+import beast.base.inference.parameter.RealParameter;
 
 @Description("Operator schedule that replaces operators with Bactrian operators")
 public class BactrianOperatorSchedule extends OperatorSchedule {
@@ -42,8 +43,11 @@ public class BactrianOperatorSchedule extends OperatorSchedule {
 			Operator bp = new BactrianNodeOperator();
 			p = initialiseOperator(p, bp);
 		} else if (p.getClass() == UniformOperator.class) {
-			Operator bp = new BactrianIntervalOperator();
-			p = initialiseOperator(p, bp);
+			UniformOperator op = (UniformOperator) p;
+			if (op.parameterInput.get() instanceof RealParameter) {
+				Operator bp = new BactrianIntervalOperator();
+				p = initialiseOperator(p, bp);
+			}
 		} else if (p.getClass() == DeltaExchangeOperator.class) {
 			Operator bp = new BactrianDeltaExchangeOperator();
 			p = initialiseOperator(p, bp);
