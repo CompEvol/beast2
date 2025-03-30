@@ -16,6 +16,7 @@
  */
 package org.apache.commons.math.distribution;
 
+
 import java.io.Serializable;
 
 import org.apache.commons.math.FunctionEvaluationException;
@@ -172,7 +173,7 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
      * @throws IllegalArgumentException if p < 0 or p > 1
      */
     @Override
-	public int inverseCumulativeProbability(final double p) throws MathException {
+    public int inverseCumulativeProbability(final double p) throws MathException {
         if (p < 0.0 || p > 1.0) {
             throw MathRuntimeException.createIllegalArgumentException(
                     OUT_OF_RANGE_POINT, p, 0.0, 1.0);
@@ -180,48 +181,68 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
 
         // by default, do simple bisection.
         // subclasses can override if there is a better method.
-        int x0 = getDomainLowerBound(p);
-        int x1 = getDomainUpperBound(p);
-        double pm;
-        while (x0 < x1) {
-            int xm = x0 + (x1 - x0) / 2;
-            pm = checkedCumulativeProbability(xm);
-            if (pm > p) {
-                // update x1
-                if (xm == x1) {
-                    // this can happen with integer division
-                    // simply decrement x1
-                    --x1;
-                } else {
-                    // update x1 normally
-                    x1 = xm;
-                }
+        int lower = getDomainLowerBound(p);
+        if (p == 0.0) {
+            return lower;
+        }
+        if (lower == Integer.MIN_VALUE) {
+            if (checkedCumulativeProbability(lower) >= p) {
+                return lower;
+            }
+        } else {
+            lower -= 1; // this ensures cumulativeProbability(lower) < p, which
+                        // is important for the solving step
+        }
+        int upper = getDomainUpperBound(p);
+        if (p == 1.0) {
+            return upper;
+        }
+
+        upper = solveInverseCumulativeProbability(p, lower, upper);
+
+        // ensure upper lies within domain bounds
+        upper = upper>=getDomainLowerBound(p) ? upper : getDomainLowerBound(p);
+        upper = upper<=getDomainUpperBound(p) ? upper : getDomainUpperBound(p);
+        
+        return upper;
+    }
+    
+
+    /**
+     * This is a utility function used by {@link
+     * #inverseCumulativeProbability(double)}. It assumes {@code 0 < p < 1} and
+     * that the inverse cumulative probability lies in the bracket {@code
+     * (lower, upper]}. The implementation does simple bisection to find the
+     * smallest {@code p}-quantile <code>inf{x in Z | P(X<=x) >= p}</code>.
+     *
+     * @param p the cumulative probability
+     * @param lower a value satisfying {@code cumulativeProbability(lower) < p}
+     * @param upper a value satisfying {@code p <= cumulativeProbability(upper)}
+     * @return the smallest {@code p}-quantile of this distribution
+     * @throws FunctionEvaluationException 
+     */
+    protected int solveInverseCumulativeProbability(final double p, int lower, int upper) throws FunctionEvaluationException {
+        while (lower + 1 < upper) {
+            int xm = (lower + upper) / 2;
+            if (xm < lower || xm > upper) {
+                /*
+                 * Overflow.
+                 * There will never be an overflow in both calculation methods
+                 * for xm at the same time
+                 */
+                xm = lower + (upper - lower) / 2;
+            }
+
+            double pm = checkedCumulativeProbability(xm);
+            if (pm >= p) {
+                upper = xm;
             } else {
-                // update x0
-                if (xm == x0) {
-                    // this can happen with integer division
-                    // simply increment x0
-                    ++x0;
-                } else {
-                    // update x0 normally
-                    x0 = xm;
-                }
+                lower = xm;
             }
         }
-
-        // insure x0 is the correct critical point
-        pm = checkedCumulativeProbability(x0);
-        while (pm > p) {
-            --x0;
-            pm = checkedCumulativeProbability(x0);
-        }
-
-        // ensure x0 lies within domain bounds
-        x0 = x0>=getDomainLowerBound(p) ? x0 : getDomainLowerBound(p);
-        x0 = x0<=getDomainUpperBound(p) ? x0 : getDomainUpperBound(p);
-        
-        return x0;
+        return upper;
     }
+
 
     /**
      * Computes the cumulative probablity function and checks for NaN values returned.
