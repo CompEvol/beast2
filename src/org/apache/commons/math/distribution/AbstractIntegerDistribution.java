@@ -162,12 +162,19 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
     }
 
     /**
-     * For a random variable X whose values are distributed according
-     * to this distribution, this method returns the largest x, such
-     * that P(X &le; x) &le; <code>p</code>.
+     * Computes the quantile function of this distribution.
+     * For a random variable {@code X} distributed according to this distribution,
+     * the returned value is     
+     * <ul>
+     * <li>{@link #getDomainLowerBound()} for {@code p = 0},</li>
+     * <li>{@link #getDomainUpperBound()} for {@code p = 1}, and</li>
+     * <li>{@link #solveInverseCumulativeProbability(double, int, int)} for
+     *     {@code 0 < p < 1}.</li>
+     * </ul>
      *
      * @param p the desired probability
-     * @return the largest x such that P(X &le; x) <= p
+     * @return the smallest {@code p}-quantile of this distribution
+     * (largest 0-quantile for {@code p = 0})
      * @throws MathException            if the inverse cumulative probability can not be
      *                                  computed due to convergence or other numerical errors.
      * @throws IllegalArgumentException if p < 0 or p > 1
@@ -242,6 +249,7 @@ public abstract class AbstractIntegerDistribution extends AbstractDistribution
         }
         return upper;
     }
+       
 
 
     /**
