@@ -14,8 +14,6 @@ import beast.base.util.Randomizer;
 
 @Description("Delta exchange operator that proposes through a Bactrian distribution for real valued parameters")
 public class BactrianDeltaExchangeOperator extends KernelOperator {
-	
-    //public Input<Tree> m_pTree = new Input<>("tree", "if specified, all beast.tree branch length are scaled");
 
     public final Input<List<RealParameter>> parameterInput = new Input<>("parameter",
             "if specified, this parameter is operated on", new ArrayList<>());
@@ -118,9 +116,7 @@ public class BactrianDeltaExchangeOperator extends KernelOperator {
         // dimension sanity check
         int dim = -1;
         if (compoundParameter == null) { // one parameter case
-        	if (parameterInput.get().size() > 0) {
-        		dim = (!parameterInput.get().isEmpty() ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
-        	}
+        	dim = (!parameterInput.get().isEmpty() ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
         } else {
             dim = compoundParameter.getDimension();
         }
