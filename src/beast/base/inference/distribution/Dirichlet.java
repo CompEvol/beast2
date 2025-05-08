@@ -78,20 +78,8 @@ public class Dirichlet extends ParametricDistribution {
             sumX += pX.getArrayValue(i);
         }
 
-        // normalise X if sum != 1
-        if (sumX != 1){
-            for (int i = 0; i < pX.getDimension(); i++) {
-                normalisedX[i] = pX.getArrayValue(i) / sumX;
-            }
-        }
-
         for (int i = 0; i < pX.getDimension(); i++) {
-            double x = 0;
-            if (sumX == 1) {
-                x = pX.getArrayValue(i);
-            } else {
-                x = normalisedX[i];
-            }
+            double x = normalisedX[i] / sumX;
 
             logP += (alpha[i] - 1) * Math.log(x);
             logP -= org.apache.commons.math.special.Gamma.logGamma(alpha[i]);
