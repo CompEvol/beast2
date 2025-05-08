@@ -72,14 +72,14 @@ public class Dirichlet extends ParametricDistribution {
         double logP = 0;
         double sumAlpha = 0;
         double sumX = 0;
-        double[] normalisedX = new double[pX.getDimension()];
+
         // check sumX first
         for (int i = 0; i < pX.getDimension(); i++) {
             sumX += pX.getArrayValue(i);
         }
 
         for (int i = 0; i < pX.getDimension(); i++) {
-            double x = normalisedX[i] / sumX;
+            double x = pX.getArrayValue(i) / sumX;
 
             logP += (alpha[i] - 1) * Math.log(x);
             logP -= org.apache.commons.math.special.Gamma.logGamma(alpha[i]);
