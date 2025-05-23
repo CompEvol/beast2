@@ -83,11 +83,13 @@ public class SiteModel extends SiteModelInterface.Base {
         if (invarParameter == null) {
             invarParameter = new RealParameter("0.0");
         }
-        if (invarParameter instanceof RealParameter invar) {
+        if (invarParameter instanceof RealParameter) {
+        	RealParameter invar = (RealParameter) invarParameter;
         	invar.setBounds(Math.max(0.0, invar.getLower()), Math.min(1.0, invar.getUpper()));
         }
 
-        if (muParameter instanceof RealParameter mu) {
+        if (muParameter instanceof RealParameter) {
+        	RealParameter mu = (RealParameter) muParameter;
         	mu.setBounds(Math.max(mu.getLower(), 0.0), Math.min(mu.getUpper(), Double.POSITIVE_INFINITY));
         }
         if (shapeParameter != null) {
@@ -96,7 +98,8 @@ public class SiteModel extends SiteModelInterface.Base {
             // the category rates can go to 0 and cause a -Inf likelihood (whilst this
             // is not a problem as the state will be rejected, it could mask other issues
             // and this seems the better approach.
-            if (shapeParameter instanceof RealParameter shape) {
+            if (shapeParameter instanceof RealParameter) {
+            	RealParameter shape = (RealParameter) shapeParameter;
             	shape.setBounds(Math.max(shape.getLower(), 1.0E-3), Math.min(shape.getUpper(), 1.0E3));
             }
         }
