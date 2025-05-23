@@ -57,12 +57,12 @@ import beast.base.inference.util.InputUtil;
 public class SiteModel extends SiteModelInterface.Base {
 
 
-    final public Input<Function> muParameterInput = new Input<>("mutationRate", "mutation rate (defaults to 1.0)");
+    final public Input<RealParameter> muParameterInput = new Input<>("mutationRate", "mutation rate (defaults to 1.0)");
     final public Input<Integer> gammaCategoryCount =
             new Input<>("gammaCategoryCount", "gamma category count (default=zero for no gamma)", 0);
-    final public Input<Function> shapeParameterInput =
+    final public Input<RealParameter> shapeParameterInput =
             new Input<>("shape", "shape parameter of gamma distribution. Ignored if gammaCategoryCount 1 or less");
-    final public Input<Function> invarParameterInput =
+    final public Input<RealParameter> invarParameterInput =
             new Input<>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     //public Input<Boolean> useBeast1StyleGammaInput = new Input<>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 
@@ -110,9 +110,9 @@ public class SiteModel extends SiteModelInterface.Base {
         }
         refresh();
 
-        addCondition0(muParameterInput);
-        addCondition0(invarParameterInput);
-        addCondition0(shapeParameterInput);
+        addCondition(muParameterInput);
+        addCondition(invarParameterInput);
+        addCondition(shapeParameterInput);
     }
 
     private void addCondition0(Input<Function> input) {
