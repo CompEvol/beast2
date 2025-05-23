@@ -56,7 +56,7 @@ public class DeltaExchangeOperatorTest extends TestOperator {
 		// An invalid operator should either fail in initByName or make valid
 		// proposals
 		try {
-			d.initByName("parameter", parameter);
+			d.initByName("parameter", parameter, "weight", 1.0);			
 		} catch (RuntimeException e) {
 			return;
 		}
