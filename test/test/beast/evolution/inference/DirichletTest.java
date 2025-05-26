@@ -6,6 +6,7 @@ import org.apache.commons.math.special.Gamma;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DirichletTest {
     @Test
@@ -54,8 +55,9 @@ public class DirichletTest {
         Double[] alpha = new Double[]{1.0, 1.0, 1.0, 1.0, 1.0};
         RealParameter a = new RealParameter(alpha);
         d.alphaInput.setValue(a, d );
+        d.sumInput.setValue(5.0, d );
         d.initAndValidate();
-
+        
         int n = alpha.length;
 
         // Define x whose sum is sumX (not 1)
@@ -94,5 +96,24 @@ public class DirichletTest {
         double log_density_scaled = log_density_standard - (n - 1) * Math.log(sumX);
 
         assertEquals(log_density_scaled, f0, 1e-6);
+    }
+
+    @Test
+    void notNormalisedTest2() {
+    	// fail to set sum
+    	
+    	Dirichlet d = new Dirichlet();
+
+        Double[] alpha = new Double[]{1.0, 1.0, 1.0, 1.0, 1.0};
+        RealParameter a = new RealParameter(alpha);
+        d.alphaInput.setValue(a, d );
+        d.initAndValidate();
+        
+        // Define x whose sum is sumX (not 1)
+        Double[] x = new Double[]{1.0, 1.0, 1.0, 1.0, 1.0}; // sum = 5 (sumX=5)
+        RealParameter p = new RealParameter(x);
+        double f0 = d.calcLogP(p);
+        
+        assertTrue(Double.isInfinite(f0));
     }
 }
