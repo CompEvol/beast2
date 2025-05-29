@@ -20,7 +20,7 @@ public class Dirichlet extends ParametricDistribution {
     final public Input<Double> sumInput = new Input<>("sum", "expected sum of the values", 1.0);
 
     
-    private double expectedSum;
+    protected double expectedSum = 1.0;
     
     @Override
     public void initAndValidate() {
@@ -97,6 +97,7 @@ public class Dirichlet extends ParametricDistribution {
         }        
 
         logP += org.apache.commons.math.special.Gamma.logGamma(sumAlpha);
+        // area = sumX^(dim-1)
         logP -= (pX.getDimension() - 1) * Math.log(sumX);
         return logP;
     }
@@ -113,7 +114,8 @@ public class Dirichlet extends ParametricDistribution {
 				sum += dirichletSample[j];
 			}
 			for (int j = 0; j < dim; j++) {
-				dirichletSample[j] = dirichletSample[j] / sum;
+                // if expectedSum != 1, then adjust the sum to it
+				dirichletSample[j] = (dirichletSample[j] / sum) * expectedSum;
 			}
 			samples[i] = dirichletSample;
 
