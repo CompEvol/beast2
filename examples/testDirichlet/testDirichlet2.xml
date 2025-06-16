@@ -1,0 +1,38 @@
+<beast version='2.0'
+       namespace='beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood'>
+
+
+    <parameter id="pi" spec="parameter.RealParameter" dimension="4" keys="A C G T" 
+               lower="0.0" name="stateNode" upper="1.0">0.25 0.25 0.25 0.25</parameter>
+                   
+    <run spec="MCMC" id="mcmc" chainLength="100000000" preBurnin="100000">
+
+        <distribution spec='CompoundDistribution' id='posterior'>
+
+                <distribution id="pi.prior" spec="distribution.Prior" x="@pi">
+                    <distr id="Dirichlet" spec="distribution.Dirichlet">
+                        <parameter id="RealParameter2" spec="parameter.RealParameter" 
+                                   dimension="4" estimate="false" name="alpha">2.0 2.0 2.0 2.0</parameter>
+                    </distr>
+                </distribution>
+
+        </distribution>
+
+
+        <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" 
+                   beta="0.05" burnin="500" initial="1000" weight="5.0">
+            <transformations spec="operator.kernel.Transform$LogConstrainedSumTransform">
+                 <f idref="pi"/>
+            </transformations>
+        </operator>
+        
+
+        <logger logEvery="1000" fileName="dirichletAlpha2222AVMN.log">
+            <log idref="pi"/>
+        </logger>
+        <logger logEvery="100000">
+             <log idref="pi"/>
+        </logger>
+    </run>
+
+</beast>

@@ -210,20 +210,31 @@ public class DeltaExchangeOperator extends Operator {
                     scalar2 = Math.round(scalar2 + d);
                 } else {
 
-                    // exchange a random delta
+                    /*
+                     * Symmetric move with weights.
+                     * The move is prosed on the line between (0, v_j) and (v_i, 0),
+                     * so delta is no loner the change between proposed value and current value in each dimension.
+                     * It is the max move along that diagonal line.
+                     * For equal weights, delta is sqrt(2) of value changes.
+                     */
+
+                    // d ~ Uniform(0, delta)
                     final double d = Randomizer.nextDouble() * delta;
-                    scalar1 -= d;
                     if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
+                        final double sumW = parameterWeights[dim1] + parameterWeights[dim2];
+                        scalar1 -= d * parameterWeights[dim2] / sumW;
+                        scalar2 += d * parameterWeights[dim1] / sumW;
                     } else {
-                        scalar2 += d;
+                        scalar1 -= d / 2; // for equal weights
+                        scalar2 += d / 2;
                     }
+
 
                 }
 
                 if (scalar1 < realparameter.getLower() || scalar1 > realparameter.getUpper() ||
                         scalar2 < realparameter.getLower() || scalar2 > realparameter.getUpper()) {
-                    logq = Double.NEGATIVE_INFINITY;
+                    return Double.NEGATIVE_INFINITY;
                 } else {
                     realparameter.setValue(dim1, scalar1);
                     realparameter.setValue(dim2, scalar2);
@@ -242,7 +253,7 @@ public class DeltaExchangeOperator extends Operator {
 
                 if (scalar1 < intparameter.getLower() || scalar1 > intparameter.getUpper() ||
                         scalar2 < intparameter.getLower() || scalar2 > intparameter.getUpper()) {
-                    logq = Double.NEGATIVE_INFINITY;
+                    return Double.NEGATIVE_INFINITY;
                 } else {
                     intparameter.setValue(dim1, scalar1);
                     intparameter.setValue(dim2, scalar2);
@@ -265,22 +276,33 @@ public class DeltaExchangeOperator extends Operator {
                     scalar2 = Math.round(scalar2 + d);
                 } else {
 
-                    // exchange a random delta
+                    /*
+                     * Symmetric move with weights.
+                     * The move is prosed on the line of weighted mean between (0, v_j) and (v_i, 0),
+                     * so delta is no loner the change between proposed value and current value in each dimension.
+                     * It is the max move along that diagonal line.
+                     For equal weights, delta is sqrt(2) of value changes.
+                     */
+
+                    // d ~ Uniform(0, delta)
                     final double d = Randomizer.nextDouble() * delta;
-                    scalar1 -= d;
                     if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
+                        final double sumW = parameterWeights[dim1] + parameterWeights[dim2];
+                        scalar1 -= d * parameterWeights[dim2] / sumW;
+                        scalar2 += d * parameterWeights[dim1] / sumW;
                     } else {
-                        scalar2 += d;
+                        scalar1 -= d / 2; // for equal weights
+                        scalar2 += d / 2;
                     }
 
+//                    System.out.println( (scalar1 * parameterWeights[dim1] + scalar2 * parameterWeights[dim2]) / sumW );
                 }
 
                 if (scalar1 < (Double) compoundParameter.getLower(dim1) ||
                         scalar1 > (Double) compoundParameter.getUpper(dim1) ||
                         scalar2 < (Double) compoundParameter.getLower(dim2) ||
                         scalar2 > (Double) compoundParameter.getUpper(dim2)) {
-                    logq = Double.NEGATIVE_INFINITY;
+                    return Double.NEGATIVE_INFINITY;
                 } else {
                     compoundParameter.setValue(dim1, scalar1);
                     compoundParameter.setValue(dim2, scalar2);
@@ -301,7 +323,7 @@ public class DeltaExchangeOperator extends Operator {
                         scalar1 > (Integer) compoundParameter.getUpper(dim1) ||
                         scalar2 < (Integer) compoundParameter.getLower(dim2) ||
                         scalar2 > (Integer) compoundParameter.getUpper(dim2)) {
-                    logq = Double.NEGATIVE_INFINITY;
+                    return Double.NEGATIVE_INFINITY;
                 } else {
                     compoundParameter.setValue(dim1, scalar1);
                     compoundParameter.setValue(dim2, scalar2);
