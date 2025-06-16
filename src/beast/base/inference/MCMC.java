@@ -200,7 +200,7 @@ public class MCMC extends Runnable {
 
         // State initialisation
         final HashSet<StateNode> operatorStateNodes = new HashSet<>();
-        for (final Operator op : operatorsInput.get()) {
+        for (final Operator op : operatorSchedule.operators) {
             for (final StateNode stateNode : op.listStateNodes()) {
                 operatorStateNodes.add(stateNode);
             }
@@ -442,6 +442,7 @@ public class MCMC extends Runnable {
         }
         for (long sampleNr = -burnIn; sampleNr <= chainLength; sampleNr++) {
             final Operator operator = propagateState(sampleNr);
+
 
             if (debugFlag && sampleNr % 1 == 0 || sampleNr % 10000 == 0) {
                 // check that the posterior is correctly calculated at every third
