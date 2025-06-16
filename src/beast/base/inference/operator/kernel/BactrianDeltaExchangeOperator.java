@@ -204,11 +204,20 @@ public class BactrianDeltaExchangeOperator extends KernelOperator {
                     // exchange a random delta
                     final double d = getNextDouble(0);
                     scalar1 -= d;
-                    if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
-                    } else {
-                        scalar2 += d;
-                    }
+//                    if (parameterWeights[dim1] != parameterWeights[dim2]) {
+//                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
+//                    } else {
+//                        scalar2 += d;
+//                    }
+                    
+                    
+                    double w1 = parameterWeights[dim1];
+                    double w2 = parameterWeights[dim2];
+                    double wsum = w1 + w2;
+                    scalar1 = scalar1 + d*w2/wsum;
+                    scalar2 = scalar2 - d*w1/wsum;
+                    
+
 
                 }
 
@@ -258,12 +267,18 @@ public class BactrianDeltaExchangeOperator extends KernelOperator {
 
                     // exchange a random delta
                     final double d = getNextDouble(0);
-                    scalar1 -= d;
-                    if (parameterWeights[dim1] != parameterWeights[dim2]) {
-                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
-                    } else {
-                        scalar2 += d;
-                    }
+//                    scalar1 -= d;
+//                    if (parameterWeights[dim1] != parameterWeights[dim2]) {
+//                        scalar2 += d * parameterWeights[dim1] / parameterWeights[dim2];
+//                    } else {
+//                        scalar2 += d;
+//                    }
+                    
+                    double w1 = parameterWeights[dim1];
+                    double w2 = parameterWeights[dim2];
+                    double wsum = w1 + w2;
+                    scalar1 = scalar1 + d*w2/wsum;
+                    scalar2 = scalar2 - d*w1/wsum;
 
                 }
 
