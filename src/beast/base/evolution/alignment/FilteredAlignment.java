@@ -372,4 +372,10 @@ public class FilteredAlignment extends Alignment {
     public int [] indices() {
     	return filter.clone();
     }
+    
+    @Override
+    public double[] getTipLikelihoods(int taxonIndex, int patternIndex_) {
+        Alignment data = alignmentInput.get();
+        return data.getTipLikelihoods(taxonIndex, filter[patternIndex_]);
+    }
 }

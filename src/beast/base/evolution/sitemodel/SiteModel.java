@@ -27,15 +27,21 @@ package beast.base.evolution.sitemodel;
 
 
 
+import java.util.ArrayList;
+
 import org.apache.commons.math.distribution.GammaDistribution;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
+import beast.base.core.BEASTInterface;
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.evolution.tree.Node;
+import beast.base.inference.StateNode;
 import beast.base.inference.parameter.RealParameter;
+import beast.base.inference.util.InputUtil;
 
 
 
@@ -60,9 +66,9 @@ public class SiteModel extends SiteModelInterface.Base {
             new Input<>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     //public Input<Boolean> useBeast1StyleGammaInput = new Input<>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 
-    protected RealParameter muParameter;
-    protected RealParameter shapeParameter;
-    protected RealParameter invarParameter;
+    protected Function muParameter;
+    protected Function shapeParameter;
+    protected Function invarParameter;
     protected boolean useBeast1StyleGamma;
     
     @Override
@@ -76,23 +82,30 @@ public class SiteModel extends SiteModelInterface.Base {
         invarParameter = invarParameterInput.get();
         if (invarParameter == null) {
             invarParameter = new RealParameter("0.0");
-            invarParameter.setBounds(Math.max(0.0, invarParameter.getLower()), Math.min(1.0, invarParameter.getUpper()));
+        }
+        if (invarParameter instanceof RealParameter) {
+        	RealParameter invar = (RealParameter) invarParameter;
+        	invar.setBounds(Math.max(0.0, invar.getLower()), Math.min(1.0, invar.getUpper()));
         }
 
-        //if (muParameter != null) {
-        muParameter.setBounds(Math.max(muParameter.getLower(), 0.0), Math.min(muParameter.getUpper(), Double.POSITIVE_INFINITY));
-        //}
+        if (muParameter instanceof RealParameter) {
+        	RealParameter mu = (RealParameter) muParameter;
+        	mu.setBounds(Math.max(mu.getLower(), 0.0), Math.min(mu.getUpper(), Double.POSITIVE_INFINITY));
+        }
         if (shapeParameter != null) {
             // The quantile calculator fails when the shape parameter goes much below
             // 1E-3 so we have put a hard lower bound on it. If this is not there then
             // the category rates can go to 0 and cause a -Inf likelihood (whilst this
             // is not a problem as the state will be rejected, it could mask other issues
             // and this seems the better approach.
-            shapeParameter.setBounds(Math.max(shapeParameter.getLower(), 1.0E-3), Math.min(shapeParameter.getUpper(), 1.0E3));
+            if (shapeParameter instanceof RealParameter) {
+            	RealParameter shape = (RealParameter) shapeParameter;
+            	shape.setBounds(Math.max(shape.getLower(), 1.0E-3), Math.min(shape.getUpper(), 1.0E3));
+            }
         }
 
 
-        if (/*invarParameter != null && */(invarParameter.getValue() < 0 || invarParameter.getValue() > 1)) {
+        if (/*invarParameter != null && */(invarParameter.getArrayValue() < 0 || invarParameter.getArrayValue() > 1)) {
             throw new IllegalArgumentException("proportion invariant should be between 0 and 1");
         }
         refresh();
@@ -102,7 +115,18 @@ public class SiteModel extends SiteModelInterface.Base {
         addCondition(shapeParameterInput);
     }
 
-    @Override
+    private void addCondition0(Input<Function> input) {
+        if (input.get() == null) return;
+
+        if (conditions == null) conditions = new ArrayList<>();
+
+        if (input.get() instanceof StateNode) {
+        	conditions.add(((BEASTInterface)input.get()).getID());
+        }
+	}
+    
+
+	@Override
     protected void refresh() {
         if (shapeParameter != null) {
             categoryCount = gammaCategoryCount.get();
@@ -116,9 +140,9 @@ public class SiteModel extends SiteModelInterface.Base {
             categoryCount = 1;
         }
 
-        if (/*invarParameter != null && */invarParameter.getValue() > 0) {
-            if (invarParameter.getValue() >= 1.0) {
-            	throw new RuntimeException("Wrong value for parameter " + invarParameter.getID() +
+        if (/*invarParameter != null && */invarParameter.getArrayValue() > 0) {
+            if (invarParameter.getArrayValue() >= 1.0) {
+            	throw new RuntimeException("Wrong value for parameter " + ((BEASTInterface)invarParameter).getID() +
             			". Proportion invariant should be in bewteen 0 and 1 (exclusive)");
             }
             if (hasPropInvariantCategory) {
@@ -162,7 +186,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
         //final double mu = (muParameter != null) ? muParameter.getValue() : 1.0;
 
-        return categoryRates[category] * muParameter.getValue();
+        return categoryRates[category] * muParameter.getArrayValue();
     }
 
 
@@ -180,7 +204,7 @@ public class SiteModel extends SiteModelInterface.Base {
             }
         }
 
-        final double mu = muParameter.getValue();//(muParameter != null) ? muParameter.getValue() : 1.0;
+        final double mu = muParameter.getArrayValue();//(muParameter != null) ? muParameter.getValue() : 1.0;
 
         final double[] rates = new double[categoryRates.length];
         for (int i = 0; i < rates.length; i++) {
@@ -242,12 +266,12 @@ public class SiteModel extends SiteModelInterface.Base {
         double propVariable = 1.0;
         int cat = 0;
 
-        if (/*invarParameter != null && */invarParameter.getValue() > 0) {
+        if (/*invarParameter != null && */invarParameter.getArrayValue() > 0) {
             if (hasPropInvariantCategory) {
                 categoryRates[0] = 0.0;
-                categoryProportions[0] = invarParameter.getValue();
+                categoryProportions[0] = invarParameter.getArrayValue();
             }
-            propVariable = 1.0 - invarParameter.getValue();
+            propVariable = 1.0 - invarParameter.getArrayValue();
             if (hasPropInvariantCategory) {
                 cat = 1;
             }
@@ -255,7 +279,7 @@ public class SiteModel extends SiteModelInterface.Base {
 
         if (shapeParameter != null) {
 
-            final double a = shapeParameter.getValue();
+            final double a = shapeParameter.getArrayValue();
             double mean = 0.0;
             final int gammaCatCount = categoryCount - cat;
 
@@ -314,13 +338,14 @@ public class SiteModel extends SiteModelInterface.Base {
     protected boolean requiresRecalculation() {
         // do explicit check whether any of the non-substitution model parameters changed
         if (categoryCount > 1) {
-            if (shapeParameter != null && shapeParameter.somethingIsDirty() ||
-                    muParameter.somethingIsDirty() ||
-                    invarParameter.somethingIsDirty()) {
+        	
+            if (shapeParameter != null && InputUtil.isDirty(shapeParameterInput) ||
+            		InputUtil.isDirty(muParameterInput) ||
+            		InputUtil.isDirty(invarParameterInput)) {
                 ratesKnown = false;
             }
         } else {
-            if (muParameter.somethingIsDirty() || !hasPropInvariantCategory && invarParameter.somethingIsDirty()) {
+            if (InputUtil.isDirty(muParameterInput) || !hasPropInvariantCategory && InputUtil.isDirty(invarParameterInput)) {
                 ratesKnown = false;
             }
         }
@@ -604,7 +629,7 @@ public class SiteModel extends SiteModelInterface.Base {
         //if (invarParameter == null) {
         //	return 0;
         //}
-        return invarParameter.getValue();
+        return invarParameter.getArrayValue();
     }
 
 } // class SiteModel

@@ -3,6 +3,7 @@ package beast.base.evolution.substitutionmodel;
 import java.lang.reflect.InvocationTargetException;
 
 import beast.base.core.Description;
+import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
 import beast.base.evolution.datatype.DataType;
@@ -14,19 +15,19 @@ import beast.base.inference.parameter.RealParameter;
 public class TVM extends GeneralSubstitutionModel {
 
     // Transversion rates
-    final public Input<RealParameter> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
-    final public Input<RealParameter> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
-    final public Input<RealParameter> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
-    final public Input<RealParameter> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
+    final public Input<Function> rateACInput = new Input<>("rateAC", "substitution rate for A to C (default 1)");
+    final public Input<Function> rateATInput = new Input<>("rateAT", "substitution rate for A to T (default 1)");
+    final public Input<Function> rateCGInput = new Input<>("rateCG", "substitution rate for C to G (default 1)");
+    final public Input<Function> rateGTInput = new Input<>("rateGT", "substitution rate for G to T (default 1)");
 
     // Transition rates
-    final public Input<RealParameter> rateTransitionsInput = new Input<>("rateTransitions", "substitution rate for A<->G and C<->T");
+    final public Input<Function> rateTransitionsInput = new Input<>("rateTransitions", "substitution rate for A<->G and C<->T");
 
-    RealParameter rateAC;
-    RealParameter rateGT;
-    RealParameter rateAT;
-    RealParameter rateCG;
-    RealParameter rateTransitions;
+    Function rateAC;
+    Function rateGT;
+    Function rateAT;
+    Function rateCG;
+    Function rateTransitions;
 
     public TVM() {
         ratesInput.setRule(Validate.OPTIONAL);
@@ -69,7 +70,7 @@ public class TVM extends GeneralSubstitutionModel {
         rateTransitions = getParameter(rateTransitionsInput);
     }
 
-    private RealParameter getParameter(Input<RealParameter> parameterInput) {
+    private Function getParameter(Input<Function> parameterInput) {
         if (parameterInput.get() != null) {
             return parameterInput.get();
         }
@@ -78,21 +79,21 @@ public class TVM extends GeneralSubstitutionModel {
 
     @Override
     public void setupRelativeRates() {
-        relativeRates[0] = rateAC.getValue(); // A->C
-        relativeRates[1] = rateTransitions.getValue(); // A->G
-        relativeRates[2] = rateAT.getValue(); // A->T
+        relativeRates[0] = rateAC.getArrayValue(); // A->C
+        relativeRates[1] = rateTransitions.getArrayValue(); // A->G
+        relativeRates[2] = rateAT.getArrayValue(); // A->T
 
-        relativeRates[3] = rateAC.getValue(); // C->A
-        relativeRates[4] = rateCG.getValue(); // C->G
-        relativeRates[5] = rateTransitions.getValue(); // C->T
+        relativeRates[3] = rateAC.getArrayValue(); // C->A
+        relativeRates[4] = rateCG.getArrayValue(); // C->G
+        relativeRates[5] = rateTransitions.getArrayValue(); // C->T
 
-        relativeRates[6] = rateTransitions.getValue(); // G->A
-        relativeRates[7] = rateCG.getValue(); // G->C
-        relativeRates[8] = rateGT.getValue(); // G->T
+        relativeRates[6] = rateTransitions.getArrayValue(); // G->A
+        relativeRates[7] = rateCG.getArrayValue(); // G->C
+        relativeRates[8] = rateGT.getArrayValue(); // G->T
 
-        relativeRates[9] = rateAT.getValue(); // T->A
-        relativeRates[10] = rateTransitions.getValue(); //T->C
-        relativeRates[11] = rateGT.getValue(); //T->G
+        relativeRates[9] = rateAT.getArrayValue(); // T->A
+        relativeRates[10] = rateTransitions.getArrayValue(); //T->C
+        relativeRates[11] = rateGT.getArrayValue(); //T->G
     }
 
     @Override

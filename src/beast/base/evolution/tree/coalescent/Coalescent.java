@@ -34,7 +34,8 @@ public class Coalescent extends TreeDistribution {
     public void initAndValidate() {
         intervals = treeIntervalsInput.get();
         if (intervals == null) {
-            throw new IllegalArgumentException("Expected treeIntervals to be specified");
+        	intervals = new TreeIntervals();
+        	intervals.initByName("tree", treeInput.get());
         }
         calculateLogP();
     }

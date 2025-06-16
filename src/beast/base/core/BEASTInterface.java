@@ -40,7 +40,7 @@ import java.util.Set;
 
 import beast.pkgmgmt.BEASTClassLoader;
 
-public interface BEASTInterface {
+public interface BEASTInterface extends Citable {
 	final static String DEFEAULT_DESCRIPTION = "Not documented!!!";
 	
 	/**
@@ -142,51 +142,12 @@ public interface BEASTInterface {
         return "Not documented!!!";
     }
 
-    /**
-     * Deprecated: use getCitationList() instead to allow multiple citations, not just the first one
-     */
-	@Deprecated
-    default Citation getCitation() {
-        final Annotation[] classAnnotations = this.getClass().getAnnotations();
-        for (final Annotation annotation : classAnnotations) {
-            if (annotation instanceof Citation) {
-                return (Citation) annotation;
-            }
-            if (annotation instanceof Citation.Citations) {
-                return ((Citation.Citations) annotation).value()[0];
-                // TODO: this ignores other citations
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return array of @Citation annotations for this class
-     * or empty list if there are no citations
-     **/
-    default List<Citation> getCitationList() {
-        final Annotation[] classAnnotations = this.getClass().getAnnotations();
-        List<Citation> citations = new ArrayList<>();
-        for (final Annotation annotation : classAnnotations) {
-            if (annotation instanceof Citation) {
-            	citations.add((Citation) annotation);
-            }
-            if (annotation instanceof Citation.Citations) {
-            	for (Citation citation : ((Citation.Citations) annotation).value()) {
-            		citations.add(citation);
-            	}
-            }
-        }
-       	return citations;
-    }
-
-    /**
-     * @return references for this plug in and all its inputs *
-     */
-    default String getCitations() {
-        return getCitations(new HashSet<>(), new HashSet<>());
-    }
-
+	
+	@Override
+	default String getCitations() {
+		return getCitations(new HashSet<>(), new HashSet<>());
+	}
+	
     default String getCitations(final HashSet<String> citations, final HashSet<String> IDs) {
         if (getID() != null) {
             if (IDs.contains(getID())) {
