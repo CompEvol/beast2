@@ -9,6 +9,7 @@ mcmc_no_prior <- read_tsv("dirichletNoPrior.log", comment = "#")
 mcmc_a1111 <- read_tsv("dirichletAlpha1111.log", comment = "#")
 mcmc_a2222 <- read_tsv("dirichletAlpha2222.log", comment = "#")
 mcmc_a2AVMN <- read_tsv("dirichletAlpha2222AVMN.log", comment = "#")
+mcmc_a1Bactrian <- read_tsv("BactrianAlpha1111.log", comment = "#")
 mcmc_a2Bactrian <- read_tsv("BactrianAlpha2222.log", comment = "#")
 
 cat("mcmc_data has ", nrow(sim_a1111), " samples, and sim_data has ", 
@@ -34,6 +35,9 @@ df_mcmc2 <- as_tibble(mcmc_a2222) |> select(-Sample) |>
 df_a2AVMN <- as_tibble(mcmc_a2AVMN) |> select(-Sample) |> 
   mutate(across(everything(), ~ as.numeric(as.character(.)))) |> 
   mutate(source = "AVMNAlpha2")
+df_a1Bactrian <- as_tibble(mcmc_a1Bactrian) |> select(-Sample) |> 
+  mutate(across(everything(), ~ as.numeric(as.character(.)))) |> 
+  mutate(source = "BactrianAlpha1")
 df_a2Bactrian <- as_tibble(mcmc_a2Bactrian) |> select(-Sample) |> 
   mutate(across(everything(), ~ as.numeric(as.character(.)))) |> 
   mutate(source = "BactrianAlpha2")
@@ -54,7 +58,8 @@ colMeans(df_mcmc2[,1:4])
 sapply(df_mcmc2[, 1:4], var)
 
 
-df_all <- bind_rows(df_sim1, df_sim2, df_no_prior, df_mcmc1, df_mcmc2, df_a2AVMN, df_a2Bactrian)
+df_all <- bind_rows(df_sim1, df_sim2, df_no_prior, df_mcmc1, df_mcmc2, 
+                    df_a2AVMN, df_a1Bactrian, df_a2Bactrian)
 df_all_long <- df_all |> 
   pivot_longer(cols = 1:4, names_to = "dimension", values_to = "value")
 
