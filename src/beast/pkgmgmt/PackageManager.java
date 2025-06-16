@@ -2031,6 +2031,8 @@ public class PackageManager {
                             new Arguments.Option("update", "Check for updates, and ask to install if available"),
                             new Arguments.Option("updatenow", "Check for updates and install without asking"),
                             new Arguments.StringOption("addRepository", "URL", "Add an external repository URL"),
+                            new Arguments.StringOption("delRepository", "URL", "Remove an external repository URL"),
+                            new Arguments.Option("listRepositories", "List installed external repositories."),
                     });
             try {
                 arguments.parseArguments(args);
@@ -2183,7 +2185,7 @@ public class PackageManager {
                                     + repoURL + "' to "
                                     + getPackageUserDir() + "/beauti.properties.");
                         } else {
-                            System.out.println("Repository URL '" + repoURL + "' already in "
+                            System.err.println("Repository URL '" + repoURL + "' already in "
                                     + getPackageUserDir() + "/beauti.properties.");
                         }
                     } catch (MalformedURLException ex) {
@@ -2194,6 +2196,49 @@ public class PackageManager {
                 }
 
             }
+
+            if (arguments.hasOption("delRepository")) {
+                String urlString = arguments.getStringOption("delRepository");
+                if (urlString != null) {
+
+                    URL repoURL;
+
+                    try {
+                        repoURL = new URI(urlString).toURL();
+
+                        List<URL> urls = getRepositoryURLs();
+
+                        int urlIdx = urls.indexOf(repoURL);
+                        if (urlIdx < 0) {
+                            System.err.println("Repository URL '" + repoURL + "' not found in "
+                                    + getPackageUserDir() + "/beauti.properties.");
+                        } else if (urlIdx == 0) {
+                            System.err.println("Cannot remove main repository, '" + repoURL + "'.");
+                        } else {
+                            urls.remove(repoURL);
+                            saveRepositoryURLs(urls);
+                            System.out.println("Successfully removed repository URL '"
+                                    + repoURL + "' from "
+                                    + getPackageUserDir() + "/beauti.properties.");
+                        }
+                    } catch(MalformedURLException ex){
+                            System.err.println("Error: malformed repository URL.");
+                            System.exit(1);
+                    }
+                }
+            }
+
+            if (arguments.hasOption("listRepositories")) {
+
+                List<URL> urls = getRepositoryURLs();
+
+                System.out.println("Installed repository URLs:");
+                System.out.println(urls.remove(0) + " (main repository, unchangeable)");
+                for (URL url : urls)
+                    System.out.println(url);
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
