@@ -935,7 +935,7 @@ public class XMLParser {
 		} catch (ClassNotFoundException e1) {
 			// should never happen since clazzName is in the list of classes collected by the AddOnManager
 			e1.printStackTrace();
-			throw new RuntimeException(e1);
+            throw new XMLParserException(node, "validate and intialize error: " + e1.getMessage(), 1107);
 		}
 		
 		// process inputs
