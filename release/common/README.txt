@@ -1,7 +1,7 @@
-                    BEAST v2.7.7 2024
-                 Beast 2 development team 2011-2024
+                    BEAST v2.7.8 2025
+                 Beast 2 development team 2011-2025
 
-Last updated: June 2024
+Last updated: June 2025
 
 Contents:
 1) INTRODUCTION
