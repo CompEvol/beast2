@@ -66,9 +66,9 @@ public class SiteModel extends SiteModelInterface.Base {
             new Input<>("proportionInvariant", "proportion of sites that is invariant: should be between 0 (default) and 1");
     //public Input<Boolean> useBeast1StyleGammaInput = new Input<>("useBeast1Gamma", "use BEAST1 style gamma categories -- for backward compatibility testing", false);
 
-    protected Function muParameter;
-    protected Function shapeParameter;
-    protected Function invarParameter;
+    protected RealParameter muParameter;
+    protected RealParameter shapeParameter;
+    protected RealParameter invarParameter;
     protected boolean useBeast1StyleGamma;
     
     @Override
