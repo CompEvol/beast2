@@ -116,7 +116,8 @@ public class BactrianDeltaExchangeOperator extends KernelOperator {
         // dimension sanity check
         int dim = -1;
         if (compoundParameter == null) { // one parameter case
-        	dim = (!parameterInput.get().isEmpty() ? parameterInput.get().get(0).getDimension() : intparameterInput.get().get(0).getDimension());
+        	dim = (parameterInput.get().size() > 0 ? parameterInput.get().get(0).getDimension() : 
+        		   intparameterInput.get().size() > 0 ? intparameterInput.get().get(0).getDimension() : 0);
         } else {
             dim = compoundParameter.getDimension();
         }
