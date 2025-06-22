@@ -157,7 +157,7 @@ public class Tree extends StateNode implements TreeInterface {
      *
      * @param traitList List of trait sets.
      */
-    protected void processTraits(List<TraitSet> traitList) {
+    public void processTraits(List<TraitSet> traitList) {
         for (TraitSet traitSet : traitList) {
             for (Node node : getExternalNodes()) {
             	String id = node.getID();
