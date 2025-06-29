@@ -6,51 +6,50 @@ Last updated: June 2025
 All issues can be viewed at https://github.com/CompEvol/beast2/issues
 ================================================================================
 Version 2.7.8 June 2025
-	o more robust state reconstruction in MCMC. #1201
-	o improve tracability of XML errors (when spec has not been specified) #28
-	o Methods for CLI repo management via packagemanager.
+	## BEAST
 	o fix DeltaExchangeOperator, BactrianDeltaExchangeOperator, for weighted Dirichlet #1199
 	o For initialisation & weighing for Dirichlet #1190
-	o Substitution model RealParamter input to Function input conversions #1196
-	o allow use of Coalescent without specifying TreeIntervals. #1192
-	o split off Citable from BEASTInterface so it can be used independently. Facilitates BeastFX#94
-	o enable uncertain alignments to be filtered by FilteredAlignment. #1188
-	o fix error reporting of BactrianDeltaExchangeOperator. #1187
+	o facilitate beast "-validate" option BeastFX#86
 	o fix for direct simulating from integer distribution #1186
-	o restore frequencies warning statement #1185
-	o make BactrianOperatorSchedule ignore Uniform operators if parameter is not a RealParameter #1183
-	o add public method to GeneralSubstitutionModel #1181
-	o robustify tree likelihoods for possibility data is not Alignment #1174
+	o enhance beast "-validate" option. BeastFX#86
 	o make TreeWithMetaDataLogger produce correct nr of commas. #1177
+	o make BactrianOperatorSchedule ignore Uniform operators if parameter is not a RealParameter #1183
+	o update parameter dimension on -resume #1159
+	o deal with spaces in quoted attribute values BeastFX#30
+	o make Newick parser work for MemoryFriendlyTreeSet. BeastFX#85
+	## BEAUti
+	o fix issue with link/unlink parittions in BEAUti. BeastFX#83
+	o fix renaming id's when cloning site model. BeastFX#91
+	o replace colons by dashes in IDs named by file name. #1184
+	o make alignments non-clonable for BEAUti link/unlink support #1150
+	## TreeAnnotator
+	o Fixing BeastFX#92 GUI dropdown not closing on first selection
+	## Other apps
+	o add -includeEvery option to LogCombiner BeastFX#84
+	o add -version_file option to AppLauncher #1158
+	o fix threading when running LogAnalyser with threads. BeastFX#81
+	o make Application validate Inputs after setting Input values. BeastFX#97
+	o set IDs of parsed trees in tree set BeastFX#87
+	## For developers
+	o more robust state reconstruction in MCMC. #1201
+	o allow use of Coalescent without specifying TreeIntervals. #1192
+	o add public method to GeneralSubstitutionModel #1181
+	o add Description to TreeAnnotator, which shows when running treeannotator -help BeastFX#28
+	o add support for citing methods in TreeAnnotator BeastFX#94
+	o split off Citable from BEASTInterface so it can be used independently. Facilitates BeastFX#94
+	o Substitution model RealParamter input to Function input conversions #1196
+	o robustify tree likelihoods for possibility data is not Alignment #1174
 	o add benchmark interface to BeagelTreeLikelihood #1172
 	o towards renaming scaleFactor to windowSize in BactrianRandomWalkOperator #1169
 	o fix indexing error in beagle tree likellihood #1168
-	o set ids of trees parsed from NEXUS file. BeastFX#87
-	o facilitate beast "-validate" option BeastFX#86
-	o Adds CL packagemanager option to add repositories. Closes #1163
-	o update parameter dimension on -resume #1159
-	o improve error message for XML where the spec attribute is missing #28
-	o deal with spaces in quoted attribute values #30
-	o make alignments non-clonable for BEAUti link/unlink support #1150
 	o redirect output to stderr in order to prevent it getting redirected to files (e.g. citations in TreeAnnotator) BeastFX#98
-	o make Application validate Inputs after setting Input values. BeastFX#97
-	o add Description to TreeAnnotator, which shows when running treeannotator -help #28
-	o add support for citing methods in TreeAnnotator BeastFX#94
-	o Fixing #92 GUI dropdown not closing on first selection
-	o replace colons by dashes in IDs named by file name. #1184
-	o add more sensible OutOfMemmoryError messages to TreeAnotator #28
-	o fix renaming id's when cloning site model. BeastFX#91
-	o set IDs of parsed trees in tree set BeastFX#87
+	## Improved error messages	
+	o improve tracability of XML errors (when spec has not been specified) #28
+	o fix error reporting of BactrianDeltaExchangeOperator. #1187
 	o improve error handling for upgrading packages missing from repositories. #1166
-	o enhance beast "-validate" option. BeastFX#86
-	o fix threading when running LogAnalyser with threads. BeastFX#81
-	o fix -version_file bug #1158
-	o add -version_file option to AppLauncher #1158
-	o make Newick parser work for MemoryFriendlyTreeSet. BeastFX#85
-	o add -includeEvery option to LogCombiner BeastFX#84
-	o fix issue with link/unlink parittions in BEAUti. BeastFX#83
-	
-
+	o add more sensible OutOfMemmoryError messages to TreeAnotator BeastFX#28
+	o improve error message for XML where the spec attribute is missing BeastFX#28
+	o restore frequencies warning statement #1185
 
 Version 2.7.7 June 2024
 	o Add CCD to the list of recommended packages for TreeAnnotator CompEvol/beast2#1138
