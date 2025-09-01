@@ -190,6 +190,17 @@ public interface SiteModelInterface {
         @Override
         public void setDataType(final DataType dataType) {
             m_dataType = dataType;
+            
+            // sanity check: make sure the number of states from dataType matches that of the substitution model
+            if (m_dataType != null) {
+            	int nrOfStatesInData = m_dataType.getStateCount();
+            	if (nrOfStatesInData >= 0) {
+            		int nrOfFrequencies = substModelInput.get().getFrequencies().length;
+            		if (nrOfStatesInData != nrOfFrequencies) {
+            			throw new IllegalArgumentException("Number of states in data (" + nrOfStatesInData + ") differs from number of frequencies (" + nrOfFrequencies +")");
+            		}
+	            }
+            }
         }
 
         public double getProportionInvariant() {
