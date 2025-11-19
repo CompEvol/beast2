@@ -17,11 +17,11 @@
 # connect it to localhost (password: password) to observe
 # the graphical output of these tests.
 
-FROM openjdk:11
+FROM debian:stable
 WORKDIR /beast2
 
 # Install Apache Ant
-RUN apt-get update && apt-get install -y ant
+RUN apt-get update && apt-get install -y openjdk-21-jdk openjfx ant
 
 # Install and configure VNC server
 RUN apt-get update && apt-get install -y tightvncserver twm
@@ -30,7 +30,7 @@ RUN echo password | vncpasswd -f > /root/.vnc/passwd
 RUN chmod 600 /root/.vnc/passwd
 
 # Install BEAGLE
-RUN apt-get update && apt-get install -y build-essential autoconf automake libtool pkg-config
+RUN apt-get update && apt-get install -y build-essential autoconf automake libtool pkg-config git
 # use latest release v3.1.2, issue #786
 RUN cd /root && git clone --branch v3.1.2 --depth=1 https://github.com/beagle-dev/beagle-lib.git
 RUN cd /root/beagle-lib && ./autogen.sh && ./configure --prefix=/usr/local && make install
