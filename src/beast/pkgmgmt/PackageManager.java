@@ -381,9 +381,14 @@ public class PackageManager {
 
                 PackageVersion packageVersion = new PackageVersion(element.getAttribute("version"));
 
-                if (element.hasAttribute("projectURL") &&
-                        !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion())<0))
-                    pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
+                    if (element.hasAttribute("projectURL") &&
+                            !(pkg.getLatestVersion() != null && packageVersion.compareTo(pkg.getLatestVersion()) < 0)) {
+                        try {
+                            pkg.setProjectURL(new URL(element.getAttribute("projectURL")));
+                        } catch (MalformedURLException ex) {
+                            System.err.println("Error parsing projectURL: " + ex.getMessage());
+                        }
+                    }
 
                 Set<PackageDependency> packageDependencies = new HashSet<PackageDependency>();
                 NodeList depNodes = element.getElementsByTagName("depends");
