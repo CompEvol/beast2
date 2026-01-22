@@ -593,6 +593,7 @@ public class MCMC extends Runnable {
             state.setEverythingDirty(false);
         } else {
             // operation failed
+			logAlpha = Double.NEGATIVE_INFINITY;
             if (sampleNr >= 0) {
                 operator.reject(-2);
             }
