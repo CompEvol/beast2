@@ -50,10 +50,16 @@ else
     export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib
 fi
 
+if [ "$#" -gt 1 ]; then
+    HEADLESS="-Djava.awt.headless=true"
+else
+    HEADLESS=""
+fi
+
 # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
 # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
 if [ -n "$BEAST_EXTRA_LIBS" ]; then 
-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
+  "$JAVA" $HEADLESS -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
 else	
-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
+  "$JAVA" $HEADLESS -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
 fi
