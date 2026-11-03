@@ -551,8 +551,9 @@ public class AdaptableVarianceMultivariateNormalOperator extends KernelOperator 
                 		logJacobian += transformations[i].getLogJacobian(x, currentIndex, currentIndex + transformationSizes[i]) - transformations[i].getLogJacobian(temp, 0, transformationSizes[i]);
                 	}
                 } else {
-                    int k = parameter.setValue(currentIndex, transformations[i].inverse(transformedX[currentIndex]));
-                    logJacobian += k * (transformations[i].getLogJacobian(x[currentIndex]) - transformations[i].getLogJacobian(parameter.getValue(currentIndex)));
+                    double extraLogJacobian = parameter.setValue(currentIndex, transformations[i].inverse(transformedX[currentIndex]));
+                    logJacobian += transformations[i].getLogJacobian(x[currentIndex]) - transformations[i].getLogJacobian(parameter.getValue(currentIndex))
+                    		+ extraLogJacobian;
                 }
                 if (DEBUG) {
                     System.err.println("Current logJacobian = " + logJacobian);
@@ -562,8 +563,9 @@ public class AdaptableVarianceMultivariateNormalOperator extends KernelOperator 
                     //TODO: figure out if this is really a problem ...
                     throw new RuntimeException("Transformations on more than 1 parameter value should be set quietly");
                 } else {
-                    parameter.setValue(currentIndex, transformations[i].inverse(transformedX[currentIndex]));
-                    logJacobian += transformations[i].getLogJacobian(x[currentIndex]) - transformations[i].getLogJacobian(parameter.getValue(currentIndex));
+                    double extraLogJacobian = parameter.setValue(currentIndex, transformations[i].inverse(transformedX[currentIndex]));
+                    logJacobian += transformations[i].getLogJacobian(x[currentIndex]) - transformations[i].getLogJacobian(parameter.getValue(currentIndex))
+                    		+ extraLogJacobian;
                 }
                 if (DEBUG) {
                     System.err.println("Current logJacobian = " + logJacobian);
@@ -733,7 +735,14 @@ public class AdaptableVarianceMultivariateNormalOperator extends KernelOperator 
             return parameterIndex1.length;
         }
 
-        public int setValue(final int param, final double value) throws Exception {
+        /**
+         * Set dimension param to value.
+         * @return log Jacobian of the move beyond the one-dimensional change of
+         * this dimension, which the transform's own Jacobian already covers:
+         * 0 for parameters; for a tree, whose root height is set by scaling all
+         * dof internal node heights by s, the other dof - 1 heights give (dof - 1) log(s).
+         */
+        public double setValue(final int param, final double value) throws Exception {
         	
         	if (Double.isNaN(value)) {
         		throw new Exception();
@@ -750,12 +759,16 @@ public class AdaptableVarianceMultivariateNormalOperator extends KernelOperator 
             	} else {
             		p.setValue(getX(param), value);
             	}
-            	return 1;
+            	return 0;
             } else if (para instanceof Tree) {
+            	if (value <= 0) {
+            		// an additive move (NoTransform) can overshoot zero; reject the proposal
+            		throw new Exception("non-positive root height");
+            	}
             	double old = para.getArrayValue();
             	double scale = value / old;
-            	((Tree) para).scale(scale);
-            	return ((Tree) para).getInternalNodeCount();
+            	int dof = ((Tree) para).scale(scale);
+            	return (dof - 1) * Math.log(scale);
             }
             return 0;
         }
