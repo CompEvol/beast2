@@ -150,6 +150,14 @@ newick='            (((((((((((((&apos;20_0.95_2&apos;[&amp;ampstate="2"]:0.0271
         </state>
 
         <distribution spec="CompoundDistribution" id="posterior">
+            <!-- proper prior, replaces the improper flat prior of the 2.7.8 example -->
+            <distribution id="hky.kappa.prior" spec="beast.base.inference.distribution.Prior" x="@hky.kappa">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="1.0" S="1.25" meanInRealSpace="false"/>
+            </distribution>
+            <!-- proper prior, replaces the improper flat prior of the 2.7.8 example -->
+            <distribution id="popSize.prior" spec="beast.base.inference.distribution.Prior" x="@popSize">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
+            </distribution>
             <distribution id="coalescent" spec="Coalescent">
                 <treeIntervals spec='beast.base.evolution.tree.TreeIntervals' id='TreeIntervals'>
                      <tree idref="tree"/>

@@ -47,9 +47,10 @@
         <distribution spec='CompoundDistribution' id='posterior'>
             <distribution id="yule.prior" idref='cyule'/>
 
-            <!-- <distribution id="birthRate.prior" spec="beast.base.inference.distribution.Prior" x="@birthRate">
-                <distr id="OneOnX" offset="0.0" spec="beast.base.inference.distribution.OneOnX"/>
-            </distribution> -->
+            <!-- proper prior, replaces the missing prior of the 2.7.8 example (its 1/x prior was commented out, leaving the posterior improper) -->
+            <distribution id="birthRate.prior" spec="beast.base.inference.distribution.Prior" x="@birthRate">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
+            </distribution>
 
         </distribution>
 

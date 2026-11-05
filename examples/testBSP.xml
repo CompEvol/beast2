@@ -110,6 +110,14 @@
                               spec="beast.base.inference.distribution.LogNormalDistributionModel"/>
             </distribution>
 
+            <!-- proper prior, replaces the improper flat prior of the 2.7.8 example -->
+            <distribution id="siteModel.alpha.prior" spec="beast.base.inference.distribution.Prior" x="@siteModel.alpha">
+                <distr spec="beast.base.inference.distribution.Exponential" mean="1.0"/>
+            </distribution>
+            <!-- proper prior, replaces the improper flat prior of the 2.7.8 example -->
+            <distribution id="clock.rate.prior" spec="beast.base.inference.distribution.Prior" x="@clock.rate">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
+            </distribution>
             <distribution spec="BayesianSkyline" id='skyline'>
                 <popSizes idref="skyline.popSize"/>
                 <groupSizes idref='skyline.groupSize'/>
@@ -118,9 +126,15 @@
                 </treeIntervals>
             </distribution>
 
-            <distribution id='eml1' spec="beast.base.inference.distribution.MarkovChainDistribution" 
-				jeffreys="true"
+            <!-- The 2.7.8 example used jeffreys="true", an improper 1/x prior on the first popSize.
+                 Instead the first popSize has an exponential prior whose mean is estimated, with a
+                 proper LogNormal(0, 8) prior on that mean. -->
+            <distribution id='eml1' spec="beast.base.inference.distribution.MarkovChainDistribution"
+				initialMean="@skyline.popSizeInitialMean"
 				parameter="@skyline.popSize"/>
+            <distribution id="skyline.popSizeInitialMean.prior" spec="beast.base.inference.distribution.Prior" x="@skyline.popSizeInitialMean">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
+            </distribution>
         </distribution>
 
 		<distribution spec='TreeLikelihood' id="likelihood">
@@ -143,6 +157,7 @@
         <state>
 			<parameter name='stateNode' id="skyline.popSize" dimension="5" value="380.0" lower="0.0" upper="38000.0"/>
 			<stateNode spec='parameter.IntegerParameter' id='skyline.groupSize' dimension="5" value="0"/>
+			<parameter name='stateNode' id="skyline.popSizeInitialMean" value="380.0" lower="0.0"/>
             <stateNode idref="hky.kappa"/>
             <stateNode idref="tree"/>
             <stateNode idref="clock.rate"/>
@@ -157,6 +172,7 @@
         <operator id='upDown' spec='UpDownOperator' scaleFactor="0.77" weight="3" up="@clock.rate" down='@tree'/>
 
         <operator id='popSizesScaler' spec='ScaleOperator' scaleFactor="0.75" weight="15" parameter="@skyline.popSize"/>
+        <operator id='popSizeInitialMeanScaler' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@skyline.popSizeInitialMean"/>
 
         <operator id='groupSizesDelta' spec='DeltaExchangeOperator' delta="1" weight="6" integer="true"
                   intparameter="@skyline.groupSize"/>
@@ -182,6 +198,7 @@
             <log idref="clock.rate"/>
             <log idref="skyline.popSize"/>
             <log idref="skyline.groupSize"/>
+            <log idref="skyline.popSizeInitialMean"/>
             <log idref="hky.kappa"/>
             <log spec='beast.base.evolution.tree.TreeHeightLogger' tree='@tree' id='treeModel.rootHeight'/>
             <log idref="likelihood"/>
