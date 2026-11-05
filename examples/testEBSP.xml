@@ -369,7 +369,8 @@
     <distribution id="posterior" spec="CompoundDistribution">
         <distribution id="prior" spec="CompoundDistribution">
             <distribution spec="beast.base.inference.distribution.Prior" x="@populationMean">
-                <distr offset="0.0" spec="beast.base.inference.distribution.OneOnX"/>
+                <!-- proper prior, replaces the improper OneOnX (1/x) prior of the 2.7.8 example -->
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
             </distribution>
             <distribution spec="beast.base.inference.distribution.Prior">
                 <x arg="@indicators" id="indsSun" spec="beast.base.evolution.Sum"/>

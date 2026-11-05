@@ -49,7 +49,8 @@
             <distribution idref="rootPrior"/>
 
             <distribution id="birthRate.prior" spec="beast.base.inference.distribution.Prior" x="@birthRate">
-                <distr id="OneOnX" offset="0.0" spec="beast.base.inference.distribution.OneOnX"/>
+                <!-- proper prior, replaces the improper OneOnX (1/x) prior of the 2.7.8 example -->
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
             </distribution>
 
         </distribution>
