@@ -540,11 +540,11 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
                     double ll = 0;
 
-                    ll += cs[0] * Math.log1p(-Math.exp(-lam * hs[0])) - lam * hs[0] - lfactorials[cs[0]];
+                    ll += cs[0] * Math.log(-Math.expm1(-lam * hs[0])) - lam * hs[0] - lfactorials[cs[0]];
                     for (int i = 1; i < cs.length - 1; ++i) {
                         final int c = cs[i];
                         if( c > 0 ) {
-                        	ll += c * (Math.log1p(-Math.exp(-lam * (hs[i] - hs[i - 1]))) - lam * hs[i - 1]);
+                        	ll += c * (Math.log(-Math.expm1(-lam * (hs[i] - hs[i - 1]))) - lam * hs[i - 1]);
                         }
                         ll += -lam * hs[i] - lfactorials[c];
                     }
@@ -579,12 +579,12 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
             lgp = -2 * lh + Math.log(lam);
             if (clade > 1) {
-                lgp += (clade - 1) * Math.log(1 - Math.exp(-lh));
+                lgp += (clade - 1) * Math.log(-Math.expm1(-lh));
             }
         } else {
             assert clade > 1;
 
-            lgp = -3 * lh + (clade - 2) * Math.log(1 - Math.exp(-lh)) + Math.log(lam);
+            lgp = -3 * lh + (clade - 2) * Math.log(-Math.expm1(-lh)) + Math.log(lam);
 
             // root is a special case
             if (taxonCount == clade) {
@@ -605,17 +605,23 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         final int m = nm - n;
 
-        final double elh2 = Math.exp(-lam * h2);
-        final double elh1 = Math.exp(-lam * h1);
-
         double lgl = 2 * Math.log(lam);
 
-        lgl += (n - 2) * Math.log(1 - elh2);
-        lgl += (m - 3) * Math.log(1 - elh1);
+        // 1 - exp(-lam * h), computed without cancellation: for small lam * h,
+        // exp(-lam * h) rounds to 1 and 1 - exp(-lam * h) to 0.
+        final double a = -Math.expm1(-lam * h1);
+        final double b = -Math.expm1(-lam * h2);
 
-        lgl += Math.log(1 - 2 * m * elh1 + 2 * (m - 1) * elh2
-                - m * (m - 1) * elh1 * elh2 + (m * (m + 1) / 2.) * elh1 * elh1
-                + ((m - 1) * (m - 2) / 2.) * elh2 * elh2);
+        lgl += (n - 2) * Math.log(b);
+        lgl += (m - 3) * Math.log(a);
+
+        // 1 - 2m e1 + 2(m-1) e2 - m(m-1) e1 e2 + m(m+1)/2 e1^2 + (m-1)(m-2)/2 e2^2, with
+        // e1 = 1 - a and e2 = 1 - b: its constant and linear terms cancel exactly, leaving
+        // a^2 (m(m+1)/2 - m(m-1) r + (m-1)(m-2)/2 r^2) with r = b / a. Written this way it
+        // stays accurate for small lam, and taking a^2 out of the log avoids underflow.
+        final double r = b / a;
+        lgl += 2 * Math.log(a) + Math.log((m * (m + 1) / 2.) - m * (m - 1) * r
+                + ((m - 1) * (m - 2) / 2.) * r * r);
 
         if (nm < taxonCount) {
             /* lgl += Math.log(0.5*(n*(n*n-1))*(n+1+m)) */
@@ -650,7 +656,7 @@ public class CalibratedYuleModel extends SpeciesTreeDistribution {
 
         for (int i = 0; i < heights; ++i) {
             final double d = lehs[i + 1] - lehs[i];
-            lebase[i] = d != 0 ? lehs[i] + Math.log1p(-Math.exp(d)) : -50;
+            lebase[i] = d != 0 ? lehs[i] + Math.log(-Math.expm1(d)) : -50;
         }
 
         if (noRoot) {
