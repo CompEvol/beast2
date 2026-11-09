@@ -54,7 +54,8 @@
                     <distr id="Uniform" lower="0.0" upper="1.0" spec="beast.base.inference.distribution.Uniform"/>
                 </distribution>
                 <distribution id="popSize.prior" spec="beast.base.inference.distribution.Prior" x="@popSize">
-                    <distr id="OneOnX" offset="0.0" spec="beast.base.inference.distribution.OneOnX"/>
+                    <!-- proper prior, replaces the improper OneOnX (1/x) prior of the 2.7.8 example -->
+                    <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
                 </distribution>
 
                 <distribution id='mrcaPrior1' spec='beast.base.evolution.tree.MRCAPrior' tree='@tree' monophyletic='true'>

@@ -65,6 +65,10 @@
             <distribution id="yule.prior" idref='yule'/>
             <distribution idref="mrcaPrior1"/>
             <distribution idref="mrcaPrior2"/>
+            <!-- proper prior, replaces the improper flat prior of the 2.7.8 example -->
+            <distribution id="birthRate.prior" spec="beast.base.inference.distribution.Prior" x="@birthRate">
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
+            </distribution>
         </distribution>
 
         <operator spec='SubtreeSlide' weight="4" gaussian="true" size="2.5" tree="@tree"/>

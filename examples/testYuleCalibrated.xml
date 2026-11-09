@@ -22,7 +22,8 @@
                 <distr id="Uniform.0" lower="0.0" offset="0.0" spec="beast.base.inference.distribution.Uniform" upper="1000.0"/>
             </distribution>
             <distribution id="ClockPrior.c:alignment" spec="beast.base.inference.distribution.Prior" x="@clockRate.c:alignment">
-                <distr id="Uniform.01" lower="0.0" offset="0.0" spec="beast.base.inference.distribution.Uniform" upper="Infinity"/>
+                <!-- proper prior, replaces the improper Uniform(0, Infinity) prior of the 2.7.8 example -->
+                <distr spec="beast.base.inference.distribution.LogNormalDistributionModel" M="0.0" S="8.0" meanInRealSpace="false"/>
             </distribution>
             <distribution id="KappaPrior.s:alignment" spec="beast.base.inference.distribution.Prior" x="@kappa.s:alignment">
                 <distr id="LogNormalDistributionModel.0" meanInRealSpace="true" offset="0.0" spec="beast.base.inference.distribution.LogNormalDistributionModel">
