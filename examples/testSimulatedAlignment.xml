@@ -2,7 +2,7 @@
        namespace='beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.base.evolution.alignment'>
 
     <!-- The simulated sequence alignment. -->
-    <data spec='beast.app.seqgen.SimulatedAlignment' id="alignment"
+    <data spec='beastfx.app.seqgen.SimulatedAlignment' id="alignment"
 	  sequencelength="2000"
 	  outputFileName="simulated_alignment.xml">
 
